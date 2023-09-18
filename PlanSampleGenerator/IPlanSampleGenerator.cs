@@ -12,8 +12,9 @@ namespace PlanSampleGenerator
         public List<string> ProblemPaths { get; set; }
         public int SampleCount { get; set; }
         public string OutputPath { get; set; }
+        public string PythonPrefix { get; set; }
         public string FastDownwardPath { get; set; }
-        public string FastDownwardArguments { get; set; }
+        public string FastDownwardSearch { get; set; }
 
         // If seed is -1, its just conventional random
         public void Sample(int seed = -1);
