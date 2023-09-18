@@ -1,5 +1,4 @@
-﻿using System;
-using Tools;
+﻿using Tools;
 using Tools.Benchmarks;
 
 namespace PlanSampleGenerator
