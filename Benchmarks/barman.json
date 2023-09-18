@@ -1,0 +1,10 @@
+{
+  "Name": "Barman",
+  "DomainPath": "Dependencies/downward-benchmarks-master/barman-sat11-strips/domain.pddl",
+  "ProblemPaths": [
+    "Dependencies/downward-benchmarks-master/barman-sat11-strips/pfile06-021.pddl",
+    "Dependencies/downward-benchmarks-master/barman-sat11-strips/pfile06-022.pddl",
+    "Dependencies/downward-benchmarks-master/barman-sat11-strips/pfile06-023.pddl",
+    "Dependencies/downward-benchmarks-master/barman-sat11-strips/pfile06-024.pddl"
+  ]
+}
