@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toolchain", "Toolchain\Tool
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolchainTests", "ToolchainTests\ToolchainTests.csproj", "{C1E2AFB4-9F51-4917-B805-BE8291EE058B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanSampleGenerator", "PlanSampleGenerator\PlanSampleGenerator.csproj", "{F75C13FC-8E07-4338-98DB-3E9B37F40438}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{C1E2AFB4-9F51-4917-B805-BE8291EE058B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1E2AFB4-9F51-4917-B805-BE8291EE058B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1E2AFB4-9F51-4917-B805-BE8291EE058B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F75C13FC-8E07-4338-98DB-3E9B37F40438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F75C13FC-8E07-4338-98DB-3E9B37F40438}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F75C13FC-8E07-4338-98DB-3E9B37F40438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F75C13FC-8E07-4338-98DB-3E9B37F40438}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

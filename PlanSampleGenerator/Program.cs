@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace Toolchain
+namespace PlanSampleGenerator
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Toolchain started!");
+            Console.WriteLine("");
 
         }
     }
