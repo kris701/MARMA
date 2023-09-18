@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tools;
 
 namespace PlanSampleGenerator
 {
@@ -29,51 +30,72 @@ namespace PlanSampleGenerator
             FastDownwardSearch = fastDownwardSearch;
         }
 
-        public void Sample(int seed = -1)
+        public void Sample(int seed = -1, bool multithreaded = true)
         {
             Random rnd = GetRandomizer(seed);
             var subset = GetRandomSubset(ProblemPaths, rnd, SampleCount);
 
             if (Directory.Exists(OutputPath))
-                Directory.Delete(OutputPath);
+                Directory.Delete(OutputPath, true);
             Directory.CreateDirectory(OutputPath);
 
+            var projectPath = ProjectHelper.GetProjectPath();
+
             List<Task> tasks = new List<Task>();
-            int id = 0;
             foreach (var sub in subset)
-                tasks.Add(SampleDomainProblemCombinationAsync(DomainPath, sub, id++));
+                tasks.Add(SampleDomainProblemCombinationAsync(DomainPath, sub, projectPath));
             foreach (var task in tasks)
+            {
                 task.Start();
-            Task.WhenAll(tasks);
+                if (!multithreaded)
+                    task.Wait();
+            }
+            Task.WaitAll(tasks.ToArray());
         }
 
-        private async Task SampleDomainProblemCombinationAsync(string domain, string problem, int id)
+        private Task SampleDomainProblemCombinationAsync(string domain, string problem, string projectPath)
         {
-            StringBuilder sb = new StringBuilder("");
-            sb.Append($"{FastDownwardPath} ");
-            string fileName = $"{new FileInfo(domain).Name}-{id}";
-            sb.Append($"--plan-file '{Path.Combine(OutputPath, fileName)}' ");
-            sb.Append($"'{domain}' ");
-            sb.Append($"'{problem}' ");
-            sb.Append($"--search \"{FastDownwardSearch}\"");
-
-            var process = new Process
+            return new Task(() =>
             {
-                StartInfo = new ProcessStartInfo()
+                StringBuilder sb = new StringBuilder("");
+                sb.Append($"{FastDownwardPath} ");
+                string fileName = $"{new FileInfo(domain).Name.Replace(".pddl","")}-{new FileInfo(problem).Name.Replace(".pddl","")}";
+                sb.Append($"--plan-file \"{Path.Combine(OutputPath, fileName)}.plan\" ");
+                sb.Append($"--sas-file \"{Path.Combine(OutputPath, fileName)}.sas\" ");
+
+                if (FastDownwardSearch.StartsWith("--alias"))
+                    sb.Append($"--alias \"lama-first\" ");
+                sb.Append($"\"{Path.Combine(projectPath, domain)}\" ");
+                sb.Append($"\"{Path.Combine(projectPath, problem)}\" ");
+                if (FastDownwardSearch.StartsWith("--search"))
+                    sb.Append($"--search \"{FastDownwardSearch}\"");
+
+                var process = new Process
                 {
-                    FileName = PythonPrefix,
-                    Arguments = sb.ToString(),
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardError = true
-                }
-            };
-            process.ErrorDataReceived += (sender, e) => {
-                Console.WriteLine(e.Data);
-            };
-            process.Start();
-            process.BeginErrorReadLine();
-            await process.WaitForExitAsync();
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = PythonPrefix,
+                        Arguments = sb.ToString(),
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        //RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        WorkingDirectory = projectPath
+                    }
+                };
+                //process.OutputDataReceived += (sender, e) =>
+                //{
+                //    Console.WriteLine(e.Data);
+                //};
+                process.ErrorDataReceived += (sender, e) =>
+                {
+                    Console.WriteLine(e.Data);
+                };
+                process.Start();
+                process.BeginErrorReadLine();
+                //process.BeginOutputReadLine();
+                process.WaitForExit();
+            });
         }
 
         private List<string> GetRandomSubset(List<string> source, Random rnd, int count)
