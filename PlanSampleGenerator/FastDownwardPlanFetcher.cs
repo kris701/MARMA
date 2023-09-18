@@ -15,13 +15,15 @@ namespace PlanSampleGenerator
         public string FastDownwardPath { get; set; }
         // Can either be a "--search" or "--alias"
         public string FastDownwardSearch { get; set; }
+        public bool CopyProblemAndDomains { get; set; }
 
-        public FastDownwardPlanFetcher(string outputPath, string pythonPrefix, string fastDownwardPath, string fastDownwardSearch)
+        public FastDownwardPlanFetcher(string outputPath, string pythonPrefix, string fastDownwardPath, string fastDownwardSearch, bool copyProblemAndDomains)
         {
             OutputPath = outputPath;
             PythonPrefix = pythonPrefix;
             FastDownwardPath = fastDownwardPath;
             FastDownwardSearch = fastDownwardSearch;
+            CopyProblemAndDomains = copyProblemAndDomains;
         }
 
         public void Fetch(string domain, List<string> problems, bool multithreaded = true)
@@ -29,6 +31,7 @@ namespace PlanSampleGenerator
             if (Directory.Exists(OutputPath))
                 Directory.Delete(OutputPath, true);
             Directory.CreateDirectory(OutputPath);
+            Directory.CreateDirectory(Path.Combine(OutputPath, "Plans"));
 
             var projectPath = ProjectHelper.GetProjectPath();
 
@@ -42,6 +45,13 @@ namespace PlanSampleGenerator
                     task.Wait();
             }
             Task.WaitAll(tasks.ToArray());
+
+            if (CopyProblemAndDomains)
+            {
+                File.Copy(Path.Combine(projectPath, domain), Path.Combine(OutputPath, "domain.pddl"));
+                foreach (var sub in problems)
+                    File.Copy(Path.Combine(projectPath, sub), Path.Combine(OutputPath, new FileInfo(sub).Name));
+            }
         }
 
         private Task SampleDomainProblemCombinationAsync(string domain, string problem, string projectPath)
@@ -51,8 +61,8 @@ namespace PlanSampleGenerator
                 StringBuilder sb = new StringBuilder("");
                 sb.Append($"{FastDownwardPath} ");
                 string fileName = $"{new FileInfo(domain).Name.Replace(".pddl", "")}-{new FileInfo(problem).Name.Replace(".pddl", "")}";
-                sb.Append($"--plan-file \"{Path.Combine(OutputPath, fileName)}.plan\" ");
-                sb.Append($"--sas-file \"{Path.Combine(OutputPath, fileName)}.sas\" ");
+                sb.Append($"--plan-file \"{Path.Combine(OutputPath, "Plans", fileName)}.plan\" ");
+                sb.Append($"--sas-file \"{Path.Combine(OutputPath, "Plans", fileName)}.sas\" ");
 
                 if (FastDownwardSearch.StartsWith("--alias"))
                     sb.Append($"--alias \"lama-first\" ");

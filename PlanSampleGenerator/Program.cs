@@ -22,7 +22,8 @@ namespace PlanSampleGenerator
                 Path.Join(projectPath, "PlanSamples", "depot"),
                 "python",
                 Path.Join(projectPath, "Dependencies", "fast-downward", "fast-downward.py"),
-                "--alias lama-first"
+                "--alias lama-first",
+                true
                 );
 
             fetcher.Fetch(barman.DomainPath, subset);

@@ -13,6 +13,7 @@ namespace PlanSampleGenerator
         public string FastDownwardPath { get; set; }
         // Can either be a "--search" or "--alias"
         public string FastDownwardSearch { get; set; }
+        public bool CopyProblemAndDomains { get; set; }
 
         public void Fetch(string domain, List<string> problems, bool multithreaded = true);
     }
