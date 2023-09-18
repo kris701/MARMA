@@ -26,7 +26,7 @@ namespace PlanSampleGenerator
 
         public void Fetch(Benchmark benchmark, int count, bool multithreaded = true, int seed = -1)
         {
-            CreateFolders(benchmark);
+            CreateFolders(benchmark.Name);
 
             var subset = benchmark.ProblemPaths.OrderBy(x => GetRandomizer(seed).Next()).Take(count).ToList();
             var remaining = benchmark.ProblemPaths.Where(x => !subset.Contains(x)).ToList();
@@ -44,12 +44,12 @@ namespace PlanSampleGenerator
                 return new Random(seed);
         }
 
-        private void CreateFolders(Benchmark benchmark)
+        private void CreateFolders(string name)
         {
-            if (Directory.Exists(Path.Combine(_outputPath, benchmark.Name)))
-                Directory.Delete(Path.Combine(_outputPath, benchmark.Name), true);
-            Directory.CreateDirectory(Path.Combine(_outputPath, benchmark.Name));
-            Directory.CreateDirectory(Path.Combine(_outputPath, benchmark.Name, "Plans"));
+            if (Directory.Exists(Path.Combine(_outputPath, name)))
+                Directory.Delete(Path.Combine(_outputPath, name), true);
+            Directory.CreateDirectory(Path.Combine(_outputPath, name));
+            Directory.CreateDirectory(Path.Combine(_outputPath, name, "Plans"));
         }
 
         private void FetchAll(string name, string domain, List<string> problems, bool multithreaded)
