@@ -15,17 +15,17 @@ namespace PlanSampleGenerator
 
             var barman = new Benchmark(benchmarkPath);
 
-            IPlanSampleGenerator generator = new PlanSampleGenerator(
-                barman.DomainPath,
-                barman.ProblemPaths,
-                2,
+            ISampler sampler = new RandomSampler(1);
+            var subset = sampler.Sample(barman.ProblemPaths, 2);
+
+            IPlanFetcher fetcher = new FastDownwardPlanFetcher(
                 Path.Join(projectPath, "PlanSamples", "depot"),
                 "python",
                 Path.Join(projectPath, "Dependencies", "fast-downward", "fast-downward.py"),
                 "--alias lama-first"
                 );
 
-            generator.Sample(-1);
+            fetcher.Fetch(barman.DomainPath, subset);
         }
     }
 }

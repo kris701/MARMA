@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,32 +8,24 @@ using Tools;
 
 namespace PlanSampleGenerator
 {
-    public class PlanSampleGenerator : IPlanSampleGenerator
+    public class FastDownwardPlanFetcher : IPlanFetcher
     {
-        public string DomainPath { get; set; }
-        public List<string> ProblemPaths { get; set; }
-        public int SampleCount { get; set; }
         public string OutputPath { get; set; }
         public string PythonPrefix { get; set; }
         public string FastDownwardPath { get; set; }
+        // Can either be a "--search" or "--alias"
         public string FastDownwardSearch { get; set; }
 
-        public PlanSampleGenerator(string domainPath, List<string> problemPaths, int sampleCount, string outputPath, string pythonPrefix, string fastDownwardPath, string fastDownwardSearch)
+        public FastDownwardPlanFetcher(string outputPath, string pythonPrefix, string fastDownwardPath, string fastDownwardSearch)
         {
-            DomainPath = domainPath;
-            ProblemPaths = problemPaths;
-            SampleCount = sampleCount;
             OutputPath = outputPath;
             PythonPrefix = pythonPrefix;
             FastDownwardPath = fastDownwardPath;
             FastDownwardSearch = fastDownwardSearch;
         }
 
-        public void Sample(int seed = -1, bool multithreaded = true)
+        public void Fetch(string domain, List<string> problems, bool multithreaded = true)
         {
-            Random rnd = GetRandomizer(seed);
-            var subset = GetRandomSubset(ProblemPaths, rnd, SampleCount);
-
             if (Directory.Exists(OutputPath))
                 Directory.Delete(OutputPath, true);
             Directory.CreateDirectory(OutputPath);
@@ -42,8 +33,8 @@ namespace PlanSampleGenerator
             var projectPath = ProjectHelper.GetProjectPath();
 
             List<Task> tasks = new List<Task>();
-            foreach (var sub in subset)
-                tasks.Add(SampleDomainProblemCombinationAsync(DomainPath, sub, projectPath));
+            foreach (var sub in problems)
+                tasks.Add(SampleDomainProblemCombinationAsync(domain, sub, projectPath));
             foreach (var task in tasks)
             {
                 task.Start();
@@ -59,7 +50,7 @@ namespace PlanSampleGenerator
             {
                 StringBuilder sb = new StringBuilder("");
                 sb.Append($"{FastDownwardPath} ");
-                string fileName = $"{new FileInfo(domain).Name.Replace(".pddl","")}-{new FileInfo(problem).Name.Replace(".pddl","")}";
+                string fileName = $"{new FileInfo(domain).Name.Replace(".pddl", "")}-{new FileInfo(problem).Name.Replace(".pddl", "")}";
                 sb.Append($"--plan-file \"{Path.Combine(OutputPath, fileName)}.plan\" ");
                 sb.Append($"--sas-file \"{Path.Combine(OutputPath, fileName)}.sas\" ");
 
@@ -96,28 +87,6 @@ namespace PlanSampleGenerator
                 //process.BeginOutputReadLine();
                 process.WaitForExit();
             });
-        }
-
-        private List<string> GetRandomSubset(List<string> source, Random rnd, int count)
-        {
-            List<string> subset = new List<string>();
-
-            while(subset.Count <= count)
-            {
-                var target = rnd.Next(0, source.Count);
-                if (!subset.Contains(source[target]))
-                    subset.Add(source[target]);
-            }
-
-            return subset;
-        }
-
-        private Random GetRandomizer(int seed)
-        {
-            if (seed == -1)
-                return new Random();
-            else
-                return new Random(seed);
         }
     }
 }
