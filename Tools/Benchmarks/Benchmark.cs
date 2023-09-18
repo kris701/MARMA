@@ -35,5 +35,13 @@ namespace Tools.Benchmarks
             DomainPath = parsed.DomainPath;
             ProblemPaths = parsed.ProblemPaths;
         }
+
+        public void Save(string path)
+        {
+            var text = JsonSerializer.Serialize(this);
+            if (File.Exists(path))
+                File.Delete(path);
+            File.WriteAllText(path, text);
+        }
     }
 }

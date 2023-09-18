@@ -1,14 +1,14 @@
-﻿namespace PlanSampleGenerator
+﻿using Tools.Benchmarks;
+
+namespace PlanSampleGenerator
 {
     public interface IPlanFetcher
     {
-        public string OutputPath { get; set; }
         public string PythonPrefix { get; set; }
         public string FastDownwardPath { get; set; }
         // Can either be a "--search" or "--alias"
         public string FastDownwardSearch { get; set; }
-        public bool CopyProblemAndDomains { get; set; }
 
-        public void Fetch(string domain, List<string> problems, bool multithreaded = true);
+        public void Fetch(Benchmark benchmark, int count, bool multithreaded = true, int seed = -1);
     }
 }

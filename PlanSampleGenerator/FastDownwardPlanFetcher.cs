@@ -1,52 +1,62 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using Tools;
+using Tools.Benchmarks;
 
 namespace PlanSampleGenerator
 {
     public class FastDownwardPlanFetcher : IPlanFetcher
     {
-        public string OutputPath { get; set; }
+        private static string _outputPath = "PlanSamples";
+        private string _projectPath;
+
         public string PythonPrefix { get; set; }
         public string FastDownwardPath { get; set; }
         // Can either be a "--search" or "--alias"
         public string FastDownwardSearch { get; set; }
-        public bool CopyProblemAndDomains { get; set; }
 
-        public FastDownwardPlanFetcher(string outputPath, string pythonPrefix, string fastDownwardPath, string fastDownwardSearch, bool copyProblemAndDomains)
+        public FastDownwardPlanFetcher(string pythonPrefix, string fastDownwardPath, string fastDownwardSearch)
         {
-            OutputPath = outputPath;
             PythonPrefix = pythonPrefix;
             FastDownwardPath = fastDownwardPath;
             FastDownwardSearch = fastDownwardSearch;
-            CopyProblemAndDomains = copyProblemAndDomains;
+            _projectPath = ProjectHelper.GetProjectPath();
+            _outputPath = Path.Combine(_projectPath, _outputPath);
         }
 
-        public void Fetch(string domain, List<string> problems, bool multithreaded = true)
+        public void Fetch(Benchmark benchmark, int count, bool multithreaded = true, int seed = -1)
         {
-            CreateFolders();
+            CreateFolders(benchmark);
 
-            var projectPath = ProjectHelper.GetProjectPath();
+            var subset = benchmark.ProblemPaths.OrderBy(x => GetRandomizer(seed).Next()).Take(count).ToList();
+            var remaining = benchmark.ProblemPaths.Where(x => !subset.Contains(x)).ToList();
 
-            FetchAll(domain, problems, projectPath, multithreaded);
+            FetchAll(benchmark.Name, benchmark.DomainPath, subset, multithreaded);
 
-            if (CopyProblemAndDomains)
-                CopyFiles(projectPath, domain, problems);
+            GenerateLogFiles(benchmark.Name, benchmark.DomainPath, subset, remaining);
         }
 
-        private void CreateFolders()
+        private Random GetRandomizer(int seed)
         {
-            if (Directory.Exists(OutputPath))
-                Directory.Delete(OutputPath, true);
-            Directory.CreateDirectory(OutputPath);
-            Directory.CreateDirectory(Path.Combine(OutputPath, "Plans"));
+            if (seed == -1)
+                return new Random();
+            else
+                return new Random(seed);
         }
 
-        private void FetchAll(string domain, List<string> problems, string projectPath, bool multithreaded)
+        private void CreateFolders(Benchmark benchmark)
+        {
+            if (Directory.Exists(Path.Combine(_outputPath, benchmark.Name)))
+                Directory.Delete(Path.Combine(_outputPath, benchmark.Name), true);
+            Directory.CreateDirectory(Path.Combine(_outputPath, benchmark.Name));
+            Directory.CreateDirectory(Path.Combine(_outputPath, benchmark.Name, "Plans"));
+        }
+
+        private void FetchAll(string name, string domain, List<string> problems, bool multithreaded)
         {
             List<Task> tasks = new List<Task>();
             foreach (var problem in problems)
-                tasks.Add(SampleDomainProblemCombinationAsync(domain, problem, projectPath));
+                tasks.Add(SampleDomainProblemCombinationAsync(name, domain, problem));
             foreach (var task in tasks)
             {
                 task.Start();
@@ -56,20 +66,20 @@ namespace PlanSampleGenerator
             Task.WaitAll(tasks.ToArray());
         }
 
-        private Task SampleDomainProblemCombinationAsync(string domain, string problem, string projectPath)
+        private Task SampleDomainProblemCombinationAsync(string name, string domain, string problem)
         {
             return new Task(() =>
             {
                 StringBuilder sb = new StringBuilder("");
                 sb.Append($"{FastDownwardPath} ");
                 string fileName = $"{new FileInfo(domain).Name.Replace(".pddl", "")}-{new FileInfo(problem).Name.Replace(".pddl", "")}";
-                sb.Append($"--plan-file \"{Path.Combine(OutputPath, "Plans", fileName)}.plan\" ");
-                sb.Append($"--sas-file \"{Path.Combine(OutputPath, "Plans", fileName)}.sas\" ");
+                sb.Append($"--plan-file \"{Path.Combine(_outputPath, name, "Plans", fileName)}.plan\" ");
+                sb.Append($"--sas-file \"{Path.Combine(_outputPath, name, "Plans", fileName)}.sas\" ");
 
                 if (FastDownwardSearch.StartsWith("--alias"))
                     sb.Append($"--alias \"lama-first\" ");
-                sb.Append($"\"{Path.Combine(projectPath, domain)}\" ");
-                sb.Append($"\"{Path.Combine(projectPath, problem)}\" ");
+                sb.Append($"\"{Path.Combine(_projectPath, domain)}\" ");
+                sb.Append($"\"{Path.Combine(_projectPath, problem)}\" ");
                 if (FastDownwardSearch.StartsWith("--search"))
                     sb.Append($"--search \"{FastDownwardSearch}\"");
 
@@ -83,7 +93,7 @@ namespace PlanSampleGenerator
                         UseShellExecute = false,
                         //RedirectStandardOutput = true,
                         RedirectStandardError = true,
-                        WorkingDirectory = projectPath
+                        WorkingDirectory = _projectPath
                     }
                 };
                 //process.OutputDataReceived += (sender, e) =>
@@ -101,11 +111,12 @@ namespace PlanSampleGenerator
             });
         }
 
-        private void CopyFiles(string projectPath, string domain, List<string> problems)
+        private void GenerateLogFiles(string name, string domain, List<string> usedProblems, List<string> remainingProblems)
         {
-            File.Copy(Path.Combine(projectPath, domain), Path.Combine(OutputPath, "domain.pddl"));
-            foreach (var sub in problems)
-                File.Copy(Path.Combine(projectPath, sub), Path.Combine(OutputPath, new FileInfo(sub).Name));
+            var usedBenchmark = new Benchmark(name, domain, usedProblems);
+            usedBenchmark.Save(Path.Combine(_outputPath, name, "used.json"));
+            var remainingBenchmark = new Benchmark(name, domain, remainingProblems);
+            remainingBenchmark.Save(Path.Combine(_outputPath, name, "remaining.json"));
         }
     }
 }

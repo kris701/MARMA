@@ -14,18 +14,13 @@ namespace PlanSampleGenerator
 
             var depot = new Benchmark(benchmarkPath);
 
-            ISampler sampler = new RandomSampler(1);
-            var subset = sampler.Sample(depot.ProblemPaths, 2);
-
             IPlanFetcher fetcher = new FastDownwardPlanFetcher(
-                Path.Join(projectPath, "PlanSamples", "depot"),
                 "python",
                 Path.Join(projectPath, "Dependencies", "fast-downward", "fast-downward.py"),
-                "--alias lama-first",
-                true
+                "--alias lama-first"
                 );
 
-            fetcher.Fetch(depot.DomainPath, subset);
+            fetcher.Fetch(depot, 2, true, 1);
         }
     }
 }
