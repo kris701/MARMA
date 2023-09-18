@@ -28,16 +28,29 @@ namespace PlanSampleGenerator
 
         public void Fetch(string domain, List<string> problems, bool multithreaded = true)
         {
+            CreateFolders();
+
+            var projectPath = ProjectHelper.GetProjectPath();
+
+            FetchAll(domain, problems, projectPath, multithreaded);
+
+            if (CopyProblemAndDomains)
+                CopyFiles(projectPath, domain, problems);
+        }
+
+        private void CreateFolders()
+        {
             if (Directory.Exists(OutputPath))
                 Directory.Delete(OutputPath, true);
             Directory.CreateDirectory(OutputPath);
             Directory.CreateDirectory(Path.Combine(OutputPath, "Plans"));
+        }
 
-            var projectPath = ProjectHelper.GetProjectPath();
-
+        private void FetchAll(string domain, List<string> problems, string projectPath, bool multithreaded)
+        {
             List<Task> tasks = new List<Task>();
-            foreach (var sub in problems)
-                tasks.Add(SampleDomainProblemCombinationAsync(domain, sub, projectPath));
+            foreach (var problem in problems)
+                tasks.Add(SampleDomainProblemCombinationAsync(domain, problem, projectPath));
             foreach (var task in tasks)
             {
                 task.Start();
@@ -45,13 +58,6 @@ namespace PlanSampleGenerator
                     task.Wait();
             }
             Task.WaitAll(tasks.ToArray());
-
-            if (CopyProblemAndDomains)
-            {
-                File.Copy(Path.Combine(projectPath, domain), Path.Combine(OutputPath, "domain.pddl"));
-                foreach (var sub in problems)
-                    File.Copy(Path.Combine(projectPath, sub), Path.Combine(OutputPath, new FileInfo(sub).Name));
-            }
         }
 
         private Task SampleDomainProblemCombinationAsync(string domain, string problem, string projectPath)
@@ -97,6 +103,13 @@ namespace PlanSampleGenerator
                 //process.BeginOutputReadLine();
                 process.WaitForExit();
             });
+        }
+
+        private void CopyFiles(string projectPath, string domain, List<string> problems)
+        {
+            File.Copy(Path.Combine(projectPath, domain), Path.Combine(OutputPath, "domain.pddl"));
+            foreach (var sub in problems)
+                File.Copy(Path.Combine(projectPath, sub), Path.Combine(OutputPath, new FileInfo(sub).Name));
         }
     }
 }
