@@ -399,3 +399,4 @@ FodyWeavers.xsd
 
 /Dependencies/**
 /PlanSamples/**
+!/Dependencies/readme.md
