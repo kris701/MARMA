@@ -12,10 +12,10 @@ namespace PlanSampleGenerator
             var projectPath = ProjectHelper.GetProjectPath();
             var benchmarkPath = Path.Join(projectPath, "Benchmarks", "depot.json");
 
-            var barman = new Benchmark(benchmarkPath);
+            var depot = new Benchmark(benchmarkPath);
 
             ISampler sampler = new RandomSampler(1);
-            var subset = sampler.Sample(barman.ProblemPaths, 2);
+            var subset = sampler.Sample(depot.ProblemPaths, 2);
 
             IPlanFetcher fetcher = new FastDownwardPlanFetcher(
                 Path.Join(projectPath, "PlanSamples", "depot"),
@@ -25,7 +25,7 @@ namespace PlanSampleGenerator
                 true
                 );
 
-            fetcher.Fetch(barman.DomainPath, subset);
+            fetcher.Fetch(depot.DomainPath, subset);
         }
     }
 }

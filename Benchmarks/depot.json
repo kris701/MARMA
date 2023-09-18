@@ -1,5 +1,5 @@
 {
-  "Name": "Barman",
+  "Name": "Depot",
   "DomainPath": "Dependencies/downward-benchmarks-master/depot/domain.pddl",
   "ProblemPaths": [
     "Dependencies/downward-benchmarks-master/depot/p01.pddl",
