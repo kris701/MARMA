@@ -7,19 +7,13 @@ using Tools.Benchmarks;
 
 namespace Toolchain
 {
-    internal class Program
+    internal class Program : BaseCLI
     {
         static void Main(string[] args)
         {
             Parser.Default.ParseArguments<ToolchainOptions>(args)
               .WithParsed(RunOptions)
               .WithNotParsed(HandleParseError);
-        }
-
-        static void HandleParseError(IEnumerable<Error> errs)
-        {
-            foreach (var error in errs)
-                ConsoleHelper.WriteLineColor($"{error}", ConsoleColor.Red);
         }
 
         static void RunOptions(ToolchainOptions opts)
@@ -33,7 +27,7 @@ namespace Toolchain
 
             var benchmark = ParseBenchmarkFile(opts.BennchmarkPath);
 
-            GeneratePlanSamples(benchmark, opts.Samples, opts.Seed, opts.Multithread, projectPath);
+            GeneratePlanSamples(benchmark, opts);
 
             ConsoleHelper.WriteLineColor("Toolchain have finished!", ConsoleColor.DarkGray);
         }
@@ -54,15 +48,15 @@ namespace Toolchain
             return benchmarkFile;
         }
 
-        private static void GeneratePlanSamples(Benchmark benchmark, int samples, int seed, bool multithread, string projectPath)
+        private static void GeneratePlanSamples(Benchmark benchmark, ToolchainOptions opts)
         {
             ConsoleHelper.WriteLineColor("Generating Plan Samples...", ConsoleColor.DarkGray);
 
             IPlanFetcher fetcher = new FastDownwardPlanFetcher(
-                "python",
-                Path.Combine(projectPath, "Dependencies", "fast-downward", "fast-downward.py"),
-                "--alias lama-first");
-            fetcher.Fetch(benchmark, samples, multithread, seed);
+                opts.PythonPrefix,
+                opts.FastDownwardPath,
+                opts.FastDownwardSearch);
+            fetcher.Fetch(benchmark, opts.Samples, opts.Multithread, opts.Seed);
 
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
         }
