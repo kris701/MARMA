@@ -8,10 +8,12 @@ use std::io::Write;
 
 fn generate_objects(problem: &Problem) -> String {
     let mut s = "".to_string();
-    problem
-        .objects
-        .iter()
-        .for_each(|o| s.push_str(&format!(" {}", o.name)));
+    problem.objects.iter().for_each(|o| {
+        s.push_str(&format!(" {}", o.name));
+        if o.type_name.is_some() {
+            s.push_str(&format!(" - {}", o.type_name.as_ref().unwrap()));
+        }
+    });
     s
 }
 

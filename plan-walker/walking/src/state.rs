@@ -3,7 +3,7 @@ use parsing::{domain::Domain, problem::Problem};
 
 use crate::{
     instance::{
-        action::expression::Expression,
+        expression::Expression,
         fact::{Fact, Facts},
     },
     plan::Plan,

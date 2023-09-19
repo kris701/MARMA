@@ -1,6 +1,6 @@
 use parsing::{domain::Domain, problem::Problem, sas::SASPlan};
 
-use crate::instance::{action::expression::Expression, fact::Facts};
+use crate::instance::{expression::Expression, fact::Facts};
 
 #[derive(Debug, PartialEq)]
 pub struct Plan {
@@ -21,7 +21,13 @@ fn convert_step(
     let parameters = i
         .parameters
         .iter()
-        .map(|par| problem.objects.iter().position(|o| o.name == *par).unwrap())
+        .map(|par| {
+            problem
+                .objects
+                .iter()
+                .position(|o| o.name.to_lowercase() == *par.to_lowercase())
+                .unwrap()
+        })
         .collect();
     Expression::new(domain, facts, action, &action.effect, &parameters)
 }

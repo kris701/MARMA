@@ -6,7 +6,6 @@ use parsing::sas::parse_sas;
 
 use crate::downward_wrapper::Downward;
 use crate::instance::fact::Facts;
-use crate::instance::Instance;
 use crate::plan::{next_goal, next_init, Plan};
 use crate::problem_writing::write_problem;
 use crate::state::State;
