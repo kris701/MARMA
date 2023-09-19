@@ -13,45 +13,45 @@ use crate::{
 };
 
 #[derive(Debug, PartialEq)]
-pub enum Precondition {
+pub enum StringExpression {
     Predicate(Term),
-    Equal(Preconditions),
-    And(Preconditions),
-    Or(Preconditions),
-    Not(Box<Precondition>),
+    Equal(StringExpressions),
+    And(StringExpressions),
+    Or(StringExpressions),
+    Not(Box<StringExpression>),
 }
-pub type Preconditions = Vec<Precondition>;
+pub type StringExpressions = Vec<StringExpression>;
 
-fn parse_predicate(input: &str) -> IResult<&str, Precondition> {
+fn parse_predicate(input: &str) -> IResult<&str, StringExpression> {
     let (remainder, term) = parse_term(input)?;
-    Ok((remainder, Precondition::Predicate(term)))
+    Ok((remainder, StringExpression::Predicate(term)))
 }
 
-fn parse_equal(input: &str) -> IResult<&str, Precondition> {
+fn parse_equal(input: &str) -> IResult<&str, StringExpression> {
     let (remainder, _) = preceded(multispace0, tag_no_case("="))(input)?;
-    let (remainder, children) = many1(parse_precondition)(remainder)?;
-    Ok((remainder, Precondition::Equal(children)))
+    let (remainder, children) = many1(parse_expression)(remainder)?;
+    Ok((remainder, StringExpression::Equal(children)))
 }
 
-fn parse_and(input: &str) -> IResult<&str, Precondition> {
+fn parse_and(input: &str) -> IResult<&str, StringExpression> {
     let (remainder, _) = preceded(multispace0, tag_no_case("and"))(input)?;
-    let (remainder, children) = many1(parse_precondition)(remainder)?;
-    Ok((remainder, Precondition::And(children)))
+    let (remainder, children) = many1(parse_expression)(remainder)?;
+    Ok((remainder, StringExpression::And(children)))
 }
 
-fn parse_or(input: &str) -> IResult<&str, Precondition> {
+fn parse_or(input: &str) -> IResult<&str, StringExpression> {
     let (remainder, _) = preceded(multispace0, tag_no_case("or"))(input)?;
-    let (remainder, children) = many1(parse_precondition)(remainder)?;
-    Ok((remainder, Precondition::Or(children)))
+    let (remainder, children) = many1(parse_expression)(remainder)?;
+    Ok((remainder, StringExpression::Or(children)))
 }
 
-fn parse_not(input: &str) -> IResult<&str, Precondition> {
+fn parse_not(input: &str) -> IResult<&str, StringExpression> {
     let (remainder, _) = preceded(multispace0, tag_no_case("not"))(input)?;
-    let (remainder, child) = parse_precondition(remainder)?;
-    Ok((remainder, Precondition::Not(Box::new(child))))
+    let (remainder, child) = parse_expression(remainder)?;
+    Ok((remainder, StringExpression::Not(Box::new(child))))
 }
 
-pub(super) fn parse_precondition(input: &str) -> IResult<&str, Precondition> {
+pub(super) fn parse_expression(input: &str) -> IResult<&str, StringExpression> {
     delimited(
         spaced(char('(')),
         alt((parse_and, parse_or, parse_not, parse_equal, parse_predicate)),
@@ -64,109 +64,109 @@ fn test() {
     assert_eq!(
         Ok((
             "",
-            Precondition::Predicate(Term {
+            StringExpression::Predicate(Term {
                 name: "predicate".to_string(),
                 parameters: vec![]
             })
         )),
-        parse_precondition("(predicate)")
+        parse_expression("(predicate)")
     );
     assert_eq!(
         Ok((
             "",
-            Precondition::Predicate(Term {
+            StringExpression::Predicate(Term {
                 name: "predicate".to_string(),
                 parameters: vec!["a".to_string()]
             })
         )),
-        parse_precondition("(predicate ?a)")
+        parse_expression("(predicate ?a)")
     );
     assert_eq!(
         Ok((
             "",
-            Precondition::Predicate(Term {
+            StringExpression::Predicate(Term {
                 name: "predicate".to_string(),
                 parameters: vec!["a".to_string(), "b".to_string()]
             })
         )),
-        parse_precondition("(predicate ?a ?b)")
+        parse_expression("(predicate ?a ?b)")
     );
     assert_eq!(
         Ok((
             "",
-            Precondition::Not(Box::new(Precondition::Predicate(Term {
+            StringExpression::Not(Box::new(StringExpression::Predicate(Term {
                 name: "predicate".to_string(),
                 parameters: vec!["a".to_string()]
             })))
         )),
-        parse_precondition("(not (predicate ?a))")
+        parse_expression("(not (predicate ?a))")
     );
     assert_eq!(
         Ok((
             "",
-            Precondition::And(vec![Precondition::Predicate(Term {
+            StringExpression::And(vec![StringExpression::Predicate(Term {
                 name: "predicate".to_string(),
                 parameters: vec!["a".to_string()]
             })])
         )),
-        parse_precondition("(and (predicate ?a))")
+        parse_expression("(and (predicate ?a))")
     );
     assert_eq!(
         Ok((
             "",
-            Precondition::And(vec![
-                Precondition::Predicate(Term {
+            StringExpression::And(vec![
+                StringExpression::Predicate(Term {
                     name: "predicate".to_string(),
                     parameters: vec!["a".to_string()]
                 }),
-                Precondition::Predicate(Term {
+                StringExpression::Predicate(Term {
                     name: "predicate".to_string(),
                     parameters: vec!["b".to_string()]
                 })
             ])
         )),
-        parse_precondition("(and (predicate ?a) (predicate ?b))")
+        parse_expression("(and (predicate ?a) (predicate ?b))")
     );
     assert_eq!(
         Ok((
             "",
-            Precondition::Or(vec![Precondition::Predicate(Term {
+            StringExpression::Or(vec![StringExpression::Predicate(Term {
                 name: "predicate".to_string(),
                 parameters: vec!["a".to_string()]
             })])
         )),
-        parse_precondition("(or (predicate ?a))")
+        parse_expression("(or (predicate ?a))")
     );
     assert_eq!(
         Ok((
             "",
-            Precondition::Or(vec![
-                Precondition::Predicate(Term {
+            StringExpression::Or(vec![
+                StringExpression::Predicate(Term {
                     name: "predicate".to_string(),
                     parameters: vec!["a".to_string()]
                 }),
-                Precondition::Predicate(Term {
+                StringExpression::Predicate(Term {
                     name: "predicate".to_string(),
                     parameters: vec!["b".to_string()]
                 }),
             ])
         )),
-        parse_precondition("(or (predicate ?a) (predicate ?b))")
+        parse_expression("(or (predicate ?a) (predicate ?b))")
     );
     assert_eq!(
         Ok((
             "",
-            Precondition::Equal(vec![
-                Precondition::Predicate(Term {
+            StringExpression::Equal(vec![
+                StringExpression::Predicate(Term {
                     name: "predicate".to_string(),
                     parameters: vec!["a".to_string()]
                 }),
-                Precondition::Predicate(Term {
+                StringExpression::Predicate(Term {
                     name: "predicate".to_string(),
                     parameters: vec!["b".to_string()]
                 }),
             ])
         )),
-        parse_precondition("(= (predicate ?a) (predicate ?b))")
+        parse_expression("(= (predicate ?a) (predicate ?b))")
     );
 }

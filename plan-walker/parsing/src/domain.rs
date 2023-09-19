@@ -5,7 +5,7 @@ use nom::{
 
 use crate::{
     domain::{
-        action::{effect::Effect, precondition::Precondition, Action},
+        action::{string_expression::StringExpression, Action},
         parameter::Parameter,
         predicate::Predicate,
         requirement::parse_requirements,
@@ -115,22 +115,22 @@ fn test() {
                     name: "a".to_string(),
                     type_name: "type1".to_string()
                 }],
-                precondition: Some(Precondition::And(vec![
-                    Precondition::Predicate(Term {
+                precondition: Some(StringExpression::And(vec![
+                    StringExpression::Predicate(Term {
                         name: "predicate1".to_string(),
                         parameters: vec!["a".to_string()]
                     }),
-                    Precondition::Not(Box::new(Precondition::Predicate(Term {
+                    StringExpression::Not(Box::new(StringExpression::Predicate(Term {
                         name: "predicate2".to_string(),
                         parameters: vec!["a".to_string()]
                     })))
                 ])),
-                effect: Effect::And(vec![
-                    Effect::Predicate(Term {
+                effect: StringExpression::And(vec![
+                    StringExpression::Predicate(Term {
                         name: "predicate1".to_string(),
                         parameters: vec!["a".to_string()]
                     }),
-                    Effect::Predicate(Term {
+                    StringExpression::Predicate(Term {
                         name: "predicate2".to_string(),
                         parameters: vec!["a".to_string()]
                     })
