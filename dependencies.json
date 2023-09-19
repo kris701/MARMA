@@ -1,0 +1,20 @@
+{
+  "Dependencies": [
+    {
+      "Name": "Fast Downward",
+      "Description": "Generic Planner",
+      "RepositoryLink": "https://github.com/aibasel/downward",
+      "TargetLocation": "Dependencies/fast-downward",
+      "BuildCommand": "python",
+      "BuildArgs": "Dependencies/fast-downward/build.py"
+    },
+    {
+      "Name": "",
+      "Description": "",
+      "RepositoryLink": "",
+      "TargetLocation": "",
+      "BuildCommand": "",
+      "BuildArgs": ""
+    }
+  ]
+}

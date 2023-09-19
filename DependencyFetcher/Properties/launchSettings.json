@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DependencyFetcher": {
+      "commandName": "Project",
+      "commandLineArgs": "../../../../Dependencies/dependencies.json"
+    }
+  }
+}
