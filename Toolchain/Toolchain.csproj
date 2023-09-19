@@ -7,8 +7,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+
   <ItemGroup>
-    <ProjectReference Include="..\DependencyFetcher\DependencyFetcher.csproj" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="..\DependencyFetcher\DependencyFetcher.csproj" />
+    <ProjectReference Include="..\PlanSampleGenerator\PlanSampleGenerator.csproj" />
     <ProjectReference Include="..\Tools\Tools.csproj" />
   </ItemGroup>
 
