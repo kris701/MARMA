@@ -11,7 +11,7 @@ namespace Toolchain
     {
         static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<Options>(args)
+            Parser.Default.ParseArguments<ToolchainOptions>(args)
               .WithParsed(RunOptions)
               .WithNotParsed(HandleParseError);
         }
@@ -22,11 +22,8 @@ namespace Toolchain
                 ConsoleHelper.WriteLineColor($"{error}", ConsoleColor.Red);
         }
 
-        static void RunOptions(Options opts)
+        static void RunOptions(ToolchainOptions opts)
         {
-            if (!File.Exists(opts.BennchmarkPath))
-                throw new FileNotFoundException("The given benchmark file was not found!");
-
             ConsoleHelper.WriteLineColor("Toolchain have started...", ConsoleColor.DarkGray);
 
             var projectPath = ProjectHelper.GetProjectPath();
@@ -39,7 +36,6 @@ namespace Toolchain
             GeneratePlanSamples(benchmark, opts.Samples, opts.Seed, opts.Multithread, projectPath);
 
             ConsoleHelper.WriteLineColor("Toolchain have finished!", ConsoleColor.DarkGray);
-
         }
 
         private static void CheckDependencies()
@@ -51,6 +47,8 @@ namespace Toolchain
         private static Benchmark ParseBenchmarkFile(string path)
         {
             ConsoleHelper.WriteLineColor("Parsing benchmark file...", ConsoleColor.DarkGray);
+            if (!File.Exists(path))
+                throw new FileNotFoundException("The given benchmark file was not found!");
             var benchmarkFile = new Benchmark(path);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
             return benchmarkFile;

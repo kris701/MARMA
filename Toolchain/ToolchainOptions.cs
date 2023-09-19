@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Toolchain
 {
-    public class Options
+    public class ToolchainOptions
     {
         [Option('b', "benchmark", Required = true, HelpText = "Path to the benchmark file to use")]
         public string BennchmarkPath { get; set; } = "";
@@ -28,7 +28,7 @@ namespace Toolchain
             get
             {
                 return new List<Example>() {
-                        new Example("Run the toolchain on a benchmark file", new Options { BennchmarkPath = "depot.json", Samples = 2 })
+                        new Example("Run the toolchain on a benchmark file", new ToolchainOptions { BennchmarkPath = "depot.json", Samples = 2 })
                       };
             }
         }

@@ -1,4 +1,6 @@
-﻿using Tools;
+﻿using CommandLine.Text;
+using CommandLine;
+using Tools;
 using Tools.Benchmarks;
 
 namespace PlanSampleGenerator
@@ -7,20 +9,43 @@ namespace PlanSampleGenerator
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Depot time!");
+            Parser.Default.ParseArguments<SampleGeneratorOptions>(args)
+              .WithParsed(RunOptions)
+              .WithNotParsed(HandleParseError);
+        }
 
-            var projectPath = ProjectHelper.GetProjectPath();
-            var benchmarkPath = Path.Join(projectPath, "Benchmarks", "depot.json");
+        static void HandleParseError(IEnumerable<Error> errs)
+        {
+            foreach (var error in errs)
+                ConsoleHelper.WriteLineColor($"{error}", ConsoleColor.Red);
+        }
 
-            var depot = new Benchmark(benchmarkPath);
+        static void RunOptions(SampleGeneratorOptions opts)
+        {
+            ConsoleHelper.WriteLineColor("Plan Sample Generator Started...", ConsoleColor.DarkGray);
 
+            var benchmark = ParseBenchmarkFile(opts.BennchmarkPath);
+
+            ConsoleHelper.WriteLineColor("Starting fetching...", ConsoleColor.DarkGray);
             IPlanFetcher fetcher = new FastDownwardPlanFetcher(
-                "python",
-                Path.Join(projectPath, "Dependencies", "fast-downward", "fast-downward.py"),
-                "--alias lama-first"
+                opts.PythonPrefix,
+                opts.FastDownwardPath,
+                opts.FastDownwardSearch
                 );
+            fetcher.Fetch(benchmark, opts.Samples, opts.Multithread, opts.Seed);
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
-            fetcher.Fetch(depot, 2, true, 1);
+            ConsoleHelper.WriteLineColor("Plan Sample Generator Done!", ConsoleColor.Green);
+        }
+
+        private static Benchmark ParseBenchmarkFile(string path)
+        {
+            ConsoleHelper.WriteLineColor("Parsing benchmark file...", ConsoleColor.DarkGray);
+            if (!File.Exists(path))
+                throw new FileNotFoundException("The given benchmark file was not found!");
+            var benchmarkFile = new Benchmark(path);
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            return benchmarkFile;
         }
     }
 }
