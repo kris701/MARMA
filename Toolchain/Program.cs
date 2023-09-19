@@ -13,7 +13,6 @@ namespace Toolchain
         static void Main(string[] args)
         {
             var parser = new Parser(with => with.IgnoreUnknownArguments = true);
-            //var parser = new Parser();
 
             // Dependency Checker
             parser.ParseArguments<DependencyFetcherOptions>(args)
