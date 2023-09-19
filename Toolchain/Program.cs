@@ -39,16 +39,6 @@ namespace Toolchain
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
         }
 
-        private static Benchmark ParseBenchmarkFile(string path)
-        {
-            ConsoleHelper.WriteLineColor("Parsing benchmark file...", ConsoleColor.DarkGray);
-            if (!File.Exists(path))
-                throw new FileNotFoundException("The given benchmark file was not found!");
-            var benchmarkFile = new Benchmark(path);
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
-            return benchmarkFile;
-        }
-
         private static void GeneratePlanSamples(Benchmark benchmark, ToolchainOptions opts)
         {
             ConsoleHelper.WriteLineColor("Generating Plan Samples...", ConsoleColor.DarkGray);
