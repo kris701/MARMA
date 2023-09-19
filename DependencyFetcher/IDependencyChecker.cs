@@ -10,6 +10,6 @@ namespace DependencyFetcher
     public interface IDependencyChecker
     {
         public DependencyList Dependencies { get; }
-        public void CheckDependencies();
+        public void CheckDependencies(string root);
     }
 }

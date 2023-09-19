@@ -7,21 +7,27 @@ namespace PlanSampleGenerator
 {
     public class FastDownwardPlanFetcher : IPlanFetcher
     {
-        private static string _outputPath = "PlanSamples";
-        private string _projectPath;
-
+        public string OutputPath { get; set; }
+        public string DataPath { get; set; }
         public string PythonPrefix { get; set; }
         public string FastDownwardPath { get; set; }
         // Can either be a "--search" or "--alias"
         public string FastDownwardSearch { get; set; }
 
-        public FastDownwardPlanFetcher(string pythonPrefix, string fastDownwardPath, string fastDownwardSearch)
+        public FastDownwardPlanFetcher(string outputPath, string dataPath, string pythonPrefix, string fastDownwardPath, string fastDownwardSearch)
         {
+            if (!Path.IsPathRooted(outputPath))
+                outputPath = Path.Join(Directory.GetCurrentDirectory(), outputPath);
+            OutputPath = outputPath;
+            if (!Path.IsPathRooted(dataPath))
+                dataPath = Path.Join(Directory.GetCurrentDirectory(), dataPath);
+            DataPath = dataPath;
             PythonPrefix = pythonPrefix;
+
+            if (!Path.IsPathRooted(fastDownwardPath))
+                fastDownwardPath = Path.Join(Directory.GetCurrentDirectory(), fastDownwardPath);
             FastDownwardPath = fastDownwardPath;
             FastDownwardSearch = fastDownwardSearch;
-            _projectPath = ProjectHelper.GetProjectPath();
-            _outputPath = Path.Combine(_projectPath, _outputPath);
         }
 
         public void Fetch(Benchmark benchmark, int count, bool multithreaded = true, int seed = -1)
@@ -46,10 +52,10 @@ namespace PlanSampleGenerator
 
         private void CreateFolders(string name)
         {
-            if (Directory.Exists(Path.Combine(_outputPath, name)))
-                Directory.Delete(Path.Combine(_outputPath, name), true);
-            Directory.CreateDirectory(Path.Combine(_outputPath, name));
-            Directory.CreateDirectory(Path.Combine(_outputPath, name, "Plans"));
+            if (Directory.Exists(Path.Combine(OutputPath, name)))
+                Directory.Delete(Path.Combine(OutputPath, name), true);
+            Directory.CreateDirectory(Path.Combine(OutputPath, name));
+            Directory.CreateDirectory(Path.Combine(OutputPath, name, "Plans"));
         }
 
         private void FetchAll(string name, string domain, List<string> problems, bool multithreaded)
@@ -73,13 +79,13 @@ namespace PlanSampleGenerator
                 StringBuilder sb = new StringBuilder("");
                 sb.Append($"{FastDownwardPath} ");
                 string fileName = $"{new FileInfo(domain).Name.Replace(".pddl", "")}-{new FileInfo(problem).Name.Replace(".pddl", "")}";
-                sb.Append($"--plan-file \"{Path.Combine(_outputPath, name, "Plans", fileName)}.plan\" ");
-                sb.Append($"--sas-file \"{Path.Combine(_outputPath, name, "Plans", fileName)}.sas\" ");
+                sb.Append($"--plan-file \"{Path.Combine(OutputPath, name, "Plans", fileName)}.plan\" ");
+                sb.Append($"--sas-file \"{Path.Combine(OutputPath, name, "Plans", fileName)}.sas\" ");
 
                 if (FastDownwardSearch.StartsWith("--alias"))
                     sb.Append($"--alias \"lama-first\" ");
-                sb.Append($"\"{Path.Combine(_projectPath, domain)}\" ");
-                sb.Append($"\"{Path.Combine(_projectPath, problem)}\" ");
+                sb.Append($"\"{Path.Combine(DataPath, domain)}\" ");
+                sb.Append($"\"{Path.Combine(DataPath, problem)}\" ");
                 if (FastDownwardSearch.StartsWith("--search"))
                     sb.Append($"--search \"{FastDownwardSearch}\"");
 
@@ -93,7 +99,7 @@ namespace PlanSampleGenerator
                         UseShellExecute = false,
                         //RedirectStandardOutput = true,
                         RedirectStandardError = true,
-                        WorkingDirectory = _projectPath
+                        WorkingDirectory = OutputPath
                     }
                 };
                 //process.OutputDataReceived += (sender, e) =>
@@ -114,9 +120,9 @@ namespace PlanSampleGenerator
         private void GenerateLogFiles(string name, string domain, List<string> usedProblems, List<string> remainingProblems)
         {
             var usedBenchmark = new Benchmark(name, domain, usedProblems);
-            usedBenchmark.Save(Path.Combine(_outputPath, name, "used.json"));
+            usedBenchmark.Save(Path.Combine(OutputPath, name, "used.json"));
             var remainingBenchmark = new Benchmark(name, domain, remainingProblems);
-            remainingBenchmark.Save(Path.Combine(_outputPath, name, "remaining.json"));
+            remainingBenchmark.Save(Path.Combine(OutputPath, name, "remaining.json"));
         }
     }
 }

@@ -25,14 +25,16 @@ namespace DependencyFetcher
             Dependencies = parsed;
         }
 
-        public void CheckDependencies()
+        public void CheckDependencies(string root)
         {
-            var projectFolder = ProjectHelper.GetProjectPath();
             foreach(var dependency in Dependencies.Dependencies)
             {
                 Console.WriteLine($"Checking dependency: {dependency.Name}");
 
-                var targetFolder = Path.Join(projectFolder, dependency.TargetLocation);
+                if (!Path.IsPathRooted(root))
+                    root = Path.Join(Directory.GetCurrentDirectory(), root);
+
+                var targetFolder = Path.Join(root, dependency.TargetLocation);
                 if (!Directory.Exists(targetFolder))
                 {
                     Console.WriteLine($"Dependency '{dependency.Name}' is not installed!");
@@ -41,11 +43,11 @@ namespace DependencyFetcher
                     if (response)
                     {
                         Console.WriteLine($"Cloning dependency '{dependency.Name}'...");
-                        CloneRepository(projectFolder, dependency);
+                        CloneRepository(root, dependency);
                         if (dependency.BuildCommand != null)
                         {
                             Console.WriteLine($"Building dependency '{dependency.Name}'...");
-                            BuildRepository(projectFolder, dependency);
+                            BuildRepository(root, dependency);
                         }
                     }
                     else

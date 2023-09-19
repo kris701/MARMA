@@ -12,44 +12,18 @@ namespace Toolchain
     {
         static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<ToolchainOptions>(args)
-              .WithParsed(RunOptions)
+            var parser = new Parser(with => with.IgnoreUnknownArguments = true);
+            //var parser = new Parser();
+
+            // Dependency Checker
+            parser.ParseArguments<DependencyFetcherOptions>(args)
+              .WithParsed(DependencyFetcher.Program.RunDependencyChecker)
               .WithNotParsed(HandleParseError);
-        }
 
-        static void RunOptions(ToolchainOptions opts)
-        {
-            ConsoleHelper.WriteLineColor("Toolchain have started...", ConsoleColor.DarkGray);
-
-            if (opts.DependencyPath != "")
-                CheckDependencies(opts.DependencyPath);
-
-            var benchmark = ParseBenchmarkFile(opts.BennchmarkPath);
-
-            GeneratePlanSamples(benchmark, opts);
-
-            ConsoleHelper.WriteLineColor("Toolchain have finished!", ConsoleColor.DarkGray);
-        }
-
-        private static void CheckDependencies(string path)
-        {
-            ConsoleHelper.WriteLineColor("Checking Dependencies...", ConsoleColor.DarkGray);
-            IDependencyChecker checker = new DependencyChecker(path);
-            checker.CheckDependencies();
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
-        }
-
-        private static void GeneratePlanSamples(Benchmark benchmark, ToolchainOptions opts)
-        {
-            ConsoleHelper.WriteLineColor("Generating Plan Samples...", ConsoleColor.DarkGray);
-
-            IPlanFetcher fetcher = new FastDownwardPlanFetcher(
-                opts.PythonPrefix,
-                opts.FastDownwardPath,
-                opts.FastDownwardSearch);
-            fetcher.Fetch(benchmark, opts.Samples, opts.Multithread, opts.Seed);
-
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            // Plan Sample Generator
+            parser.ParseArguments<PlanSampleGeneratorOptions>(args)
+              .WithParsed(PlanSampleGenerator.Program.RunPlanSampleGeneration)
+              .WithNotParsed(HandleParseError);
         }
     }
 }

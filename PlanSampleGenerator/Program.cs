@@ -9,16 +9,16 @@ using Tools.Benchmarks;
 
 namespace PlanSampleGenerator
 {
-    internal class Program : BaseCLI
+    public class Program : BaseCLI
     {
         static void Main(string[] args)
         {
             Parser.Default.ParseArguments<PlanSampleGeneratorOptions>(args)
-              .WithParsed(RunOptions)
+              .WithParsed(RunPlanSampleGeneration)
               .WithNotParsed(HandleParseError);
         }
 
-        static void RunOptions(PlanSampleGeneratorOptions opts)
+        public static void RunPlanSampleGeneration(PlanSampleGeneratorOptions opts)
         {
             var benchmark = ParseBenchmarkFile(opts.BennchmarkPath);
 
@@ -30,6 +30,8 @@ namespace PlanSampleGenerator
             ConsoleHelper.WriteLineColor("Generating Plan Samples...", ConsoleColor.DarkGray);
 
             IPlanFetcher fetcher = new FastDownwardPlanFetcher(
+                opts.OutPath,
+                opts.DataPath,
                 opts.PythonPrefix,
                 opts.FastDownwardPath,
                 opts.FastDownwardSearch);
