@@ -4,6 +4,8 @@ mod permutation;
 
 use std::time::Instant;
 
+use crate::time::run_time;
+
 use self::{action::Actions, fact::Facts};
 use parsing::{domain::Domain, problem::Problem};
 
@@ -15,21 +17,13 @@ pub struct Instance {
 impl Instance {
     pub fn new(domain: &Domain, problem: &Problem) -> Self {
         let fact_generation_begin = Instant::now();
-        println!("Generating pseudo-facts...");
+        println!("{} Generating pseudo-facts...", run_time());
         let facts = Facts::new(domain, problem);
-        println!(
-            "Generated Facts {} [{}ms]",
-            facts.facts.len(),
-            fact_generation_begin.elapsed().as_millis()
-        );
+        println!("{} Generated Facts {}", run_time(), facts.facts.len(),);
         let action_generation_begin = Instant::now();
-        println!("Generating pseudo-actions...");
+        println!("{} Generating pseudo-actions...", run_time());
         let actions = Actions::new(domain, problem, &facts);
-        println!(
-            "Generated Actions {} [{}ms]",
-            actions.actions.len(),
-            action_generation_begin.elapsed().as_millis()
-        );
+        println!("{} Generated Actions {}", run_time(), actions.actions.len(),);
         Instance { facts, actions }
     }
 }

@@ -5,6 +5,7 @@ use parsing::{
 
 use crate::instance::fact::{Fact, Facts};
 
+#[derive(Debug, PartialEq)]
 pub enum Expression {
     Term(usize),
     Not(Box<Expression>),

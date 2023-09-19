@@ -8,6 +8,8 @@ use parsing::{
     problem::Problem,
 };
 
+use crate::time::run_time;
+
 use self::expression::Expression;
 
 use super::{fact::Facts, permutation::permute};
@@ -46,7 +48,7 @@ fn generate_actions(
     action: &action::Action,
 ) -> Vec<Action> {
     let permutations = permute(&domain.types, problem, &action.parameters);
-    println!("{}: {}", action.name, permutations.len());
+    println!("{} {}: {}", run_time(), action.name, permutations.len());
     permutations
         .iter()
         .map(|permutation| Action::new(domain, facts, action, permutation))

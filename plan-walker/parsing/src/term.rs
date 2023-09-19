@@ -6,7 +6,7 @@ use nom::{
 use crate::shared::{named, spaced};
 use nom::character::complete::char;
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Term {
     pub name: String,
     pub parameters: Vec<String>,
