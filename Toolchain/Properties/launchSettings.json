@@ -2,7 +2,7 @@
   "profiles": {
     "Toolchain": {
       "commandName": "Project",
-      "commandLineArgs": "--benchmark Benchmarks/depot.json\r\n--samples 2\r\n--checkdeps\r\n--downward Dependencies/fast-downward/fast-downward.py\r\n--seed 1",
+      "commandLineArgs": "--benchmark Benchmarks/depot.json\r\n--samples 2\r\n--downward Dependencies/fast-downward/fast-downward.py\r\n--seed 1\r\n--deps Dependencies/dependencies.json",
       "workingDirectory": "../"
     }
   }

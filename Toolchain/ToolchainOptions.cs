@@ -15,8 +15,8 @@ namespace Toolchain
         public string BennchmarkPath { get; set; } = "";
 
         // Dependency Checking
-        [Option('c', "checkdeps", Required = false, HelpText = "Check if required dependencies are installed")]
-        public bool CheckDependencies { get; set; } = false;
+        [Option('c', "deps", Required = false, HelpText = "Path to dependency checking file.", Default = "")]
+        public string DependencyPath { get; set; } = "";
 
         // Plan Sample Generation
         [Option('s', "samples", Required = true, HelpText = "How many samples are to be takes as the 'train' set")]

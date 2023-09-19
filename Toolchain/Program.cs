@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using CommandLine.Text;
+using DependencyFetcher;
 using PlanSampleGenerator;
 using System;
 using Tools;
@@ -20,10 +21,8 @@ namespace Toolchain
         {
             ConsoleHelper.WriteLineColor("Toolchain have started...", ConsoleColor.DarkGray);
 
-            var projectPath = ProjectHelper.GetProjectPath();
-
-            if (opts.CheckDependencies)
-                CheckDependencies();
+            if (opts.DependencyPath != "")
+                CheckDependencies(opts.DependencyPath);
 
             var benchmark = ParseBenchmarkFile(opts.BennchmarkPath);
 
@@ -32,11 +31,10 @@ namespace Toolchain
             ConsoleHelper.WriteLineColor("Toolchain have finished!", ConsoleColor.DarkGray);
         }
 
-        private static void CheckDependencies()
+        private static void CheckDependencies(string path)
         {
             ConsoleHelper.WriteLineColor("Checking Dependencies...", ConsoleColor.DarkGray);
-            var dependenciesFile = Path.Combine(projectFolder, "Dependencies", "dependencies.json");
-            IDependencyChecker checker = new DependencyChecker(dependenciesFile);
+            IDependencyChecker checker = new DependencyChecker(path);
             checker.CheckDependencies();
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
         }
