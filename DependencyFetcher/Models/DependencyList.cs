@@ -9,5 +9,10 @@ namespace DependencyFetcher.Models
     public class DependencyList
     {
         public List<Dependency> Dependencies { get; set; }
+
+        public DependencyList(List<Dependency> dependencies)
+        {
+            Dependencies = dependencies;
+        }
     }
 }
