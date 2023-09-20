@@ -5,8 +5,6 @@ use crate::instance::fact::Facts;
 use crate::state::State;
 use crate::write_file;
 use std::ffi::OsString;
-use std::fs::File;
-use std::io::Write;
 
 fn generate_objects(problem: &Problem) -> String {
     let mut s = "".to_string();

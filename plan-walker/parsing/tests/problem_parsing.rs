@@ -18,14 +18,11 @@ use rstest::*;
 #[case("logistics-typed")]
 #[case("logistics-untyped")]
 #[case("satellite")]
-#[case("driverlog-automatic")]
-#[case("driverlog-hand-coded")]
-#[case("barman-agile")]
-#[case("barman-satisficing")]
+#[case("driverlog")]
+#[case("barman")]
 #[case("grid")]
-#[case("child-snack-agile")]
-#[case("child-snack-satisficing")]
-#[case("hiking-sequential-agile")]
+#[case("child-snack")]
+#[case("hiking")]
 fn parse_problem(#[case] domain_name: &str) {
     let problem_path = format!("tests/data/{}/instances/", domain_name);
     let files = fs::read_dir(problem_path).unwrap();

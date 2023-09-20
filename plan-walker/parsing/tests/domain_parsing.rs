@@ -18,14 +18,11 @@ use rstest::*;
 #[case("logistics-typed")]
 #[case("logistics-untyped")]
 #[case("satellite")]
-#[case("driverlog-automatic")]
-#[case("driverlog-hand-coded")]
-#[case("barman-agile")]
-#[case("barman-satisficing")]
+#[case("driverlog")]
+#[case("barman")]
 #[case("grid")]
-#[case("child-snack-agile")]
-#[case("child-snack-satisficing")]
-#[case("hiking-sequential-agile")]
+#[case("child-snack")]
+#[case("hiking")]
 fn parse_domain(#[case] domain_name: &str) {
     if let Ok(str) = fs::read_to_string(format!("tests/data/{}/domain.pddl", domain_name)) {
         let parse_result = domain::parse_domain(&str);
