@@ -400,3 +400,4 @@ FodyWeavers.xsd
 /Dependencies/**
 /PlanSamples/**
 !/Dependencies/readme.md
+!/Dependencies/dependencies.json
