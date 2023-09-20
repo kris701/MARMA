@@ -1,0 +1,18 @@
+{
+  "Dependencies": [
+    {
+      "Name": "Fast Downward",
+      "Description": "Generic Planner",
+      "RepositoryLink": "https://github.com/aibasel/downward",
+      "TargetLocation": "fast-downward",
+      "BuildCommand": "python",
+      "BuildArgs": "fast-downward/build.py"
+    },
+    {
+      "Name": "Fast Downward Benchmarks",
+      "Description": "A set of domains and problems that is tested on.",
+      "RepositoryLink": "https://github.com/aibasel/downward-benchmarks",
+      "TargetLocation": "downward-benchmarks-master"
+    }
+  ]
+}
