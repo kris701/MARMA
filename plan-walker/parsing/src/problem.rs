@@ -1,14 +1,12 @@
 use nom::branch::permutation;
-use nom::bytes::complete::{tag, tag_no_case};
-use nom::combinator::opt;
-use nom::multi::many1;
+use nom::bytes::complete::tag_no_case;
 use nom::sequence::delimited;
 use nom::{character::complete::char, IResult};
 
 use crate::shared::{remove_comments, spaced};
 
 use self::domain::parse_domain;
-use self::goal::{parse_goal, Goals};
+use self::goal::parse_goal;
 use self::init::parse_inits;
 use self::name::parse_name;
 use self::object::parse_objects;

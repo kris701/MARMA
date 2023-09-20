@@ -6,10 +6,7 @@ use nom::{
     IResult,
 };
 
-use crate::{
-    domain::parameter::Parameter,
-    shared::{named, spaced},
-};
+use crate::shared::{named, spaced};
 
 use super::parameter::{parse_parameters, Parameters};
 
@@ -43,87 +40,95 @@ pub(super) fn parse_predicates(input: &str) -> IResult<&str, Predicates> {
     Ok((remainder, predicates))
 }
 
-#[test]
-fn test() {
-    assert_eq!(
-        Ok((
-            "",
-            vec![Predicate {
-                name: "predicate".to_string(),
-                parameters: vec![Parameter::Untyped {
-                    name: "p".to_string()
+#[cfg(test)]
+mod test {
+    use crate::domain::{
+        parameter::Parameter,
+        predicate::{parse_predicates, Predicate},
+    };
+
+    #[test]
+    fn test() {
+        assert_eq!(
+            Ok((
+                "",
+                vec![Predicate {
+                    name: "predicate".to_string(),
+                    parameters: vec![Parameter::Untyped {
+                        name: "p".to_string()
+                    }]
                 }]
-            }]
-        )),
-        parse_predicates(":predicates (predicate ?p)")
-    );
-    assert_eq!(
-        Ok((
-            "",
-            vec![Predicate {
-                name: "predicate".to_string(),
-                parameters: vec![Parameter::Typed {
-                    name: "p".to_string(),
-                    type_name: "type".to_string()
+            )),
+            parse_predicates(":predicates (predicate ?p)")
+        );
+        assert_eq!(
+            Ok((
+                "",
+                vec![Predicate {
+                    name: "predicate".to_string(),
+                    parameters: vec![Parameter::Typed {
+                        name: "p".to_string(),
+                        type_name: "type".to_string()
+                    }]
                 }]
-            }]
-        )),
-        parse_predicates(":predicates (predicate ?p - type)")
-    );
-    assert_eq!(
-        Ok((
-            "",
-            vec![Predicate {
-                name: "predicate".to_string(),
-                parameters: vec![
-                    Parameter::Typed {
-                        name: "p1".to_string(),
-                        type_name: "type".to_string()
-                    },
-                    Parameter::Typed {
-                        name: "p2".to_string(),
-                        type_name: "type".to_string()
-                    },
-                ]
-            }]
-        )),
-        parse_predicates(":predicates (predicate ?p1 ?p2 - type)")
-    );
-    assert_eq!(
-        Ok((
-            "",
-            vec![Predicate {
-                name: "predicate".to_string(),
-                parameters: vec![
-                    Parameter::Typed {
-                        name: "p1".to_string(),
-                        type_name: "type1".to_string()
-                    },
-                    Parameter::Typed {
-                        name: "p2".to_string(),
-                        type_name: "type2".to_string()
-                    },
-                ]
-            }]
-        )),
-        parse_predicates(":predicates (predicate ?p1 - type1 ?p2 - type2)")
-    );
-    assert_eq!(
-        Ok((
-            "",
-            vec![Predicate {
-                name: "predicate".to_string(),
-                parameters: vec![
-                    Parameter::Typed {
-                        name: "p1".to_string(),
-                        type_name: "type".to_string()
-                    },
-                    Parameter::Untyped {
-                        name: "p2".to_string(),
-                    },
-                ]
-            }]
-        )),
-        parse_predicates(":predicates (predicate ?p1 - type ?p2)")
-    );
+            )),
+            parse_predicates(":predicates (predicate ?p - type)")
+        );
+        assert_eq!(
+            Ok((
+                "",
+                vec![Predicate {
+                    name: "predicate".to_string(),
+                    parameters: vec![
+                        Parameter::Typed {
+                            name: "p1".to_string(),
+                            type_name: "type".to_string()
+                        },
+                        Parameter::Typed {
+                            name: "p2".to_string(),
+                            type_name: "type".to_string()
+                        },
+                    ]
+                }]
+            )),
+            parse_predicates(":predicates (predicate ?p1 ?p2 - type)")
+        );
+        assert_eq!(
+            Ok((
+                "",
+                vec![Predicate {
+                    name: "predicate".to_string(),
+                    parameters: vec![
+                        Parameter::Typed {
+                            name: "p1".to_string(),
+                            type_name: "type1".to_string()
+                        },
+                        Parameter::Typed {
+                            name: "p2".to_string(),
+                            type_name: "type2".to_string()
+                        },
+                    ]
+                }]
+            )),
+            parse_predicates(":predicates (predicate ?p1 - type1 ?p2 - type2)")
+        );
+        assert_eq!(
+            Ok((
+                "",
+                vec![Predicate {
+                    name: "predicate".to_string(),
+                    parameters: vec![
+                        Parameter::Typed {
+                            name: "p1".to_string(),
+                            type_name: "type".to_string()
+                        },
+                        Parameter::Untyped {
+                            name: "p2".to_string(),
+                        },
+                    ]
+                }]
+            )),
+            parse_predicates(":predicates (predicate ?p1 - type ?p2)")
+        );
+    }
 }

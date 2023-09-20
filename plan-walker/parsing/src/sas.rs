@@ -1,12 +1,11 @@
 use nom::character::complete::char;
-use nom::multi::{many1, separated_list1};
+use nom::multi::many1;
 use nom::sequence::delimited;
-use nom::{number, IResult};
 
 use crate::shared::spaced;
 use crate::{
     shared::remove_comments,
-    term::{parse_term, Term, Terms},
+    term::{parse_term, Term},
 };
 
 #[derive(Debug, PartialEq, Clone)]

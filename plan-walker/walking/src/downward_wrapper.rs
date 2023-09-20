@@ -1,7 +1,4 @@
-use std::{
-    env, fs,
-    process::{Command, ExitStatus},
-};
+use std::{fs, process::Command};
 
 use parsing::sas::{parse_sas, SASPlan};
 
@@ -37,7 +34,7 @@ impl Downward {
                     Err(err) => panic!("Could not parse sas plan(This is likely caused by init and goal being the same in problem): {}", err),
                 };
             }
-            Err(err) => panic!("Could not solve problem: {}", err),
+            Err(err) => panic!("Could not run downward: {}", err),
         }
     }
 }

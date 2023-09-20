@@ -2,10 +2,8 @@ use std::collections::HashMap;
 
 use parsing::{
     domain::{predicate::Predicate, Domain},
-    problem::{object::Objects, Problem},
+    problem::Problem,
 };
-
-use itertools::Itertools;
 
 use crate::time::run_time;
 

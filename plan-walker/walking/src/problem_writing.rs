@@ -3,7 +3,7 @@ use parsing::problem::Problem;
 
 use crate::instance::fact::Facts;
 use crate::state::State;
-use std::fs::{File, OpenOptions};
+use std::fs::File;
 use std::io::Write;
 
 fn generate_objects(problem: &Problem) -> String {
@@ -33,7 +33,7 @@ fn generate_state(domain: &Domain, problem: &Problem, facts: &Facts, state: &Sta
         .values
         .iter()
         .enumerate()
-        .filter(|(i, v)| **v)
+        .filter(|(_, v)| **v)
         .for_each(|(i, _)| {
             s.push_str(&format!(
                 "\t\t({})\n",
@@ -75,5 +75,8 @@ pub fn write_problem(
 ) {
     let content = generate_problem(domain, problem, facts, init_state, goal_state);
     let mut output = File::create(path).unwrap();
-    write!(output, "{}", content);
+    match write!(output, "{}", content) {
+        Ok(_) => {}
+        Err(err) => panic!("Could not write problem to file: {}", err),
+    };
 }

@@ -1,4 +1,3 @@
-use itertools::Itertools;
 use parsing::{domain::Domain, problem::Problem};
 
 use crate::{
@@ -54,41 +53,39 @@ impl State {
         State { values }
     }
 
-    fn apply_term(&mut self, facts: &Facts, val: bool, i: &usize) {
+    fn apply_term(&mut self, val: bool, i: &usize) {
         self.values[*i] = val;
     }
 
-    fn apply_internal(&mut self, facts: &Facts, expression: &Expression, val: bool) {
+    fn apply_internal(&mut self, expression: &Expression, val: bool) {
         match expression {
-            Expression::Term(i) => self.apply_term(facts, val, i),
-            Expression::Not(e) => self.apply_internal(facts, e, !val),
+            Expression::Term(i) => self.apply_term(val, i),
+            Expression::Not(e) => self.apply_internal(e, !val),
             Expression::And(e) => {
                 e.iter()
                     .filter(|e| match e {
                         Expression::Not(_) => true,
                         _ => false,
                     })
-                    .for_each(|e| self.apply_internal(facts, e, val));
+                    .for_each(|e| self.apply_internal(e, val));
                 e.iter()
                     .filter(|e| match e {
                         Expression::Not(_) => false,
                         _ => true,
                     })
-                    .for_each(|e| self.apply_internal(facts, e, val));
+                    .for_each(|e| self.apply_internal(e, val));
             }
             Expression::Equal(_) => panic!("Cannot apply equal expression"),
             Expression::Or(_) => panic!("Cannot apply or expression"),
         }
     }
 
-    pub fn apply(&mut self, facts: &Facts, expression: &Expression) {
-        self.apply_internal(facts, expression, true)
+    pub fn apply(&mut self, expression: &Expression) {
+        self.apply_internal(expression, true)
     }
-    pub fn apply_plan(&self, facts: &Facts, plan: &Plan) -> State {
+    pub fn apply_plan(&self, plan: &Plan) -> State {
         let mut new_state = self.clone();
-        plan.steps
-            .iter()
-            .for_each(|step| new_state.apply(facts, step));
+        plan.steps.iter().for_each(|step| new_state.apply(step));
         return new_state;
     }
 }

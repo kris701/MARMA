@@ -1,4 +1,4 @@
-use std::{env, fs, time::Instant};
+use std::{env, fs};
 
 use parsing::domain::parse_domain;
 use parsing::problem::parse_problem;
@@ -6,14 +6,11 @@ use parsing::sas::parse_sas;
 
 use crate::downward_wrapper::Downward;
 use crate::instance::fact::Facts;
-use crate::plan::{next_goal, next_init, Plan};
+use crate::plan::{next_goal, next_init};
 use crate::problem_writing::write_problem;
 use crate::state::State;
 use crate::stiching::stich_single;
 use crate::time::{init_time, run_time};
-
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 
 mod downward_wrapper;
 mod instance;
@@ -62,8 +59,8 @@ fn main() {
         let init_plan = next_init(&domain, &problem, &facts, &sas_plan);
         let goal_plan = next_goal(&metadomain, &domain, &problem, &facts, &sas_plan);
         assert_ne!(init_plan, goal_plan);
-        let init_state = init.apply_plan(&facts, &init_plan);
-        let goal_state = init.apply_plan(&facts, &goal_plan);
+        let init_state = init.apply_plan(&init_plan);
+        let goal_state = init.apply_plan(&goal_plan);
         assert_ne!(init_state, goal_state);
         let temp_problem_path = ".temp_problem.pddl";
         println!("{} Writing temp problem...", run_time());

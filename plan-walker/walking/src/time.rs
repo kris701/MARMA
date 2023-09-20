@@ -1,6 +1,6 @@
 use std::{
     sync::atomic::{AtomicUsize, Ordering},
-    time::{Instant, SystemTime},
+    time::SystemTime,
 };
 
 use std::time::UNIX_EPOCH;
@@ -20,6 +20,7 @@ pub fn init_time() {
 
 pub fn run_time() -> String {
     let start_time = START_TIME.load(Ordering::SeqCst);
+    assert_ne!(start_time, 0); // Uninitialized - Run init_time
     let curr_time = time();
     let elapsed = curr_time - start_time;
     match elapsed {
