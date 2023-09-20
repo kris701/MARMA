@@ -1,7 +1,9 @@
-use std::{env, fs};
+use std::ffi::OsString;
+use std::fs;
+use std::path::Path;
 
-use parsing::domain::parse_domain;
-use parsing::problem::parse_problem;
+use parsing::domain::{parse_domain, Domain};
+use parsing::problem::{parse_problem, Problem};
 use parsing::sas::parse_sas;
 
 use crate::downward_wrapper::Downward;
@@ -11,6 +13,7 @@ use crate::problem_writing::write_problem;
 use crate::state::State;
 use crate::stiching::stich_single;
 use crate::time::{init_time, run_time};
+use clap::Parser;
 
 mod downward_wrapper;
 mod instance;
@@ -20,49 +23,81 @@ mod state;
 mod stiching;
 mod time;
 
+#[derive(Parser, Default, Debug)]
+#[command(term_width = 0)]
+pub struct Args {
+    /// Path to original domain
+    #[arg(short = 'd')]
+    domain: OsString,
+    /// Path to original problem
+    #[arg(short = 'p')]
+    problem: OsString,
+    /// Path to meta domain
+    #[arg(short = 'm')]
+    meta_domain: OsString,
+    /// Path to fast-downward.
+    /// Required only if not found in env or path.
+    /// Searches for {downward, fast-downward, fastdownward} irregardles (somewhat) of casing
+    #[arg(short = 'f')]
+    downward: Option<OsString>,
+    /// Path to solution for meta domain + problem.
+    /// If not provided, uses fast downward to generate it
+    #[arg(short = 's')]
+    solution: Option<OsString>,
+}
+
+fn read_file(path: &OsString) -> String {
+    println!(
+        "{} Reading {}...",
+        run_time(),
+        Path::new(path).file_name().unwrap().to_str().unwrap()
+    );
+    match fs::read_to_string(path) {
+        Ok(c) => c,
+        Err(err) => panic!(
+            "Could not read file: \"{}\"\nError: {}",
+            path.to_str().unwrap(),
+            err
+        ),
+    }
+}
+
+fn parse_instance(args: &Args) -> (Problem, Domain, Domain) {
+    let problem_s = read_file(&args.problem);
+    let domain_s = read_file(&args.domain);
+    let meta_domain_s = read_file(&args.meta_domain);
+
+    println!("{} Parsing problem...", run_time());
+    let problem = parse_problem(&problem_s).unwrap();
+    println!("{} Parsing domain...", run_time());
+    let domain = parse_domain(&domain_s).unwrap();
+    println!("{} Parsing meta domain...", run_time());
+    let meta_domain = parse_domain(&meta_domain_s).unwrap();
+
+    (problem, domain, meta_domain)
+}
+
 fn main() {
     init_time();
-    let args: Vec<String> = env::args().collect();
-    if args.len() == 1 || args[1] == "-h" || args[1] == "--help" {
-        println!("First argument is meta-domain file path");
-        println!("Second argument is domain file path");
-        println!("Third argument is problem file path");
-        println!("Fourth argument is fast-downward path");
-        println!("Fifth argument is sas plan path");
-        return;
-    }
-    let metadomain_path = &args[1];
-    let domain_path = &args[2];
-    let problem_path = &args[3];
-    println!("{} Reading domain...", run_time());
-    let metadomain_string = fs::read_to_string(metadomain_path).unwrap();
-    let domain_string = fs::read_to_string(domain_path).unwrap();
-    println!("{} Reading problem...", run_time());
-    let problem_string = fs::read_to_string(problem_path).unwrap();
-    println!("{} Parsing domain...", run_time());
-    let metadomain = parse_domain(&metadomain_string).unwrap();
-    let domain = parse_domain(&domain_string).unwrap();
-    println!("{} Parsing problem...", run_time());
-    let problem = parse_problem(&problem_string).unwrap();
+    let args = Args::parse();
+    println!("{} Finding downward...", run_time());
+    let downward = Downward::new(&args.downward);
+    println!("{} Finding solution...", run_time());
+    let mut sas_plan = downward.solve_or_find(&args.meta_domain, &args.problem, &args.solution);
+    let (problem, domain, meta_domain) = parse_instance(&args);
+
     println!("{} Converting predicates...", run_time());
     let facts = Facts::new(&domain, &problem);
-    let downward_path = &args[4];
-    let downward = Downward::new(downward_path.to_string());
-    let sas_path = &args[5];
     println!("{} Generating init...", run_time());
     let init = State::new(&domain, &problem, &facts);
-    println!("{} Reading plan...", run_time());
-    let sas_string = fs::read_to_string(sas_path).unwrap();
-    println!("{} Parsing plan...", run_time());
-    let mut sas_plan = parse_sas(&sas_string).unwrap();
     while sas_plan.has_meta() {
         let init_plan = next_init(&domain, &problem, &facts, &sas_plan);
-        let goal_plan = next_goal(&metadomain, &domain, &problem, &facts, &sas_plan);
+        let goal_plan = next_goal(&meta_domain, &domain, &problem, &facts, &sas_plan);
         assert_ne!(init_plan, goal_plan);
         let init_state = init.apply_plan(&init_plan);
         let goal_state = init.apply_plan(&goal_plan);
         assert_ne!(init_state, goal_state);
-        let temp_problem_path = ".temp_problem.pddl";
+        let temp_problem_path = OsString::from(".temp_problem.pddl");
         println!("{} Writing temp problem...", run_time());
         write_problem(
             &domain,
@@ -73,7 +108,7 @@ fn main() {
             &temp_problem_path,
         );
         println!("{} Solving temp problem...", run_time());
-        downward.solve(&domain_path, &temp_problem_path);
+        downward.solve(&args.domain, &temp_problem_path);
         println!("{} Reading temp plan...", run_time());
         let sas_string = fs::read_to_string("sas_plan").unwrap();
         println!("{} Parsing temp plan...", run_time());

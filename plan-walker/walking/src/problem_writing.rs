@@ -3,6 +3,7 @@ use parsing::problem::Problem;
 
 use crate::instance::fact::Facts;
 use crate::state::State;
+use std::ffi::OsString;
 use std::fs::File;
 use std::io::Write;
 
@@ -71,7 +72,7 @@ pub fn write_problem(
     facts: &Facts,
     init_state: &State,
     goal_state: &State,
-    path: &str,
+    path: &OsString,
 ) {
     let content = generate_problem(domain, problem, facts, init_state, goal_state);
     let mut output = File::create(path).unwrap();

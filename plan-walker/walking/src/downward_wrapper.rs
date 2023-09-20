@@ -1,19 +1,53 @@
-use std::{fs, process::Command};
+use std::{env, ffi::OsString, fs, process::Command};
 
 use parsing::sas::{parse_sas, SASPlan};
 
+use crate::{read_file, time::run_time};
+
 pub struct Downward {
-    path: String,
+    path: OsString,
 }
 
 impl Downward {
-    pub fn new(path: String) -> Self {
-        Self { path }
+    pub fn new(path: &Option<OsString>) -> Self {
+        // First if given path, use that
+        match path {
+            Some(path) => {
+                return Downward {
+                    path: path.to_owned(),
+                }
+            }
+            None => {}
+        };
+        let checks = [
+            "downward",
+            "DOWNWARD",
+            "Downward",
+            "fast-donward",
+            "FAST-DOWNWARD",
+            "Fast-Downward",
+            "fastdownward",
+            "FASTDOWNWARD",
+            "FastDownward",
+        ];
+        // Check enviornment
+        for check in checks {
+            match env::var(check) {
+                Ok(c) => return Downward { path: c.into() },
+                Err(_) => {}
+            }
+        }
+        panic!("Fast downward not given as argument, nor found in env or path");
     }
 
-    pub fn solve(&self, domain_path: &str, problem_path: &str) -> SASPlan {
-        let mut cmd = Command::new(format!("{}", self.path));
-        cmd.args(&["--alias", "lama-first", domain_path, problem_path]);
+    pub fn solve(&self, domain_path: &OsString, problem_path: &OsString) -> SASPlan {
+        let mut cmd = Command::new(&self.path);
+        cmd.args(&[
+            "--alias",
+            "lama-first",
+            domain_path.to_str().unwrap(),
+            problem_path.to_str().unwrap(),
+        ]);
 
         match cmd.output() {
             Ok(out) => {
@@ -36,5 +70,22 @@ impl Downward {
             }
             Err(err) => panic!("Could not run downward: {}", err),
         }
+    }
+
+    pub fn solve_or_find(
+        &self,
+        meta_domain_path: &OsString,
+        problem_path: &OsString,
+        solution_path: &Option<OsString>,
+    ) -> SASPlan {
+        if let Some(path) = solution_path {
+            println!("{} Solution given", run_time());
+            let content = read_file(path);
+            println!("{} Parsing solution...", run_time());
+            return parse_sas(&content).unwrap();
+        }
+        println!("{} Solution not given", run_time());
+        println!("{} Using downward to find...", run_time());
+        self.solve(meta_domain_path, problem_path)
     }
 }
