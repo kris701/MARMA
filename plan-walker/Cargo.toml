@@ -1,2 +1,3 @@
 [workspace]
 members = ["parsing", "walking"]
+resolver = "2"
