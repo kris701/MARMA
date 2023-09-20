@@ -3,6 +3,7 @@ use parsing::problem::Problem;
 
 use crate::instance::fact::Facts;
 use crate::state::State;
+use crate::write_file;
 use std::ffi::OsString;
 use std::fs::File;
 use std::io::Write;
@@ -75,9 +76,5 @@ pub fn write_problem(
     path: &OsString,
 ) {
     let content = generate_problem(domain, problem, facts, init_state, goal_state);
-    let mut output = File::create(path).unwrap();
-    match write!(output, "{}", content) {
-        Ok(_) => {}
-        Err(err) => panic!("Could not write problem to file: {}", err),
-    };
+    write_file(path, content);
 }

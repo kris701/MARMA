@@ -27,12 +27,6 @@ fn generate_params(term: &Term) -> String {
     s
 }
 impl SASPlan {
-    pub fn print(&self) {
-        self.steps
-            .iter()
-            .for_each(|s| println!("({}{})", s.0.name, generate_params(&s.0)));
-    }
-
     pub fn has_meta(&self) -> bool {
         self.steps.iter().any(|s| match s.1 {
             StepType::Normal => false,
@@ -49,6 +43,16 @@ impl SASPlan {
             Some(l) => Some(l),
             None => None,
         }
+    }
+
+    pub fn to_string(&self) -> String {
+        let mut s = "".to_string();
+
+        self.steps
+            .iter()
+            .for_each(|t| s.push_str(&format!("({}{})\n", t.0.name, generate_params(&t.0))));
+        s.push_str(&format!("; cost = {} (unit cost)", self.steps.len()));
+        s
     }
 }
 

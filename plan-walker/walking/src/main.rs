@@ -1,12 +1,12 @@
 use std::ffi::OsString;
-use std::fs;
-use std::path::Path;
+use std::fs::{self};
 
 use parsing::domain::{parse_domain, Domain};
 use parsing::problem::{parse_problem, Problem};
 use parsing::sas::parse_sas;
 
 use crate::downward_wrapper::Downward;
+use crate::file_io::{read_file, write_file};
 use crate::instance::fact::Facts;
 use crate::plan::{next_goal, next_init};
 use crate::problem_writing::write_problem;
@@ -16,6 +16,7 @@ use crate::time::{init_time, run_time};
 use clap::Parser;
 
 mod downward_wrapper;
+mod file_io;
 mod instance;
 mod plan;
 mod problem_writing;
@@ -44,22 +45,10 @@ pub struct Args {
     /// If not provided, uses fast downward to generate it
     #[arg(short = 's')]
     solution: Option<OsString>,
-}
-
-fn read_file(path: &OsString) -> String {
-    println!(
-        "{} Reading {}...",
-        run_time(),
-        Path::new(path).file_name().unwrap().to_str().unwrap()
-    );
-    match fs::read_to_string(path) {
-        Ok(c) => c,
-        Err(err) => panic!(
-            "Could not read file: \"{}\"\nError: {}",
-            path.to_str().unwrap(),
-            err
-        ),
-    }
+    /// Path to write final solution to
+    /// If not given, simply prints to stdout
+    #[arg(short = 'o')]
+    out: Option<OsString>,
 }
 
 fn parse_instance(args: &Args) -> (Problem, Domain, Domain) {
@@ -116,6 +105,13 @@ fn main() {
         println!("{} Stitching plan...", run_time());
         sas_plan = stich_single(&sas_plan, &temp_plan);
     }
-    println!("{} Final Plan", run_time());
-    sas_plan.print();
+    let sas_plan = sas_plan.to_string();
+    match args.out {
+        Some(path) => {
+            write_file(&path, sas_plan);
+        }
+        None => {
+            println!("{} Final plan\n{}", run_time(), sas_plan);
+        }
+    }
 }
