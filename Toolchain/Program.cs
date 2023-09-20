@@ -1,7 +1,9 @@
 ﻿using CommandLine;
 using CommandLine.Text;
+using DependencyFetcher;
 using PlanSampleGenerator;
 using System;
+using System.Runtime.InteropServices;
 using Tools;
 using Tools.Benchmarks;
 
@@ -11,54 +13,23 @@ namespace Toolchain
     {
         static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<ToolchainOptions>(args)
-              .WithParsed(RunOptions)
+            var parser = new Parser(with => { 
+                with.IgnoreUnknownArguments = true;
+                with.AutoHelp = true;
+                with.AutoVersion = true;
+                with.HelpWriter = Parser.Default.Settings.HelpWriter;
+            });
+
+            
+            // Dependency Checker
+            parser.ParseArguments<DependencyFetcherOptions>(args)
+              .WithParsed(DependencyFetcher.Program.RunDependencyChecker)
               .WithNotParsed(HandleParseError);
-        }
 
-        static void RunOptions(ToolchainOptions opts)
-        {
-            ConsoleHelper.WriteLineColor("Toolchain have started...", ConsoleColor.DarkGray);
-
-            var projectPath = ProjectHelper.GetProjectPath();
-
-            if (opts.CheckDependencies)
-                CheckDependencies();
-
-            var benchmark = ParseBenchmarkFile(opts.BennchmarkPath);
-
-            GeneratePlanSamples(benchmark, opts);
-
-            ConsoleHelper.WriteLineColor("Toolchain have finished!", ConsoleColor.DarkGray);
-        }
-
-        private static void CheckDependencies()
-        {
-            ConsoleHelper.WriteLineColor("Checking Dependencies...", ConsoleColor.DarkGray);
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
-        }
-
-        private static Benchmark ParseBenchmarkFile(string path)
-        {
-            ConsoleHelper.WriteLineColor("Parsing benchmark file...", ConsoleColor.DarkGray);
-            if (!File.Exists(path))
-                throw new FileNotFoundException("The given benchmark file was not found!");
-            var benchmarkFile = new Benchmark(path);
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
-            return benchmarkFile;
-        }
-
-        private static void GeneratePlanSamples(Benchmark benchmark, ToolchainOptions opts)
-        {
-            ConsoleHelper.WriteLineColor("Generating Plan Samples...", ConsoleColor.DarkGray);
-
-            IPlanFetcher fetcher = new FastDownwardPlanFetcher(
-                opts.PythonPrefix,
-                opts.FastDownwardPath,
-                opts.FastDownwardSearch);
-            fetcher.Fetch(benchmark, opts.Samples, opts.Multithread, opts.Seed);
-
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            // Plan Sample Generator
+            parser.ParseArguments<PlanSampleGeneratorOptions>(args)
+              .WithParsed(PlanSampleGenerator.Program.RunPlanSampleGeneration)
+              .WithNotParsed(HandleParseError);
         }
     }
 }

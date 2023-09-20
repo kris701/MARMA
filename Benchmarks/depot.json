@@ -1,16 +1,16 @@
 {
   "Name": "Depot",
-  "DomainPath": "Dependencies/downward-benchmarks-master/depot/domain.pddl",
+  "DomainPath": "depot/domain.pddl",
   "ProblemPaths": [
-    "Dependencies/downward-benchmarks-master/depot/p01.pddl",
-    "Dependencies/downward-benchmarks-master/depot/p02.pddl",
-    "Dependencies/downward-benchmarks-master/depot/p03.pddl",
-    "Dependencies/downward-benchmarks-master/depot/p04.pddl",
-    "Dependencies/downward-benchmarks-master/depot/p05.pddl",
-    "Dependencies/downward-benchmarks-master/depot/p06.pddl",
-    "Dependencies/downward-benchmarks-master/depot/p07.pddl",
-    "Dependencies/downward-benchmarks-master/depot/p08.pddl",
-    "Dependencies/downward-benchmarks-master/depot/p09.pddl",
-    "Dependencies/downward-benchmarks-master/depot/p10.pddl"
+    "depot/p01.pddl",
+    "depot/p02.pddl",
+    "depot/p03.pddl",
+    "depot/p04.pddl",
+    "depot/p05.pddl",
+    "depot/p06.pddl",
+    "depot/p07.pddl",
+    "depot/p08.pddl",
+    "depot/p09.pddl",
+    "depot/p10.pddl"
   ]
 }

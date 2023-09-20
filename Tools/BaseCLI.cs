@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommandLine;
+using CommandLine.Text;
+using Tools.Benchmarks;
 
 namespace Tools
 {
@@ -11,8 +13,10 @@ namespace Tools
     {
         public static void HandleParseError(IEnumerable<Error> errs)
         {
+            var sentenceBuilder = SentenceBuilder.Create();
             foreach (var error in errs)
-                ConsoleHelper.WriteLineColor($"{error}", ConsoleColor.Red);
+                if (error is not HelpRequestedError)
+                    ConsoleHelper.WriteLineColor(sentenceBuilder.FormatError(error), ConsoleColor.Red);
         }
     }
 }
