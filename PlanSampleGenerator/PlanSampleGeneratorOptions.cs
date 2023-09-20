@@ -19,7 +19,7 @@ namespace PlanSampleGenerator
 
         // Plan Sample Generation
         [Option("samples", Required = true, HelpText = "How many samples are to be takes as the 'train' set")]
-        public int Samples { get; set; } = 0;
+        public int Samples { get; set; }
         [Option("py", Required = false, HelpText = "What python prefix to use", Default = "python")]
         public string PythonPrefix { get; set; } = "python";
         [Option("fastdownward", Required = false, HelpText = "Path to fast-downward", Default = "fast-downward.py")]
@@ -30,7 +30,7 @@ namespace PlanSampleGenerator
         // Misc
         [Option("seed", Required = false, HelpText = "Optional seed for all the random number generation", Default = -1)]
         public int Seed { get; set; } = -1;
-        [Option("multithread", Required = false, HelpText = "If parts of the toolchain should run multithreaded or not.")]
+        [Option("multithread", Required = false, HelpText = "If parts of the toolchain should run multithreaded or not.", Default = false)]
         public bool Multithread { get; set; } = false;
     }
 }
