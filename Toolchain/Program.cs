@@ -3,6 +3,7 @@ using CommandLine.Text;
 using DependencyFetcher;
 using PlanSampleGenerator;
 using System;
+using System.Runtime.InteropServices;
 using Tools;
 using Tools.Benchmarks;
 
@@ -12,8 +13,14 @@ namespace Toolchain
     {
         static void Main(string[] args)
         {
-            var parser = new Parser(with => with.IgnoreUnknownArguments = true);
+            var parser = new Parser(with => { 
+                with.IgnoreUnknownArguments = true;
+                with.AutoHelp = true;
+                with.AutoVersion = true;
+                with.HelpWriter = Parser.Default.Settings.HelpWriter;
+            });
 
+            
             // Dependency Checker
             parser.ParseArguments<DependencyFetcherOptions>(args)
               .WithParsed(DependencyFetcher.Program.RunDependencyChecker)

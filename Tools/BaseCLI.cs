@@ -15,9 +15,8 @@ namespace Tools
         {
             var sentenceBuilder = SentenceBuilder.Create();
             foreach (var error in errs)
-            {
-                ConsoleHelper.WriteLineColor(sentenceBuilder.FormatError(error), ConsoleColor.Red);
-            }
+                if (error is not HelpRequestedError)
+                    ConsoleHelper.WriteLineColor(sentenceBuilder.FormatError(error), ConsoleColor.Red);
         }
     }
 }

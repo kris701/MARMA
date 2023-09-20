@@ -28,7 +28,7 @@ namespace PlanSampleGenerator
         public string FastDownwardSearch { get; set; } = "--alias lama-first";
 
         // Misc
-        [Option("seed", Required = false, HelpText = "Optional seed for all the random number generation")]
+        [Option("seed", Required = false, HelpText = "Optional seed for all the random number generation", Default = -1)]
         public int Seed { get; set; } = -1;
         [Option("multithread", Required = false, HelpText = "If parts of the toolchain should run multithreaded or not.")]
         public bool Multithread { get; set; } = false;
