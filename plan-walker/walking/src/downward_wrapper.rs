@@ -12,7 +12,7 @@ impl Downward {
     }
 
     pub fn solve(&self, domain_path: &str, problem_path: &str) -> SASPlan {
-        let mut cmd = Command::new(format!("{}/fast-downward.py", self.path));
+        let mut cmd = Command::new(format!("{}", self.path));
         cmd.args(&["--alias", "lama-first", domain_path, problem_path]);
 
         match cmd.output() {
