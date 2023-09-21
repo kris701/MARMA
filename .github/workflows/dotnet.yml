@@ -13,13 +13,17 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-  steps:
-  - uses: actions/checkout@v3
-  - uses: actions/setup-dotnet@v3
-    with:
-      dotnet-version: '7.0.x'
-  - name: Build
-  - run: dotnet build
-  - name: Test
-  - run: dotnet test
-
+        
+    steps:
+    - uses: actions/checkout@v3
+  
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
+      
+    - name: Build
+      run: dotnet build
+    
+    - name: Test
+      run: dotnet test
