@@ -1,0 +1,25 @@
+name: Dotnet
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+  steps:
+  - uses: actions/checkout@v3
+  - uses: actions/setup-dotnet@v3
+    with:
+      dotnet-version: '7.0.x'
+  - name: Build
+  - run: dotnet build
+  - name: Test
+  - run: dotnet test
+
