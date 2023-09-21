@@ -3,7 +3,7 @@ use parsing::{
     term::Term,
 };
 
-use crate::instance::fact::{Fact, Facts};
+use crate::fact::{Fact, Facts};
 
 #[derive(Debug, PartialEq)]
 pub enum Expression {

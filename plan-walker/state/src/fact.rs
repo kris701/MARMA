@@ -5,8 +5,6 @@ use parsing::{
     problem::Problem,
 };
 
-use crate::time::run_time;
-
 use super::permutation::permute;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
@@ -27,7 +25,6 @@ fn generate_facts_predicate(
     predicate_index: usize,
 ) -> Vec<Fact> {
     let permutations = permute(&domain.types, problem, &predicate.parameters);
-    println!("{} {}: {}", run_time(), predicate.name, permutations.len());
     permutations
         .iter()
         .map(|permutation| Fact {

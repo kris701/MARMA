@@ -1,9 +1,9 @@
 use parsing::domain::Domain;
 use parsing::problem::Problem;
+use shared::io::file::write_file;
 
-use crate::instance::fact::Facts;
+use crate::fact::Facts;
 use crate::state::State;
-use crate::write_file;
 use std::ffi::OsString;
 
 fn generate_objects(problem: &Problem) -> String {

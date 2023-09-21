@@ -1,6 +1,6 @@
 use parsing::{domain::Domain, problem::Problem, sas::SASPlan};
 
-use crate::instance::{expression::Expression, fact::Facts};
+use crate::{expression::Expression, fact::Facts};
 
 #[derive(Debug, PartialEq)]
 pub struct Plan {

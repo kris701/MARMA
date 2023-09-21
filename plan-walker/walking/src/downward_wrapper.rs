@@ -1,8 +1,7 @@
-use std::{env, ffi::OsString, fs, process::Command};
+use std::{env, ffi::OsString, process::Command};
 
 use parsing::sas::{parse_sas, SASPlan};
-
-use crate::{read_file, time::run_time};
+use shared::{io::file::read_file, time::run_time};
 
 pub struct Downward {
     path: OsString,

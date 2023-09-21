@@ -1,10 +1,8 @@
 use parsing::{domain::Domain, problem::Problem};
 
 use crate::{
-    instance::{
-        expression::Expression,
-        fact::{Fact, Facts},
-    },
+    expression::Expression,
+    fact::{Fact, Facts},
     plan::Plan,
 };
 
