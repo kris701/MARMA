@@ -25,6 +25,6 @@ pub fn run_time() -> String {
     let elapsed = curr_time - start_time;
     match elapsed {
         0..=9999 => format!("[{:4}ms]", elapsed),
-        _ => format!("[{:4}s]", elapsed / 1000),
+        _ => format!("[{:5}s]", elapsed / 1000),
     }
 }
