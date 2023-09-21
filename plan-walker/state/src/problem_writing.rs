@@ -2,7 +2,8 @@ use parsing::domain::Domain;
 use parsing::problem::Problem;
 use shared::io::file::write_file;
 
-use crate::fact::Facts;
+use crate::instance::fact::Facts;
+use crate::instance::Instance;
 use crate::state::State;
 use std::ffi::OsString;
 
@@ -17,62 +18,47 @@ fn generate_objects(problem: &Problem) -> String {
     s
 }
 
-fn generate_fact(domain: &Domain, problem: &Problem, facts: &Facts, i: usize) -> String {
+fn generate_fact(instance: &Instance, i: usize) -> String {
     let mut s = "".to_string();
-    let fact = &facts.facts[i];
-    s.push_str(&domain.predicates[fact.predicate].name);
+    let fact = &instance.facts.facts[i];
+    s.push_str(&instance.domain.predicates[fact.predicate].name);
     fact.parameters
         .iter()
-        .for_each(|i| s.push_str(&format!(" {}", problem.objects[*i].name)));
+        .for_each(|i| s.push_str(&format!(" {}", instance.problem.objects[*i].name)));
     s
 }
 
-fn generate_state(domain: &Domain, problem: &Problem, facts: &Facts, state: &State) -> String {
+fn generate_state(instance: &Instance, state: &State) -> String {
     let mut s = "".to_string();
     state
         .values
         .iter()
         .enumerate()
         .filter(|(_, v)| **v)
-        .for_each(|(i, _)| {
-            s.push_str(&format!(
-                "\t\t({})\n",
-                generate_fact(domain, problem, facts, i)
-            ))
-        });
+        .for_each(|(i, _)| s.push_str(&format!("\t\t({})\n", generate_fact(instance, i))));
     s
 }
 
-fn generate_problem(
-    domain: &Domain,
-    problem: &Problem,
-    facts: &Facts,
-    init_state: &State,
-    goal_state: &State,
-) -> String {
+fn generate_problem(instance: &Instance, init_state: &State, goal_state: &State) -> String {
     let mut s: String = "(define\n\t(problem temp)\n".to_string();
-    s.push_str(&format!("\t(:domain {})\n", domain.name));
-    s.push_str(&format!("\t(:objects{})\n", generate_objects(problem)));
+    s.push_str(&format!("\t(:domain {})\n", instance.domain.name));
+    s.push_str(&format!(
+        "\t(:objects{})\n",
+        generate_objects(&instance.problem)
+    ));
     s.push_str(&format!(
         "\t(:init\n{}\t)\n",
-        generate_state(domain, problem, facts, init_state)
+        generate_state(instance, init_state)
     ));
     s.push_str(&format!(
         "\t(:goal (and \n{}\t))\n",
-        generate_state(domain, problem, facts, goal_state)
+        generate_state(instance, goal_state)
     ));
     s.push_str(")");
     s
 }
 
-pub fn write_problem(
-    domain: &Domain,
-    problem: &Problem,
-    facts: &Facts,
-    init_state: &State,
-    goal_state: &State,
-    path: &OsString,
-) {
-    let content = generate_problem(domain, problem, facts, init_state, goal_state);
+pub fn write_problem(instance: &Instance, init_state: &State, goal_state: &State, path: &OsString) {
+    let content = generate_problem(instance, init_state, goal_state);
     write_file(path, content);
 }

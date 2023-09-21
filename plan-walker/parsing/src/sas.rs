@@ -35,6 +35,10 @@ impl SASPlan {
         self.steps.iter().position(|s| s.1 == StepType::Meta)
     }
 
+    pub fn meta_count(&self) -> usize {
+        self.steps.iter().filter(|s| s.1 == StepType::Meta).count()
+    }
+
     pub fn to_string(&self) -> String {
         let mut s = "".to_string();
 

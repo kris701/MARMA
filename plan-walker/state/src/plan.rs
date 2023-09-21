@@ -1,6 +1,9 @@
 use parsing::{domain::Domain, problem::Problem, sas::SASPlan};
 
-use crate::{expression::Expression, fact::Facts};
+use crate::{
+    expression::Expression,
+    instance::{fact::Facts, Instance},
+};
 
 #[derive(Debug, PartialEq)]
 pub struct Plan {
@@ -32,29 +35,23 @@ fn convert_step(
     Expression::new(domain, facts, action, &action.effect, &parameters)
 }
 
-pub fn next_init(domain: &Domain, problem: &Problem, facts: &Facts, sas_plan: &SASPlan) -> Plan {
+pub fn next_init(instance: &Instance, sas_plan: &SASPlan) -> Plan {
     let steps = sas_plan.steps[0..sas_plan.meta_pos().unwrap()]
         .iter()
-        .map(|i| convert_step(domain, problem, facts, &i.0))
+        .map(|i| convert_step(&instance.domain, &instance.problem, &instance.facts, &i.0))
         .collect();
     Plan { steps }
 }
 
-pub fn next_goal(
-    meta_domain: &Domain,
-    domain: &Domain,
-    problem: &Problem,
-    facts: &Facts,
-    sas_plan: &SASPlan,
-) -> Plan {
+pub fn next_goal(instance: &Instance, meta_domain: &Domain, sas_plan: &SASPlan) -> Plan {
     let mut steps: Vec<Expression> = sas_plan.steps[0..sas_plan.meta_pos().unwrap()]
         .iter()
-        .map(|i| convert_step(domain, problem, facts, &i.0))
+        .map(|i| convert_step(&instance.domain, &instance.problem, &instance.facts, &i.0))
         .collect();
     steps.push(convert_step(
         meta_domain,
-        problem,
-        facts,
+        &instance.problem,
+        &instance.facts,
         &sas_plan.steps[sas_plan.meta_pos().unwrap()].0,
     ));
     Plan { steps }

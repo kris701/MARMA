@@ -1,7 +1,10 @@
+use std::ffi::OsString;
+
 use nom::branch::permutation;
 use nom::bytes::complete::tag_no_case;
 use nom::sequence::delimited;
 use nom::{character::complete::char, IResult};
+use shared::io::file::read_file;
 
 use crate::shared::{remove_comments, spaced};
 
@@ -56,4 +59,18 @@ pub fn parse_problem(input: &str) -> Result<Problem, String> {
         Err(err) => return Err(err.to_string()),
     };
     Ok(domain)
+}
+
+impl From<&OsString> for Problem {
+    fn from(path: &OsString) -> Self {
+        let content = read_file(&path.into());
+        match parse_problem(&content) {
+            Ok(domain) => domain,
+            Err(err) => panic!(
+                "Error while parsing domain \"{}\"\n{}",
+                path.to_str().unwrap(),
+                err
+            ),
+        }
+    }
 }

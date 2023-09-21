@@ -1,7 +1,10 @@
+use std::ffi::OsString;
+
 use nom::{
     branch::permutation, bytes::complete::tag, character::complete::char, combinator::opt,
     multi::many1, sequence::delimited, IResult,
 };
+use shared::io::file::read_file;
 
 use crate::{
     domain::requirement::parse_requirements,
@@ -68,6 +71,20 @@ pub fn parse_domain(input: &str) -> Result<Domain, String> {
         Err(err) => return Err(err.to_string()),
     };
     Ok(domain)
+}
+
+impl From<&OsString> for Domain {
+    fn from(path: &OsString) -> Self {
+        let content = read_file(&path.into());
+        match parse_domain(&content) {
+            Ok(domain) => domain,
+            Err(err) => panic!(
+                "Error while parsing domain \"{}\"\n{}",
+                path.to_str().unwrap(),
+                err
+            ),
+        }
+    }
 }
 
 #[cfg(test)]

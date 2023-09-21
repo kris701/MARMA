@@ -16,7 +16,7 @@ mod test {
         term::Term,
     };
 
-    use crate::stich_single;
+    use crate::stiching::stich_single;
     #[test]
     fn stitch_single() {
         assert_eq!(
