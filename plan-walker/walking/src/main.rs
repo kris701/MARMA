@@ -1,3 +1,5 @@
+use color_eyre::eyre::Result;
+
 use std::ffi::OsString;
 use std::fs::{self};
 
@@ -57,37 +59,52 @@ fn parse_instance(args: &Args) -> (Problem, Domain, Domain) {
     let meta_domain_s = read_file(&args.meta_domain);
 
     println!("{} Parsing problem...", run_time());
-    let problem = parse_problem(&problem_s).unwrap();
+    let problem = match parse_problem(&problem_s) {
+        Ok(p) => p,
+        Err(err) => panic!("Could not parse given problem file with err:\n{}", err),
+    };
     println!("{} Parsing domain...", run_time());
-    let domain = parse_domain(&domain_s).unwrap();
+    let domain = match parse_domain(&domain_s) {
+        Ok(p) => p,
+        Err(err) => panic!("Could not parse given domain file with err:\n{}", err),
+    };
     println!("{} Parsing meta domain...", run_time());
-    let meta_domain = parse_domain(&meta_domain_s).unwrap();
+    let meta_domain = match parse_domain(&meta_domain_s) {
+        Ok(p) => p,
+        Err(err) => panic!("Could not parse given meta domain file with err:\n{}", err),
+    };
 
     (problem, domain, meta_domain)
 }
 
-fn main() {
+fn main() -> Result<()> {
+    color_eyre::install()?;
     init_time();
     let args = Args::parse();
-    println!("{} Finding downward...", run_time());
-    let downward = Downward::new(&args.downward);
-    println!("{} Finding solution...", run_time());
-    let mut sas_plan = downward.solve_or_find(&args.meta_domain, &args.problem, &args.solution);
-    let (problem, domain, meta_domain) = parse_instance(&args);
 
+    let (problem, domain, meta_domain) = parse_instance(&args);
     println!("{} Converting predicates...", run_time());
     let facts = Facts::new(&domain, &problem);
     println!("{} Generating init...", run_time());
     let init = State::new(&domain, &problem, &facts);
+
+    println!("{} Finding downward...", run_time());
+    let downward = Downward::new(&args.downward);
+    println!("{} Finding solution...", run_time());
+    let mut sas_plan = downward.solve_or_find(&args.meta_domain, &args.problem, &args.solution);
+
     while sas_plan.has_meta() {
         let init_plan = next_init(&domain, &problem, &facts, &sas_plan);
         let goal_plan = next_goal(&meta_domain, &domain, &problem, &facts, &sas_plan);
-        assert_ne!(init_plan, goal_plan);
+        if init_plan == goal_plan {
+            panic!("LOGIC ERROR: Somehow plan for init and goal are the same. This is a bug.")
+        }
         let init_state = init.apply_plan(&init_plan);
         let goal_state = init.apply_plan(&goal_plan);
-        assert_ne!(init_state, goal_state);
+        if init_state == goal_state {
+            panic!("LOGIC ERROR: Somehow state for init and goal are the same. This is a bug.")
+        }
         let temp_problem_path = OsString::from(".temp_problem.pddl");
-        println!("{} Writing temp problem...", run_time());
         write_problem(
             &domain,
             &problem,
@@ -97,21 +114,15 @@ fn main() {
             &temp_problem_path,
         );
         println!("{} Solving temp problem...", run_time());
-        downward.solve(&args.domain, &temp_problem_path);
-        println!("{} Reading temp plan...", run_time());
-        let sas_string = fs::read_to_string("sas_plan").unwrap();
-        println!("{} Parsing temp plan...", run_time());
-        let temp_plan = parse_sas(&sas_string).unwrap();
+        let temp_plan = downward.solve(&args.domain, &temp_problem_path);
         println!("{} Stitching plan...", run_time());
         sas_plan = stich_single(&sas_plan, &temp_plan);
     }
     let sas_plan = sas_plan.to_string();
-    match args.out {
-        Some(path) => {
-            write_file(&path, sas_plan);
-        }
-        None => {
-            println!("{} Final plan\n{}", run_time(), sas_plan);
-        }
+    if let Some(path) = args.out {
+        write_file(&path, sas_plan);
+    } else {
+        println!("{} Final plan\n{}", run_time(), sas_plan);
     }
+    Ok(())
 }

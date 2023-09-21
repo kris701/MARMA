@@ -17,3 +17,4 @@ Cargo.lock
 sas_plan
 # Used to communicate with fast downward
 .temp_problem.pddl
+output.sas
