@@ -8,7 +8,7 @@
         {
           "Name": "Fetching packages",
           "Command": "apt",
-          "Arguments": "install cmake gcc-multilib g++-multilib flex bison python curl automake"
+          "Arguments": "install cmake gcc-multilib g++-multilib flex bison python3 curl automake"
         },
         {
           "Name": "Fetching Rust",
@@ -29,7 +29,7 @@
         },
         {
           "Name": "Building repository",
-          "Command": "python",
+          "Command": "python3",
           "Arguments": "build.py"
         }
       ]
