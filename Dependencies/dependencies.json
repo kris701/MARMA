@@ -1,6 +1,23 @@
 {
   "Dependencies": [
     {
+      "Name": "Packages",
+      "Description": "All the packages the project needs",
+      "TargetLocation": "packages",
+      "SetupCalls": [
+        {
+          "Name": "Fetching packages",
+          "Command": "apt",
+          "Arguments": "install gcc-multilib g++-multilib flex bison python curl automake"
+        },
+        {
+          "Name": "Fetching Rust",
+          "Command": "curl",
+          "Arguments": "--proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh"
+        }
+      ]
+    },
+    {
       "Name": "Fast Downward",
       "Description": "Generic Planner",
       "TargetLocation": "fast-downward",
@@ -41,6 +58,16 @@
           "Name": "Move to build dir",
           "Command": "cd",
           "Arguments": "src"
+        },
+        {
+          "Name": "Removing '-Werror' from Makefile",
+          "Command": "sed",
+          "Arguments": "-e s/-Werror//g -i preprocess/Makefile"
+        },
+        {
+          "Name": "Removing '-Werror' from Makefile",
+          "Command": "sed",
+          "Arguments": "-e s/-Werror//g -i search/Makefile"
         },
         {
           "Name": "Building repository",
