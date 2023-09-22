@@ -42,12 +42,15 @@ namespace DependencyFetcher
                     var response = GetYNResponse();
                     if (response)
                     {
-                        Console.WriteLine($"Cloning dependency '{dependency.Name}'...");
-                        CloneRepository(root, dependency);
-                        if (dependency.BuildCommand != null)
+                        Directory.CreateDirectory(targetFolder);
+                        foreach(var call in dependency.SetupCalls)
                         {
-                            Console.WriteLine($"Building dependency '{dependency.Name}'...");
-                            BuildRepository(root, dependency);
+                            Console.WriteLine($"Step '{call.Name}' started...");
+                            if (call.Command.ToLower() == "cd")
+                                targetFolder = Path.Join(targetFolder, call.Arguments);
+                            else
+                                ExecuteCall(targetFolder, call.Command, call.Arguments);
+                            Console.WriteLine($"Step '{call.Name}' finished!");
                         }
                     }
                     else
@@ -64,6 +67,7 @@ namespace DependencyFetcher
 
         private bool GetYNResponse()
         {
+            return true;
             char key = ' ';
             while (key != 'y' && key != 'Y' && key != 'n' && key != 'N')
                 key = Console.ReadKey().KeyChar;
@@ -73,42 +77,19 @@ namespace DependencyFetcher
             return false;
         }
 
-        private void CloneRepository(string projectFolder, Dependency dependency)
+        private void ExecuteCall(string folder, string command, string args)
         {
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo()
                 {
-                    FileName = "git",
-                    Arguments = $"clone {dependency.RepositoryLink} {Path.Join(projectFolder, dependency.TargetLocation)}",
+                    FileName = command,
+                    Arguments = args,
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    WorkingDirectory = projectFolder
-                }
-            };
-            process.OutputDataReceived += RecieveOutputData;
-            process.ErrorDataReceived += RecieveErrorData;
-            process.Start();
-            process.BeginErrorReadLine();
-            process.BeginOutputReadLine();
-            process.WaitForExit();
-        }
-
-        private void BuildRepository(string projectFolder, Dependency dependency)
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo()
-                {
-                    FileName = dependency.BuildCommand,
-                    Arguments = dependency.BuildArgs,
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    WorkingDirectory = projectFolder
+                    WorkingDirectory = folder
                 }
             };
             process.OutputDataReceived += RecieveOutputData;

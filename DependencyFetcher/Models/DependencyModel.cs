@@ -10,20 +10,15 @@ namespace DependencyFetcher.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public Uri RepositoryLink { get; set; }
         public string TargetLocation { get; set; }
+        public List<SetupCall> SetupCalls { get; set; }
 
-        public string? BuildCommand { get; set; }
-        public string? BuildArgs { get; set; }
-
-        public Dependency(string name, string description, Uri repositoryLink, string targetLocation, string? buildCommand, string? buildArgs)
+        public Dependency(string name, string description, string targetLocation, List<SetupCall> setupCalls)
         {
             Name = name;
             Description = description;
-            RepositoryLink = repositoryLink;
             TargetLocation = targetLocation;
-            BuildCommand = buildCommand;
-            BuildArgs = buildArgs;
+            SetupCalls = setupCalls;
         }
     }
 }

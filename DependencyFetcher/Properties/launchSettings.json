@@ -3,7 +3,14 @@
     "DependencyFetcher": {
       "commandName": "Project",
       "commandLineArgs": "--root Dependencies\r\n--deps Dependencies/dependencies.json",
-      "workingDirectory": "../"
+      "workingDirectory": "../",
+      "remoteDebugEnabled": false
+    },
+    "WSL": {
+      "commandName": "WSL",
+      "distributionName": "",
+      "commandLineArgs": "DependencyFetcher/bin/Debug/net7.0/DependencyFetcher.dll --root Dependencies --deps Dependencies/dependencies.json",
+      "workingDirectory": "DependencyFetcher/../"
     }
   }
 }

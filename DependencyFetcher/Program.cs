@@ -15,8 +15,11 @@ namespace DependencyFetcher
 
         public static void RunDependencyChecker(DependencyFetcherOptions opts)
         {
+            opts.DependencyPath = PathHelper.RootPath(opts.DependencyPath);
+            opts.RootPath = PathHelper.RootPath(opts.RootPath);
+
             if (!File.Exists(opts.DependencyPath))
-                throw new IOException($"File not found: {opts.DependencyPath}");
+                throw new IOException($"File not found: {Directory.GetCurrentDirectory()} - {opts.DependencyPath}");
             if (!Directory.Exists(opts.RootPath))
                 throw new IOException($"Root not found: {opts.RootPath}");
 
