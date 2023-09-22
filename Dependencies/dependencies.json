@@ -6,13 +6,21 @@
       "RepositoryLink": "https://github.com/aibasel/downward",
       "TargetLocation": "fast-downward",
       "BuildCommand": "python",
-      "BuildArgs": "fast-downward/build.py"
+      "BuildArgs": "build.py"
     },
     {
       "Name": "Fast Downward Benchmarks",
       "Description": "A set of domains and problems that is tested on.",
       "RepositoryLink": "https://github.com/aibasel/downward-benchmarks",
       "TargetLocation": "downward-benchmarks-master"
+    },
+    {
+      "Name": "VAL",
+      "Description": "Tool to validate plans",
+      "RepositoryLink": "https://github.com/KCL-Planning/VAL.git",
+      "TargetLocation": "val",
+      "BuildCommand": "cmake",
+      "BuildArgs": "--build ."
     }
   ]
 }

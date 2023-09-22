@@ -53,6 +53,7 @@ namespace DependencyFetcher
                     else
                     {
                         Console.WriteLine($"Ignoring dependency '{dependency.Name}'...");
+                        Directory.CreateDirectory(targetFolder);
                     }
 
                 } else
@@ -108,7 +109,7 @@ namespace DependencyFetcher
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    WorkingDirectory = projectFolder
+                    WorkingDirectory = Path.Join(projectFolder, dependency.TargetLocation)
                 }
             };
             process.OutputDataReceived += RecieveOutputData;
