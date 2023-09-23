@@ -13,7 +13,7 @@
         {
           "Name": "Fetching Rust",
           "Command": "curl",
-          "Arguments": "--proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh"
+          "Arguments": "--proto \"=https\" --tlsv1.2 https://sh.rustup.rs -sSf | sh"
         }
       ]
     },
