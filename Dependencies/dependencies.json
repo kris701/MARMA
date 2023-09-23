@@ -7,7 +7,7 @@
       "SetupCalls": [
         {
           "Name": "Fetching packages",
-          "Command": "apt",
+          "Command": "apt-get",
           "Arguments": "install cmake gcc-multilib g++-multilib flex bison python3 curl automake"
         },
         {

@@ -67,7 +67,7 @@ namespace DependencyFetcher
 
         private bool GetYNResponse()
         {
-            return true;
+            //return true;
             char key = ' ';
             while (key != 'y' && key != 'Y' && key != 'n' && key != 'N')
                 key = Console.ReadKey().KeyChar;
