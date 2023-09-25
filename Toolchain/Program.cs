@@ -1,6 +1,5 @@
 ﻿using CommandLine;
 using CommandLine.Text;
-using DependencyFetcher;
 using PlanSampleGenerator;
 using System;
 using System.Runtime.InteropServices;
@@ -19,12 +18,6 @@ namespace Toolchain
                 with.AutoVersion = true;
                 with.HelpWriter = Parser.Default.Settings.HelpWriter;
             });
-
-            
-            // Dependency Checker
-            parser.ParseArguments<DependencyFetcherOptions>(args)
-              .WithParsed(DependencyFetcher.Program.RunDependencyChecker)
-              .WithNotParsed(HandleParseError);
 
             // Plan Sample Generator
             parser.ParseArguments<PlanSampleGeneratorOptions>(args)

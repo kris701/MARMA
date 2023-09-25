@@ -20,8 +20,8 @@ namespace PlanSampleGenerator
         // Plan Sample Generation
         [Option("samples", Required = true, HelpText = "How many samples are to be takes as the 'train' set")]
         public int Samples { get; set; }
-        [Option("py", Required = false, HelpText = "What python prefix to use", Default = "python")]
-        public string PythonPrefix { get; set; } = "python";
+        [Option("py", Required = false, HelpText = "What python prefix to use", Default = "python3")]
+        public string PythonPrefix { get; set; } = "python3";
         [Option("fastdownward", Required = false, HelpText = "Path to fast-downward", Default = "fast-downward.py")]
         public string FastDownwardPath { get; set; } = "fast-downward.py";
         [Option("alias", Required = false, HelpText = "Alias (or search) to use with fast downward", Default = "--alias lama-first")]
