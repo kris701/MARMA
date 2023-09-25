@@ -52,8 +52,6 @@ cd VAL
 cmake build .
 make
 cd ..
-cd ..
-cd ..
 echo 
 echo == Done! ==
 echo 
