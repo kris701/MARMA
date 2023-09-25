@@ -1,5 +1,5 @@
 use nom::character::complete::char;
-use nom::multi::many1;
+use nom::multi::{many0, many1};
 use nom::sequence::delimited;
 
 use crate::shared::spaced;
@@ -28,21 +28,15 @@ fn generate_params(term: &Term) -> String {
 }
 impl SASPlan {
     pub fn has_meta(&self) -> bool {
-        self.steps.iter().any(|s| match s.1 {
-            StepType::Normal => false,
-            StepType::Meta => true,
-        })
+        self.steps.iter().any(|s| s.1 == StepType::Meta)
     }
 
     pub fn meta_pos(&self) -> Option<usize> {
-        match self
-            .steps
-            .iter()
-            .position(|p| !matches!(p.1, StepType::Normal))
-        {
-            Some(l) => Some(l),
-            None => None,
-        }
+        self.steps.iter().position(|s| s.1 == StepType::Meta)
+    }
+
+    pub fn meta_count(&self) -> usize {
+        self.steps.iter().filter(|s| s.1 == StepType::Meta).count()
     }
 
     pub fn to_string(&self) -> String {

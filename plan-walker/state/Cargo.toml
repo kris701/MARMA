@@ -1,9 +1,9 @@
 [package]
-name = "parsing"
+name = "state"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+parsing = { path = "../parsing" }
 shared = { path = "../shared" }
-nom = "7.1.3"
-rstest = "0.18.2"
+itertools="*"
