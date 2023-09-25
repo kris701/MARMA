@@ -57,7 +57,7 @@ impl Downward {
     pub fn solve(&self, domain_path: &OsString, problem_path: &OsString) -> SASPlan {
         let mut cmd = Command::new("python");
         cmd.args(&[
-            self.path.to_str().unwrap(),
+            Path::new(&self.path).to_str().unwrap(),
             "--alias",
             "lama-first",
             domain_path.to_str().unwrap(),
