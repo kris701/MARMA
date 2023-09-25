@@ -1,10 +1,10 @@
-use std::{env, ffi::OsString, process::Command};
+use std::{env, ffi::OsString, path::Path, process::Command};
 
 use parsing::sas::{parse_sas, SASPlan};
 use shared::{io::file::read_file, time::run_time};
 
 pub struct Downward {
-    path: OsString,
+    pub path: OsString,
 }
 
 impl Downward {
@@ -12,9 +12,15 @@ impl Downward {
         // First if given path, use that
         match path {
             Some(path) => {
+                if !Path::new(path).exists() {
+                    panic!(
+                        "Could not find any file at given downward path: {}",
+                        path.to_str().unwrap()
+                    );
+                }
                 return Downward {
                     path: path.to_owned(),
-                }
+                };
             }
             None => {}
         };
@@ -32,7 +38,16 @@ impl Downward {
         // Check enviornment
         for check in checks {
             match env::var(check) {
-                Ok(c) => return Downward { path: c.into() },
+                Ok(c) => {
+                    if !Path::new(&c).exists() {
+                        panic!(
+                        "Env/Path indicates downward at following location, however no such file exists: {}",
+                        c
+                    );
+                    }
+
+                    return Downward { path: c.into() };
+                }
                 Err(_) => {}
             }
         }
