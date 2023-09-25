@@ -22,7 +22,7 @@ echo
 echo == Done! ==
 echo 
 
-echo == Installing  ==
+echo == Installing Stackelberg Planner ==
 echo 
 git clone -n --depth=1 --filter=tree:0 https://gitlab.com/atorralba_planners/stackelberg-planner-sls stackelberg-planner
 cd stackelberg-planner
@@ -49,8 +49,12 @@ echo == Installing VAL ==
 echo 
 git clone https://github.com/KCL-Planning/VAL.git VAL
 cd VAL
-sed -i 's/-Werror //g' Makefile
-make
+cd scripts
+cd linux
+bash build_linux64.sh
+cd ..
+cd ..
+cd ..
 echo 
 echo == Done! ==
 echo 
