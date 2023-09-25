@@ -67,9 +67,8 @@ impl Downward {
                 problem_path.to_str().unwrap()
             );
         }
-        let mut cmd = Command::new("python");
+        let mut cmd = Command::new(Path::new(&self.path).to_str().unwrap());
         cmd.args(&[
-            Path::new(&self.path).to_str().unwrap(),
             "--alias",
             "lama-first",
             domain_path.to_str().unwrap(),
