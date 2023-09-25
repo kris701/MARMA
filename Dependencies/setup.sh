@@ -31,7 +31,7 @@ git checkout
 cd src
 sed -e s/-Werror//g -i preprocess/Makefile
 sed -e s/-Werror//g -i search/Makefile
-bash build_all
+bash build_all -j
 cd ..
 cd ..
 echo 
@@ -50,7 +50,7 @@ echo
 git clone https://github.com/KCL-Planning/VAL.git VAL
 cd VAL
 cmake build .
-make
+make -j
 cd ..
 echo 
 echo == Done! ==
