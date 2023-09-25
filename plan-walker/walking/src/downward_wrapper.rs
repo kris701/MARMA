@@ -55,6 +55,18 @@ impl Downward {
     }
 
     pub fn solve(&self, domain_path: &OsString, problem_path: &OsString) -> SASPlan {
+        if !Path::new(&domain_path).exists() {
+            panic!(
+                "No file at given domain path: {}",
+                domain_path.to_str().unwrap()
+            );
+        }
+        if !Path::new(&problem_path).exists() {
+            panic!(
+                "No file at given problem path: {}",
+                problem_path.to_str().unwrap()
+            );
+        }
         let mut cmd = Command::new("python");
         cmd.args(&[
             Path::new(&self.path).to_str().unwrap(),
