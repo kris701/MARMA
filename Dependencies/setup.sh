@@ -49,9 +49,8 @@ echo == Installing VAL ==
 echo 
 git clone https://github.com/KCL-Planning/VAL.git VAL
 cd VAL
-cd scripts
-cd linux
-bash build_linux64.sh
+cmake build .
+make
 cd ..
 cd ..
 cd ..
