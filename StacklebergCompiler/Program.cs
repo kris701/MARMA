@@ -34,15 +34,12 @@ namespace StacklebergCompiler
             var problem = parser.ParseAs<ProblemDecl>(opts.ProblemFilePath);
             var metaAction = parser.ParseAs<ActionDecl>(opts.MetaActionFile);
 
-            LeaderFollowerCompiler leaderFollowerCompiler = new LeaderFollowerCompiler();
-            var leaderFollowerDecl = leaderFollowerCompiler.GeneratePrimaryLeaderFollowerDecl(domain, problem);
-
-            IPDDLCodeGenerator generator = new PDDLCodeGenerator(listener);
-            generator.Generate(leaderFollowerDecl.Domain, "merged_domain.pddl");
-            generator.Generate(leaderFollowerDecl.Problem, "merged_problem.pddl");
-
             ConditionalEffectCompiler compiler = new ConditionalEffectCompiler();
             var conditionalDomain = compiler.GenerateConditionalEffects(domain, problem, metaAction);
+
+            IPDDLCodeGenerator generator = new PDDLCodeGenerator(listener);
+            generator.Generate(conditionalDomain.Domain, "new_domain.pddl");
+            generator.Generate(conditionalDomain.Problem, "new_problem.pddl");
         }
     }
 }
