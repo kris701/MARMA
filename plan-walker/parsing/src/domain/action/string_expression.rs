@@ -12,7 +12,7 @@ use crate::{
     term::{parse_term, Term},
 };
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum StringExpression {
     Predicate(Term),
     Equal(StringExpressions),

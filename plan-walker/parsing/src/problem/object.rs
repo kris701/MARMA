@@ -11,7 +11,7 @@ use nom::{
 use crate::shared::{named, spaced};
 use nom::character::complete::char;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Object {
     pub name: String,
     pub type_name: Option<String>,

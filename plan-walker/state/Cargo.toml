@@ -7,3 +7,8 @@ edition = "2021"
 parsing = { path = "../parsing" }
 shared = { path = "../shared" }
 itertools="*"
+criterion = "0.5.1"
+
+[[bench]]
+name = "init"
+harness = false
