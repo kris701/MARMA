@@ -8,6 +8,7 @@ using PDDLSharp.Parsers;
 using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.Problem;
 using PDDLSharp.Models.Domain;
+using PDDLSharp.CodeGenerators;
 
 namespace StacklebergCompiler
 {
@@ -25,11 +26,23 @@ namespace StacklebergCompiler
             IErrorListener listener = new ErrorListener();
             IPDDLParser parser = new PDDLParser(listener);
 
+            opts.DomainFilePath = PathHelper.RootPath(opts.DomainFilePath);
+            opts.ProblemFilePath = PathHelper.RootPath(opts.ProblemFilePath);
+            opts.MetaActionFile = PathHelper.RootPath(opts.MetaActionFile);
+
             var domain = parser.ParseAs<DomainDecl>(opts.DomainFilePath);
             var problem = parser.ParseAs<ProblemDecl>(opts.ProblemFilePath);
             var metaAction = parser.ParseAs<ActionDecl>(opts.MetaActionFile);
 
+            LeaderFollowerCompiler leaderFollowerCompiler = new LeaderFollowerCompiler();
+            var leaderFollowerDecl = leaderFollowerCompiler.GeneratePrimaryLeaderFollowerDecl(domain, problem);
 
+            IPDDLCodeGenerator generator = new PDDLCodeGenerator(listener);
+            generator.Generate(leaderFollowerDecl.Domain, "merged_domain.pddl");
+            generator.Generate(leaderFollowerDecl.Problem, "merged_problem.pddl");
+
+            ConditionalEffectCompiler compiler = new ConditionalEffectCompiler();
+            var conditionalDomain = compiler.GenerateConditionalEffects(domain, problem, metaAction);
         }
     }
 }
