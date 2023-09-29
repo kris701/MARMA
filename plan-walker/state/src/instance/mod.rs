@@ -4,31 +4,31 @@ use parsing::{
     domain::{parse_domain, Domain},
     problem::Problem,
 };
+use shared::time::run_time;
 
-use self::fact::Facts;
+use self::{fact::Facts, operator::Operators};
 
 pub mod fact;
+pub mod operator;
 mod permutation;
 
 pub struct Instance {
     pub domain: Domain,
     pub problem: Problem,
     pub facts: Facts,
+    pub operators: Operators,
 }
 
 impl Instance {
     pub fn new(domain: Domain, problem: Problem) -> Self {
         let facts = Facts::new(&domain, &problem);
+        let operators = Operators::new(&domain, &problem, &facts);
+
         Self {
             domain,
             problem,
             facts,
+            operators,
         }
     }
-}
-
-pub fn instance_from(domain_path: &OsString, problem_path: &OsString) -> Instance {
-    let domain = Domain::from(domain_path);
-    let problem = Problem::from(problem_path);
-    Instance::new(domain, problem)
 }

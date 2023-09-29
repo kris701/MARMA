@@ -1,9 +1,10 @@
 use color_eyre::eyre::Result;
 use parsing::domain::Domain;
+use parsing::problem::Problem;
 use reconstruction::reconstruct;
 use shared::io::file::write_file;
 use shared::time::{init_time, run_time};
-use state::instance::instance_from;
+use state::instance::Instance;
 
 use std::ffi::OsString;
 
@@ -47,12 +48,17 @@ fn main() -> Result<()> {
 
     let args = Args::parse();
 
+    println!("{} Pasing instance....", run_time());
+    let domain = Domain::from(&args.domain);
+    let problem = Problem::from(&args.problem);
+    println!("{} Converting instance....", run_time());
+    let instance = Instance::new(domain, problem);
+
     println!("{} Finding fast downward...", run_time());
     let downward = Downward::new(&args.downward);
     println!("{} Finding meta solution...", run_time());
     let meta_plan = downward.solve_or_find(&args.meta_domain, &args.problem, &args.solution);
 
-    let instance = instance_from(&args.domain, &args.problem);
     let meta_domain = Domain::from(&args.meta_domain);
 
     let plan = reconstruct(instance, &args.domain, meta_domain, &downward, meta_plan).to_string();

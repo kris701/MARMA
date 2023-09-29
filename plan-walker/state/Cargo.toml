@@ -8,6 +8,7 @@ parsing = { path = "../parsing" }
 shared = { path = "../shared" }
 itertools="*"
 criterion = "0.5.1"
+bitvec = "1.0.1"
 
 [[bench]]
 name = "init"
