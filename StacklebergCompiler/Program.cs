@@ -24,7 +24,7 @@ namespace StacklebergCompiler
         public static void RunStacklebergCompiler(StacklebergCompilerOptions opts)
         {
             IErrorListener listener = new ErrorListener();
-            IPDDLParser parser = new PDDLParser(listener);
+            IParser parser = new PDDLParser(listener);
 
             opts.DomainFilePath = PathHelper.RootPath(opts.DomainFilePath);
             opts.ProblemFilePath = PathHelper.RootPath(opts.ProblemFilePath);
@@ -37,7 +37,7 @@ namespace StacklebergCompiler
             ConditionalEffectCompiler compiler = new ConditionalEffectCompiler();
             var conditionalDomain = compiler.GenerateConditionalEffects(domain, problem, metaAction);
 
-            IPDDLCodeGenerator generator = new PDDLCodeGenerator(listener);
+            ICodeGenerator generator = new PDDLCodeGenerator(listener);
             generator.Generate(conditionalDomain.Domain, "new_domain.pddl");
             generator.Generate(conditionalDomain.Problem, "new_problem.pddl");
         }

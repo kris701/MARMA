@@ -59,16 +59,14 @@ namespace StacklebergCompiler
                 var predicates = action.Effects.FindTypes<PredicateExp>();
                 foreach (var pred in predicates)
                 {
-                    var newWhen = new WhenExp(new ASTNode(), action, null, null);
+                    var newWhen = new WhenExp(action, null, null);
                     if (pred.Parent is NotExp)
                     {
-                        newWhen.Condition = new NotExp(new ASTNode(), newWhen, new PredicateExp(
-                            new ASTNode(),
+                        newWhen.Condition = new NotExp(newWhen, new PredicateExp(
                             newWhen,
                             $"leader-state-{pred.Name}",
                             pred.Arguments));
                         newWhen.Effect = new PredicateExp(
-                            new ASTNode(),
                             newWhen,
                             $"is-goal-{pred.Name}",
                             pred.Arguments);
@@ -76,12 +74,10 @@ namespace StacklebergCompiler
                     else
                     {
                         newWhen.Condition = new PredicateExp(
-                            new ASTNode(),
                             newWhen,
                             $"leader-state-{pred.Name}",
                             pred.Arguments);
                         newWhen.Effect = new PredicateExp(
-                            new ASTNode(),
                             newWhen,
                             $"is-goal-{pred.Name}",
                             pred.Arguments);
@@ -102,7 +98,6 @@ namespace StacklebergCompiler
                 foreach (var predicate in domain.Predicates.Predicates)
                 {
                     newLeaderPredicates.Add(new PredicateExp(
-                        new ASTNode(),
                         domain.Predicates,
                         $"leader-state-{predicate.Name}",
                         predicate.Arguments));
@@ -119,7 +114,6 @@ namespace StacklebergCompiler
                 foreach (var predicate in domain.Predicates.Predicates)
                 {
                     newGoalPredicates.Add(new PredicateExp(
-                        new ASTNode(),
                         domain.Predicates,
                         $"is-goal-{predicate.Name}",
                         predicate.Arguments));
@@ -150,7 +144,6 @@ namespace StacklebergCompiler
             {
                 if (init is PredicateExp pred)
                     newInits.Add(new PredicateExp(
-                        new ASTNode(), 
                         problem.Init,
                         $"{LeaderPrefix}{pred.Name}",
                         pred.Arguments));
