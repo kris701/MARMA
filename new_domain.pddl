@@ -35,6 +35,7 @@
 		(is-goal-calibrated ?i - instrument)
 		(is-goal-have_image ?d - direction ?m - mode)
 		(is-goal-calibration_target ?i - instrument ?d - direction)
+		(leader_turn)
 	)
 
 	(:action fix_turn_to
@@ -42,6 +43,7 @@
 		:precondition 
 			(and
 				(leader-state-pointing ?s ?d_prev)
+				(leader_turn)
 			)
 		:effect 
 			(and
@@ -57,6 +59,9 @@
 		:precondition 
 			(and
 				(pointing ?s ?d_prev)
+				(not
+					(leader_turn)
+				)
 			)
 		:effect 
 			(and
@@ -72,6 +77,9 @@
 		:precondition 
 			(and
 				(pointing ?s ?d_prev)
+				(not
+					(leader_turn)
+				)
 				(leader-state-pointing ?s ?d_new)
 				(not
 					(leader-state-pointing ?s ?d_prev)
@@ -94,6 +102,7 @@
 			(and
 				(leader-state-on_board ?i ?s)
 				(leader-state-power_avail ?s)
+				(leader_turn)
 			)
 		:effect 
 			(and
@@ -113,6 +122,9 @@
 			(and
 				(on_board ?i ?s)
 				(power_avail ?s)
+				(not
+					(leader_turn)
+				)
 			)
 		:effect 
 			(and
@@ -132,6 +144,9 @@
 			(and
 				(on_board ?i ?s)
 				(power_avail ?s)
+				(not
+					(leader_turn)
+				)
 				(leader-state-power_on ?i)
 				(not
 					(leader-state-calibrated ?i)
@@ -161,6 +176,7 @@
 			(and
 				(leader-state-on_board ?i ?s)
 				(leader-state-power_on ?i)
+				(leader_turn)
 			)
 		:effect 
 			(and
@@ -177,6 +193,9 @@
 			(and
 				(on_board ?i ?s)
 				(power_on ?i)
+				(not
+					(leader_turn)
+				)
 			)
 		:effect 
 			(and
@@ -193,6 +212,9 @@
 			(and
 				(on_board ?i ?s)
 				(power_on ?i)
+				(not
+					(leader_turn)
+				)
 				(not
 					(leader-state-power_on ?i)
 				)
@@ -217,9 +239,12 @@
 				(leader-state-calibration_target ?i ?d)
 				(leader-state-pointing ?s ?d)
 				(leader-state-power_on ?i)
+				(leader_turn)
 			)
 		:effect 
-			(leader-state-calibrated ?i)
+			(and
+				(leader-state-calibrated ?i)
+			)
 	)
 
 	(:action attack_calibrate
@@ -230,9 +255,14 @@
 				(calibration_target ?i ?d)
 				(pointing ?s ?d)
 				(power_on ?i)
+				(not
+					(leader_turn)
+				)
 			)
 		:effect 
-			(calibrated ?i)
+			(and
+				(calibrated ?i)
+			)
 	)
 
 	(:action attack_calibrate_1
@@ -243,9 +273,16 @@
 				(calibration_target ?i ?d)
 				(pointing ?s ?d)
 				(power_on ?i)
+				(not
+					(leader_turn)
+				)
+				(leader-state-calibrated ?i)
 			)
 		:effect 
-			(calibrated ?i)
+			(and
+				(calibrated ?i)
+				(is-goal-calibrated ?i)
+			)
 	)
 
 	(:action fix_take_image
@@ -258,9 +295,12 @@
 				(leader-state-power_on ?i)
 				(leader-state-pointing ?s ?d)
 				(leader-state-power_on ?i)
+				(leader_turn)
 			)
 		:effect 
-			(leader-state-have_image ?d ?m)
+			(and
+				(leader-state-have_image ?d ?m)
+			)
 	)
 
 	(:action attack_take_image
@@ -273,9 +313,14 @@
 				(power_on ?i)
 				(pointing ?s ?d)
 				(power_on ?i)
+				(not
+					(leader_turn)
+				)
 			)
 		:effect 
-			(have_image ?d ?m)
+			(and
+				(have_image ?d ?m)
+			)
 	)
 
 	(:action attack_take_image_1
@@ -288,9 +333,16 @@
 				(power_on ?i)
 				(pointing ?s ?d)
 				(power_on ?i)
+				(not
+					(leader_turn)
+				)
+				(leader-state-have_image ?d ?m)
 			)
 		:effect 
-			(have_image ?d ?m)
+			(and
+				(have_image ?d ?m)
+				(is-goal-have_image ?d ?m)
+			)
 	)
 
 	(:action fix_meta_$switch-on-calibrate
@@ -299,6 +351,7 @@
 			(and
 				(leader-state-on_board ?i ?s)
 				(leader-state-power_avail ?s)
+				(leader_turn)
 			)
 		:effect 
 			(and

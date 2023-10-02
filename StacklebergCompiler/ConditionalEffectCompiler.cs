@@ -25,6 +25,7 @@ namespace StacklebergCompiler
 
             // Domain
             GenerateLeaderFollowerActions(newDomain);
+            TurnAllActionEffectsToAnd(newDomain);
             if (newDomain.Predicates != null)
             {
                 var newPredicates = new List<PredicateExp>();
@@ -35,12 +36,57 @@ namespace StacklebergCompiler
             UpdateLeaderActionsPredicatePrefixes(newDomain);
             UpdateFollowerActionsEffects(newDomain);
             UpdateAndInsertMetaActionToFit(newDomain, metaAction);
+            InsertTurnPredicate(newDomain);
 
             // Problem
             GenerateLeaderInits(newProblem);
             GenerateNewGoal(newProblem);
+            InsertTurnPredicate(newProblem);
 
             return new PDDLDecl(newDomain, newProblem);
+        }
+
+        private void TurnAllActionEffectsToAnd(DomainDecl domain)
+        {
+            foreach(var act in domain.Actions)
+            {
+                if (act.Effects is not AndExp)
+                {
+                    var newAnd = new AndExp(null, new List<IExp>()
+                    {
+                        act.Effects
+                    });
+                    act.Effects = newAnd;
+                }
+            }
+        }
+
+        private void InsertTurnPredicate(DomainDecl domain)
+        {
+            if (domain.Predicates != null)
+                domain.Predicates.Predicates.Add(
+                    new PredicateExp(null, "leader_turn", new List<NameExp>()));
+
+            foreach(var action in domain.Actions)
+            {
+                if (action.Name.Contains(LeaderPrefix))
+                {
+                    if (action.Preconditions is AndExp leaderPreconditions)
+                        leaderPreconditions.Children.Add(new PredicateExp(null, "leader_turn", new List<NameExp>()));
+                }
+                else if (action.Name.Contains(FollowerPrefix))
+                {
+                    if (action.Preconditions is AndExp leaderPreconditions)
+                        leaderPreconditions.Children.Add(new NotExp(null, new PredicateExp(null, "leader_turn", new List<NameExp>())));
+                }
+            }
+        }
+
+        private void InsertTurnPredicate(ProblemDecl problem)
+        {
+            if (problem.Init != null)
+                problem.Init.Predicates.Add(
+                    new PredicateExp(null, "leader_turn", new List<NameExp>()));
         }
 
         private void UpdateAndInsertMetaActionToFit(DomainDecl domain, ActionDecl metaAction)
@@ -156,7 +202,7 @@ namespace StacklebergCompiler
                 if (init is PredicateExp pred)
                     newInits.Add(new PredicateExp(
                         problem.Init,
-                        $"{LeaderPrefix}{pred.Name}",
+                        $"leader-state-{pred.Name}",
                         pred.Arguments));
             }
             problem.Init.Predicates.AddRange(newInits);

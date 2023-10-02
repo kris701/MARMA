@@ -24,11 +24,12 @@
 		(on_board instrument0 satellite0)
 		(power_avail satellite0)
 		(pointing satellite0 phenomenon6)
-		(fix_supports instrument0 thermograph0)
-		(fix_calibration_target instrument0 groundstation2)
-		(fix_on_board instrument0 satellite0)
-		(fix_power_avail satellite0)
-		(fix_pointing satellite0 phenomenon6)
+		(leader-state-supports instrument0 thermograph0)
+		(leader-state-calibration_target instrument0 groundstation2)
+		(leader-state-on_board instrument0 satellite0)
+		(leader-state-power_avail satellite0)
+		(leader-state-pointing satellite0 phenomenon6)
+		(leader_turn)
 	)
 
 	(:goal
