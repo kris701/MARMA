@@ -16,6 +16,7 @@ namespace StacklebergCompiler
     {
         private readonly string LeaderPrefix = "attack_";
         private readonly string FollowerPrefix = "fix_";
+        private readonly string MetaActionPrefix = "meta_";
 
         public PDDLDecl GenerateConditionalEffects(DomainDecl domain, ProblemDecl problem, ActionDecl metaAction)
         {
@@ -33,12 +34,22 @@ namespace StacklebergCompiler
             }
             UpdateLeaderActionsPredicatePrefixes(newDomain);
             UpdateFollowerActionsEffects(newDomain);
+            UpdateAndInsertMetaActionToFit(newDomain, metaAction);
 
             // Problem
             GenerateLeaderInits(newProblem);
             GenerateNewGoal(newProblem);
 
             return new PDDLDecl(newDomain, newProblem);
+        }
+
+        private void UpdateAndInsertMetaActionToFit(DomainDecl domain, ActionDecl metaAction)
+        {
+            var metaPredicates = metaAction.FindTypes<PredicateExp>();
+            foreach (var predicate in metaPredicates)
+                predicate.Name = $"leader-state-{predicate.Name}";
+            metaAction.Name = $"{LeaderPrefix}{MetaActionPrefix}{metaAction.Name}";
+            domain.Actions.Add(metaAction);
         }
 
         private void UpdateLeaderActionsPredicatePrefixes(DomainDecl domain)

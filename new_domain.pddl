@@ -56,18 +56,29 @@
 				(not
 					(at-robby ?from)
 				)
-				(when
-					(leader-state-at-robby ?to)
-					(is-goal-at-robby ?to)
-				)
+			)
+	)
 
-				(when
-					(not
-						(leader-state-at-robby ?from)
-					)
-					(is-goal-at-robby ?from)
+	(:action fix_move_1
+		:parameters ( ?from ?to)
+		:precondition 
+			(and
+				(room ?from)
+				(room ?to)
+				(at-robby ?from)
+				(leader-state-at-robby ?to)
+				(not
+					(leader-state-at-robby ?from)
 				)
-
+			)
+		:effect 
+			(and
+				(at-robby ?to)
+				(not
+					(at-robby ?from)
+				)
+				(is-goal-at-robby ?to)
+				(is-goal-at-robby ?from)
 			)
 	)
 
@@ -114,25 +125,39 @@
 				(not
 					(free ?gripper)
 				)
-				(when
-					(leader-state-carry ?obj ?gripper)
-					(is-goal-carry ?obj ?gripper)
-				)
+			)
+	)
 
-				(when
-					(not
-						(leader-state-at ?obj ?room)
-					)
-					(is-goal-at ?obj ?room)
+	(:action fix_pick_1
+		:parameters ( ?obj ?room ?gripper)
+		:precondition 
+			(and
+				(ball ?obj)
+				(room ?room)
+				(gripper ?gripper)
+				(at ?obj ?room)
+				(at-robby ?room)
+				(free ?gripper)
+				(leader-state-carry ?obj ?gripper)
+				(not
+					(leader-state-at ?obj ?room)
 				)
-
-				(when
-					(not
-						(leader-state-free ?gripper)
-					)
-					(is-goal-free ?gripper)
+				(not
+					(leader-state-free ?gripper)
 				)
-
+			)
+		:effect 
+			(and
+				(carry ?obj ?gripper)
+				(not
+					(at ?obj ?room)
+				)
+				(not
+					(free ?gripper)
+				)
+				(is-goal-carry ?obj ?gripper)
+				(is-goal-at ?obj ?room)
+				(is-goal-free ?gripper)
 			)
 	)
 
@@ -173,23 +198,52 @@
 				(not
 					(carry ?obj ?gripper)
 				)
-				(when
+			)
+	)
+
+	(:action fix_drop_1
+		:parameters ( ?obj ?room ?gripper)
+		:precondition 
+			(and
+				(ball ?obj)
+				(room ?room)
+				(gripper ?gripper)
+				(carry ?obj ?gripper)
+				(at-robby ?room)
+				(leader-state-at ?obj ?room)
+				(leader-state-free ?gripper)
+				(not
+					(leader-state-carry ?obj ?gripper)
+				)
+			)
+		:effect 
+			(and
+				(at ?obj ?room)
+				(free ?gripper)
+				(not
+					(carry ?obj ?gripper)
+				)
+				(is-goal-at ?obj ?room)
+				(is-goal-free ?gripper)
+				(is-goal-carry ?obj ?gripper)
+			)
+	)
+
+	(:action attack_meta_meta-pick
+		:parameters ( ?obj ?room)
+		:precondition 
+			(and
+				(leader-state-ball ?obj)
+				(leader-state-room ?room)
+				(leader-state-at ?obj ?room)
+				(leader-state-at-robby ?room)
+			)
+		:effect 
+			(and
+				(leader-state-carry ?obj ?gripper)
+				(not
 					(leader-state-at ?obj ?room)
-					(is-goal-at ?obj ?room)
 				)
-
-				(when
-					(leader-state-free ?gripper)
-					(is-goal-free ?gripper)
-				)
-
-				(when
-					(not
-						(leader-state-carry ?obj ?gripper)
-					)
-					(is-goal-carry ?obj ?gripper)
-				)
-
 			)
 	)
 

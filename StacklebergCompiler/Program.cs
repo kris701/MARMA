@@ -35,12 +35,15 @@ namespace StacklebergCompiler
             var metaAction = parser.ParseAs<ActionDecl>(opts.MetaActionFile);
 
             ConditionalEffectCompiler compiler = new ConditionalEffectCompiler();
-            var conditionalDomain = compiler.GenerateConditionalEffects(domain, problem, metaAction);
+            var conditionalDecl = compiler.GenerateConditionalEffects(domain, problem, metaAction);
+
+            ConditionalEffectAbstractor abstractor = new ConditionalEffectAbstractor();
+            var abstractedConditionalDec = abstractor.AbstractConditionalEffects(conditionalDecl.Domain, conditionalDecl.Problem);
 
             ICodeGenerator generator = new PDDLCodeGenerator(listener);
             generator.Readable = true;
-            generator.Generate(conditionalDomain.Domain, "new_domain.pddl");
-            generator.Generate(conditionalDomain.Problem, "new_problem.pddl");
+            generator.Generate(abstractedConditionalDec.Domain, "new_domain.pddl");
+            generator.Generate(abstractedConditionalDec.Problem, "new_problem.pddl");
         }
     }
 }
