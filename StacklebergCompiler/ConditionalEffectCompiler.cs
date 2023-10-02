@@ -37,6 +37,7 @@ namespace StacklebergCompiler
             UpdateFollowerActionsEffects(newDomain);
             UpdateAndInsertMetaActionToFit(newDomain, metaAction);
             InsertTurnPredicate(newDomain);
+            AddPassTurnToFollowerAction(newDomain);
 
             // Problem
             GenerateLeaderInits(newProblem);
@@ -44,6 +45,16 @@ namespace StacklebergCompiler
             InsertTurnPredicate(newProblem);
 
             return new PDDLDecl(newDomain, newProblem);
+        }
+
+        private void AddPassTurnToFollowerAction(DomainDecl domain)
+        {
+            domain.Actions.Add(new ActionDecl(
+                null, 
+                $"{LeaderPrefix}Pass-Turn",
+                new ParameterExp(null, new List<NameExp>()),
+                new PredicateExp(null, "leader_turn", new List<NameExp>()),
+                new NotExp(null, new PredicateExp(null, "leader_turn", new List<NameExp>()))));
         }
 
         private void TurnAllActionEffectsToAnd(DomainDecl domain)

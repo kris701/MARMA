@@ -363,4 +363,14 @@
 			)
 	)
 
+	(:action fix_Pass-Turn
+		:parameters ()
+		:precondition 
+			(leader_turn)
+		:effect 
+			(not
+				(leader_turn)
+			)
+	)
+
 )
