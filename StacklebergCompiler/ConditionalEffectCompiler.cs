@@ -14,8 +14,8 @@ namespace StacklebergCompiler
 {
     public class ConditionalEffectCompiler
     {
-        private readonly string LeaderPrefix = "attack_";
-        private readonly string FollowerPrefix = "fix_";
+        private readonly string LeaderPrefix = "fix_";
+        private readonly string FollowerPrefix = "attack_";
         private readonly string MetaActionPrefix = "meta_";
 
         public PDDLDecl GenerateConditionalEffects(DomainDecl domain, ProblemDecl problem, ActionDecl metaAction)

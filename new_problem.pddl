@@ -1,58 +1,41 @@
 (define
-	(problem strips-gripper-x-1)
+	(problem strips-sat-x-1)
 
-	(:domain gripper-strips)
+	(:domain satellite)
 
 	(:objects
-		rooma
-		roomb
-		ball4
-		ball3
-		ball2
-		ball1
-		left
-		right
+		satellite0 - satellite
+		instrument0 - instrument
+		image1 - mode
+		spectrograph2 - mode
+		thermograph0 - mode
+		star0 - direction
+		groundstation1 - direction
+		groundstation2 - direction
+		phenomenon3 - direction
+		phenomenon4 - direction
+		star5 - direction
+		phenomenon6 - direction
 	)
 
 	(:init
-		(room rooma)
-		(room roomb)
-		(ball ball4)
-		(ball ball3)
-		(ball ball2)
-		(ball ball1)
-		(at-robby rooma)
-		(free left)
-		(free right)
-		(at ball4 rooma)
-		(at ball3 rooma)
-		(at ball2 rooma)
-		(at ball1 rooma)
-		(gripper left)
-		(gripper right)
-		(attack_room rooma)
-		(attack_room roomb)
-		(attack_ball ball4)
-		(attack_ball ball3)
-		(attack_ball ball2)
-		(attack_ball ball1)
-		(attack_at-robby rooma)
-		(attack_free left)
-		(attack_free right)
-		(attack_at ball4 rooma)
-		(attack_at ball3 rooma)
-		(attack_at ball2 rooma)
-		(attack_at ball1 rooma)
-		(attack_gripper left)
-		(attack_gripper right)
+		(supports instrument0 thermograph0)
+		(calibration_target instrument0 groundstation2)
+		(on_board instrument0 satellite0)
+		(power_avail satellite0)
+		(pointing satellite0 phenomenon6)
+		(fix_supports instrument0 thermograph0)
+		(fix_calibration_target instrument0 groundstation2)
+		(fix_on_board instrument0 satellite0)
+		(fix_power_avail satellite0)
+		(fix_pointing satellite0 phenomenon6)
 	)
 
 	(:goal
 		(and
-			(is-goal-at ball4 roomb)
-			(is-goal-at ball3 roomb)
-			(is-goal-at ball2 roomb)
-			(is-goal-at ball1 roomb)
+			(is-goal-have_image phenomenon4 thermograph0)
+			(is-goal-have_image star5 thermograph0)
+			(is-goal-have_image phenomenon6 thermograph0)
 		)
 	)
 

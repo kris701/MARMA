@@ -6,7 +6,7 @@
     "WSL": {
       "commandName": "WSL",
       "distributionName": "",
-      "commandLineArgs": "StacklebergCompiler/bin/Debug/net7.0/StacklebergCompiler.dll --domain StacklebergCompiler/bin/Debug/net7.0/TestData/domain.pddl --problem StacklebergCompiler/bin/Debug/net7.0/TestData/prob01.pddl --meta-action StacklebergCompiler/bin/Debug/net7.0/TestData/metaaction.pddl",
+      "commandLineArgs": "StacklebergCompiler/bin/Debug/net7.0/StacklebergCompiler.dll --domain StacklebergCompiler/bin/Debug/net7.0/TestData/original_domain.pddl --problem StacklebergCompiler/bin/Debug/net7.0/TestData/instance-1.pddl --meta-action StacklebergCompiler/bin/Debug/net7.0/TestData/meta_domain.pddl",
       "workingDirectory": "StacklebergCompiler/../"
     }
   }
