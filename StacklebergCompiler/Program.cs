@@ -38,6 +38,7 @@ namespace StacklebergCompiler
             var conditionalDomain = compiler.GenerateConditionalEffects(domain, problem, metaAction);
 
             ICodeGenerator generator = new PDDLCodeGenerator(listener);
+            generator.Readable = true;
             generator.Generate(conditionalDomain.Domain, "new_domain.pddl");
             generator.Generate(conditionalDomain.Problem, "new_problem.pddl");
         }
