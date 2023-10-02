@@ -81,7 +81,7 @@ fn test() {
         Ok((
             "",
             vec![Type {
-                name: "Object".to_string(),
+                name: "object".to_string(),
                 sub_types: vec![]
             }]
         )),
@@ -91,7 +91,7 @@ fn test() {
         Ok((
             "",
             vec![Type {
-                name: "Object".to_string(),
+                name: "object".to_string(),
                 sub_types: vec!["type1".to_string()]
             }]
         )),
@@ -101,7 +101,7 @@ fn test() {
         Ok((
             "",
             vec![Type {
-                name: "Object".to_string(),
+                name: "object".to_string(),
                 sub_types: vec!["type1".to_string(), "type2".to_string()]
             }]
         )),
@@ -112,7 +112,7 @@ fn test() {
             "",
             vec![
                 Type {
-                    name: "Objects".to_string(),
+                    name: "objects".to_string(),
                     sub_types: vec!["type1".to_string(), "type2".to_string()]
                 },
                 Type {
@@ -133,7 +133,7 @@ fn test() {
         Ok((
             "",
             vec![Type {
-                name: "Object".to_string(),
+                name: "object".to_string(),
                 sub_types: vec!["type1".to_string(), "type2".to_string()]
             }]
         )),
@@ -144,7 +144,7 @@ fn test() {
             "",
             vec![
                 Type {
-                    name: "Object".to_string(),
+                    name: "object".to_string(),
                     sub_types: vec!["type-1".to_string()]
                 },
                 Type {

@@ -1,14 +1,18 @@
+use bitvec::vec::BitVec;
 use parsing::{domain::Domain, problem::Problem};
 
 use crate::{
     expression::Expression,
-    instance::fact::{Fact, Facts},
+    instance::{
+        fact::{Fact, Facts},
+        operator::Operator,
+    },
     plan::Plan,
 };
 
 #[derive(Clone, Hash, Debug, PartialEq)]
 pub struct State {
-    pub values: Vec<bool>,
+    pub values: BitVec,
 }
 
 fn convert_init(
@@ -52,7 +56,7 @@ impl State {
     }
 
     fn apply_term(&mut self, val: bool, i: &usize) {
-        self.values[*i] = val;
+        self.values.set(*i, val);
     }
 
     fn apply_internal(&mut self, expression: &Expression, val: bool) {
@@ -79,11 +83,12 @@ impl State {
     }
 
     pub fn apply(&mut self, expression: &Expression) {
-        self.apply_internal(expression, true)
+        todo!()
     }
+
     pub fn apply_plan(&self, plan: &Plan) -> State {
-        let mut new_state = self.clone();
-        plan.steps.iter().for_each(|step| new_state.apply(step));
-        return new_state;
+        todo!()
     }
+
+    pub fn apply_operators(&mut self, operators: &Vec<Operator>) {}
 }

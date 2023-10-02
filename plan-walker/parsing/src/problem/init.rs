@@ -26,7 +26,7 @@ fn parse_goal_test() {
         Ok((
             "",
             vec![Term {
-                name: "Name".to_string(),
+                name: "name".to_string(),
                 parameters: vec![]
             }]
         )),
@@ -36,7 +36,7 @@ fn parse_goal_test() {
         Ok((
             "",
             vec![Term {
-                name: "Name".to_string(),
+                name: "name".to_string(),
                 parameters: vec!["param1".to_string()]
             }]
         )),
@@ -47,11 +47,11 @@ fn parse_goal_test() {
             "",
             vec![
                 Term {
-                    name: "Name1".to_string(),
+                    name: "name1".to_string(),
                     parameters: vec!["param1".to_string()]
                 },
                 Term {
-                    name: "Name2".to_string(),
+                    name: "name2".to_string(),
                     parameters: vec!["param2".to_string()]
                 }
             ]
@@ -66,11 +66,11 @@ fn parse_goal_test() {
             "",
             vec![
                 Term {
-                    name: "Name1".to_string(),
+                    name: "name1".to_string(),
                     parameters: vec!["param1".to_string()]
                 },
                 Term {
-                    name: "Name2".to_string(),
+                    name: "name2".to_string(),
                     parameters: vec!["param2".to_string(), "param3".to_string()]
                 }
             ]

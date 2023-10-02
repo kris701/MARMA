@@ -1,6 +1,9 @@
+use std::ffi::OsString;
+
 use nom::character::complete::char;
 use nom::multi::{many0, many1};
 use nom::sequence::delimited;
+use shared::io::file::read_file;
 
 use crate::shared::spaced;
 use crate::{
@@ -77,4 +80,18 @@ pub fn parse_sas(input: &str) -> Result<SASPlan, String> {
         .collect();
 
     Ok(SASPlan { steps })
+}
+
+impl From<&OsString> for SASPlan {
+    fn from(path: &OsString) -> Self {
+        let content = read_file(&path.into());
+        match parse_sas(&content) {
+            Ok(domain) => domain,
+            Err(err) => panic!(
+                "Error while parsing sas plan \"{}\"\n{}",
+                path.to_str().unwrap(),
+                err
+            ),
+        }
+    }
 }

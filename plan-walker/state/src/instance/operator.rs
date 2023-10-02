@@ -8,6 +8,7 @@ use crate::bit_expression::{extract, generate, BitExp};
 use super::fact::Facts;
 use super::permutation::permute;
 
+#[derive(Clone, Debug, PartialEq)]
 pub struct Operator {
     pub has: BitExp,
     pub not: BitExp,
@@ -24,7 +25,7 @@ impl Operators {
         let mut operators = Vec::<Operator>::new();
         for action in domain.actions.iter() {
             for permutation in permute(&domain.types, problem, &action.parameters) {
-                let operator = extract_from_action(permutation, &action, &domain.types, facts);
+                let operator = extract_from_action(&permutation, &action, facts);
                 if let Ok(operator) = operator {
                     operators.push(operator);
                 }
@@ -39,9 +40,8 @@ impl Operators {
 }
 
 pub fn extract_from_action(
-    parameters: Vec<usize>,
+    parameters: &Vec<usize>,
     action: &Action,
-    types: &Option<Types>,
     facts: &Facts,
 ) -> Result<Operator, &'static str> {
     let (pre_neg, pre_pos) = extract(facts, action, &parameters, &action.precondition)?;

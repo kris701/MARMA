@@ -33,7 +33,7 @@ pub fn named(input: &str) -> IResult<&str, String> {
     let (remainder, name) = is_not(" \t\r\n()?:")(input)?;
     not(tag("-"))(name)?;
     not(tag("="))(name)?;
-    return Ok((remainder, name.to_owned()));
+    return Ok((remainder, name.to_lowercase().to_owned()));
 }
 
 #[test]

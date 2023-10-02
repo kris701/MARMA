@@ -30,6 +30,7 @@ fn generate_facts_predicate(
     predicate_index: usize,
 ) -> Vec<Fact> {
     let permutations = permute(&domain.types, problem, &predicate.parameters);
+    println!("{}: {}", predicate.name, permutations.len());
     permutations
         .iter()
         .map(|permutation| Fact {
