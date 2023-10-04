@@ -13,42 +13,32 @@ namespace StacklebergCompiler
 {
     public class ConditionalEffectAbstractor
     {
-        private readonly string LeaderPrefix = "fix_";
-        private readonly string FollowerPrefix = "attack_";
-        private readonly string MetaActionPrefix = "meta_";
-
         public PDDLDecl AbstractConditionalEffects(DomainDecl domain, ProblemDecl problem)
         {
             var newDomain = domain.Copy();
-            newDomain.Actions.Clear();
 
-            foreach (var action in domain.Actions)
-            {
-                if (action.Name.Contains(FollowerPrefix))
-                {
-                    var baseAction = GenerateBaseFromConditional(action);
-                    newDomain.Actions.Add(baseAction);
-
-                    var whenNodes = action.FindTypes<WhenExp>();
-                    var newAction = baseAction.Copy();
-                    if (newAction.Preconditions is AndExp preconditions &&
-                        newAction.Effects is AndExp effects)
-                    {
-                        foreach (var whenNode in whenNodes)
-                        {
-                            preconditions.Children.Add(whenNode.Condition);
-                            effects.Children.Add(whenNode.Effect);
-                        }
-                    }
-
-                    newAction.Name = $"{newAction.Name}_1";
-                    newDomain.Actions.Add(newAction);
-                }
-                else
-                    newDomain.Actions.Add(action);
-            }
+            newDomain.Actions = GenerateAbstractedActions(newDomain.Actions);
 
             return new PDDLDecl(newDomain, problem);
+        }
+
+        private List<ActionDecl> GenerateAbstractedActions(List<ActionDecl> actions)
+        {
+            List<ActionDecl> newActions = new List<ActionDecl>();
+            foreach (var action in actions)
+            {
+                if (action.Name.Contains(ReservedNames.FollowerActionPrefix))
+                {
+                    var baseAction = GenerateBaseFromConditional(action);
+                    var whenNodes = action.FindTypes<WhenExp>();
+                    newActions.Add(baseAction);
+                    if (action.Name != ReservedNames.FollowerReachGoalAction)
+                        newActions.Add(GenerateGoalVariantFromConditional(baseAction, whenNodes));
+                }
+                else
+                    newActions.Add(action);
+            }
+            return newActions;
         }
 
         private ActionDecl GenerateBaseFromConditional(ActionDecl action)
@@ -57,6 +47,24 @@ namespace StacklebergCompiler
             if (newAction.Effects is AndExp and) {
                 and.Children.RemoveAll(x => x.GetType() == typeof(WhenExp));
             }
+            return newAction;
+        }
+
+        private ActionDecl GenerateGoalVariantFromConditional(ActionDecl baseAction, List<WhenExp> whenNodes)
+        {
+            var newAction = baseAction.Copy();
+            if (newAction.Preconditions is AndExp preconditions &&
+                newAction.Effects is AndExp effects)
+            {
+                foreach (var whenNode in whenNodes)
+                {
+                    preconditions.Children.Add(whenNode.Condition);
+                    effects.Children.Add(whenNode.Effect);
+                }
+            }
+
+            newAction.Name = $"{newAction.Name}{ReservedNames.GoalActionSufix}";
+
             return newAction;
         }
     }

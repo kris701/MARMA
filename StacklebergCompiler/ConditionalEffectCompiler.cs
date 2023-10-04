@@ -14,14 +14,15 @@ namespace StacklebergCompiler
 {
     public class ConditionalEffectCompiler
     {
-        private readonly string LeaderPrefix = "fix_";
-        private readonly string FollowerPrefix = "attack_";
-        private readonly string MetaActionPrefix = "meta_";
-
         public PDDLDecl GenerateConditionalEffects(DomainDecl domain, ProblemDecl problem, ActionDecl metaAction)
         {
             var newDomain = domain.Copy();
             var newProblem = problem.Copy();
+
+            // Problem
+            GenerateLeaderInits(newProblem);
+            GenerateNewGoal(newProblem);
+            InsertTurnPredicate(newProblem);
 
             // Domain
             GenerateLeaderFollowerActions(newDomain);
@@ -38,23 +39,33 @@ namespace StacklebergCompiler
             UpdateAndInsertMetaActionToFit(newDomain, metaAction);
             InsertTurnPredicate(newDomain);
             AddPassTurnToFollowerAction(newDomain);
-
-            // Problem
-            GenerateLeaderInits(newProblem);
-            GenerateNewGoal(newProblem);
-            InsertTurnPredicate(newProblem);
+            if (newProblem.Goal != null)
+                AddFollowerReachGoalAction(newDomain, newProblem.Goal);
 
             return new PDDLDecl(newDomain, newProblem);
+        }
+
+        private void AddFollowerReachGoalAction(DomainDecl domain, GoalDecl goal)
+        {
+            domain.Actions.Add(new ActionDecl(
+                null,
+                ReservedNames.FollowerReachGoalAction,
+                new ParameterExp(
+                    null,
+                    new List<NameExp>()),
+                new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()),
+                goal.GoalExp.Copy()
+                ));
         }
 
         private void AddPassTurnToFollowerAction(DomainDecl domain)
         {
             domain.Actions.Add(new ActionDecl(
-                null, 
-                $"{LeaderPrefix}Pass-Turn",
+                null,
+                ReservedNames.LeaderPassTurnAction,
                 new ParameterExp(null, new List<NameExp>()),
-                new PredicateExp(null, "leader_turn", new List<NameExp>()),
-                new NotExp(null, new PredicateExp(null, "leader_turn", new List<NameExp>()))));
+                new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()),
+                new NotExp(null, new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()))));
         }
 
         private void TurnAllActionEffectsToAnd(DomainDecl domain)
@@ -76,19 +87,19 @@ namespace StacklebergCompiler
         {
             if (domain.Predicates != null)
                 domain.Predicates.Predicates.Add(
-                    new PredicateExp(null, "leader_turn", new List<NameExp>()));
+                    new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()));
 
             foreach(var action in domain.Actions)
             {
-                if (action.Name.Contains(LeaderPrefix))
+                if (action.Name.Contains(ReservedNames.LeaderActionPrefix))
                 {
                     if (action.Preconditions is AndExp leaderPreconditions)
-                        leaderPreconditions.Children.Add(new PredicateExp(null, "leader_turn", new List<NameExp>()));
+                        leaderPreconditions.Children.Add(new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()));
                 }
-                else if (action.Name.Contains(FollowerPrefix))
+                else if (action.Name.Contains(ReservedNames.FollowerActionPrefix))
                 {
                     if (action.Preconditions is AndExp leaderPreconditions)
-                        leaderPreconditions.Children.Add(new NotExp(null, new PredicateExp(null, "leader_turn", new List<NameExp>())));
+                        leaderPreconditions.Children.Add(new NotExp(null, new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>())));
                 }
             }
         }
@@ -97,31 +108,31 @@ namespace StacklebergCompiler
         {
             if (problem.Init != null)
                 problem.Init.Predicates.Add(
-                    new PredicateExp(null, "leader_turn", new List<NameExp>()));
+                    new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()));
         }
 
         private void UpdateAndInsertMetaActionToFit(DomainDecl domain, ActionDecl metaAction)
         {
             var metaPredicates = metaAction.FindTypes<PredicateExp>();
             foreach (var predicate in metaPredicates)
-                predicate.Name = $"leader-state-{predicate.Name}";
-            metaAction.Name = $"{LeaderPrefix}{MetaActionPrefix}{metaAction.Name}";
+                predicate.Name = $"{ReservedNames.LeaderStatePrefix}{predicate.Name}";
+            metaAction.Name = $"{ReservedNames.LeaderActionPrefix}{ReservedNames.MetaActionPrefix}{metaAction.Name}";
             domain.Actions.Add(metaAction);
         }
 
         private void UpdateLeaderActionsPredicatePrefixes(DomainDecl domain)
         {
-            foreach (var action in domain.Actions.Where(x => x.Name.StartsWith(LeaderPrefix)))
+            foreach (var action in domain.Actions.Where(x => x.Name.StartsWith(ReservedNames.LeaderActionPrefix)))
             {
                 var predicates = action.FindTypes<PredicateExp>();
                 foreach (var predicate in predicates)
-                    predicate.Name = $"leader-state-{predicate.Name}";
+                    predicate.Name = $"{ReservedNames.LeaderStatePrefix}{predicate.Name}";
             }
         }
 
         private void UpdateFollowerActionsEffects(DomainDecl domain)
         {
-            foreach (var action in domain.Actions.Where(x => x.Name.StartsWith(FollowerPrefix)))
+            foreach (var action in domain.Actions.Where(x => x.Name.StartsWith(ReservedNames.FollowerActionPrefix)))
             {
                 var newExpressions = new List<IExp>();
                 var predicates = action.Effects.FindTypes<PredicateExp>();
@@ -132,22 +143,22 @@ namespace StacklebergCompiler
                     {
                         newWhen.Condition = new NotExp(newWhen, new PredicateExp(
                             newWhen,
-                            $"leader-state-{pred.Name}",
+                            $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
                             pred.Arguments));
                         newWhen.Effect = new PredicateExp(
                             newWhen,
-                            $"is-goal-{pred.Name}",
+                            $"{ReservedNames.IsGoalPrefix}{pred.Name}",
                             pred.Arguments);
                     }
                     else
                     {
                         newWhen.Condition = new PredicateExp(
                             newWhen,
-                            $"leader-state-{pred.Name}",
+                            $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
                             pred.Arguments);
                         newWhen.Effect = new PredicateExp(
                             newWhen,
-                            $"is-goal-{pred.Name}",
+                            $"{ReservedNames.IsGoalPrefix}{pred.Name}",
                             pred.Arguments);
                     }
                     newExpressions.Add(newWhen);
@@ -167,7 +178,7 @@ namespace StacklebergCompiler
                 {
                     newLeaderPredicates.Add(new PredicateExp(
                         domain.Predicates,
-                        $"leader-state-{predicate.Name}",
+                        $"{ReservedNames.LeaderActionPrefix}{predicate.Name}",
                         predicate.Arguments));
                 }
             }
@@ -183,7 +194,7 @@ namespace StacklebergCompiler
                 {
                     newGoalPredicates.Add(new PredicateExp(
                         domain.Predicates,
-                        $"is-goal-{predicate.Name}",
+                        $"{ReservedNames.IsGoalPrefix}{predicate.Name}",
                         predicate.Arguments));
                 }
             }
@@ -196,9 +207,9 @@ namespace StacklebergCompiler
             foreach(var action in domain.Actions)
             {
                 var leaderAct = action.Copy();
-                leaderAct.Name = $"{LeaderPrefix}{leaderAct.Name}";
+                leaderAct.Name = $"{ReservedNames.LeaderActionPrefix}{leaderAct.Name}";
                 var followerAct = action.Copy();
-                followerAct.Name = $"{FollowerPrefix}{followerAct.Name}";
+                followerAct.Name = $"{ReservedNames.FollowerActionPrefix}{followerAct.Name}";
                 newActions.Add(leaderAct);
                 newActions.Add(followerAct);
             }
@@ -213,7 +224,7 @@ namespace StacklebergCompiler
                 if (init is PredicateExp pred)
                     newInits.Add(new PredicateExp(
                         problem.Init,
-                        $"leader-state-{pred.Name}",
+                        $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
                         pred.Arguments));
             }
             problem.Init.Predicates.AddRange(newInits);
@@ -221,9 +232,10 @@ namespace StacklebergCompiler
 
         private void GenerateNewGoal(ProblemDecl problem)
         {
-            var predicates = problem.Goal.GoalExp.FindTypes<PredicateExp>();
-            foreach (var predicate in predicates)
-                predicate.Name = $"is-goal-{predicate.Name}";
+            if (problem.Goal != null)
+            {
+                //problem.Goal.GoalExp = new AndExp(null, new List<IExp>());
+            }
         }
     }
 }

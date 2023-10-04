@@ -69,30 +69,18 @@
 				(not
 					(pointing ?s ?d_prev)
 				)
-			)
-	)
+				(when
+					(leader-state-pointing ?s ?d_new)
+					(is-goal-pointing ?s ?d_new)
+				)
 
-	(:action attack_turn_to_goal
-		:parameters ( ?s - satellite ?d_new - direction ?d_prev - direction)
-		:precondition 
-			(and
-				(pointing ?s ?d_prev)
-				(not
-					(leader-turn)
+				(when
+					(not
+						(leader-state-pointing ?s ?d_prev)
+					)
+					(is-goal-pointing ?s ?d_prev)
 				)
-				(leader-state-pointing ?s ?d_new)
-				(not
-					(leader-state-pointing ?s ?d_prev)
-				)
-			)
-		:effect 
-			(and
-				(pointing ?s ?d_new)
-				(not
-					(pointing ?s ?d_prev)
-				)
-				(is-goal-pointing ?s ?d_new)
-				(is-goal-pointing ?s ?d_prev)
+
 			)
 	)
 
@@ -135,38 +123,25 @@
 				(not
 					(power_avail ?s)
 				)
-			)
-	)
+				(when
+					(leader-state-power_on ?i)
+					(is-goal-power_on ?i)
+				)
 
-	(:action attack_switch_on_goal
-		:parameters ( ?i - instrument ?s - satellite)
-		:precondition 
-			(and
-				(on_board ?i ?s)
-				(power_avail ?s)
-				(not
-					(leader-turn)
+				(when
+					(not
+						(leader-state-calibrated ?i)
+					)
+					(is-goal-calibrated ?i)
 				)
-				(leader-state-power_on ?i)
-				(not
-					(leader-state-calibrated ?i)
+
+				(when
+					(not
+						(leader-state-power_avail ?s)
+					)
+					(is-goal-power_avail ?s)
 				)
-				(not
-					(leader-state-power_avail ?s)
-				)
-			)
-		:effect 
-			(and
-				(power_on ?i)
-				(not
-					(calibrated ?i)
-				)
-				(not
-					(power_avail ?s)
-				)
-				(is-goal-power_on ?i)
-				(is-goal-calibrated ?i)
-				(is-goal-power_avail ?s)
+
 			)
 	)
 
@@ -203,31 +178,18 @@
 					(power_on ?i)
 				)
 				(power_avail ?s)
-			)
-	)
+				(when
+					(not
+						(leader-state-power_on ?i)
+					)
+					(is-goal-power_on ?i)
+				)
 
-	(:action attack_switch_off_goal
-		:parameters ( ?i - instrument ?s - satellite)
-		:precondition 
-			(and
-				(on_board ?i ?s)
-				(power_on ?i)
-				(not
-					(leader-turn)
+				(when
+					(leader-state-power_avail ?s)
+					(is-goal-power_avail ?s)
 				)
-				(not
-					(leader-state-power_on ?i)
-				)
-				(leader-state-power_avail ?s)
-			)
-		:effect 
-			(and
-				(not
-					(power_on ?i)
-				)
-				(power_avail ?s)
-				(is-goal-power_on ?i)
-				(is-goal-power_avail ?s)
+
 			)
 	)
 
@@ -262,26 +224,11 @@
 		:effect 
 			(and
 				(calibrated ?i)
-			)
-	)
-
-	(:action attack_calibrate_goal
-		:parameters ( ?s - satellite ?i - instrument ?d - direction)
-		:precondition 
-			(and
-				(on_board ?i ?s)
-				(calibration_target ?i ?d)
-				(pointing ?s ?d)
-				(power_on ?i)
-				(not
-					(leader-turn)
+				(when
+					(leader-state-calibrated ?i)
+					(is-goal-calibrated ?i)
 				)
-				(leader-state-calibrated ?i)
-			)
-		:effect 
-			(and
-				(calibrated ?i)
-				(is-goal-calibrated ?i)
+
 			)
 	)
 
@@ -320,28 +267,11 @@
 		:effect 
 			(and
 				(have_image ?d ?m)
-			)
-	)
-
-	(:action attack_take_image_goal
-		:parameters ( ?s - satellite ?d - direction ?i - instrument ?m - mode)
-		:precondition 
-			(and
-				(calibrated ?i)
-				(on_board ?i ?s)
-				(supports ?i ?m)
-				(power_on ?i)
-				(pointing ?s ?d)
-				(power_on ?i)
-				(not
-					(leader-turn)
+				(when
+					(leader-state-have_image ?d ?m)
+					(is-goal-have_image ?d ?m)
 				)
-				(leader-state-have_image ?d ?m)
-			)
-		:effect 
-			(and
-				(have_image ?d ?m)
-				(is-goal-have_image ?d ?m)
+
 			)
 	)
 

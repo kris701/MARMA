@@ -358,7 +358,7 @@ begin_goal
 13 0
 15 0
 end_goal
-157
+159
 begin_operator
 attack_calibrate satellite0 instrument0 groundstation2
 3
@@ -370,7 +370,7 @@ attack_calibrate satellite0 instrument0 groundstation2
 0
 end_operator
 begin_operator
-attack_calibrate_1 satellite0 instrument0 groundstation2
+attack_calibrate_goal satellite0 instrument0 groundstation2
 4
 25 0
 35 1
@@ -382,6 +382,16 @@ attack_calibrate_1 satellite0 instrument0 groundstation2
 0
 end_operator
 begin_operator
+attack_reach-goal 
+1
+35 0
+3
+0 12 -1 0
+0 13 -1 0
+0 15 -1 0
+0
+end_operator
+begin_operator
 attack_switch_off instrument0 satellite0
 1
 35 1
@@ -390,7 +400,7 @@ attack_switch_off instrument0 satellite0
 0
 end_operator
 begin_operator
-attack_switch_off_1 instrument0 satellite0
+attack_switch_off_goal instrument0 satellite0
 2
 34 0
 35 1
@@ -410,7 +420,7 @@ attack_switch_on instrument0 satellite0
 0
 end_operator
 begin_operator
-attack_switch_on_1 instrument0 satellite0
+attack_switch_on_goal instrument0 satellite0
 3
 25 1
 34 1
@@ -501,7 +511,7 @@ attack_take_image satellite0 star5 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 groundstation1 instrument0 thermograph0
+attack_take_image_goal satellite0 groundstation1 instrument0 thermograph0
 5
 0 0
 26 0
@@ -514,7 +524,7 @@ attack_take_image_1 satellite0 groundstation1 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 groundstation2 instrument0 thermograph0
+attack_take_image_goal satellite0 groundstation2 instrument0 thermograph0
 5
 0 0
 27 0
@@ -527,7 +537,7 @@ attack_take_image_1 satellite0 groundstation2 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 phenomenon3 instrument0 thermograph0
+attack_take_image_goal satellite0 phenomenon3 instrument0 thermograph0
 5
 0 0
 28 0
@@ -540,7 +550,7 @@ attack_take_image_1 satellite0 phenomenon3 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 phenomenon4 instrument0 thermograph0
+attack_take_image_goal satellite0 phenomenon4 instrument0 thermograph0
 5
 0 0
 29 0
@@ -553,7 +563,7 @@ attack_take_image_1 satellite0 phenomenon4 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 phenomenon6 instrument0 thermograph0
+attack_take_image_goal satellite0 phenomenon6 instrument0 thermograph0
 5
 0 0
 30 0
@@ -566,7 +576,7 @@ attack_take_image_1 satellite0 phenomenon6 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 star0 instrument0 thermograph0
+attack_take_image_goal satellite0 star0 instrument0 thermograph0
 5
 0 0
 31 0
@@ -579,7 +589,7 @@ attack_take_image_1 satellite0 star0 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 star5 instrument0 thermograph0
+attack_take_image_goal satellite0 star5 instrument0 thermograph0
 5
 0 0
 32 0
@@ -928,7 +938,7 @@ attack_turn_to satellite0 star5 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 groundstation2
+attack_turn_to_goal satellite0 groundstation1 groundstation2
 2
 33 0
 35 1
@@ -939,7 +949,7 @@ attack_turn_to_1 satellite0 groundstation1 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 phenomenon3
+attack_turn_to_goal satellite0 groundstation1 phenomenon3
 2
 33 0
 35 1
@@ -950,7 +960,7 @@ attack_turn_to_1 satellite0 groundstation1 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 phenomenon4
+attack_turn_to_goal satellite0 groundstation1 phenomenon4
 2
 33 0
 35 1
@@ -961,7 +971,7 @@ attack_turn_to_1 satellite0 groundstation1 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 phenomenon6
+attack_turn_to_goal satellite0 groundstation1 phenomenon6
 2
 33 0
 35 1
@@ -972,7 +982,7 @@ attack_turn_to_1 satellite0 groundstation1 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 star0
+attack_turn_to_goal satellite0 groundstation1 star0
 2
 33 0
 35 1
@@ -983,7 +993,7 @@ attack_turn_to_1 satellite0 groundstation1 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 star5
+attack_turn_to_goal satellite0 groundstation1 star5
 2
 33 0
 35 1
@@ -994,7 +1004,7 @@ attack_turn_to_1 satellite0 groundstation1 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 groundstation1
+attack_turn_to_goal satellite0 groundstation2 groundstation1
 2
 33 1
 35 1
@@ -1005,7 +1015,7 @@ attack_turn_to_1 satellite0 groundstation2 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 phenomenon3
+attack_turn_to_goal satellite0 groundstation2 phenomenon3
 2
 33 1
 35 1
@@ -1016,7 +1026,7 @@ attack_turn_to_1 satellite0 groundstation2 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 phenomenon4
+attack_turn_to_goal satellite0 groundstation2 phenomenon4
 2
 33 1
 35 1
@@ -1027,7 +1037,7 @@ attack_turn_to_1 satellite0 groundstation2 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 phenomenon6
+attack_turn_to_goal satellite0 groundstation2 phenomenon6
 2
 33 1
 35 1
@@ -1038,7 +1048,7 @@ attack_turn_to_1 satellite0 groundstation2 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 star0
+attack_turn_to_goal satellite0 groundstation2 star0
 2
 33 1
 35 1
@@ -1049,7 +1059,7 @@ attack_turn_to_1 satellite0 groundstation2 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 star5
+attack_turn_to_goal satellite0 groundstation2 star5
 2
 33 1
 35 1
@@ -1060,7 +1070,7 @@ attack_turn_to_1 satellite0 groundstation2 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 groundstation1
+attack_turn_to_goal satellite0 phenomenon3 groundstation1
 2
 33 2
 35 1
@@ -1071,7 +1081,7 @@ attack_turn_to_1 satellite0 phenomenon3 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 groundstation2
+attack_turn_to_goal satellite0 phenomenon3 groundstation2
 2
 33 2
 35 1
@@ -1082,7 +1092,7 @@ attack_turn_to_1 satellite0 phenomenon3 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 phenomenon4
+attack_turn_to_goal satellite0 phenomenon3 phenomenon4
 2
 33 2
 35 1
@@ -1093,7 +1103,7 @@ attack_turn_to_1 satellite0 phenomenon3 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 phenomenon6
+attack_turn_to_goal satellite0 phenomenon3 phenomenon6
 2
 33 2
 35 1
@@ -1104,7 +1114,7 @@ attack_turn_to_1 satellite0 phenomenon3 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 star0
+attack_turn_to_goal satellite0 phenomenon3 star0
 2
 33 2
 35 1
@@ -1115,7 +1125,7 @@ attack_turn_to_1 satellite0 phenomenon3 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 star5
+attack_turn_to_goal satellite0 phenomenon3 star5
 2
 33 2
 35 1
@@ -1126,7 +1136,7 @@ attack_turn_to_1 satellite0 phenomenon3 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 groundstation1
+attack_turn_to_goal satellite0 phenomenon4 groundstation1
 2
 33 3
 35 1
@@ -1137,7 +1147,7 @@ attack_turn_to_1 satellite0 phenomenon4 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 groundstation2
+attack_turn_to_goal satellite0 phenomenon4 groundstation2
 2
 33 3
 35 1
@@ -1148,7 +1158,7 @@ attack_turn_to_1 satellite0 phenomenon4 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 phenomenon3
+attack_turn_to_goal satellite0 phenomenon4 phenomenon3
 2
 33 3
 35 1
@@ -1159,7 +1169,7 @@ attack_turn_to_1 satellite0 phenomenon4 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 phenomenon6
+attack_turn_to_goal satellite0 phenomenon4 phenomenon6
 2
 33 3
 35 1
@@ -1170,7 +1180,7 @@ attack_turn_to_1 satellite0 phenomenon4 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 star0
+attack_turn_to_goal satellite0 phenomenon4 star0
 2
 33 3
 35 1
@@ -1181,7 +1191,7 @@ attack_turn_to_1 satellite0 phenomenon4 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 star5
+attack_turn_to_goal satellite0 phenomenon4 star5
 2
 33 3
 35 1
@@ -1192,7 +1202,7 @@ attack_turn_to_1 satellite0 phenomenon4 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 groundstation1
+attack_turn_to_goal satellite0 phenomenon6 groundstation1
 2
 33 4
 35 1
@@ -1203,7 +1213,7 @@ attack_turn_to_1 satellite0 phenomenon6 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 groundstation2
+attack_turn_to_goal satellite0 phenomenon6 groundstation2
 2
 33 4
 35 1
@@ -1214,7 +1224,7 @@ attack_turn_to_1 satellite0 phenomenon6 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 phenomenon3
+attack_turn_to_goal satellite0 phenomenon6 phenomenon3
 2
 33 4
 35 1
@@ -1225,7 +1235,7 @@ attack_turn_to_1 satellite0 phenomenon6 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 phenomenon4
+attack_turn_to_goal satellite0 phenomenon6 phenomenon4
 2
 33 4
 35 1
@@ -1236,7 +1246,7 @@ attack_turn_to_1 satellite0 phenomenon6 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 star0
+attack_turn_to_goal satellite0 phenomenon6 star0
 2
 33 4
 35 1
@@ -1247,7 +1257,7 @@ attack_turn_to_1 satellite0 phenomenon6 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 star5
+attack_turn_to_goal satellite0 phenomenon6 star5
 2
 33 4
 35 1
@@ -1258,7 +1268,7 @@ attack_turn_to_1 satellite0 phenomenon6 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 groundstation1
+attack_turn_to_goal satellite0 star0 groundstation1
 2
 33 5
 35 1
@@ -1269,7 +1279,7 @@ attack_turn_to_1 satellite0 star0 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 groundstation2
+attack_turn_to_goal satellite0 star0 groundstation2
 2
 33 5
 35 1
@@ -1280,7 +1290,7 @@ attack_turn_to_1 satellite0 star0 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 phenomenon3
+attack_turn_to_goal satellite0 star0 phenomenon3
 2
 33 5
 35 1
@@ -1291,7 +1301,7 @@ attack_turn_to_1 satellite0 star0 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 phenomenon4
+attack_turn_to_goal satellite0 star0 phenomenon4
 2
 33 5
 35 1
@@ -1302,7 +1312,7 @@ attack_turn_to_1 satellite0 star0 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 phenomenon6
+attack_turn_to_goal satellite0 star0 phenomenon6
 2
 33 5
 35 1
@@ -1313,7 +1323,7 @@ attack_turn_to_1 satellite0 star0 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 star5
+attack_turn_to_goal satellite0 star0 star5
 2
 33 5
 35 1
@@ -1324,7 +1334,7 @@ attack_turn_to_1 satellite0 star0 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 groundstation1
+attack_turn_to_goal satellite0 star5 groundstation1
 2
 33 6
 35 1
@@ -1335,7 +1345,7 @@ attack_turn_to_1 satellite0 star5 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 groundstation2
+attack_turn_to_goal satellite0 star5 groundstation2
 2
 33 6
 35 1
@@ -1346,7 +1356,7 @@ attack_turn_to_1 satellite0 star5 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 phenomenon3
+attack_turn_to_goal satellite0 star5 phenomenon3
 2
 33 6
 35 1
@@ -1357,7 +1367,7 @@ attack_turn_to_1 satellite0 star5 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 phenomenon4
+attack_turn_to_goal satellite0 star5 phenomenon4
 2
 33 6
 35 1
@@ -1368,7 +1378,7 @@ attack_turn_to_1 satellite0 star5 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 phenomenon6
+attack_turn_to_goal satellite0 star5 phenomenon6
 2
 33 6
 35 1
@@ -1379,7 +1389,7 @@ attack_turn_to_1 satellite0 star5 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 star0
+attack_turn_to_goal satellite0 star5 star0
 2
 33 6
 35 1
@@ -1397,6 +1407,15 @@ fix_calibrate satellite0 instrument0 groundstation2
 35 0
 1
 0 25 -1 0
+0
+end_operator
+begin_operator
+fix_meta_$switch-on-calibrate satellite0 instrument0
+1
+35 0
+2
+0 25 -1 0
+0 34 0 1
 0
 end_operator
 begin_operator

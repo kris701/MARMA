@@ -1,1 +1,2 @@
-[{"attacker cost": 2147483647, "defender cost": 0, "sequences": [  []], "attacker plan":  []}]
+[{"attacker cost": 1, "defender cost": 0, "sequences": [  []], "attacker plan":  ["attack_reach-goal "]},
+{"attacker cost": 2147483647, "defender cost": 1, "sequences": [  ["fix_pass-turn "]], "attacker plan":  []}]

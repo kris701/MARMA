@@ -281,7 +281,7 @@ var1
 Atom have_image(groundstation1, thermograph0)
 NegatedAtom have_image(groundstation1, thermograph0)
 end_variable
-48
+39
 begin_mutex_group
 mutex
 fw
@@ -413,28 +413,7 @@ mutex
 fw
 2
 0 0
-24 0
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
-0 0
 25 0
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
-0 0
-26 0
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
-0 0
-27 0
 end_mutex_group
 begin_mutex_group
 mutex
@@ -510,29 +489,8 @@ begin_mutex_group
 mutex
 fw
 2
-6 1
-24 0
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
 7 1
 25 0
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
-8 1
-26 0
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
-9 1
-27 0
 end_mutex_group
 begin_mutex_group
 mutex
@@ -573,29 +531,8 @@ begin_mutex_group
 mutex
 fw
 2
-24 0
-31 1
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
 25 0
 32 1
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
-26 0
-33 1
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
-27 0
-34 1
 end_mutex_group
 begin_mutex_group
 mutex
@@ -664,7 +601,7 @@ begin_goal
 26 0
 27 0
 end_goal
-157
+159
 begin_operator
 attack_calibrate satellite0 instrument0 groundstation2
 3
@@ -676,7 +613,7 @@ attack_calibrate satellite0 instrument0 groundstation2
 0
 end_operator
 begin_operator
-attack_calibrate_1 satellite0 instrument0 groundstation2
+attack_calibrate_goal satellite0 instrument0 groundstation2
 4
 4 0
 0 1
@@ -688,6 +625,16 @@ attack_calibrate_1 satellite0 instrument0 groundstation2
 0
 end_operator
 begin_operator
+attack_reach-goal 
+1
+0 0
+3
+0 27 -1 0
+0 26 -1 0
+0 24 -1 0
+0
+end_operator
+begin_operator
 attack_switch_off instrument0 satellite0
 1
 0 1
@@ -696,7 +643,7 @@ attack_switch_off instrument0 satellite0
 0
 end_operator
 begin_operator
-attack_switch_off_1 instrument0 satellite0
+attack_switch_off_goal instrument0 satellite0
 2
 1 0
 0 1
@@ -716,7 +663,7 @@ attack_switch_on instrument0 satellite0
 0
 end_operator
 begin_operator
-attack_switch_on_1 instrument0 satellite0
+attack_switch_on_goal instrument0 satellite0
 3
 4 1
 1 1
@@ -807,7 +754,7 @@ attack_take_image satellite0 star5 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 groundstation1 instrument0 thermograph0
+attack_take_image_goal satellite0 groundstation1 instrument0 thermograph0
 5
 23 0
 12 0
@@ -820,7 +767,7 @@ attack_take_image_1 satellite0 groundstation1 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 groundstation2 instrument0 thermograph0
+attack_take_image_goal satellite0 groundstation2 instrument0 thermograph0
 5
 23 0
 11 0
@@ -833,7 +780,7 @@ attack_take_image_1 satellite0 groundstation2 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 phenomenon3 instrument0 thermograph0
+attack_take_image_goal satellite0 phenomenon3 instrument0 thermograph0
 5
 23 0
 10 0
@@ -846,7 +793,7 @@ attack_take_image_1 satellite0 phenomenon3 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 phenomenon4 instrument0 thermograph0
+attack_take_image_goal satellite0 phenomenon4 instrument0 thermograph0
 5
 23 0
 9 0
@@ -859,7 +806,7 @@ attack_take_image_1 satellite0 phenomenon4 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 phenomenon6 instrument0 thermograph0
+attack_take_image_goal satellite0 phenomenon6 instrument0 thermograph0
 5
 23 0
 8 0
@@ -872,7 +819,7 @@ attack_take_image_1 satellite0 phenomenon6 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 star0 instrument0 thermograph0
+attack_take_image_goal satellite0 star0 instrument0 thermograph0
 5
 23 0
 7 0
@@ -885,7 +832,7 @@ attack_take_image_1 satellite0 star0 instrument0 thermograph0
 0
 end_operator
 begin_operator
-attack_take_image_1 satellite0 star5 instrument0 thermograph0
+attack_take_image_goal satellite0 star5 instrument0 thermograph0
 5
 23 0
 6 0
@@ -1234,7 +1181,7 @@ attack_turn_to satellite0 star5 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 groundstation2
+attack_turn_to_goal satellite0 groundstation1 groundstation2
 2
 2 0
 0 1
@@ -1245,7 +1192,7 @@ attack_turn_to_1 satellite0 groundstation1 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 phenomenon3
+attack_turn_to_goal satellite0 groundstation1 phenomenon3
 2
 2 0
 0 1
@@ -1256,7 +1203,7 @@ attack_turn_to_1 satellite0 groundstation1 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 phenomenon4
+attack_turn_to_goal satellite0 groundstation1 phenomenon4
 2
 2 0
 0 1
@@ -1267,7 +1214,7 @@ attack_turn_to_1 satellite0 groundstation1 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 phenomenon6
+attack_turn_to_goal satellite0 groundstation1 phenomenon6
 2
 2 0
 0 1
@@ -1278,7 +1225,7 @@ attack_turn_to_1 satellite0 groundstation1 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 star0
+attack_turn_to_goal satellite0 groundstation1 star0
 2
 2 0
 0 1
@@ -1289,7 +1236,7 @@ attack_turn_to_1 satellite0 groundstation1 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation1 star5
+attack_turn_to_goal satellite0 groundstation1 star5
 2
 2 0
 0 1
@@ -1300,7 +1247,7 @@ attack_turn_to_1 satellite0 groundstation1 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 groundstation1
+attack_turn_to_goal satellite0 groundstation2 groundstation1
 2
 2 1
 0 1
@@ -1311,7 +1258,7 @@ attack_turn_to_1 satellite0 groundstation2 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 phenomenon3
+attack_turn_to_goal satellite0 groundstation2 phenomenon3
 2
 2 1
 0 1
@@ -1322,7 +1269,7 @@ attack_turn_to_1 satellite0 groundstation2 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 phenomenon4
+attack_turn_to_goal satellite0 groundstation2 phenomenon4
 2
 2 1
 0 1
@@ -1333,7 +1280,7 @@ attack_turn_to_1 satellite0 groundstation2 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 phenomenon6
+attack_turn_to_goal satellite0 groundstation2 phenomenon6
 2
 2 1
 0 1
@@ -1344,7 +1291,7 @@ attack_turn_to_1 satellite0 groundstation2 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 star0
+attack_turn_to_goal satellite0 groundstation2 star0
 2
 2 1
 0 1
@@ -1355,7 +1302,7 @@ attack_turn_to_1 satellite0 groundstation2 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 groundstation2 star5
+attack_turn_to_goal satellite0 groundstation2 star5
 2
 2 1
 0 1
@@ -1366,7 +1313,7 @@ attack_turn_to_1 satellite0 groundstation2 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 groundstation1
+attack_turn_to_goal satellite0 phenomenon3 groundstation1
 2
 2 2
 0 1
@@ -1377,7 +1324,7 @@ attack_turn_to_1 satellite0 phenomenon3 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 groundstation2
+attack_turn_to_goal satellite0 phenomenon3 groundstation2
 2
 2 2
 0 1
@@ -1388,7 +1335,7 @@ attack_turn_to_1 satellite0 phenomenon3 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 phenomenon4
+attack_turn_to_goal satellite0 phenomenon3 phenomenon4
 2
 2 2
 0 1
@@ -1399,7 +1346,7 @@ attack_turn_to_1 satellite0 phenomenon3 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 phenomenon6
+attack_turn_to_goal satellite0 phenomenon3 phenomenon6
 2
 2 2
 0 1
@@ -1410,7 +1357,7 @@ attack_turn_to_1 satellite0 phenomenon3 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 star0
+attack_turn_to_goal satellite0 phenomenon3 star0
 2
 2 2
 0 1
@@ -1421,7 +1368,7 @@ attack_turn_to_1 satellite0 phenomenon3 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon3 star5
+attack_turn_to_goal satellite0 phenomenon3 star5
 2
 2 2
 0 1
@@ -1432,7 +1379,7 @@ attack_turn_to_1 satellite0 phenomenon3 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 groundstation1
+attack_turn_to_goal satellite0 phenomenon4 groundstation1
 2
 2 3
 0 1
@@ -1443,7 +1390,7 @@ attack_turn_to_1 satellite0 phenomenon4 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 groundstation2
+attack_turn_to_goal satellite0 phenomenon4 groundstation2
 2
 2 3
 0 1
@@ -1454,7 +1401,7 @@ attack_turn_to_1 satellite0 phenomenon4 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 phenomenon3
+attack_turn_to_goal satellite0 phenomenon4 phenomenon3
 2
 2 3
 0 1
@@ -1465,7 +1412,7 @@ attack_turn_to_1 satellite0 phenomenon4 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 phenomenon6
+attack_turn_to_goal satellite0 phenomenon4 phenomenon6
 2
 2 3
 0 1
@@ -1476,7 +1423,7 @@ attack_turn_to_1 satellite0 phenomenon4 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 star0
+attack_turn_to_goal satellite0 phenomenon4 star0
 2
 2 3
 0 1
@@ -1487,7 +1434,7 @@ attack_turn_to_1 satellite0 phenomenon4 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon4 star5
+attack_turn_to_goal satellite0 phenomenon4 star5
 2
 2 3
 0 1
@@ -1498,7 +1445,7 @@ attack_turn_to_1 satellite0 phenomenon4 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 groundstation1
+attack_turn_to_goal satellite0 phenomenon6 groundstation1
 2
 2 4
 0 1
@@ -1509,7 +1456,7 @@ attack_turn_to_1 satellite0 phenomenon6 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 groundstation2
+attack_turn_to_goal satellite0 phenomenon6 groundstation2
 2
 2 4
 0 1
@@ -1520,7 +1467,7 @@ attack_turn_to_1 satellite0 phenomenon6 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 phenomenon3
+attack_turn_to_goal satellite0 phenomenon6 phenomenon3
 2
 2 4
 0 1
@@ -1531,7 +1478,7 @@ attack_turn_to_1 satellite0 phenomenon6 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 phenomenon4
+attack_turn_to_goal satellite0 phenomenon6 phenomenon4
 2
 2 4
 0 1
@@ -1542,7 +1489,7 @@ attack_turn_to_1 satellite0 phenomenon6 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 star0
+attack_turn_to_goal satellite0 phenomenon6 star0
 2
 2 4
 0 1
@@ -1553,7 +1500,7 @@ attack_turn_to_1 satellite0 phenomenon6 star0
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 phenomenon6 star5
+attack_turn_to_goal satellite0 phenomenon6 star5
 2
 2 4
 0 1
@@ -1564,7 +1511,7 @@ attack_turn_to_1 satellite0 phenomenon6 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 groundstation1
+attack_turn_to_goal satellite0 star0 groundstation1
 2
 2 5
 0 1
@@ -1575,7 +1522,7 @@ attack_turn_to_1 satellite0 star0 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 groundstation2
+attack_turn_to_goal satellite0 star0 groundstation2
 2
 2 5
 0 1
@@ -1586,7 +1533,7 @@ attack_turn_to_1 satellite0 star0 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 phenomenon3
+attack_turn_to_goal satellite0 star0 phenomenon3
 2
 2 5
 0 1
@@ -1597,7 +1544,7 @@ attack_turn_to_1 satellite0 star0 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 phenomenon4
+attack_turn_to_goal satellite0 star0 phenomenon4
 2
 2 5
 0 1
@@ -1608,7 +1555,7 @@ attack_turn_to_1 satellite0 star0 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 phenomenon6
+attack_turn_to_goal satellite0 star0 phenomenon6
 2
 2 5
 0 1
@@ -1619,7 +1566,7 @@ attack_turn_to_1 satellite0 star0 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star0 star5
+attack_turn_to_goal satellite0 star0 star5
 2
 2 5
 0 1
@@ -1630,7 +1577,7 @@ attack_turn_to_1 satellite0 star0 star5
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 groundstation1
+attack_turn_to_goal satellite0 star5 groundstation1
 2
 2 6
 0 1
@@ -1641,7 +1588,7 @@ attack_turn_to_1 satellite0 star5 groundstation1
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 groundstation2
+attack_turn_to_goal satellite0 star5 groundstation2
 2
 2 6
 0 1
@@ -1652,7 +1599,7 @@ attack_turn_to_1 satellite0 star5 groundstation2
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 phenomenon3
+attack_turn_to_goal satellite0 star5 phenomenon3
 2
 2 6
 0 1
@@ -1663,7 +1610,7 @@ attack_turn_to_1 satellite0 star5 phenomenon3
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 phenomenon4
+attack_turn_to_goal satellite0 star5 phenomenon4
 2
 2 6
 0 1
@@ -1674,7 +1621,7 @@ attack_turn_to_1 satellite0 star5 phenomenon4
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 phenomenon6
+attack_turn_to_goal satellite0 star5 phenomenon6
 2
 2 6
 0 1
@@ -1685,7 +1632,7 @@ attack_turn_to_1 satellite0 star5 phenomenon6
 0
 end_operator
 begin_operator
-attack_turn_to_1 satellite0 star5 star0
+attack_turn_to_goal satellite0 star5 star0
 2
 2 6
 0 1
@@ -1703,6 +1650,15 @@ fix_calibrate satellite0 instrument0 groundstation2
 0 0
 1
 0 4 -1 0
+0
+end_operator
+begin_operator
+fix_meta_$switch-on-calibrate satellite0 instrument0
+1
+0 0
+2
+0 4 -1 0
+0 1 0 1
 0
 end_operator
 begin_operator
@@ -2157,7 +2113,7 @@ switch 5
 check 0
 check 0
 check 1
-13
+14
 check 0
 check 0
 check 0
@@ -2180,7 +2136,7 @@ switch 5
 check 0
 check 0
 check 1
-14
+15
 check 0
 check 0
 check 0
@@ -2203,7 +2159,7 @@ switch 5
 check 0
 check 0
 check 1
-15
+16
 check 0
 check 0
 check 0
@@ -2226,7 +2182,7 @@ switch 5
 check 0
 check 0
 check 1
-16
+17
 check 0
 check 0
 check 0
@@ -2249,7 +2205,7 @@ switch 5
 check 0
 check 0
 check 1
-17
+18
 check 0
 check 0
 check 0
@@ -2272,7 +2228,7 @@ switch 5
 check 0
 check 0
 check 1
-18
+19
 check 0
 check 0
 check 0
@@ -2295,7 +2251,7 @@ switch 5
 check 0
 check 0
 check 1
-19
+20
 check 0
 check 0
 check 0
@@ -2304,12 +2260,6 @@ switch 0
 check 0
 check 0
 switch 3
-check 0
-switch 5
-check 0
-check 0
-check 1
-6
 check 0
 switch 5
 check 0
@@ -2346,6 +2296,12 @@ check 0
 check 0
 check 1
 12
+check 0
+switch 5
+check 0
+check 0
+check 1
+13
 check 0
 check 0
 check 0
@@ -2360,26 +2316,6 @@ check 0
 switch 0
 check 0
 check 1
-108
-check 0
-check 0
-check 0
-switch 1
-check 0
-check 0
-switch 0
-check 0
-check 1
-109
-check 0
-check 0
-check 0
-switch 1
-check 0
-check 0
-switch 0
-check 0
-check 1
 110
 check 0
 check 0
@@ -2424,6 +2360,26 @@ check 1
 check 0
 check 0
 check 0
+switch 1
+check 0
+check 0
+switch 0
+check 0
+check 1
+115
+check 0
+check 0
+check 0
+switch 1
+check 0
+check 0
+switch 0
+check 0
+check 1
+116
+check 0
+check 0
+check 0
 switch 0
 check 0
 check 0
@@ -2452,7 +2408,7 @@ check 0
 switch 5
 check 0
 check 1
-5
+6
 check 0
 check 0
 check 0
@@ -2462,17 +2418,15 @@ check 0
 switch 0
 check 0
 check 6
-121
-127
-133
-139
-145
-151
+123
+129
+135
+141
+147
+153
 switch 3
 check 0
 check 0
-check 1
-62
 check 1
 63
 check 1
@@ -2483,6 +2437,8 @@ check 1
 66
 check 1
 67
+check 1
+68
 check 0
 check 0
 switch 1
@@ -2491,25 +2447,23 @@ check 0
 switch 0
 check 0
 check 1
-104
+105
 check 0
 check 0
 switch 0
 check 0
 check 6
-115
-128
-134
-140
-146
-152
+117
+130
+136
+142
+148
+154
 switch 3
 check 0
 check 1
-68
-check 0
-check 1
 69
+check 0
 check 1
 70
 check 1
@@ -2518,58 +2472,8 @@ check 1
 72
 check 1
 73
-check 0
-check 0
-switch 0
-check 0
-check 6
-116
-122
-135
-141
-147
-153
-switch 3
-check 0
 check 1
 74
-check 1
-75
-check 0
-check 1
-76
-check 1
-77
-check 1
-78
-check 1
-79
-check 0
-check 0
-switch 0
-check 0
-check 6
-117
-123
-129
-142
-148
-154
-switch 3
-check 0
-check 1
-80
-check 1
-81
-check 1
-82
-check 0
-check 1
-83
-check 1
-84
-check 1
-85
 check 0
 check 0
 switch 0
@@ -2577,25 +2481,25 @@ check 0
 check 6
 118
 124
-130
-136
+137
+143
 149
 155
 switch 3
 check 0
 check 1
-86
+75
 check 1
-87
-check 1
-88
-check 1
-89
+76
 check 0
 check 1
-90
+77
 check 1
-91
+78
+check 1
+79
+check 1
+80
 check 0
 check 0
 switch 0
@@ -2604,24 +2508,24 @@ check 6
 119
 125
 131
-137
-143
+144
+150
 156
 switch 3
 check 0
 check 1
-92
+81
 check 1
-93
+82
 check 1
-94
-check 1
-95
-check 1
-96
+83
 check 0
 check 1
-97
+84
+check 1
+85
+check 1
+86
 check 0
 check 0
 switch 0
@@ -2631,12 +2535,62 @@ check 6
 126
 132
 138
-144
-150
+151
+157
 switch 3
 check 0
 check 1
+87
+check 1
+88
+check 1
+89
+check 1
+90
+check 0
+check 1
+91
+check 1
+92
+check 0
+check 0
+switch 0
+check 0
+check 6
+121
+127
+133
+139
+145
+158
+switch 3
+check 0
+check 1
+93
+check 1
+94
+check 1
+95
+check 1
+96
+check 1
+97
+check 0
+check 1
 98
+check 0
+check 0
+switch 0
+check 0
+check 6
+122
+128
+134
+140
+146
+152
+switch 3
+check 0
 check 1
 99
 check 1
@@ -2647,6 +2601,8 @@ check 1
 102
 check 1
 103
+check 1
+104
 check 0
 check 0
 check 0
@@ -2654,27 +2610,76 @@ switch 1
 check 0
 switch 0
 check 0
-check 1
-107
+check 2
+106
+109
 switch 5
 check 0
 check 0
 check 1
-3
+4
 check 0
 check 0
 switch 0
 check 0
 check 1
-106
+108
 check 0
 check 0
 switch 0
 check 0
-check 1
-105
+check 2
+2
+107
 switch 3
 check 0
+check 6
+27
+33
+39
+45
+51
+57
+switch 5
+check 6
+21
+34
+40
+46
+52
+58
+check 0
+check 1
+0
+check 0
+check 6
+22
+28
+41
+47
+53
+59
+check 6
+23
+29
+35
+48
+54
+60
+check 6
+24
+30
+36
+42
+55
+61
+check 6
+25
+31
+37
+43
+49
+62
 check 6
 26
 32
@@ -2683,138 +2688,41 @@ check 6
 50
 56
 switch 5
-check 6
-20
-33
-39
-45
-51
-57
 check 0
 check 1
-0
-check 0
-check 6
-21
-27
-40
-46
-52
-58
-check 6
-22
-28
-34
-47
-53
-59
-check 6
-23
-29
-35
-41
-54
-60
-check 6
-24
-30
-36
-42
-48
-61
-check 6
-25
-31
-37
-43
-49
-55
-switch 5
-check 0
+5
 check 1
-4
-check 1
-2
+3
 check 0
 check 0
 end_SG
 begin_DTG
 1
 1
-105
+107
 0
 0
 end_DTG
 begin_DTG
 1
 1
-107
-1
-0 0
-1
-0
 106
 1
 0 0
+1
+0
+108
+1
+0 0
 end_DTG
 begin_DTG
 6
 1
-121
+123
 1
 0 0
 2
-127
-1
-0 0
-3
-133
-1
-0 0
-4
-139
-1
-0 0
-5
-145
-1
-0 0
-6
-151
-1
-0 0
-6
-0
-115
-1
-0 0
-2
-128
-1
-0 0
-3
-134
-1
-0 0
-4
-140
-1
-0 0
-5
-146
-1
-0 0
-6
-152
-1
-0 0
-6
-0
-116
-1
-0 0
-1
-122
+129
 1
 0 0
 3
@@ -2838,12 +2746,12 @@ begin_DTG
 117
 1
 0 0
-1
-123
+2
+130
 1
 0 0
-2
-129
+3
+136
 1
 0 0
 4
@@ -2867,12 +2775,12 @@ begin_DTG
 124
 1
 0 0
-2
-130
+3
+137
 1
 0 0
-3
-136
+4
+143
 1
 0 0
 5
@@ -2896,12 +2804,12 @@ begin_DTG
 131
 1
 0 0
-3
-137
+4
+144
 1
 0 0
-4
-143
+5
+150
 1
 0 0
 6
@@ -2925,44 +2833,69 @@ begin_DTG
 138
 1
 0 0
+5
+151
+1
+0 0
+6
+157
+1
+0 0
+6
+0
+121
+1
+0 0
+1
+127
+1
+0 0
+2
+133
+1
+0 0
+3
+139
+1
+0 0
 4
-144
+145
+1
+0 0
+6
+158
+1
+0 0
+6
+0
+122
+1
+0 0
+1
+128
+1
+0 0
+2
+134
+1
+0 0
+3
+140
+1
+0 0
+4
+146
 1
 0 0
 5
-150
+152
 1
 0 0
 end_DTG
 begin_DTG
 6
 1
-26
-1
-0 1
-2
-32
-1
-0 1
-3
-38
-1
-0 1
-4
-44
-1
-0 1
-5
-50
-1
-0 1
-6
-56
-1
-0 1
-6
-0
-20
+27
 1
 0 1
 2
@@ -2990,8 +2923,8 @@ begin_DTG
 21
 1
 0 1
-1
-27
+2
+34
 1
 0 1
 3
@@ -3019,8 +2952,8 @@ begin_DTG
 28
 1
 0 1
-2
-34
+3
+41
 1
 0 1
 4
@@ -3048,8 +2981,8 @@ begin_DTG
 35
 1
 0 1
-3
-41
+4
+48
 1
 0 1
 5
@@ -3077,8 +3010,8 @@ begin_DTG
 42
 1
 0 1
-4
-48
+5
+55
 1
 0 1
 6
@@ -3106,21 +3039,51 @@ begin_DTG
 49
 1
 0 1
+6
+62
+1
+0 1
+6
+0
+26
+1
+0 1
+1
+32
+1
+0 1
+2
+38
+1
+0 1
+3
+44
+1
+0 1
+4
+50
+1
+0 1
 5
-55
+56
 1
 0 1
 end_DTG
 begin_DTG
 1
 1
-107
+109
 2
 1 0
 0 0
-1
+2
 0
-104
+106
+2
+1 0
+0 0
+0
+105
 3
 2 1
 1 1
@@ -3129,14 +3092,36 @@ end_DTG
 begin_DTG
 1
 1
-4
+5
 1
 0 1
 1
 0
-2
+3
 1
 0 1
+end_DTG
+begin_DTG
+0
+1
+0
+116
+4
+4 0
+2 6
+1 1
+0 0
+end_DTG
+begin_DTG
+0
+1
+0
+115
+4
+4 0
+2 5
+1 1
+0 0
 end_DTG
 begin_DTG
 0
@@ -3145,7 +3130,7 @@ begin_DTG
 114
 4
 4 0
-2 6
+2 4
 1 1
 0 0
 end_DTG
@@ -3156,7 +3141,7 @@ begin_DTG
 113
 4
 4 0
-2 5
+2 3
 1 1
 0 0
 end_DTG
@@ -3167,7 +3152,7 @@ begin_DTG
 112
 4
 4 0
-2 4
+2 2
 1 1
 0 0
 end_DTG
@@ -3178,7 +3163,7 @@ begin_DTG
 111
 4
 4 0
-2 3
+2 1
 1 1
 0 0
 end_DTG
@@ -3189,28 +3174,6 @@ begin_DTG
 110
 4
 4 0
-2 2
-1 1
-0 0
-end_DTG
-begin_DTG
-0
-1
-0
-109
-4
-4 0
-2 1
-1 1
-0 0
-end_DTG
-begin_DTG
-0
-1
-0
-108
-4
-4 0
 2 0
 1 1
 0 0
@@ -3219,13 +3182,13 @@ begin_DTG
 0
 2
 0
-3
+4
 3
 1 0
 0 1
 5 1
 0
-5
+6
 4
 4 1
 1 1
@@ -3236,13 +3199,13 @@ begin_DTG
 0
 2
 0
-3
+4
 3
 1 0
 0 1
 5 1
 0
-5
+6
 4
 4 1
 1 1
@@ -3253,73 +3216,149 @@ begin_DTG
 0
 12
 0
-67
+68
 3
 2 0
 0 1
 3 6
 0
-73
+74
 3
 2 1
 0 1
 3 6
 0
-79
+80
 3
 2 2
 0 1
 3 6
 0
-85
+86
 3
 2 3
 0 1
 3 6
 0
-91
+92
 3
 2 4
 0 1
 3 6
 0
-97
+98
 3
 2 5
 0 1
 3 6
 0
-98
+99
 3
 2 6
 0 1
 3 0
 0
-99
+100
 3
 2 6
 0 1
 3 1
 0
-100
+101
 3
 2 6
 0 1
 3 2
 0
-101
+102
 3
 2 6
 0 1
 3 3
 0
-102
+103
 3
 2 6
 0 1
 3 4
 0
-103
+104
+3
+2 6
+0 1
+3 5
+end_DTG
+begin_DTG
+0
+12
+0
+67
+3
+2 0
+0 1
+3 5
+0
+73
+3
+2 1
+0 1
+3 5
+0
+79
+3
+2 2
+0 1
+3 5
+0
+85
+3
+2 3
+0 1
+3 5
+0
+91
+3
+2 4
+0 1
+3 5
+0
+93
+3
+2 5
+0 1
+3 0
+0
+94
+3
+2 5
+0 1
+3 1
+0
+95
+3
+2 5
+0 1
+3 2
+0
+96
+3
+2 5
+0 1
+3 3
+0
+97
+3
+2 5
+0 1
+3 4
+0
+98
+3
+2 5
+0 1
+3 6
+0
+104
 3
 2 6
 0 1
@@ -3333,327 +3372,81 @@ begin_DTG
 3
 2 0
 0 1
-3 5
+3 4
 0
 72
 3
 2 1
 0 1
-3 5
+3 4
 0
 78
 3
 2 2
 0 1
-3 5
+3 4
 0
 84
 3
 2 3
 0 1
-3 5
-0
-90
-3
-2 4
-0 1
-3 5
-0
-92
-3
-2 5
-0 1
-3 0
-0
-93
-3
-2 5
-0 1
-3 1
-0
-94
-3
-2 5
-0 1
-3 2
-0
-95
-3
-2 5
-0 1
-3 3
-0
-96
-3
-2 5
-0 1
 3 4
-0
-97
-3
-2 5
-0 1
-3 6
-0
-103
-3
-2 6
-0 1
-3 5
-end_DTG
-begin_DTG
-0
-12
-0
-65
-3
-2 0
-0 1
-3 4
-0
-71
-3
-2 1
-0 1
-3 4
-0
-77
-3
-2 2
-0 1
-3 4
-0
-83
-3
-2 3
-0 1
-3 4
-0
-86
-3
-2 4
-0 1
-3 0
 0
 87
 3
 2 4
 0 1
-3 1
+3 0
 0
 88
 3
 2 4
 0 1
-3 2
+3 1
 0
 89
 3
 2 4
 0 1
-3 3
+3 2
 0
 90
 3
 2 4
 0 1
-3 5
+3 3
 0
 91
 3
 2 4
 0 1
-3 6
-0
-96
-3
-2 5
-0 1
-3 4
-0
-102
-3
-2 6
-0 1
-3 4
-end_DTG
-begin_DTG
-0
-12
-0
-64
-3
-2 0
-0 1
-3 3
-0
-70
-3
-2 1
-0 1
-3 3
-0
-76
-3
-2 2
-0 1
-3 3
-0
-80
-3
-2 3
-0 1
-3 0
-0
-81
-3
-2 3
-0 1
-3 1
-0
-82
-3
-2 3
-0 1
-3 2
-0
-83
-3
-2 3
-0 1
-3 4
-0
-84
-3
-2 3
-0 1
 3 5
 0
-85
-3
-2 3
-0 1
-3 6
-0
-89
+92
 3
 2 4
 0 1
-3 3
+3 6
 0
-95
+97
 3
 2 5
-0 1
-3 3
-0
-101
-3
-2 6
-0 1
-3 3
-end_DTG
-begin_DTG
-0
-12
-0
-63
-3
-2 0
-0 1
-3 2
-0
-69
-3
-2 1
-0 1
-3 2
-0
-74
-3
-2 2
-0 1
-3 0
-0
-75
-3
-2 2
-0 1
-3 1
-0
-76
-3
-2 2
-0 1
-3 3
-0
-77
-3
-2 2
 0 1
 3 4
 0
-78
-3
-2 2
-0 1
-3 5
-0
-79
-3
-2 2
-0 1
-3 6
-0
-82
-3
-2 3
-0 1
-3 2
-0
-88
-3
-2 4
-0 1
-3 2
-0
-94
-3
-2 5
-0 1
-3 2
-0
-100
+103
 3
 2 6
 0 1
-3 2
+3 4
 end_DTG
 begin_DTG
 0
 12
 0
-62
+65
 3
 2 0
-0 1
-3 1
-0
-68
-3
-2 1
-0 1
-3 0
-0
-69
-3
-2 1
-0 1
-3 2
-0
-70
-3
-2 1
 0 1
 3 3
 0
@@ -3661,45 +3454,215 @@ begin_DTG
 3
 2 1
 0 1
-3 4
+3 3
 0
-72
-3
-2 1
-0 1
-3 5
-0
-73
-3
-2 1
-0 1
-3 6
-0
-75
+77
 3
 2 2
 0 1
-3 1
+3 3
 0
 81
 3
 2 3
 0 1
+3 0
+0
+82
+3
+2 3
+0 1
 3 1
 0
-87
+83
+3
+2 3
+0 1
+3 2
+0
+84
+3
+2 3
+0 1
+3 4
+0
+85
+3
+2 3
+0 1
+3 5
+0
+86
+3
+2 3
+0 1
+3 6
+0
+90
+3
+2 4
+0 1
+3 3
+0
+96
+3
+2 5
+0 1
+3 3
+0
+102
+3
+2 6
+0 1
+3 3
+end_DTG
+begin_DTG
+0
+12
+0
+64
+3
+2 0
+0 1
+3 2
+0
+70
+3
+2 1
+0 1
+3 2
+0
+75
+3
+2 2
+0 1
+3 0
+0
+76
+3
+2 2
+0 1
+3 1
+0
+77
+3
+2 2
+0 1
+3 3
+0
+78
+3
+2 2
+0 1
+3 4
+0
+79
+3
+2 2
+0 1
+3 5
+0
+80
+3
+2 2
+0 1
+3 6
+0
+83
+3
+2 3
+0 1
+3 2
+0
+89
+3
+2 4
+0 1
+3 2
+0
+95
+3
+2 5
+0 1
+3 2
+0
+101
+3
+2 6
+0 1
+3 2
+end_DTG
+begin_DTG
+0
+12
+0
+63
+3
+2 0
+0 1
+3 1
+0
+69
+3
+2 1
+0 1
+3 0
+0
+70
+3
+2 1
+0 1
+3 2
+0
+71
+3
+2 1
+0 1
+3 3
+0
+72
+3
+2 1
+0 1
+3 4
+0
+73
+3
+2 1
+0 1
+3 5
+0
+74
+3
+2 1
+0 1
+3 6
+0
+76
+3
+2 2
+0 1
+3 1
+0
+82
+3
+2 3
+0 1
+3 1
+0
+88
 3
 2 4
 0 1
 3 1
 0
-93
+94
 3
 2 5
 0 1
 3 1
 0
-99
+100
 3
 2 6
 0 1
@@ -3709,73 +3672,73 @@ begin_DTG
 0
 12
 0
-62
+63
 3
 2 0
 0 1
 3 1
 0
-63
+64
 3
 2 0
 0 1
 3 2
 0
-64
+65
 3
 2 0
 0 1
 3 3
 0
-65
+66
 3
 2 0
 0 1
 3 4
 0
-66
+67
 3
 2 0
 0 1
 3 5
 0
-67
+68
 3
 2 0
 0 1
 3 6
 0
-68
+69
 3
 2 1
 0 1
 3 0
 0
-74
+75
 3
 2 2
 0 1
 3 0
 0
-80
+81
 3
 2 3
 0 1
 3 0
 0
-86
+87
 3
 2 4
 0 1
 3 0
 0
-92
+93
 3
 2 5
 0 1
 3 0
 0
-98
+99
 3
 2 6
 0 1
@@ -3792,7 +3755,7 @@ begin_DTG
 3 1
 5 1
 0
-5
+6
 4
 4 1
 1 1
@@ -3802,7 +3765,7 @@ end_DTG
 begin_DTG
 1
 1
-4
+5
 2
 0 1
 5 0
@@ -3816,9 +3779,13 @@ begin_DTG
 end_DTG
 begin_DTG
 0
-1
+2
 0
-19
+2
+1
+0 0
+0
+20
 5
 23 0
 6 0
@@ -3830,7 +3797,7 @@ begin_DTG
 0
 1
 0
-18
+19
 5
 23 0
 7 0
@@ -3840,9 +3807,13 @@ begin_DTG
 end_DTG
 begin_DTG
 0
-1
+2
 0
-17
+2
+1
+0 0
+0
+18
 5
 23 0
 8 0
@@ -3852,9 +3823,13 @@ begin_DTG
 end_DTG
 begin_DTG
 0
-1
+2
 0
-16
+2
+1
+0 0
+0
+17
 5
 23 0
 9 0
@@ -3866,7 +3841,7 @@ begin_DTG
 0
 1
 0
-15
+16
 5
 23 0
 10 0
@@ -3878,7 +3853,7 @@ begin_DTG
 0
 1
 0
-14
+15
 5
 23 0
 11 0
@@ -3890,7 +3865,7 @@ begin_DTG
 0
 1
 0
-13
+14
 5
 23 0
 12 0
@@ -3902,7 +3877,7 @@ begin_DTG
 0
 1
 0
-12
+13
 4
 23 0
 0 1
@@ -3913,7 +3888,7 @@ begin_DTG
 0
 1
 0
-11
+12
 4
 23 0
 0 1
@@ -3924,7 +3899,7 @@ begin_DTG
 0
 1
 0
-10
+11
 4
 23 0
 0 1
@@ -3935,7 +3910,7 @@ begin_DTG
 0
 1
 0
-9
+10
 4
 23 0
 0 1
@@ -3946,7 +3921,7 @@ begin_DTG
 0
 1
 0
-8
+9
 4
 23 0
 0 1
@@ -3957,7 +3932,7 @@ begin_DTG
 0
 1
 0
-7
+8
 4
 23 0
 0 1
@@ -3968,7 +3943,7 @@ begin_DTG
 0
 1
 0
-6
+7
 4
 23 0
 0 1
@@ -3989,10 +3964,10 @@ begin_CG
 30 1
 29 1
 28 1
-27 1
-26 1
+27 2
+26 2
 25 1
-24 1
+24 2
 21 12
 20 12
 19 12
@@ -4002,7 +3977,7 @@ begin_CG
 15 12
 14 2
 13 2
-4 2
+4 3
 12 1
 11 1
 10 1
@@ -4011,7 +3986,7 @@ begin_CG
 7 1
 6 1
 2 42
-1 2
+1 3
 3 84
 5 4
 13
@@ -4019,7 +3994,7 @@ begin_CG
 22 1
 14 2
 13 2
-4 2
+4 3
 12 1
 11 1
 10 1

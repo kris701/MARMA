@@ -25,6 +25,8 @@ namespace StacklebergCompiler
         {
             IErrorListener listener = new ErrorListener();
             IParser parser = new PDDLParser(listener);
+            ICodeGenerator generator = new PDDLCodeGenerator(listener);
+            generator.Readable = true;
 
             opts.DomainFilePath = PathHelper.RootPath(opts.DomainFilePath);
             opts.ProblemFilePath = PathHelper.RootPath(opts.ProblemFilePath);
@@ -37,11 +39,11 @@ namespace StacklebergCompiler
             ConditionalEffectCompiler compiler = new ConditionalEffectCompiler();
             var conditionalDecl = compiler.GenerateConditionalEffects(domain, problem, metaAction);
 
+            generator.Generate(conditionalDecl.Domain, "conditional_domain.pddl");
+            generator.Generate(conditionalDecl.Problem, "conditional_problem.pddl");
+
             ConditionalEffectAbstractor abstractor = new ConditionalEffectAbstractor();
             var abstractedConditionalDec = abstractor.AbstractConditionalEffects(conditionalDecl.Domain, conditionalDecl.Problem);
-
-            ICodeGenerator generator = new PDDLCodeGenerator(listener);
-            generator.Readable = true;
             generator.Generate(abstractedConditionalDec.Domain, "new_domain.pddl");
             generator.Generate(abstractedConditionalDec.Problem, "new_problem.pddl");
         }
