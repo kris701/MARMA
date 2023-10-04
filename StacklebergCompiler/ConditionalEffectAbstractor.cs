@@ -58,8 +58,11 @@ namespace StacklebergCompiler
             {
                 foreach (var whenNode in whenNodes)
                 {
-                    preconditions.Children.Add(whenNode.Condition);
-                    effects.Children.Add(whenNode.Effect);
+                    if (whenNode.Condition is not NotExp)
+                    {
+                        preconditions.Children.Add(whenNode.Condition);
+                        effects.Children.Add(whenNode.Effect);
+                    }
                 }
             }
 
