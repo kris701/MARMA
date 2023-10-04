@@ -31,7 +31,6 @@ fn generate_fact(instance: &Instance, i: usize) -> String {
 fn generate_state(instance: &Instance, state: &State) -> String {
     let mut s = "".to_string();
     state
-        .values
         .iter()
         .enumerate()
         .filter(|(_, v)| **v)

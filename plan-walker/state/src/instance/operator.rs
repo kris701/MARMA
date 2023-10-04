@@ -8,7 +8,7 @@ use crate::bit_expression::{extract, generate, BitExp};
 use super::fact::Facts;
 use super::permutation::permute;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Operator {
     pub has: BitExp,
     pub not: BitExp,

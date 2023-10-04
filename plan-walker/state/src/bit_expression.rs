@@ -49,7 +49,7 @@ fn evaluate_term(
         .map(|p| match_parameter(action, parameters, p))
         .collect();
     let fact = facts.index(pred_index, &parameter_indexes);
-    exp.set(fact, val);
+    exp.set(fact, true);
 
     true
 }

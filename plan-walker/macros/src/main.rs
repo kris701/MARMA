@@ -4,11 +4,17 @@ use clap::Parser;
 use color_eyre::eyre::Result;
 use parsing::{domain::Domain, problem::Problem, sas::SASPlan};
 use shared::time::{init_time, run_time};
-use state::{instance::fact::Facts, plan::Plan, state::State};
+use state::{
+    instance::fact::Facts,
+    plan::Plan,
+    state::{generate_state, State},
+};
 
-use crate::blocks::block_decomposition;
+use crate::{block_deordering::deorder, blocks::block_decomposition};
 
+mod block_deordering;
 mod blocks;
+mod constraints;
 
 #[derive(Parser, Default, Debug)]
 #[command(term_width = 0)]
@@ -48,7 +54,7 @@ fn main() -> Result<()> {
     let facts = Facts::new(&domain, &problem);
     println!("Total: {}", facts.count());
     println!("{} Generating state...", run_time());
-    let state = State::new(&domain, &problem, &facts);
+    let state = generate_state(&domain, &problem, &facts);
     println!("{} Parsing solution...", run_time());
     let solution = SASPlan::from(&args.solution.unwrap());
     println!("Steps: {}", solution.steps.len());
@@ -62,6 +68,16 @@ fn main() -> Result<()> {
         println!("---{}---", i);
         for step in &block.steps {
             println!("{}", domain.actions[step.action_index].name);
+        }
+    }
+    let deordered = deorder(&domain, &problem, &facts, &state, blocks);
+    println!("Deordered len: {}", deordered.len());
+    for i in 0..deordered.len() {
+        println!("Layer: {}", i);
+        for block in &deordered[i] {
+            for step in &block.steps {
+                println!("{}", domain.actions[step.action_index].name);
+            }
         }
     }
 

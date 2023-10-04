@@ -10,7 +10,7 @@ use crate::{
     },
 };
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Step {
     pub operator: Operator,
     pub action_index: usize,

@@ -1,19 +1,15 @@
+use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign};
+
 use bitvec::vec::BitVec;
+use itertools::Itertools;
 use parsing::{domain::Domain, problem::Problem};
 
-use crate::{
-    expression::Expression,
-    instance::{
-        fact::{Fact, Facts},
-        operator::Operator,
-    },
-    plan::Plan,
+use crate::instance::{
+    fact::{Fact, Facts},
+    operator::Operator,
 };
 
-#[derive(Clone, Hash, Debug, PartialEq)]
-pub struct State {
-    pub values: BitVec,
-}
+pub type State = BitVec;
 
 fn convert_init(
     domain: &Domain,
@@ -26,7 +22,7 @@ fn convert_init(
         .iter()
         .position(|pre| pre.name == i.name)
         .unwrap();
-    let parameters = i
+    let parameters: Vec<usize> = i
         .parameters
         .iter()
         .map(|par| problem.objects.iter().position(|o| o.name == *par).unwrap())
@@ -42,53 +38,19 @@ fn convert_init(
         .to_owned()
 }
 
-impl State {
-    pub fn new(domain: &Domain, problem: &Problem, facts: &Facts) -> Self {
-        let inits: Vec<usize> = problem
-            .inits
-            .iter()
-            .map(|i| convert_init(domain, problem, i, facts))
-            .collect();
-        let values = (0..facts.facts.len())
-            .map(|num| inits.contains(&num))
-            .collect();
-        State { values }
-    }
+pub fn generate_state(domain: &Domain, problem: &Problem, facts: &Facts) -> State {
+    let inits: Vec<usize> = problem
+        .inits
+        .iter()
+        .map(|i| convert_init(domain, problem, i, facts))
+        .collect();
+    let values = (0..facts.facts.len())
+        .map(|num| inits.contains(&num))
+        .collect();
+    values
+}
 
-    fn apply_term(&mut self, val: bool, i: &usize) {
-        self.values.set(*i, val);
-    }
-
-    fn apply_internal(&mut self, expression: &Expression, val: bool) {
-        match expression {
-            Expression::Term(i) => self.apply_term(val, i),
-            Expression::Not(e) => self.apply_internal(e, !val),
-            Expression::And(e) => {
-                e.iter()
-                    .filter(|e| match e {
-                        Expression::Not(_) => true,
-                        _ => false,
-                    })
-                    .for_each(|e| self.apply_internal(e, val));
-                e.iter()
-                    .filter(|e| match e {
-                        Expression::Not(_) => false,
-                        _ => true,
-                    })
-                    .for_each(|e| self.apply_internal(e, val));
-            }
-            Expression::Equal(_) => panic!("Cannot apply equal expression"),
-            Expression::Or(_) => panic!("Cannot apply or expression"),
-        }
-    }
-
-    pub fn apply(&mut self, expression: &Expression) {
-        todo!()
-    }
-
-    pub fn apply_plan(&self, plan: &Plan) -> State {
-        todo!()
-    }
-
-    pub fn apply_operators(&mut self, operators: &Vec<Operator>) {}
+pub fn apply_to_state(state: &mut State, operator: &Operator) {
+    state.bitand_assign(operator.del.to_owned());
+    state.bitor_assign(operator.add.to_owned());
 }
