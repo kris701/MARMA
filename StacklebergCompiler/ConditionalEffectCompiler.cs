@@ -178,7 +178,7 @@ namespace StacklebergCompiler
                 {
                     newLeaderPredicates.Add(new PredicateExp(
                         domain.Predicates,
-                        $"{ReservedNames.LeaderActionPrefix}{predicate.Name}",
+                        $"{ReservedNames.LeaderStatePrefix}{predicate.Name}",
                         predicate.Arguments));
                 }
             }

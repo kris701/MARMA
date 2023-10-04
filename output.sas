@@ -259,8 +259,8 @@ begin_variable
 var35
 -1
 2
-Atom leader_turn()
-NegatedAtom leader_turn()
+Atom leader-turn()
+NegatedAtom leader-turn()
 end_variable
 begin_variable
 var36
@@ -354,9 +354,9 @@ begin_state
 end_state
 begin_goal
 3
-12 0
-13 0
-15 0
+4 0
+5 0
+7 0
 end_goal
 159
 begin_operator
@@ -386,9 +386,9 @@ attack_reach-goal
 1
 35 0
 3
-0 12 -1 0
-0 13 -1 0
-0 15 -1 0
+0 4 -1 0
+0 5 -1 0
+0 7 -1 0
 0
 end_operator
 begin_operator

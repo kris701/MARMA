@@ -9,8 +9,8 @@ begin_variable
 var35
 -1
 2
-Atom leader_turn()
-NegatedAtom leader_turn()
+Atom leader-turn()
+NegatedAtom leader-turn()
 end_variable
 begin_variable
 var34
@@ -281,7 +281,7 @@ var1
 Atom have_image(groundstation1, thermograph0)
 NegatedAtom have_image(groundstation1, thermograph0)
 end_variable
-39
+45
 begin_mutex_group
 mutex
 fw
@@ -413,7 +413,28 @@ mutex
 fw
 2
 0 0
+24 0
+end_mutex_group
+begin_mutex_group
+mutex
+fw
+2
+0 0
 25 0
+end_mutex_group
+begin_mutex_group
+mutex
+fw
+2
+0 0
+26 0
+end_mutex_group
+begin_mutex_group
+mutex
+fw
+2
+0 0
+27 0
 end_mutex_group
 begin_mutex_group
 mutex
@@ -441,28 +462,7 @@ mutex
 fw
 2
 0 0
-31 0
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
-0 0
 32 0
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
-0 0
-33 0
-end_mutex_group
-begin_mutex_group
-mutex
-fw
-2
-0 0
-34 0
 end_mutex_group
 begin_mutex_group
 mutex
@@ -489,8 +489,29 @@ begin_mutex_group
 mutex
 fw
 2
+6 1
+24 0
+end_mutex_group
+begin_mutex_group
+mutex
+fw
+2
 7 1
 25 0
+end_mutex_group
+begin_mutex_group
+mutex
+fw
+2
+8 1
+26 0
+end_mutex_group
+begin_mutex_group
+mutex
+fw
+2
+9 1
+27 0
 end_mutex_group
 begin_mutex_group
 mutex
@@ -531,8 +552,29 @@ begin_mutex_group
 mutex
 fw
 2
+24 0
+31 1
+end_mutex_group
+begin_mutex_group
+mutex
+fw
+2
 25 0
 32 1
+end_mutex_group
+begin_mutex_group
+mutex
+fw
+2
+26 0
+33 1
+end_mutex_group
+begin_mutex_group
+mutex
+fw
+2
+27 0
+34 1
 end_mutex_group
 begin_mutex_group
 mutex
@@ -597,9 +639,9 @@ begin_state
 end_state
 begin_goal
 3
-24 0
-26 0
-27 0
+31 0
+33 0
+34 0
 end_goal
 159
 begin_operator
@@ -629,9 +671,9 @@ attack_reach-goal
 1
 0 0
 3
-0 27 -1 0
-0 26 -1 0
-0 24 -1 0
+0 34 -1 0
+0 33 -1 0
+0 31 -1 0
 0
 end_operator
 begin_operator
@@ -3779,11 +3821,7 @@ begin_DTG
 end_DTG
 begin_DTG
 0
-2
-0
-2
 1
-0 0
 0
 20
 5
@@ -3807,11 +3845,7 @@ begin_DTG
 end_DTG
 begin_DTG
 0
-2
-0
-2
 1
-0 0
 0
 18
 5
@@ -3823,11 +3857,7 @@ begin_DTG
 end_DTG
 begin_DTG
 0
-2
-0
-2
 1
-0 0
 0
 17
 5
@@ -3875,7 +3905,11 @@ begin_DTG
 end_DTG
 begin_DTG
 0
+2
+0
+2
 1
+0 0
 0
 13
 4
@@ -3897,7 +3931,11 @@ begin_DTG
 end_DTG
 begin_DTG
 0
+2
+0
+2
 1
+0 0
 0
 11
 4
@@ -3908,7 +3946,11 @@ begin_DTG
 end_DTG
 begin_DTG
 0
+2
+0
+2
 1
+0 0
 0
 10
 4
@@ -3956,18 +3998,18 @@ begin_CG
 37 2
 36 2
 35 2
-34 2
-33 2
+34 3
+33 3
 32 2
-31 2
+31 3
 22 2
 30 1
 29 1
 28 1
-27 2
-26 2
+27 1
+26 1
 25 1
-24 2
+24 1
 21 12
 20 12
 19 12

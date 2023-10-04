@@ -19,14 +19,14 @@
 		(calibrated ?i - instrument)
 		(have_image ?d - direction ?m - mode)
 		(calibration_target ?i - instrument ?d - direction)
-		(fix_on_board ?i - instrument ?s - satellite)
-		(fix_supports ?i - instrument ?m - mode)
-		(fix_pointing ?s - satellite ?d - direction)
-		(fix_power_avail ?s - satellite)
-		(fix_power_on ?i - instrument)
-		(fix_calibrated ?i - instrument)
-		(fix_have_image ?d - direction ?m - mode)
-		(fix_calibration_target ?i - instrument ?d - direction)
+		(leader-state-on_board ?i - instrument ?s - satellite)
+		(leader-state-supports ?i - instrument ?m - mode)
+		(leader-state-pointing ?s - satellite ?d - direction)
+		(leader-state-power_avail ?s - satellite)
+		(leader-state-power_on ?i - instrument)
+		(leader-state-calibrated ?i - instrument)
+		(leader-state-have_image ?d - direction ?m - mode)
+		(leader-state-calibration_target ?i - instrument ?d - direction)
 		(is-goal-on_board ?i - instrument ?s - satellite)
 		(is-goal-supports ?i - instrument ?m - mode)
 		(is-goal-pointing ?s - satellite ?d - direction)
@@ -363,7 +363,7 @@
 			)
 	)
 
-	(:action pass-turn
+	(:action fix_pass-turn
 		:parameters ()
 		:precondition 
 			(leader-turn)
