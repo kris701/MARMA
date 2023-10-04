@@ -213,10 +213,11 @@ namespace StacklebergCompiler
             {
                 foreach (var predicate in domain.Predicates.Predicates)
                 {
-                    newLeaderPredicates.Add(new PredicateExp(
-                        domain.Predicates,
-                        $"{ReservedNames.LeaderStatePrefix}{predicate.Name}",
-                        predicate.Arguments));
+                    if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
+                        newLeaderPredicates.Add(new PredicateExp(
+                            domain.Predicates,
+                            $"{ReservedNames.LeaderStatePrefix}{predicate.Name}",
+                            predicate.Arguments));
                 }
             }
             return newLeaderPredicates;
@@ -229,10 +230,11 @@ namespace StacklebergCompiler
             {
                 foreach (var predicate in domain.Predicates.Predicates)
                 {
-                    newGoalPredicates.Add(new PredicateExp(
-                        domain.Predicates,
-                        $"{ReservedNames.IsGoalPrefix}{predicate.Name}",
-                        predicate.Arguments));
+                    if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
+                        newGoalPredicates.Add(new PredicateExp(
+                            domain.Predicates,
+                            $"{ReservedNames.IsGoalPrefix}{predicate.Name}",
+                            predicate.Arguments));
                 }
             }
             return newGoalPredicates;
@@ -307,10 +309,10 @@ namespace StacklebergCompiler
                 foreach (var predicate in domain.Predicates.Predicates)
                     if (predicate is PredicateExp pred)
                         newGoals.AddRange(GeneratePossibles(pred, 0, objDict));
+                newGoals.RemoveAll(x => StaticPredicateDetector.StaticPredicates.Contains((x as PredicateExp).Name));
                 foreach (var goal in newGoals)
                     if (goal is PredicateExp pred)
-                        if (!StaticPredicateDetector.StaticPredicates.Contains(pred.Name))
-                            pred.Name = $"{ReservedNames.IsGoalPrefix}{pred.Name}";
+                        pred.Name = $"{ReservedNames.IsGoalPrefix}{pred.Name}";
 
                 problem.Goal.GoalExp = new AndExp(null, newGoals);
             }

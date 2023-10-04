@@ -1,6 +1,6 @@
 (:action meta-pick
-       :parameters (?obj ?room ?gripper)
-       :precondition  (and  (ball ?obj) (room ?room)
+       :parameters (?obj - ball ?room - room ?gripper - gripper)
+       :precondition  (and 
 			    (at ?obj ?room) (at-robby ?room))
        :effect (and (carry ?obj ?gripper)
 		    (not (at ?obj ?room))))
