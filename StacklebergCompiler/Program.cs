@@ -9,6 +9,7 @@ using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.Problem;
 using PDDLSharp.Models.Domain;
 using PDDLSharp.CodeGenerators;
+using PDDLSharp.Analysers;
 
 namespace StacklebergCompiler
 {

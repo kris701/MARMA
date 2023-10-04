@@ -1,4 +1,5 @@
-﻿using PDDLSharp.Models;
+﻿using PDDLSharp.Contextualisers;
+using PDDLSharp.Models;
 using PDDLSharp.Models.AST;
 using PDDLSharp.Models.Domain;
 using PDDLSharp.Models.Expressions;
@@ -20,8 +21,8 @@ namespace StacklebergCompiler
             var newProblem = problem.Copy();
 
             // Problem
-            GenerateLeaderInits(newProblem);
-            GenerateNewGoal(newProblem);
+            GenerateNewInits(newProblem);
+            GenerateNewGoal(newProblem, newDomain);
             InsertTurnPredicate(newProblem);
 
             // Domain
@@ -60,12 +61,38 @@ namespace StacklebergCompiler
 
         private void AddPassTurnToFollowerAction(DomainDecl domain)
         {
+            List<IExp> effects = new List<IExp>();
+            effects.Add(new NotExp(null, new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>())));
+
+            if (domain.Predicates != null)
+            {
+                foreach(var predicate in domain.Predicates.Predicates)
+                {
+                    if (!predicate.Name.Contains(ReservedNames.LeaderStatePrefix) && !predicate.Name.Contains(ReservedNames.IsGoalPrefix) && predicate.Name != ReservedNames.LeaderTurnPredicate)
+                    {
+                        var leaderPredicate = predicate.Copy();
+                        leaderPredicate.Name = $"{ReservedNames.LeaderStatePrefix}{leaderPredicate}";
+                        var goalPredicate = predicate.Copy();
+                        goalPredicate.Name = $"{ReservedNames.IsGoalPrefix}{goalPredicate}";
+
+                        effects.Add(new ForAllExp(
+                            null,
+                            new ParameterExp(null, predicate.Arguments.Copy()),
+                            new WhenExp(
+                                null,
+                                new NotExp(null, leaderPredicate),
+                                goalPredicate)
+                            ));
+                    }
+                }
+            }
+
             domain.Actions.Add(new ActionDecl(
                 null,
                 ReservedNames.LeaderPassTurnAction,
                 new ParameterExp(null, new List<NameExp>()),
                 new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()),
-                new NotExp(null, new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()))));
+                new AndExp(null, effects)));
         }
 
         private void TurnAllActionEffectsToAnd(DomainDecl domain)
@@ -216,26 +243,98 @@ namespace StacklebergCompiler
             domain.Actions = newActions;
         }
 
-        private void GenerateLeaderInits(ProblemDecl problem)
+        private void GenerateNewInits(ProblemDecl problem)
+        {
+            if (problem.Init != null)
+            {
+                var initPredicates = new List<PredicateExp>();
+                foreach (var item in problem.Init.Predicates)
+                    if (item is PredicateExp pred)
+                        initPredicates.Add(pred);
+
+                problem.Init.Predicates.AddRange(GenerateLeaderInits(initPredicates));
+                problem.Init.Predicates.AddRange(GenerateGoalInits(initPredicates));
+            }
+        }
+
+        private List<PredicateExp> GenerateLeaderInits(List<PredicateExp> inits)
         {
             var newInits = new List<PredicateExp>();
-            foreach (var init in problem.Init.Predicates)
+            foreach (var init in inits)
             {
                 if (init is PredicateExp pred)
                     newInits.Add(new PredicateExp(
-                        problem.Init,
+                        null,
                         $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
                         pred.Arguments));
             }
-            problem.Init.Predicates.AddRange(newInits);
+            return newInits;
         }
 
-        private void GenerateNewGoal(ProblemDecl problem)
+        private List<PredicateExp> GenerateGoalInits(List<PredicateExp> inits)
         {
-            if (problem.Goal != null)
+            var newInits = new List<PredicateExp>();
+            foreach (var init in inits)
             {
-                //problem.Goal.GoalExp = new AndExp(null, new List<IExp>());
+                if (init is PredicateExp pred)
+                    newInits.Add(new PredicateExp(
+                        null,
+                        $"{ReservedNames.IsGoalPrefix}{pred.Name}",
+                        pred.Arguments));
             }
+            return newInits;
+        }
+
+        private void GenerateNewGoal(ProblemDecl problem, DomainDecl domain)
+        {
+            if (problem.Goal != null && problem.Init != null && problem.Objects != null && domain.Predicates != null)
+            {
+                List<IExp> newGoals = new List<IExp>();
+                var objDict = DictionaryObjectsOfType(problem.Objects.Objs);
+
+                foreach (var predicate in domain.Predicates.Predicates)
+                    if (predicate is PredicateExp pred)
+                        newGoals.AddRange(GeneratePossibles(pred, 0, objDict));
+                foreach (var goal in newGoals)
+                    if (goal is PredicateExp pred)
+                        pred.Name = $"{ReservedNames.IsGoalPrefix}{pred.Name}";
+
+                problem.Goal.GoalExp = new AndExp(null, newGoals);
+            }
+        }
+
+        private List<PredicateExp> GeneratePossibles(PredicateExp parentPredicate, int argIndex, Dictionary<string, List<string>> objDict)
+        {
+            List<PredicateExp> returnList = new List<PredicateExp>();
+            if (argIndex >= parentPredicate.Arguments.Count)
+                return returnList;
+
+            foreach(var obj in objDict[parentPredicate.Arguments[argIndex].Type.Name])
+            {
+                var newPredicate = new PredicateExp(null, parentPredicate.Name, parentPredicate.Arguments.Copy());
+                if (argIndex == parentPredicate.Arguments.Count - 1)
+                    returnList.Add(newPredicate);
+                newPredicate.Arguments.RemoveAt(argIndex);
+                newPredicate.Arguments.Insert(argIndex, new NameExp(null, obj));
+
+                returnList.AddRange(GeneratePossibles(newPredicate, argIndex + 1, objDict));
+            }
+
+            return returnList;
+        }
+
+        private Dictionary<string, List<string>> DictionaryObjectsOfType(List<NameExp> objs)
+        {
+            Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
+
+            foreach(var obj in objs)
+            {
+                if (!dict.ContainsKey(obj.Type.Name))
+                    dict.Add(obj.Type.Name, new List<string>());
+                dict[obj.Type.Name].Add(obj.Name);
+            }
+
+            return dict;
         }
     }
 }

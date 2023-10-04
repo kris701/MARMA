@@ -298,8 +298,90 @@
 		:precondition 
 			(leader-turn)
 		:effect 
-			(not
-				(leader-turn)
+			(and
+				(not
+					(leader-turn)
+				)
+				(forall ( ?i - instrument ?s - satellite)
+					(when
+						(not
+							(leader-state-on_board ?i ?s)
+						)
+						(is-goal-on_board ?i ?s)
+					)
+
+				)
+
+				(forall ( ?i - instrument ?m - mode)
+					(when
+						(not
+							(leader-state-supports ?i ?m)
+						)
+						(is-goal-supports ?i ?m)
+					)
+
+				)
+
+				(forall ( ?s - satellite ?d - direction)
+					(when
+						(not
+							(leader-state-pointing ?s ?d)
+						)
+						(is-goal-pointing ?s ?d)
+					)
+
+				)
+
+				(forall ( ?s - satellite)
+					(when
+						(not
+							(leader-state-power_avail ?s)
+						)
+						(is-goal-power_avail ?s)
+					)
+
+				)
+
+				(forall ( ?i - instrument)
+					(when
+						(not
+							(leader-state-power_on ?i)
+						)
+						(is-goal-power_on ?i)
+					)
+
+				)
+
+				(forall ( ?i - instrument)
+					(when
+						(not
+							(leader-state-calibrated ?i)
+						)
+						(is-goal-calibrated ?i)
+					)
+
+				)
+
+				(forall ( ?d - direction ?m - mode)
+					(when
+						(not
+							(leader-state-have_image ?d ?m)
+						)
+						(is-goal-have_image ?d ?m)
+					)
+
+				)
+
+				(forall ( ?i - instrument ?d - direction)
+					(when
+						(not
+							(leader-state-calibration_target ?i ?d)
+						)
+						(is-goal-calibration_target ?i ?d)
+					)
+
+				)
+
 			)
 	)
 
@@ -309,9 +391,48 @@
 			(leader-turn)
 		:effect 
 			(and
-				(have_image phenomenon4 thermograph0)
-				(have_image star5 thermograph0)
-				(have_image phenomenon6 thermograph0)
+				(is-goal-on_board instrument0 satellite0)
+				(is-goal-supports instrument0 image1)
+				(is-goal-supports instrument0 spectrograph2)
+				(is-goal-supports instrument0 thermograph0)
+				(is-goal-pointing satellite0 star0)
+				(is-goal-pointing satellite0 groundstation1)
+				(is-goal-pointing satellite0 groundstation2)
+				(is-goal-pointing satellite0 phenomenon3)
+				(is-goal-pointing satellite0 phenomenon4)
+				(is-goal-pointing satellite0 star5)
+				(is-goal-pointing satellite0 phenomenon6)
+				(is-goal-power_avail satellite0)
+				(is-goal-power_on instrument0)
+				(is-goal-calibrated instrument0)
+				(is-goal-have_image star0 image1)
+				(is-goal-have_image star0 spectrograph2)
+				(is-goal-have_image star0 thermograph0)
+				(is-goal-have_image groundstation1 image1)
+				(is-goal-have_image groundstation1 spectrograph2)
+				(is-goal-have_image groundstation1 thermograph0)
+				(is-goal-have_image groundstation2 image1)
+				(is-goal-have_image groundstation2 spectrograph2)
+				(is-goal-have_image groundstation2 thermograph0)
+				(is-goal-have_image phenomenon3 image1)
+				(is-goal-have_image phenomenon3 spectrograph2)
+				(is-goal-have_image phenomenon3 thermograph0)
+				(is-goal-have_image phenomenon4 image1)
+				(is-goal-have_image phenomenon4 spectrograph2)
+				(is-goal-have_image phenomenon4 thermograph0)
+				(is-goal-have_image star5 image1)
+				(is-goal-have_image star5 spectrograph2)
+				(is-goal-have_image star5 thermograph0)
+				(is-goal-have_image phenomenon6 image1)
+				(is-goal-have_image phenomenon6 spectrograph2)
+				(is-goal-have_image phenomenon6 thermograph0)
+				(is-goal-calibration_target instrument0 star0)
+				(is-goal-calibration_target instrument0 groundstation1)
+				(is-goal-calibration_target instrument0 groundstation2)
+				(is-goal-calibration_target instrument0 phenomenon3)
+				(is-goal-calibration_target instrument0 phenomenon4)
+				(is-goal-calibration_target instrument0 star5)
+				(is-goal-calibration_target instrument0 phenomenon6)
 			)
 	)
 

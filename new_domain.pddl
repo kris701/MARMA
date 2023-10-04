@@ -51,6 +51,8 @@
 				(not
 					(leader-state-pointing ?s ?d_prev)
 				)
+				(will-be-true-pointing ?s ?d_new)
+				(will-be-false-pointing ?s ?d_prev)
 			)
 	)
 
@@ -368,21 +370,14 @@
 		:precondition 
 			(leader-turn)
 		:effect 
-			(not
-				(leader-turn)
-			)
+			(not (leader-turn))
 	)
 
 	(:action attack_reach-goal
 		:parameters ()
 		:precondition 
 			(leader-turn)
-		:effect 
-			(and
-				(have_image phenomenon4 thermograph0)
-				(have_image star5 thermograph0)
-				(have_image phenomenon6 thermograph0)
-			)
+		:effect ()
 	)
 
 )
