@@ -17,58 +17,116 @@ namespace StacklebergCompiler
         {
             var newDomain = domain.Copy();
 
-            newDomain.Actions = GenerateAbstractedActions(newDomain.Actions);
+            //newDomain.Actions = GenerateAbstractedActions(newDomain.Actions);
+            newDomain.Actions = GenerateAbstractedActions2(newDomain.Actions);
 
             return new PDDLDecl(newDomain, problem);
         }
 
-        private List<ActionDecl> GenerateAbstractedActions(List<ActionDecl> actions)
+        private List<ActionDecl> GenerateAbstractedActions2(List<ActionDecl> actions)
         {
             List<ActionDecl> newActions = new List<ActionDecl>();
-            foreach (var action in actions)
+
+            foreach(var action in actions)
             {
-                if (action.Name.Contains(ReservedNames.FollowerActionPrefix))
+                if (action.Name.StartsWith(ReservedNames.FollowerActionPrefix))
                 {
-                    var baseAction = GenerateBaseFromConditional(action);
-                    var whenNodes = action.FindTypes<WhenExp>();
-                    newActions.Add(baseAction);
-                    if (action.Name != ReservedNames.FollowerReachGoalAction)
-                        newActions.Add(GenerateGoalVariantFromConditional(baseAction, whenNodes));
+                    if (action.Effects is AndExp and)
+                    {
+                        and.Children.RemoveAll(x => x is WhenExp);
+                        var trues = GenerateTrue(and.Children);
+                        var permutations = GeneratePermutations(and.Children.Count, 0, new List<bool>());
+                        int counter = 0;
+                        foreach (var permutation in permutations)
+                        {
+                            var newAct = action.Copy();
+
+                            for(int i = 0; i < permutation.Count; i++)
+                            {
+                                var pred = GetActualPredicate(and.Children[i]);
+                                if (newAct.Preconditions is AndExp preAnd && newAct.Effects is AndExp effAnd) 
+                                {
+                                    if (permutation[i])
+                                    {
+                                        preAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.LeaderStatePrefix));
+                                        if (trues[i])
+                                            effAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix));
+                                        else
+                                            effAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix)));
+                                    }
+                                    else
+                                    {
+                                        preAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.LeaderStatePrefix)));
+                                        if (trues[i])
+                                            effAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix)));
+                                        else
+                                            effAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix));
+                                    }
+                                }
+                            }
+
+                            newAct.Name = $"{newAct.Name}_{counter++}";
+                            newActions.Add(newAct);
+                        }
+                    }
                 }
                 else
                     newActions.Add(action);
             }
+
             return newActions;
         }
 
-        private ActionDecl GenerateBaseFromConditional(ActionDecl action)
+        private PredicateExp GetActualPredicate(IExp item)
         {
-            var newAction = action.Copy();
-            if (newAction.Effects is AndExp and) {
-                and.Children.RemoveAll(x => x.GetType() == typeof(WhenExp));
-            }
-            return newAction;
+            if (item is NotExp not)
+                if (not.Child is PredicateExp nPred)
+                    return nPred;
+            if (item is PredicateExp pred)
+                return pred;
+            throw new Exception("Expected a predicate");
         }
 
-        private ActionDecl GenerateGoalVariantFromConditional(ActionDecl baseAction, List<WhenExp> whenNodes)
+        private PredicateExp CopyAndPrefixPredicate(PredicateExp pred, string name)
         {
-            var newAction = baseAction.Copy();
-            if (newAction.Preconditions is AndExp preconditions &&
-                newAction.Effects is AndExp effects)
+            var copy = pred.Copy();
+            copy.Name = $"{name}{copy.Name}";
+            return copy;
+        }
+
+        private List<bool> GenerateTrue(List<IExp> items)
+        {
+            List<bool> returnList = new List<bool>();
+
+            foreach (var item in items)
             {
-                foreach (var whenNode in whenNodes)
-                {
-                    if (whenNode.Condition is not NotExp)
-                    {
-                        preconditions.Children.Add(whenNode.Condition);
-                        effects.Children.Add(whenNode.Effect);
-                    }
-                }
+                if (item is NotExp)
+                    returnList.Add(false);
+                else
+                    returnList.Add(true);
             }
 
-            newAction.Name = $"{newAction.Name}{ReservedNames.GoalActionSufix}";
+            return returnList;
+        }
 
-            return newAction;
+        private List<List<bool>> GeneratePermutations(int count, int index, List<bool> source)
+        {
+            List<List<bool>> returnList = new List<List<bool>>();
+            if (index >= count)
+            {
+                returnList.Add(source);
+                return returnList;
+            }
+
+            var trueSource = source.Copy();
+            trueSource.Insert(index, true);
+            returnList.AddRange(GeneratePermutations(count, index + 1, trueSource));
+
+            var falseSource = source.Copy();
+            falseSource.Insert(index, false);
+            returnList.AddRange(GeneratePermutations(count, index + 1, falseSource));
+
+            return returnList;
         }
     }
 }

@@ -186,30 +186,54 @@ namespace StacklebergCompiler
                 var predicates = action.Effects.FindTypes<PredicateExp>();
                 foreach (var pred in predicates)
                 {
-                    var newWhen = new WhenExp(action, null, null);
                     if (pred.Parent is NotExp)
                     {
-                        newWhen.Condition = new NotExp(newWhen, new PredicateExp(
-                            newWhen,
+                        var trueWhen = new WhenExp(action, null, null);
+                        trueWhen.Condition = new NotExp(trueWhen, new PredicateExp(
+                            trueWhen,
                             $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
                             pred.Arguments));
-                        newWhen.Effect = new PredicateExp(
-                            newWhen,
+                        trueWhen.Effect = new PredicateExp(
+                            trueWhen,
                             $"{ReservedNames.IsGoalPrefix}{pred.Name}",
                             pred.Arguments);
+                        newExpressions.Add(trueWhen);
+
+                        var falseWhen = new WhenExp(action, null, null);
+                        falseWhen.Condition = new PredicateExp(
+                            falseWhen,
+                            $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
+                            pred.Arguments);
+                        falseWhen.Effect = new NotExp(null, new PredicateExp(
+                            falseWhen,
+                            $"{ReservedNames.IsGoalPrefix}{pred.Name}",
+                            pred.Arguments));
+                        newExpressions.Add(falseWhen);
                     }
                     else
                     {
-                        newWhen.Condition = new PredicateExp(
-                            newWhen,
+                        var trueWhen = new WhenExp(action, null, null);
+                        trueWhen.Condition = new PredicateExp(
+                            trueWhen,
                             $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
                             pred.Arguments);
-                        newWhen.Effect = new PredicateExp(
-                            newWhen,
+                        trueWhen.Effect = new PredicateExp(
+                            trueWhen,
                             $"{ReservedNames.IsGoalPrefix}{pred.Name}",
                             pred.Arguments);
+                        newExpressions.Add(trueWhen);
+
+                        var falseWhen = new WhenExp(action, null, null);
+                        falseWhen.Condition = new NotExp(null, new PredicateExp(
+                            falseWhen,
+                            $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
+                            pred.Arguments));
+                        falseWhen.Effect = new NotExp(null, new PredicateExp(
+                            falseWhen,
+                            $"{ReservedNames.IsGoalPrefix}{pred.Name}",
+                            pred.Arguments));
+                        newExpressions.Add(falseWhen);
                     }
-                    newExpressions.Add(newWhen);
                 }
 
                 if (action.Effects is AndExp and)
@@ -303,12 +327,10 @@ namespace StacklebergCompiler
                 List<IExp> newGoals = new List<IExp>();
                 foreach (var goal in goals)
                     newGoals.Add(goal);
-                newGoals.Add(new NotExp(null, new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>())));
 
                 problem.Goal.GoalExp = new AndExp(null, newGoals);
             }
         }
-
 
         private List<PredicateExp> IsGoal = new List<PredicateExp>();
         private void GenerateIsGoal(ProblemDecl problem, DomainDecl domain)

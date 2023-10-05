@@ -1,2 +1,3 @@
-[{"attacker cost": 1, "defender cost": 0, "sequences": [  []], "attacker plan":  ["attack_reach-goal "]},
-{"attacker cost": 3, "defender cost": 1, "sequences": [  ["fix_meta_$switch-on-calibrate satellite0 instrument0"]], "attacker plan":  ["attack_switch_on_goal instrument0 satellite0", "attack_turn_to satellite0 groundstation2 phenomenon6", "attack_calibrate_goal satellite0 instrument0 groundstation2"]}]
+[{"attacker cost": 0, "defender cost": 0, "sequences": [  []], "attacker plan":  []},
+{"attacker cost": 1, "defender cost": 1, "sequences": [  ["fix_meta_$tele-pick ball2 rooma right"]], "attacker plan":  ["attack_pick_3 ball2 rooma right"]},
+{"attacker cost": 3, "defender cost": 2, "sequences": [  ["fix_move rooma roomb", "fix_meta_$tele-pick ball2 rooma right"]], "attacker plan":  ["attack_move_2 roomb rooma", "attack_pick_3 ball2 rooma right", "attack_move_1 rooma roomb"]}]
