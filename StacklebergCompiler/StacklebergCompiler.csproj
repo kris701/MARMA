@@ -12,30 +12,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="TestData\domain.pddl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-	  <None Include="TestData\metaaction.pddl">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Include="TestData\prob01.pddl">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Tools\Tools.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\instance-1.pddl">
+    <None Update="TestData\gripper-domain.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\meta_domain.pddl">
+    <None Update="TestData\gripper-metaaction.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\original_domain.pddl">
+    <None Update="TestData\gripper-prob1.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\satellite-prob1.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\satellite-metaaction.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\satellite-domain.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

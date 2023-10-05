@@ -37,7 +37,7 @@ namespace StacklebergCompiler
                         }
                         if (!isStatic)
                             continue;
-                        if (IsInEffects(predicate.Parent, predicate))
+                        if (IsInEffects(domain, predicate))
                             isStatic = false;
                     }
                     if (isStatic)
@@ -48,19 +48,13 @@ namespace StacklebergCompiler
             return _staticPredicates;
         }
 
-        private static bool IsInEffects(INode node, INode target)
+        private static bool IsInEffects(DomainDecl domain, PredicateExp predicate)
         {
-            if (node.Parent != null)
+            foreach(var action in domain.Actions)
             {
-                if (node.Parent is ActionDecl act)
-                {
-                    if (act.Effects is AndExp and)
-                        foreach (var innerNode in and)
-                            if (innerNode == target)
-                                return true;
-                }
-                else
-                    return IsInEffects(node.Parent, target);
+                var allPredicates = action.Effects.FindTypes<PredicateExp>();
+                if (allPredicates.Contains(predicate))
+                    return true;
             }
             return false;
         }

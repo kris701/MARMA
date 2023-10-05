@@ -1,258 +1,318 @@
 (define
-	(domain gripper-strips)
+	(domain satellite)
+
+	(:requirements :strips :equality :typing)
 
 	(:types
-		room
-		ball
-		gripper
+		satellite
+		direction
+		instrument
+		mode
 	)
 
 	(:predicates
-		(at-robby ?r - room)
-		(at ?b - ball ?r - room)
-		(free ?g - gripper)
-		(carry ?o - ball ?g - gripper)
-		(leader-state-at-robby ?r - room)
-		(leader-state-at ?b - ball ?r - room)
-		(leader-state-free ?g - gripper)
-		(leader-state-carry ?o - ball ?g - gripper)
-		(is-goal-at-robby ?r - room)
-		(is-goal-at ?b - ball ?r - room)
-		(is-goal-free ?g - gripper)
-		(is-goal-carry ?o - ball ?g - gripper)
+		(on_board ?i - instrument ?s - satellite)
+		(supports ?i - instrument ?m - mode)
+		(pointing ?s - satellite ?d - direction)
+		(power_avail ?s - satellite)
+		(power_on ?i - instrument)
+		(calibrated ?i - instrument)
+		(have_image ?d - direction ?m - mode)
+		(calibration_target ?i - instrument ?d - direction)
+		(leader-state-pointing ?s - satellite ?d - direction)
+		(leader-state-power_avail ?s - satellite)
+		(leader-state-power_on ?i - instrument)
+		(leader-state-calibrated ?i - instrument)
+		(leader-state-have_image ?d - direction ?m - mode)
+		(is-goal-pointing ?s - satellite ?d - direction)
+		(is-goal-power_avail ?s - satellite)
+		(is-goal-power_on ?i - instrument)
+		(is-goal-calibrated ?i - instrument)
+		(is-goal-have_image ?d - direction ?m - mode)
 		(leader-turn)
 	)
 
-	(:action fix_move
-		:parameters ( ?from - room ?to - room)
+	(:action fix_turn_to
+		:parameters ( ?s - satellite ?d_new - direction ?d_prev - direction)
 		:precondition 
 			(and
-				(leader-state-at-robby ?from)
+				(leader-state-pointing ?s ?d_prev)
 				(leader-turn)
 			)
 		:effect 
 			(and
-				(leader-state-at-robby ?to)
+				(leader-state-pointing ?s ?d_new)
 				(not
-					(leader-state-at-robby ?from)
+					(leader-state-pointing ?s ?d_prev)
+				)
+				(pointing ?s ?d_new)
+				(not
+					(pointing ?s ?d_prev)
 				)
 			)
 	)
 
-	(:action attack_move
-		:parameters ( ?from - room ?to - room)
+	(:action attack_turn_to
+		:parameters ( ?s - satellite ?d_new - direction ?d_prev - direction)
 		:precondition 
 			(and
-				(at-robby ?from)
+				(pointing ?s ?d_prev)
 				(not
 					(leader-turn)
 				)
 			)
 		:effect 
 			(and
-				(at-robby ?to)
+				(pointing ?s ?d_new)
 				(not
-					(at-robby ?from)
+					(pointing ?s ?d_prev)
 				)
 				(when
-					(leader-state-at-robby ?to)
-					(is-goal-at-robby ?to)
+					(leader-state-pointing ?s ?d_new)
+					(is-goal-pointing ?s ?d_new)
 				)
 
 				(when
 					(not
-						(leader-state-at-robby ?from)
+						(leader-state-pointing ?s ?d_prev)
 					)
-					(is-goal-at-robby ?from)
+					(is-goal-pointing ?s ?d_prev)
 				)
 
 			)
 	)
 
-	(:action fix_pick
-		:parameters ( ?obj - ball ?room - room ?gripper - gripper)
+	(:action fix_switch_on
+		:parameters ( ?i - instrument ?s - satellite)
 		:precondition 
 			(and
-				(leader-state-at ?obj ?room)
-				(leader-state-at-robby ?room)
-				(leader-state-free ?gripper)
+				(on_board ?i ?s)
+				(leader-state-power_avail ?s)
 				(leader-turn)
 			)
 		:effect 
 			(and
-				(leader-state-carry ?obj ?gripper)
+				(leader-state-power_on ?i)
 				(not
-					(leader-state-at ?obj ?room)
+					(leader-state-calibrated ?i)
 				)
 				(not
-					(leader-state-free ?gripper)
+					(leader-state-power_avail ?s)
+				)
+				(power_on ?i)
+				(not
+					(calibrated ?i)
+				)
+				(not
+					(power_avail ?s)
 				)
 			)
 	)
 
-	(:action attack_pick
-		:parameters ( ?obj - ball ?room - room ?gripper - gripper)
+	(:action attack_switch_on
+		:parameters ( ?i - instrument ?s - satellite)
 		:precondition 
 			(and
-				(at ?obj ?room)
-				(at-robby ?room)
-				(free ?gripper)
+				(on_board ?i ?s)
+				(power_avail ?s)
 				(not
 					(leader-turn)
 				)
 			)
 		:effect 
 			(and
-				(carry ?obj ?gripper)
+				(power_on ?i)
 				(not
-					(at ?obj ?room)
+					(calibrated ?i)
 				)
 				(not
-					(free ?gripper)
+					(power_avail ?s)
 				)
 				(when
-					(leader-state-carry ?obj ?gripper)
-					(is-goal-carry ?obj ?gripper)
+					(leader-state-power_on ?i)
+					(is-goal-power_on ?i)
 				)
 
 				(when
 					(not
-						(leader-state-at ?obj ?room)
+						(leader-state-calibrated ?i)
 					)
-					(is-goal-at ?obj ?room)
+					(is-goal-calibrated ?i)
 				)
 
 				(when
 					(not
-						(leader-state-free ?gripper)
+						(leader-state-power_avail ?s)
 					)
-					(is-goal-free ?gripper)
+					(is-goal-power_avail ?s)
 				)
 
 			)
 	)
 
-	(:action fix_drop
-		:parameters ( ?obj - ball ?room - room ?gripper - gripper)
+	(:action fix_switch_off
+		:parameters ( ?i - instrument ?s - satellite)
 		:precondition 
 			(and
-				(leader-state-carry ?obj ?gripper)
-				(leader-state-at-robby ?room)
+				(on_board ?i ?s)
+				(leader-state-power_on ?i)
 				(leader-turn)
 			)
 		:effect 
 			(and
-				(leader-state-at ?obj ?room)
-				(leader-state-free ?gripper)
 				(not
-					(leader-state-carry ?obj ?gripper)
+					(leader-state-power_on ?i)
 				)
+				(leader-state-power_avail ?s)
+				(not
+					(power_on ?i)
+				)
+				(power_avail ?s)
 			)
 	)
 
-	(:action attack_drop
-		:parameters ( ?obj - ball ?room - room ?gripper - gripper)
+	(:action attack_switch_off
+		:parameters ( ?i - instrument ?s - satellite)
 		:precondition 
 			(and
-				(carry ?obj ?gripper)
-				(at-robby ?room)
+				(on_board ?i ?s)
+				(power_on ?i)
 				(not
 					(leader-turn)
 				)
 			)
 		:effect 
 			(and
-				(at ?obj ?room)
-				(free ?gripper)
 				(not
-					(carry ?obj ?gripper)
+					(power_on ?i)
 				)
-				(when
-					(leader-state-at ?obj ?room)
-					(is-goal-at ?obj ?room)
-				)
-
-				(when
-					(leader-state-free ?gripper)
-					(is-goal-free ?gripper)
-				)
-
+				(power_avail ?s)
 				(when
 					(not
-						(leader-state-carry ?obj ?gripper)
+						(leader-state-power_on ?i)
 					)
-					(is-goal-carry ?obj ?gripper)
+					(is-goal-power_on ?i)
+				)
+
+				(when
+					(leader-state-power_avail ?s)
+					(is-goal-power_avail ?s)
 				)
 
 			)
 	)
 
-	(:action fix_meta_meta-pick
-		:parameters ( ?obj - ball ?room - room ?gripper - gripper)
+	(:action fix_calibrate
+		:parameters ( ?s - satellite ?i - instrument ?d - direction)
 		:precondition 
 			(and
-				(leader-state-at ?obj ?room)
-				(leader-state-at-robby ?room)
+				(on_board ?i ?s)
+				(calibration_target ?i ?d)
+				(leader-state-pointing ?s ?d)
+				(leader-state-power_on ?i)
 				(leader-turn)
 			)
 		:effect 
 			(and
-				(leader-state-carry ?obj ?gripper)
-				(not
-					(leader-state-at ?obj ?room)
-				)
+				(leader-state-calibrated ?i)
+				(calibrated ?i)
 			)
 	)
 
-	(:action fix_pass-turn
-		:parameters ()
+	(:action attack_calibrate
+		:parameters ( ?s - satellite ?i - instrument ?d - direction)
 		:precondition 
-			(leader-turn)
-		:effect 
 			(and
+				(on_board ?i ?s)
+				(calibration_target ?i ?d)
+				(pointing ?s ?d)
+				(power_on ?i)
 				(not
 					(leader-turn)
 				)
-				(forall ( ?r - room)
-					(when
-						(not
-							(leader-state-at-robby ?r)
-						)
-						(is-goal-at-robby ?r)
-					)
-
+			)
+		:effect 
+			(and
+				(calibrated ?i)
+				(when
+					(leader-state-calibrated ?i)
+					(is-goal-calibrated ?i)
 				)
 
-				(forall ( ?b - ball ?r - room)
-					(when
-						(not
-							(leader-state-at ?b ?r)
-						)
-						(is-goal-at ?b ?r)
-					)
+			)
+	)
 
+	(:action fix_take_image
+		:parameters ( ?s - satellite ?d - direction ?i - instrument ?m - mode)
+		:precondition 
+			(and
+				(leader-state-calibrated ?i)
+				(on_board ?i ?s)
+				(supports ?i ?m)
+				(leader-state-power_on ?i)
+				(leader-state-pointing ?s ?d)
+				(leader-state-power_on ?i)
+				(leader-turn)
+			)
+		:effect 
+			(and
+				(leader-state-have_image ?d ?m)
+				(have_image ?d ?m)
+			)
+	)
+
+	(:action attack_take_image
+		:parameters ( ?s - satellite ?d - direction ?i - instrument ?m - mode)
+		:precondition 
+			(and
+				(calibrated ?i)
+				(on_board ?i ?s)
+				(supports ?i ?m)
+				(power_on ?i)
+				(pointing ?s ?d)
+				(power_on ?i)
+				(not
+					(leader-turn)
+				)
+			)
+		:effect 
+			(and
+				(have_image ?d ?m)
+				(when
+					(leader-state-have_image ?d ?m)
+					(is-goal-have_image ?d ?m)
 				)
 
-				(forall ( ?g - gripper)
-					(when
-						(not
-							(leader-state-free ?g)
-						)
-						(is-goal-free ?g)
-					)
+			)
+	)
 
+	(:action fix_meta_$switch-on-calibrate
+		:parameters ( ?s - satellite ?i - instrument)
+		:precondition 
+			(and
+				(on_board ?i ?s)
+				(leader-state-power_avail ?s)
+				(leader-turn)
+			)
+		:effect 
+			(and
+				(leader-state-calibrated ?i)
+				(not
+					(is-goal-calibrated ?i)
 				)
-
-				(forall ( ?o - ball ?g - gripper)
-					(when
-						(not
-							(leader-state-carry ?o ?g)
-						)
-						(is-goal-carry ?o ?g)
-					)
-
+				(leader-state-power_on ?i)
+				(not
+					(is-goal-power_on ?i)
 				)
-
+				(not
+					(leader-state-power_avail ?s)
+				)
+				(not
+					(is-goal-power_avail ?s)
+				)
+				(not
+					(leader-turn)
+				)
 			)
 	)
 
@@ -261,27 +321,8 @@
 		:precondition 
 			(leader-turn)
 		:effect 
-			(and
-				(is-goal-at-robby rooma)
-				(is-goal-at-robby roomb)
-				(is-goal-at ball4 rooma)
-				(is-goal-at ball4 roomb)
-				(is-goal-at ball3 rooma)
-				(is-goal-at ball3 roomb)
-				(is-goal-at ball2 rooma)
-				(is-goal-at ball2 roomb)
-				(is-goal-at ball1 rooma)
-				(is-goal-at ball1 roomb)
-				(is-goal-free left)
-				(is-goal-free right)
-				(is-goal-carry ball4 left)
-				(is-goal-carry ball4 right)
-				(is-goal-carry ball3 left)
-				(is-goal-carry ball3 right)
-				(is-goal-carry ball2 left)
-				(is-goal-carry ball2 right)
-				(is-goal-carry ball1 left)
-				(is-goal-carry ball1 right)
+			(not
+				(leader-turn)
 			)
 	)
 

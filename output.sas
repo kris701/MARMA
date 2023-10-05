@@ -4,335 +4,239 @@ end_version
 begin_metric
 0
 end_metric
-28
+30
 begin_variable
 var0
 -1
-3
-Atom at(ball1, rooma)
-Atom at(ball1, roomb)
-<none of those>
+2
+Atom calibrated(instrument0)
+NegatedAtom calibrated(instrument0)
 end_variable
 begin_variable
 var1
 -1
-3
-Atom at(ball2, rooma)
-Atom at(ball2, roomb)
-<none of those>
+2
+Atom have_image(groundstation1, thermograph0)
+NegatedAtom have_image(groundstation1, thermograph0)
 end_variable
 begin_variable
 var2
 -1
-3
-Atom at(ball3, rooma)
-Atom at(ball3, roomb)
-<none of those>
+2
+Atom have_image(groundstation2, thermograph0)
+NegatedAtom have_image(groundstation2, thermograph0)
 end_variable
 begin_variable
 var3
 -1
-3
-Atom at(ball4, rooma)
-Atom at(ball4, roomb)
-<none of those>
+2
+Atom have_image(phenomenon3, thermograph0)
+NegatedAtom have_image(phenomenon3, thermograph0)
 end_variable
 begin_variable
 var4
 -1
 2
-Atom at-robby(rooma)
-Atom at-robby(roomb)
+Atom have_image(phenomenon4, thermograph0)
+NegatedAtom have_image(phenomenon4, thermograph0)
 end_variable
 begin_variable
 var5
 -1
-5
-Atom carry(ball1, left)
-Atom carry(ball2, left)
-Atom carry(ball3, left)
-Atom carry(ball4, left)
-Atom free(left)
+2
+Atom have_image(phenomenon6, thermograph0)
+NegatedAtom have_image(phenomenon6, thermograph0)
 end_variable
 begin_variable
 var6
 -1
-5
-Atom carry(ball1, right)
-Atom carry(ball2, right)
-Atom carry(ball3, right)
-Atom carry(ball4, right)
-Atom free(right)
+2
+Atom have_image(star0, thermograph0)
+NegatedAtom have_image(star0, thermograph0)
 end_variable
 begin_variable
 var7
 -1
 2
-Atom is-goal-at(ball1, roomb)
-NegatedAtom is-goal-at(ball1, roomb)
+Atom have_image(star5, thermograph0)
+NegatedAtom have_image(star5, thermograph0)
 end_variable
 begin_variable
 var8
 -1
 2
-Atom is-goal-at(ball2, roomb)
-NegatedAtom is-goal-at(ball2, roomb)
+Atom is-goal-calibrated(instrument0)
+NegatedAtom is-goal-calibrated(instrument0)
 end_variable
 begin_variable
 var9
 -1
 2
-Atom is-goal-at(ball3, roomb)
-NegatedAtom is-goal-at(ball3, roomb)
+Atom is-goal-power_on(instrument0)
+NegatedAtom is-goal-power_on(instrument0)
 end_variable
 begin_variable
 var10
 -1
 2
-Atom is-goal-at(ball4, roomb)
-NegatedAtom is-goal-at(ball4, roomb)
+Atom leader-state-calibrated(instrument0)
+NegatedAtom leader-state-calibrated(instrument0)
 end_variable
 begin_variable
 var11
 -1
 2
-Atom is-goal-at-robby(roomb)
-NegatedAtom is-goal-at-robby(roomb)
+Atom leader-state-have_image(groundstation1, thermograph0)
+NegatedAtom leader-state-have_image(groundstation1, thermograph0)
 end_variable
 begin_variable
 var12
 -1
 2
-Atom is-goal-carry(ball1, left)
-NegatedAtom is-goal-carry(ball1, left)
+Atom leader-state-have_image(groundstation2, thermograph0)
+NegatedAtom leader-state-have_image(groundstation2, thermograph0)
 end_variable
 begin_variable
 var13
 -1
 2
-Atom is-goal-carry(ball1, right)
-NegatedAtom is-goal-carry(ball1, right)
+Atom leader-state-have_image(phenomenon3, thermograph0)
+NegatedAtom leader-state-have_image(phenomenon3, thermograph0)
 end_variable
 begin_variable
 var14
 -1
 2
-Atom is-goal-carry(ball2, left)
-NegatedAtom is-goal-carry(ball2, left)
+Atom leader-state-have_image(phenomenon4, thermograph0)
+NegatedAtom leader-state-have_image(phenomenon4, thermograph0)
 end_variable
 begin_variable
 var15
 -1
 2
-Atom is-goal-carry(ball2, right)
-NegatedAtom is-goal-carry(ball2, right)
+Atom leader-state-have_image(phenomenon6, thermograph0)
+NegatedAtom leader-state-have_image(phenomenon6, thermograph0)
 end_variable
 begin_variable
 var16
 -1
 2
-Atom is-goal-carry(ball3, left)
-NegatedAtom is-goal-carry(ball3, left)
+Atom leader-state-have_image(star0, thermograph0)
+NegatedAtom leader-state-have_image(star0, thermograph0)
 end_variable
 begin_variable
 var17
 -1
 2
-Atom is-goal-carry(ball3, right)
-NegatedAtom is-goal-carry(ball3, right)
+Atom leader-state-have_image(star5, thermograph0)
+NegatedAtom leader-state-have_image(star5, thermograph0)
 end_variable
 begin_variable
 var18
 -1
-2
-Atom is-goal-carry(ball4, left)
-NegatedAtom is-goal-carry(ball4, left)
+7
+Atom leader-state-pointing(satellite0, groundstation1)
+Atom leader-state-pointing(satellite0, groundstation2)
+Atom leader-state-pointing(satellite0, phenomenon3)
+Atom leader-state-pointing(satellite0, phenomenon4)
+Atom leader-state-pointing(satellite0, phenomenon6)
+Atom leader-state-pointing(satellite0, star0)
+Atom leader-state-pointing(satellite0, star5)
 end_variable
 begin_variable
 var19
 -1
 2
-Atom is-goal-carry(ball4, right)
-NegatedAtom is-goal-carry(ball4, right)
+Atom leader-state-power_avail(satellite0)
+Atom leader-state-power_on(instrument0)
 end_variable
 begin_variable
 var20
--1
-3
-Atom leader-state-at(ball1, rooma)
-Atom leader-state-at(ball1, roomb)
-<none of those>
-end_variable
-begin_variable
-var21
--1
-3
-Atom leader-state-at(ball2, rooma)
-Atom leader-state-at(ball2, roomb)
-<none of those>
-end_variable
-begin_variable
-var22
--1
-3
-Atom leader-state-at(ball3, rooma)
-Atom leader-state-at(ball3, roomb)
-<none of those>
-end_variable
-begin_variable
-var23
--1
-3
-Atom leader-state-at(ball4, rooma)
-Atom leader-state-at(ball4, roomb)
-<none of those>
-end_variable
-begin_variable
-var24
--1
-2
-Atom leader-state-at-robby(rooma)
-Atom leader-state-at-robby(roomb)
-end_variable
-begin_variable
-var25
--1
-5
-Atom leader-state-carry(ball1, left)
-Atom leader-state-carry(ball2, left)
-Atom leader-state-carry(ball3, left)
-Atom leader-state-carry(ball4, left)
-Atom leader-state-free(left)
-end_variable
-begin_variable
-var26
--1
-5
-Atom leader-state-carry(ball1, right)
-Atom leader-state-carry(ball2, right)
-Atom leader-state-carry(ball3, right)
-Atom leader-state-carry(ball4, right)
-Atom leader-state-free(right)
-end_variable
-begin_variable
-var27
 -1
 2
 Atom leader-turn()
 NegatedAtom leader-turn()
 end_variable
-14
+begin_variable
+var21
+-1
+2
+Atom pointing(satellite0, groundstation1)
+NegatedAtom pointing(satellite0, groundstation1)
+end_variable
+begin_variable
+var22
+-1
+2
+Atom pointing(satellite0, groundstation2)
+NegatedAtom pointing(satellite0, groundstation2)
+end_variable
+begin_variable
+var23
+-1
+2
+Atom pointing(satellite0, phenomenon3)
+NegatedAtom pointing(satellite0, phenomenon3)
+end_variable
+begin_variable
+var24
+-1
+2
+Atom pointing(satellite0, phenomenon4)
+NegatedAtom pointing(satellite0, phenomenon4)
+end_variable
+begin_variable
+var25
+-1
+2
+Atom pointing(satellite0, phenomenon6)
+NegatedAtom pointing(satellite0, phenomenon6)
+end_variable
+begin_variable
+var26
+-1
+2
+Atom pointing(satellite0, star0)
+NegatedAtom pointing(satellite0, star0)
+end_variable
+begin_variable
+var27
+-1
+2
+Atom pointing(satellite0, star5)
+NegatedAtom pointing(satellite0, star5)
+end_variable
+begin_variable
+var28
+-1
+2
+Atom power_avail(satellite0)
+NegatedAtom power_avail(satellite0)
+end_variable
+begin_variable
+var29
+-1
+2
+Atom power_on(instrument0)
+NegatedAtom power_on(instrument0)
+end_variable
+2
 begin_mutex_group
-4
-0 0
-0 1
-5 0
-6 0
-end_mutex_group
-begin_mutex_group
-4
-1 0
-1 1
-5 1
-6 1
-end_mutex_group
-begin_mutex_group
-4
-2 0
-2 1
-5 2
-6 2
-end_mutex_group
-begin_mutex_group
-4
-3 0
-3 1
-5 3
-6 3
+7
+18 0
+18 1
+18 2
+18 3
+18 4
+18 5
+18 6
 end_mutex_group
 begin_mutex_group
 2
-4 0
-4 1
-end_mutex_group
-begin_mutex_group
-5
-5 0
-5 1
-5 2
-5 3
-5 4
-end_mutex_group
-begin_mutex_group
-5
-6 0
-6 1
-6 2
-6 3
-6 4
-end_mutex_group
-begin_mutex_group
-4
-20 0
-20 1
-25 0
-26 0
-end_mutex_group
-begin_mutex_group
-4
-21 0
-21 1
-25 1
-26 1
-end_mutex_group
-begin_mutex_group
-4
-22 0
-22 1
-25 2
-26 2
-end_mutex_group
-begin_mutex_group
-4
-23 0
-23 1
-25 3
-26 3
-end_mutex_group
-begin_mutex_group
-2
-24 0
-24 1
-end_mutex_group
-begin_mutex_group
-5
-25 0
-25 1
-25 2
-25 3
-25 4
-end_mutex_group
-begin_mutex_group
-5
-26 0
-26 1
-26 2
-26 3
-26 4
+19 0
+19 1
 end_mutex_group
 begin_state
-0
-0
-0
-0
-0
-4
-4
-1
-1
-1
-1
-1
 1
 1
 1
@@ -343,1189 +247,1586 @@ begin_state
 1
 0
 0
-0
-0
-0
-4
+1
+1
+1
+1
+1
+1
+1
+1
 4
 0
+0
+1
+1
+1
+1
+0
+1
+1
+0
+1
 end_state
 begin_goal
-13
-7 0
+3
 8 0
 9 0
-10 0
-11 0
-12 0
-13 0
-14 0
-15 0
-16 0
-17 0
-18 0
-19 0
+20 1
 end_goal
-105
+158
 begin_operator
-attack_drop ball1 rooma left
-2
-4 0
-27 1
-2
-0 0 -1 0
-0 5 0 4
-0
-end_operator
-begin_operator
-attack_drop ball1 rooma right
-2
-4 0
-27 1
-2
-0 0 -1 0
-0 6 0 4
-0
-end_operator
-begin_operator
-attack_drop ball1 roomb left
-2
-4 1
-27 1
-2
-0 0 -1 1
-0 5 0 4
-0
-end_operator
-begin_operator
-attack_drop ball1 roomb right
-2
-4 1
-27 1
-2
-0 0 -1 1
-0 6 0 4
-0
-end_operator
-begin_operator
-attack_drop ball2 rooma left
-2
-4 0
-27 1
-2
-0 1 -1 0
-0 5 1 4
-0
-end_operator
-begin_operator
-attack_drop ball2 rooma right
-2
-4 0
-27 1
-2
-0 1 -1 0
-0 6 1 4
-0
-end_operator
-begin_operator
-attack_drop ball2 roomb left
-2
-4 1
-27 1
-2
-0 1 -1 1
-0 5 1 4
-0
-end_operator
-begin_operator
-attack_drop ball2 roomb right
-2
-4 1
-27 1
-2
-0 1 -1 1
-0 6 1 4
-0
-end_operator
-begin_operator
-attack_drop ball3 rooma left
-2
-4 0
-27 1
-2
-0 2 -1 0
-0 5 2 4
-0
-end_operator
-begin_operator
-attack_drop ball3 rooma right
-2
-4 0
-27 1
-2
-0 2 -1 0
-0 6 2 4
-0
-end_operator
-begin_operator
-attack_drop ball3 roomb left
-2
-4 1
-27 1
-2
-0 2 -1 1
-0 5 2 4
-0
-end_operator
-begin_operator
-attack_drop ball3 roomb right
-2
-4 1
-27 1
-2
-0 2 -1 1
-0 6 2 4
-0
-end_operator
-begin_operator
-attack_drop ball4 rooma left
-2
-4 0
-27 1
-2
-0 3 -1 0
-0 5 3 4
-0
-end_operator
-begin_operator
-attack_drop ball4 rooma right
-2
-4 0
-27 1
-2
-0 3 -1 0
-0 6 3 4
-0
-end_operator
-begin_operator
-attack_drop ball4 roomb left
-2
-4 1
-27 1
-2
-0 3 -1 1
-0 5 3 4
-0
-end_operator
-begin_operator
-attack_drop ball4 roomb right
-2
-4 1
-27 1
-2
-0 3 -1 1
-0 6 3 4
-0
-end_operator
-begin_operator
-attack_drop_goal ball1 rooma left
-4
-4 0
-20 0
-25 4
-27 1
-2
-0 0 -1 0
-0 5 0 4
-0
-end_operator
-begin_operator
-attack_drop_goal ball1 rooma right
-4
-4 0
-20 0
-26 4
-27 1
-2
-0 0 -1 0
-0 6 0 4
-0
-end_operator
-begin_operator
-attack_drop_goal ball1 roomb left
-4
-4 1
+attack_calibrate satellite0 instrument0 groundstation2
+3
 20 1
-25 4
-27 1
-3
-0 0 -1 1
-0 5 0 4
-0 7 -1 0
+22 0
+29 0
+1
+0 0 -1 0
 0
 end_operator
 begin_operator
-attack_drop_goal ball1 roomb right
-4
-4 1
+attack_calibrate_goal satellite0 instrument0 groundstation2
+3
 20 1
-26 4
-27 1
-3
-0 0 -1 1
-0 6 0 4
-0 7 -1 0
-0
-end_operator
-begin_operator
-attack_drop_goal ball2 rooma left
-4
-4 0
-21 0
-25 4
-27 1
-2
-0 1 -1 0
-0 5 1 4
-0
-end_operator
-begin_operator
-attack_drop_goal ball2 rooma right
-4
-4 0
-21 0
-26 4
-27 1
-2
-0 1 -1 0
-0 6 1 4
-0
-end_operator
-begin_operator
-attack_drop_goal ball2 roomb left
-4
-4 1
-21 1
-25 4
-27 1
-3
-0 1 -1 1
-0 5 1 4
-0 8 -1 0
-0
-end_operator
-begin_operator
-attack_drop_goal ball2 roomb right
-4
-4 1
-21 1
-26 4
-27 1
-3
-0 1 -1 1
-0 6 1 4
-0 8 -1 0
-0
-end_operator
-begin_operator
-attack_drop_goal ball3 rooma left
-4
-4 0
 22 0
-25 4
-27 1
+29 0
 2
-0 2 -1 0
-0 5 2 4
-0
-end_operator
-begin_operator
-attack_drop_goal ball3 rooma right
-4
-4 0
-22 0
-26 4
-27 1
-2
-0 2 -1 0
-0 6 2 4
-0
-end_operator
-begin_operator
-attack_drop_goal ball3 roomb left
-4
-4 1
-22 1
-25 4
-27 1
-3
-0 2 -1 1
-0 5 2 4
-0 9 -1 0
-0
-end_operator
-begin_operator
-attack_drop_goal ball3 roomb right
-4
-4 1
-22 1
-26 4
-27 1
-3
-0 2 -1 1
-0 6 2 4
-0 9 -1 0
-0
-end_operator
-begin_operator
-attack_drop_goal ball4 rooma left
-4
-4 0
-23 0
-25 4
-27 1
-2
-0 3 -1 0
-0 5 3 4
-0
-end_operator
-begin_operator
-attack_drop_goal ball4 rooma right
-4
-4 0
-23 0
-26 4
-27 1
-2
-0 3 -1 0
-0 6 3 4
-0
-end_operator
-begin_operator
-attack_drop_goal ball4 roomb left
-4
-4 1
-23 1
-25 4
-27 1
-3
-0 3 -1 1
-0 5 3 4
-0 10 -1 0
-0
-end_operator
-begin_operator
-attack_drop_goal ball4 roomb right
-4
-4 1
-23 1
-26 4
-27 1
-3
-0 3 -1 1
-0 6 3 4
-0 10 -1 0
-0
-end_operator
-begin_operator
-attack_move rooma roomb
-1
-27 1
-1
-0 4 0 1
-0
-end_operator
-begin_operator
-attack_move roomb rooma
-1
-27 1
-1
-0 4 1 0
-0
-end_operator
-begin_operator
-attack_move_goal rooma roomb
-2
-24 1
-27 1
-2
-0 4 0 1
-0 11 -1 0
-0
-end_operator
-begin_operator
-attack_move_goal roomb rooma
-2
-24 0
-27 1
-1
-0 4 1 0
-0
-end_operator
-begin_operator
-attack_move_goal roomb roomb
-3
-4 1
-24 1
-27 1
-1
-0 11 -1 0
-0
-end_operator
-begin_operator
-attack_pick ball1 rooma left
-2
-4 0
-27 1
-2
-0 0 0 2
-0 5 4 0
-0
-end_operator
-begin_operator
-attack_pick ball1 rooma right
-2
-4 0
-27 1
-2
-0 0 0 2
-0 6 4 0
-0
-end_operator
-begin_operator
-attack_pick ball1 roomb left
-2
-4 1
-27 1
-2
-0 0 1 2
-0 5 4 0
-0
-end_operator
-begin_operator
-attack_pick ball1 roomb right
-2
-4 1
-27 1
-2
-0 0 1 2
-0 6 4 0
-0
-end_operator
-begin_operator
-attack_pick ball2 rooma left
-2
-4 0
-27 1
-2
-0 1 0 2
-0 5 4 1
-0
-end_operator
-begin_operator
-attack_pick ball2 rooma right
-2
-4 0
-27 1
-2
-0 1 0 2
-0 6 4 1
-0
-end_operator
-begin_operator
-attack_pick ball2 roomb left
-2
-4 1
-27 1
-2
-0 1 1 2
-0 5 4 1
-0
-end_operator
-begin_operator
-attack_pick ball2 roomb right
-2
-4 1
-27 1
-2
-0 1 1 2
-0 6 4 1
-0
-end_operator
-begin_operator
-attack_pick ball3 rooma left
-2
-4 0
-27 1
-2
-0 2 0 2
-0 5 4 2
-0
-end_operator
-begin_operator
-attack_pick ball3 rooma right
-2
-4 0
-27 1
-2
-0 2 0 2
-0 6 4 2
-0
-end_operator
-begin_operator
-attack_pick ball3 roomb left
-2
-4 1
-27 1
-2
-0 2 1 2
-0 5 4 2
-0
-end_operator
-begin_operator
-attack_pick ball3 roomb right
-2
-4 1
-27 1
-2
-0 2 1 2
-0 6 4 2
-0
-end_operator
-begin_operator
-attack_pick ball4 rooma left
-2
-4 0
-27 1
-2
-0 3 0 2
-0 5 4 3
-0
-end_operator
-begin_operator
-attack_pick ball4 rooma right
-2
-4 0
-27 1
-2
-0 3 0 2
-0 6 4 3
-0
-end_operator
-begin_operator
-attack_pick ball4 roomb left
-2
-4 1
-27 1
-2
-0 3 1 2
-0 5 4 3
-0
-end_operator
-begin_operator
-attack_pick ball4 roomb right
-2
-4 1
-27 1
-2
-0 3 1 2
-0 6 4 3
-0
-end_operator
-begin_operator
-attack_pick_goal ball1 rooma left
-3
-4 0
-25 0
-27 1
-3
-0 0 0 2
-0 5 4 0
-0 12 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball1 rooma right
-3
-4 0
-26 0
-27 1
-3
-0 0 0 2
-0 6 4 0
-0 13 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball1 roomb left
-3
-4 1
-25 0
-27 1
-3
-0 0 1 2
-0 5 4 0
-0 12 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball1 roomb right
-3
-4 1
-26 0
-27 1
-3
-0 0 1 2
-0 6 4 0
-0 13 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball2 rooma left
-3
-4 0
-25 1
-27 1
-3
-0 1 0 2
-0 5 4 1
-0 14 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball2 rooma right
-3
-4 0
-26 1
-27 1
-3
-0 1 0 2
-0 6 4 1
-0 15 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball2 roomb left
-3
-4 1
-25 1
-27 1
-3
-0 1 1 2
-0 5 4 1
-0 14 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball2 roomb right
-3
-4 1
-26 1
-27 1
-3
-0 1 1 2
-0 6 4 1
-0 15 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball3 rooma left
-3
-4 0
-25 2
-27 1
-3
-0 2 0 2
-0 5 4 2
-0 16 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball3 rooma right
-3
-4 0
-26 2
-27 1
-3
-0 2 0 2
-0 6 4 2
-0 17 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball3 roomb left
-3
-4 1
-25 2
-27 1
-3
-0 2 1 2
-0 5 4 2
-0 16 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball3 roomb right
-3
-4 1
-26 2
-27 1
-3
-0 2 1 2
-0 6 4 2
-0 17 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball4 rooma left
-3
-4 0
-25 3
-27 1
-3
-0 3 0 2
-0 5 4 3
-0 18 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball4 rooma right
-3
-4 0
-26 3
-27 1
-3
-0 3 0 2
-0 6 4 3
-0 19 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball4 roomb left
-3
-4 1
-25 3
-27 1
-3
-0 3 1 2
-0 5 4 3
-0 18 -1 0
-0
-end_operator
-begin_operator
-attack_pick_goal ball4 roomb right
-3
-4 1
-26 3
-27 1
-3
-0 3 1 2
-0 6 4 3
-0 19 -1 0
+0 0 -1 0
+0 8 1 0
 0
 end_operator
 begin_operator
 attack_reach-goal 
+0
 1
+0 20 0 1
+0
+end_operator
+begin_operator
+attack_switch_off instrument0 satellite0
+1
+20 1
+2
+0 28 -1 0
+0 29 0 1
+0
+end_operator
+begin_operator
+attack_switch_off_goal instrument0 satellite0
+2
+19 0
+20 1
+2
+0 28 -1 0
+0 29 0 1
+0
+end_operator
+begin_operator
+attack_switch_on instrument0 satellite0
+1
+20 1
+3
+0 0 -1 1
+0 28 0 1
+0 29 -1 0
+0
+end_operator
+begin_operator
+attack_switch_on_goal instrument0 satellite0
+1
+20 1
+4
+0 0 -1 1
+0 9 1 0
+0 28 0 1
+0 29 -1 0
+0
+end_operator
+begin_operator
+attack_take_image satellite0 groundstation1 instrument0 thermograph0
+4
+0 0
+20 1
+21 0
+29 0
+1
+0 1 -1 0
+0
+end_operator
+begin_operator
+attack_take_image satellite0 groundstation2 instrument0 thermograph0
+4
+0 0
+20 1
+22 0
+29 0
+1
+0 2 -1 0
+0
+end_operator
+begin_operator
+attack_take_image satellite0 phenomenon3 instrument0 thermograph0
+4
+0 0
+20 1
+23 0
+29 0
+1
+0 3 -1 0
+0
+end_operator
+begin_operator
+attack_take_image satellite0 phenomenon4 instrument0 thermograph0
+4
+0 0
+20 1
+24 0
+29 0
+1
+0 4 -1 0
+0
+end_operator
+begin_operator
+attack_take_image satellite0 phenomenon6 instrument0 thermograph0
+4
+0 0
+20 1
+25 0
+29 0
+1
+0 5 -1 0
+0
+end_operator
+begin_operator
+attack_take_image satellite0 star0 instrument0 thermograph0
+4
+0 0
+20 1
+26 0
+29 0
+1
+0 6 -1 0
+0
+end_operator
+begin_operator
+attack_take_image satellite0 star5 instrument0 thermograph0
+4
+0 0
+20 1
 27 0
-13
+29 0
+1
 0 7 -1 0
-0 8 -1 0
-0 9 -1 0
-0 10 -1 0
-0 11 -1 0
-0 12 -1 0
-0 13 -1 0
-0 14 -1 0
-0 15 -1 0
-0 16 -1 0
-0 17 -1 0
-0 18 -1 0
-0 19 -1 0
 0
 end_operator
 begin_operator
-fix_drop ball1 rooma left
-2
-24 0
-27 0
-2
-0 20 -1 0
-0 25 0 4
-0
-end_operator
-begin_operator
-fix_drop ball1 rooma right
-2
-24 0
-27 0
-2
-0 20 -1 0
-0 26 0 4
-0
-end_operator
-begin_operator
-fix_drop ball1 roomb left
-2
-24 1
-27 0
-2
-0 20 -1 1
-0 25 0 4
-0
-end_operator
-begin_operator
-fix_drop ball1 roomb right
-2
-24 1
-27 0
-2
-0 20 -1 1
-0 26 0 4
-0
-end_operator
-begin_operator
-fix_drop ball2 rooma left
-2
-24 0
-27 0
+attack_turn_to satellite0 groundstation1 groundstation2
+1
+20 1
 2
 0 21 -1 0
-0 25 1 4
+0 22 0 1
 0
 end_operator
 begin_operator
-fix_drop ball2 rooma right
-2
-24 0
-27 0
+attack_turn_to satellite0 groundstation1 phenomenon3
+1
+20 1
 2
 0 21 -1 0
-0 26 1 4
+0 23 0 1
 0
 end_operator
 begin_operator
-fix_drop ball2 roomb left
-2
-24 1
-27 0
-2
-0 21 -1 1
-0 25 1 4
-0
-end_operator
-begin_operator
-fix_drop ball2 roomb right
-2
-24 1
-27 0
-2
-0 21 -1 1
-0 26 1 4
-0
-end_operator
-begin_operator
-fix_drop ball3 rooma left
-2
-24 0
-27 0
-2
-0 22 -1 0
-0 25 2 4
-0
-end_operator
-begin_operator
-fix_drop ball3 rooma right
-2
-24 0
-27 0
-2
-0 22 -1 0
-0 26 2 4
-0
-end_operator
-begin_operator
-fix_drop ball3 roomb left
-2
-24 1
-27 0
-2
-0 22 -1 1
-0 25 2 4
-0
-end_operator
-begin_operator
-fix_drop ball3 roomb right
-2
-24 1
-27 0
-2
-0 22 -1 1
-0 26 2 4
-0
-end_operator
-begin_operator
-fix_drop ball4 rooma left
-2
-24 0
-27 0
-2
-0 23 -1 0
-0 25 3 4
-0
-end_operator
-begin_operator
-fix_drop ball4 rooma right
-2
-24 0
-27 0
-2
-0 23 -1 0
-0 26 3 4
-0
-end_operator
-begin_operator
-fix_drop ball4 roomb left
-2
-24 1
-27 0
-2
-0 23 -1 1
-0 25 3 4
-0
-end_operator
-begin_operator
-fix_drop ball4 roomb right
-2
-24 1
-27 0
-2
-0 23 -1 1
-0 26 3 4
-0
-end_operator
-begin_operator
-fix_move rooma roomb
+attack_turn_to satellite0 groundstation1 phenomenon4
 1
-27 0
-1
+20 1
+2
+0 21 -1 0
 0 24 0 1
 0
 end_operator
 begin_operator
-fix_move roomb rooma
+attack_turn_to satellite0 groundstation1 phenomenon6
 1
-27 0
-1
-0 24 1 0
+20 1
+2
+0 21 -1 0
+0 25 0 1
 0
 end_operator
 begin_operator
-fix_pass-turn 
+attack_turn_to satellite0 groundstation1 star0
+1
+20 1
+2
+0 21 -1 0
+0 26 0 1
 0
-42
-1 20 0 7 -1 0
-1 20 2 7 -1 0
-1 21 0 8 -1 0
-1 21 2 8 -1 0
-1 22 0 9 -1 0
-1 22 2 9 -1 0
-1 23 0 10 -1 0
-1 23 2 10 -1 0
-1 24 0 11 -1 0
-1 25 1 12 -1 0
-1 25 2 12 -1 0
-1 25 3 12 -1 0
-1 25 4 12 -1 0
-1 26 1 13 -1 0
-1 26 2 13 -1 0
-1 26 3 13 -1 0
-1 26 4 13 -1 0
-1 25 0 14 -1 0
-1 25 2 14 -1 0
-1 25 3 14 -1 0
-1 25 4 14 -1 0
-1 26 0 15 -1 0
-1 26 2 15 -1 0
-1 26 3 15 -1 0
-1 26 4 15 -1 0
-1 25 0 16 -1 0
-1 25 1 16 -1 0
-1 25 3 16 -1 0
-1 25 4 16 -1 0
-1 26 0 17 -1 0
-1 26 1 17 -1 0
-1 26 3 17 -1 0
-1 26 4 17 -1 0
-1 25 0 18 -1 0
-1 25 1 18 -1 0
-1 25 2 18 -1 0
-1 25 4 18 -1 0
-1 26 0 19 -1 0
-1 26 1 19 -1 0
-1 26 2 19 -1 0
-1 26 4 19 -1 0
+end_operator
+begin_operator
+attack_turn_to satellite0 groundstation1 star5
+1
+20 1
+2
+0 21 -1 0
 0 27 0 1
 0
 end_operator
 begin_operator
-fix_pick ball1 rooma left
+attack_turn_to satellite0 groundstation2 groundstation1
+1
+20 1
 2
-24 0
-27 0
-2
-0 20 0 2
-0 25 4 0
+0 21 0 1
+0 22 -1 0
 0
 end_operator
 begin_operator
-fix_pick ball1 rooma right
+attack_turn_to satellite0 groundstation2 phenomenon3
+1
+20 1
 2
-24 0
-27 0
-2
-0 20 0 2
-0 26 4 0
+0 22 -1 0
+0 23 0 1
 0
 end_operator
 begin_operator
-fix_pick ball1 roomb left
+attack_turn_to satellite0 groundstation2 phenomenon4
+1
+20 1
 2
-24 1
-27 0
-2
-0 20 1 2
-0 25 4 0
+0 22 -1 0
+0 24 0 1
 0
 end_operator
 begin_operator
-fix_pick ball1 roomb right
+attack_turn_to satellite0 groundstation2 phenomenon6
+1
+20 1
 2
-24 1
-27 0
-2
-0 20 1 2
-0 26 4 0
+0 22 -1 0
+0 25 0 1
 0
 end_operator
 begin_operator
-fix_pick ball2 rooma left
+attack_turn_to satellite0 groundstation2 star0
+1
+20 1
 2
-24 0
-27 0
-2
-0 21 0 2
-0 25 4 1
+0 22 -1 0
+0 26 0 1
 0
 end_operator
 begin_operator
-fix_pick ball2 rooma right
+attack_turn_to satellite0 groundstation2 star5
+1
+20 1
 2
-24 0
-27 0
-2
-0 21 0 2
-0 26 4 1
+0 22 -1 0
+0 27 0 1
 0
 end_operator
 begin_operator
-fix_pick ball2 roomb left
+attack_turn_to satellite0 phenomenon3 groundstation1
+1
+20 1
 2
-24 1
-27 0
-2
-0 21 1 2
-0 25 4 1
+0 21 0 1
+0 23 -1 0
 0
 end_operator
 begin_operator
-fix_pick ball2 roomb right
+attack_turn_to satellite0 phenomenon3 groundstation2
+1
+20 1
 2
-24 1
-27 0
-2
-0 21 1 2
-0 26 4 1
+0 22 0 1
+0 23 -1 0
 0
 end_operator
 begin_operator
-fix_pick ball3 rooma left
+attack_turn_to satellite0 phenomenon3 phenomenon4
+1
+20 1
 2
-24 0
-27 0
-2
-0 22 0 2
-0 25 4 2
+0 23 -1 0
+0 24 0 1
 0
 end_operator
 begin_operator
-fix_pick ball3 rooma right
+attack_turn_to satellite0 phenomenon3 phenomenon6
+1
+20 1
 2
-24 0
-27 0
-2
-0 22 0 2
-0 26 4 2
+0 23 -1 0
+0 25 0 1
 0
 end_operator
 begin_operator
-fix_pick ball3 roomb left
+attack_turn_to satellite0 phenomenon3 star0
+1
+20 1
 2
-24 1
-27 0
-2
-0 22 1 2
-0 25 4 2
+0 23 -1 0
+0 26 0 1
 0
 end_operator
 begin_operator
-fix_pick ball3 roomb right
+attack_turn_to satellite0 phenomenon3 star5
+1
+20 1
 2
-24 1
-27 0
-2
-0 22 1 2
-0 26 4 2
+0 23 -1 0
+0 27 0 1
 0
 end_operator
 begin_operator
-fix_pick ball4 rooma left
+attack_turn_to satellite0 phenomenon4 groundstation1
+1
+20 1
 2
-24 0
-27 0
-2
-0 23 0 2
-0 25 4 3
+0 21 0 1
+0 24 -1 0
 0
 end_operator
 begin_operator
-fix_pick ball4 rooma right
+attack_turn_to satellite0 phenomenon4 groundstation2
+1
+20 1
 2
-24 0
-27 0
-2
-0 23 0 2
-0 26 4 3
+0 22 0 1
+0 24 -1 0
 0
 end_operator
 begin_operator
-fix_pick ball4 roomb left
+attack_turn_to satellite0 phenomenon4 phenomenon3
+1
+20 1
 2
-24 1
-27 0
-2
-0 23 1 2
-0 25 4 3
+0 23 0 1
+0 24 -1 0
 0
 end_operator
 begin_operator
-fix_pick ball4 roomb right
+attack_turn_to satellite0 phenomenon4 phenomenon6
+1
+20 1
 2
-24 1
-27 0
+0 24 -1 0
+0 25 0 1
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 phenomenon4 star0
+1
+20 1
 2
-0 23 1 2
-0 26 4 3
+0 24 -1 0
+0 26 0 1
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 phenomenon4 star5
+1
+20 1
+2
+0 24 -1 0
+0 27 0 1
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 phenomenon6 groundstation1
+1
+20 1
+2
+0 21 0 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 phenomenon6 groundstation2
+1
+20 1
+2
+0 22 0 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 phenomenon6 phenomenon3
+1
+20 1
+2
+0 23 0 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 phenomenon6 phenomenon4
+1
+20 1
+2
+0 24 0 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 phenomenon6 star0
+1
+20 1
+2
+0 25 -1 0
+0 26 0 1
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 phenomenon6 star5
+1
+20 1
+2
+0 25 -1 0
+0 27 0 1
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star0 groundstation1
+1
+20 1
+2
+0 21 0 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star0 groundstation2
+1
+20 1
+2
+0 22 0 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star0 phenomenon3
+1
+20 1
+2
+0 23 0 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star0 phenomenon4
+1
+20 1
+2
+0 24 0 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star0 phenomenon6
+1
+20 1
+2
+0 25 0 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star0 star5
+1
+20 1
+2
+0 26 -1 0
+0 27 0 1
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star5 groundstation1
+1
+20 1
+2
+0 21 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star5 groundstation2
+1
+20 1
+2
+0 22 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star5 phenomenon3
+1
+20 1
+2
+0 23 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star5 phenomenon4
+1
+20 1
+2
+0 24 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star5 phenomenon6
+1
+20 1
+2
+0 25 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to satellite0 star5 star0
+1
+20 1
+2
+0 26 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation1 groundstation2
+2
+18 0
+20 1
+2
+0 21 -1 0
+0 22 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation1 phenomenon3
+2
+18 0
+20 1
+2
+0 21 -1 0
+0 23 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation1 phenomenon4
+2
+18 0
+20 1
+2
+0 21 -1 0
+0 24 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation1 phenomenon6
+2
+18 0
+20 1
+2
+0 21 -1 0
+0 25 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation1 star0
+2
+18 0
+20 1
+2
+0 21 -1 0
+0 26 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation1 star5
+2
+18 0
+20 1
+2
+0 21 -1 0
+0 27 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation2 groundstation1
+2
+18 1
+20 1
+2
+0 21 0 1
+0 22 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation2 phenomenon3
+2
+18 1
+20 1
+2
+0 22 -1 0
+0 23 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation2 phenomenon4
+2
+18 1
+20 1
+2
+0 22 -1 0
+0 24 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation2 phenomenon6
+2
+18 1
+20 1
+2
+0 22 -1 0
+0 25 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation2 star0
+2
+18 1
+20 1
+2
+0 22 -1 0
+0 26 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 groundstation2 star5
+2
+18 1
+20 1
+2
+0 22 -1 0
+0 27 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon3 groundstation1
+2
+18 2
+20 1
+2
+0 21 0 1
+0 23 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon3 groundstation2
+2
+18 2
+20 1
+2
+0 22 0 1
+0 23 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon3 phenomenon4
+2
+18 2
+20 1
+2
+0 23 -1 0
+0 24 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon3 phenomenon6
+2
+18 2
+20 1
+2
+0 23 -1 0
+0 25 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon3 star0
+2
+18 2
+20 1
+2
+0 23 -1 0
+0 26 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon3 star5
+2
+18 2
+20 1
+2
+0 23 -1 0
+0 27 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon4 groundstation1
+2
+18 3
+20 1
+2
+0 21 0 1
+0 24 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon4 groundstation2
+2
+18 3
+20 1
+2
+0 22 0 1
+0 24 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon4 phenomenon3
+2
+18 3
+20 1
+2
+0 23 0 1
+0 24 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon4 phenomenon6
+2
+18 3
+20 1
+2
+0 24 -1 0
+0 25 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon4 star0
+2
+18 3
+20 1
+2
+0 24 -1 0
+0 26 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon4 star5
+2
+18 3
+20 1
+2
+0 24 -1 0
+0 27 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon6 groundstation1
+2
+18 4
+20 1
+2
+0 21 0 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon6 groundstation2
+2
+18 4
+20 1
+2
+0 22 0 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon6 phenomenon3
+2
+18 4
+20 1
+2
+0 23 0 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon6 phenomenon4
+2
+18 4
+20 1
+2
+0 24 0 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon6 star0
+2
+18 4
+20 1
+2
+0 25 -1 0
+0 26 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 phenomenon6 star5
+2
+18 4
+20 1
+2
+0 25 -1 0
+0 27 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star0 groundstation1
+2
+18 5
+20 1
+2
+0 21 0 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star0 groundstation2
+2
+18 5
+20 1
+2
+0 22 0 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star0 phenomenon3
+2
+18 5
+20 1
+2
+0 23 0 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star0 phenomenon4
+2
+18 5
+20 1
+2
+0 24 0 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star0 phenomenon6
+2
+18 5
+20 1
+2
+0 25 0 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star0 star5
+2
+18 5
+20 1
+2
+0 26 -1 0
+0 27 0 1
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star5 groundstation1
+2
+18 6
+20 1
+2
+0 21 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star5 groundstation2
+2
+18 6
+20 1
+2
+0 22 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star5 phenomenon3
+2
+18 6
+20 1
+2
+0 23 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star5 phenomenon4
+2
+18 6
+20 1
+2
+0 24 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star5 phenomenon6
+2
+18 6
+20 1
+2
+0 25 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+attack_turn_to_goal satellite0 star5 star0
+2
+18 6
+20 1
+2
+0 26 0 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+fix_calibrate satellite0 instrument0 groundstation2
+3
+18 1
+19 1
+20 0
+2
+0 0 -1 0
+0 10 -1 0
+0
+end_operator
+begin_operator
+fix_meta_$switch-on-calibrate satellite0 instrument0
+0
+5
+0 8 -1 1
+0 9 -1 1
+0 10 -1 0
+0 19 0 1
+0 20 0 1
+0
+end_operator
+begin_operator
+fix_switch_off instrument0 satellite0
+1
+20 0
+3
+0 19 1 0
+0 28 -1 0
+0 29 -1 1
+0
+end_operator
+begin_operator
+fix_switch_on instrument0 satellite0
+1
+20 0
+5
+0 0 -1 1
+0 10 -1 1
+0 19 0 1
+0 28 -1 1
+0 29 -1 0
+0
+end_operator
+begin_operator
+fix_take_image satellite0 groundstation1 instrument0 thermograph0
+4
+10 0
+18 0
+19 1
+20 0
+2
+0 1 -1 0
+0 11 -1 0
+0
+end_operator
+begin_operator
+fix_take_image satellite0 groundstation2 instrument0 thermograph0
+4
+10 0
+18 1
+19 1
+20 0
+2
+0 2 -1 0
+0 12 -1 0
+0
+end_operator
+begin_operator
+fix_take_image satellite0 phenomenon3 instrument0 thermograph0
+4
+10 0
+18 2
+19 1
+20 0
+2
+0 3 -1 0
+0 13 -1 0
+0
+end_operator
+begin_operator
+fix_take_image satellite0 phenomenon4 instrument0 thermograph0
+4
+10 0
+18 3
+19 1
+20 0
+2
+0 4 -1 0
+0 14 -1 0
+0
+end_operator
+begin_operator
+fix_take_image satellite0 phenomenon6 instrument0 thermograph0
+4
+10 0
+18 4
+19 1
+20 0
+2
+0 5 -1 0
+0 15 -1 0
+0
+end_operator
+begin_operator
+fix_take_image satellite0 star0 instrument0 thermograph0
+4
+10 0
+18 5
+19 1
+20 0
+2
+0 6 -1 0
+0 16 -1 0
+0
+end_operator
+begin_operator
+fix_take_image satellite0 star5 instrument0 thermograph0
+4
+10 0
+18 6
+19 1
+20 0
+2
+0 7 -1 0
+0 17 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation1 groundstation1
+2
+18 0
+20 0
+1
+0 21 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation1 groundstation2
+1
+20 0
+3
+0 18 1 0
+0 21 -1 0
+0 22 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation1 phenomenon3
+1
+20 0
+3
+0 18 2 0
+0 21 -1 0
+0 23 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation1 phenomenon4
+1
+20 0
+3
+0 18 3 0
+0 21 -1 0
+0 24 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation1 phenomenon6
+1
+20 0
+3
+0 18 4 0
+0 21 -1 0
+0 25 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation1 star0
+1
+20 0
+3
+0 18 5 0
+0 21 -1 0
+0 26 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation1 star5
+1
+20 0
+3
+0 18 6 0
+0 21 -1 0
+0 27 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation2 groundstation1
+1
+20 0
+3
+0 18 0 1
+0 21 -1 1
+0 22 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation2 groundstation2
+2
+18 1
+20 0
+1
+0 22 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation2 phenomenon3
+1
+20 0
+3
+0 18 2 1
+0 22 -1 0
+0 23 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation2 phenomenon4
+1
+20 0
+3
+0 18 3 1
+0 22 -1 0
+0 24 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation2 phenomenon6
+1
+20 0
+3
+0 18 4 1
+0 22 -1 0
+0 25 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation2 star0
+1
+20 0
+3
+0 18 5 1
+0 22 -1 0
+0 26 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 groundstation2 star5
+1
+20 0
+3
+0 18 6 1
+0 22 -1 0
+0 27 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon3 groundstation1
+1
+20 0
+3
+0 18 0 2
+0 21 -1 1
+0 23 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon3 groundstation2
+1
+20 0
+3
+0 18 1 2
+0 22 -1 1
+0 23 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon3 phenomenon3
+2
+18 2
+20 0
+1
+0 23 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon3 phenomenon4
+1
+20 0
+3
+0 18 3 2
+0 23 -1 0
+0 24 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon3 phenomenon6
+1
+20 0
+3
+0 18 4 2
+0 23 -1 0
+0 25 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon3 star0
+1
+20 0
+3
+0 18 5 2
+0 23 -1 0
+0 26 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon3 star5
+1
+20 0
+3
+0 18 6 2
+0 23 -1 0
+0 27 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon4 groundstation1
+1
+20 0
+3
+0 18 0 3
+0 21 -1 1
+0 24 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon4 groundstation2
+1
+20 0
+3
+0 18 1 3
+0 22 -1 1
+0 24 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon4 phenomenon3
+1
+20 0
+3
+0 18 2 3
+0 23 -1 1
+0 24 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon4 phenomenon4
+2
+18 3
+20 0
+1
+0 24 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon4 phenomenon6
+1
+20 0
+3
+0 18 4 3
+0 24 -1 0
+0 25 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon4 star0
+1
+20 0
+3
+0 18 5 3
+0 24 -1 0
+0 26 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon4 star5
+1
+20 0
+3
+0 18 6 3
+0 24 -1 0
+0 27 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon6 groundstation1
+1
+20 0
+3
+0 18 0 4
+0 21 -1 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon6 groundstation2
+1
+20 0
+3
+0 18 1 4
+0 22 -1 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon6 phenomenon3
+1
+20 0
+3
+0 18 2 4
+0 23 -1 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon6 phenomenon4
+1
+20 0
+3
+0 18 3 4
+0 24 -1 1
+0 25 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon6 phenomenon6
+2
+18 4
+20 0
+1
+0 25 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon6 star0
+1
+20 0
+3
+0 18 5 4
+0 25 -1 0
+0 26 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 phenomenon6 star5
+1
+20 0
+3
+0 18 6 4
+0 25 -1 0
+0 27 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star0 groundstation1
+1
+20 0
+3
+0 18 0 5
+0 21 -1 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star0 groundstation2
+1
+20 0
+3
+0 18 1 5
+0 22 -1 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star0 phenomenon3
+1
+20 0
+3
+0 18 2 5
+0 23 -1 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star0 phenomenon4
+1
+20 0
+3
+0 18 3 5
+0 24 -1 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star0 phenomenon6
+1
+20 0
+3
+0 18 4 5
+0 25 -1 1
+0 26 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star0 star0
+2
+18 5
+20 0
+1
+0 26 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star0 star5
+1
+20 0
+3
+0 18 6 5
+0 26 -1 0
+0 27 -1 1
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star5 groundstation1
+1
+20 0
+3
+0 18 0 6
+0 21 -1 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star5 groundstation2
+1
+20 0
+3
+0 18 1 6
+0 22 -1 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star5 phenomenon3
+1
+20 0
+3
+0 18 2 6
+0 23 -1 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star5 phenomenon4
+1
+20 0
+3
+0 18 3 6
+0 24 -1 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star5 phenomenon6
+1
+20 0
+3
+0 18 4 6
+0 25 -1 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star5 star0
+1
+20 0
+3
+0 18 5 6
+0 26 -1 1
+0 27 -1 0
+0
+end_operator
+begin_operator
+fix_turn_to satellite0 star5 star5
+2
+18 6
+20 0
+1
+0 27 -1 0
 0
 end_operator
 0
