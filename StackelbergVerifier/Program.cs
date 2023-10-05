@@ -20,12 +20,55 @@ namespace StacklebergVerifier
         public static void RunStacklebergVerifier(StackelbergVerifierOptions opts)
         {
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
-            if (!Directory.Exists(opts.OutputPath))
-                Directory.CreateDirectory(opts.OutputPath);
             opts.DomainFilePath = PathHelper.RootPath(opts.DomainFilePath);
             opts.ProblemFilePath = PathHelper.RootPath(opts.ProblemFilePath);
             opts.StackelbergPath = PathHelper.RootPath(opts.StackelbergPath);
 
+            ConsoleHelper.WriteLineColor("Verifying paths...", ConsoleColor.DarkGray);
+            if (!Directory.Exists(opts.OutputPath))
+                Directory.CreateDirectory(opts.OutputPath);
+            if (!File.Exists(opts.DomainFilePath))
+                throw new FileNotFoundException($"Domain file not found: {opts.DomainFilePath}");
+            if (!File.Exists(opts.ProblemFilePath))
+                throw new FileNotFoundException($"Problem file not found: {opts.ProblemFilePath}");
+            if (!File.Exists(opts.StackelbergPath))
+                throw new FileNotFoundException($"Stackelberg planner file not found: {opts.StackelbergPath}");
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor("Executing Stackelberg Planner", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("(Note, this may take a while)", ConsoleColor.DarkGray);
+            var process = ExecutePlanner(opts);
+            while(!process.HasExited)
+            {
+                ConsoleHelper.WriteColor(".", ConsoleColor.DarkGray);
+                Thread.Sleep(1000);
+            }
+            Console.WriteLine();
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor("Checking Frontier...", ConsoleColor.DarkGray);
+            if (IsFrontierValid(Path.Combine(opts.OutputPath, "pareto_frontier.json")))
+                ConsoleHelper.WriteLineColor("== Frontier is valid ==", ConsoleColor.Green);
+            else
+                ConsoleHelper.WriteLineColor("== Frontier is not valid ==", ConsoleColor.Red);
+        }
+
+        private static bool IsFrontierValid(string file)
+        {
+            if (!File.Exists(file))
+                return false;
+            var text = File.ReadAllText(file);
+            var index = text.LastIndexOf("\"attacker cost\": ") + "\"attacker cost\": ".Length;
+            var endIndex = text.IndexOf(",", index);
+            var numberStr = text.Substring(index, endIndex - index);
+            var number = int.Parse(numberStr);
+            if (number != int.MaxValue)
+                return true;
+            return false;
+        }
+
+        private static Process ExecutePlanner(StackelbergVerifierOptions opts)
+        {
             StringBuilder sb = new StringBuilder("");
             sb.Append($"{opts.StackelbergPath} ");
             sb.Append($"\"{opts.DomainFilePath}\" ");
@@ -50,33 +93,7 @@ namespace StacklebergVerifier
             };
 
             process.Start();
-            Console.WriteLine("Verifying...");
-            while(!process.HasExited)
-            {
-                Console.Write(".");
-                Thread.Sleep(1000);
-            }
-            Console.WriteLine();
-            Console.WriteLine("Done!");
-            Console.WriteLine("Checking frontier...");
-            if (IsFrontierValid(Path.Combine(opts.OutputPath, "pareto_frontier.json")))
-                Console.WriteLine("== Frontier is valid ==");
-            else
-                Console.WriteLine("== Frontier is not valid ==");
-        }
-
-        private static bool IsFrontierValid(string file)
-        {
-            if (!File.Exists(file))
-                return false;
-            var text = File.ReadAllText(file);
-            var index = text.LastIndexOf("\"defender cost\": ") + "\"defender cost\": ".Length;
-            var endIndex = text.IndexOf(",", index);
-            var numberStr = text.Substring(index, endIndex - index);
-            var number = Int32.Parse(numberStr);
-            if (number != int.MaxValue)
-                return true;
-            return false;
+            return process;
         }
 
     }
