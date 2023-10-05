@@ -17,63 +17,67 @@ namespace StacklebergCompiler
         {
             var newDomain = domain.Copy();
 
-            //newDomain.Actions = GenerateAbstractedActions(newDomain.Actions);
-            newDomain.Actions = GenerateAbstractedActions2(newDomain.Actions);
+            newDomain.Actions = GenerateAbstractedActions(newDomain.Actions);
 
             return new PDDLDecl(newDomain, problem);
         }
 
-        private List<ActionDecl> GenerateAbstractedActions2(List<ActionDecl> actions)
+        private List<ActionDecl> GenerateAbstractedActions(List<ActionDecl> actions)
         {
             List<ActionDecl> newActions = new List<ActionDecl>();
 
             foreach(var action in actions)
             {
                 if (action.Name.StartsWith(ReservedNames.FollowerActionPrefix))
-                {
-                    if (action.Effects is AndExp and)
-                    {
-                        and.Children.RemoveAll(x => x is WhenExp);
-                        var trues = GenerateTrue(and.Children);
-                        var permutations = GeneratePermutations(and.Children.Count, 0, new List<bool>());
-                        int counter = 0;
-                        foreach (var permutation in permutations)
-                        {
-                            var newAct = action.Copy();
-
-                            for(int i = 0; i < permutation.Count; i++)
-                            {
-                                var pred = GetActualPredicate(and.Children[i]);
-                                if (newAct.Preconditions is AndExp preAnd && newAct.Effects is AndExp effAnd) 
-                                {
-                                    if (permutation[i])
-                                    {
-                                        preAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.LeaderStatePrefix));
-                                        if (trues[i])
-                                            effAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix));
-                                        else
-                                            effAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix)));
-                                    }
-                                    else
-                                    {
-                                        preAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.LeaderStatePrefix)));
-                                        if (trues[i])
-                                            effAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix)));
-                                        else
-                                            effAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix));
-                                    }
-                                }
-                            }
-
-                            newAct.Name = $"{newAct.Name}_{counter++}";
-                            newActions.Add(newAct);
-                        }
-                    }
-                }
+                    newActions.AddRange(GeneratePossibleActions(action));
                 else
                     newActions.Add(action);
             }
 
+            return newActions;
+        }
+
+        private List<ActionDecl> GeneratePossibleActions(ActionDecl source)
+        {
+            List<ActionDecl> newActions = new List<ActionDecl>();
+            if (source.Effects is AndExp and)
+            {
+                and.Children.RemoveAll(x => x is WhenExp);
+                var trues = GenerateTrue(and.Children);
+                var permutations = GeneratePermutations(and.Children.Count, 0, new List<bool>());
+                int counter = 0;
+                foreach (var permutation in permutations)
+                {
+                    var newAct = source.Copy();
+
+                    for (int i = 0; i < permutation.Count; i++)
+                    {
+                        var pred = GetActualPredicate(and.Children[i]);
+                        if (newAct.Preconditions is AndExp preAnd && newAct.Effects is AndExp effAnd)
+                        {
+                            if (permutation[i])
+                            {
+                                preAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.LeaderStatePrefix));
+                                if (trues[i])
+                                    effAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix));
+                                else
+                                    effAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix)));
+                            }
+                            else
+                            {
+                                preAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.LeaderStatePrefix)));
+                                if (trues[i])
+                                    effAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix)));
+                                else
+                                    effAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix));
+                            }
+                        }
+                    }
+
+                    newAct.Name = $"{newAct.Name}_{counter++}";
+                    newActions.Add(newAct);
+                }
+            }
             return newActions;
         }
 
