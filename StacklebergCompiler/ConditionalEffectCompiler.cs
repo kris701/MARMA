@@ -24,62 +24,36 @@ namespace StacklebergCompiler
             StaticPredicateDetector.GenerateStaticPredicates(domain);
 
             // Generate total goal
-            GenerateIsGoal(newProblem, newDomain);
+            TotalGoalGenerator.GenerateIsGoal(newProblem, newDomain);
 
             // Problem
             GenerateNewInits(newProblem);
             GenerateNewGoal(newProblem, newDomain);
-            InsertTurnPredicate(newProblem);
+            InsertTurnPredicateIntoInit(newProblem);
 
             // Domain
-            GenerateLeaderFollowerActions(newDomain);
+            SplitActionsIntoLeaderFollowerVariants(newDomain);
             TurnAllActionEffectsToAnd(newDomain);
-            if (newDomain.Predicates != null)
-            {
-                var newPredicates = new List<PredicateExp>();
-                newPredicates.AddRange(GenerateLeaderPredicates(newDomain));
-                newPredicates.AddRange(GenerateGoalPredicates(newDomain));
-                newDomain.Predicates.Predicates.AddRange(newPredicates);
-            }
-            UpdateLeaderActionsPredicates(newDomain);
-            UpdateFollowerActionsEffects(newDomain);
+            GenerateDomainPredicates(newDomain);
+            UpdateLeaderActionsPredicatesAndEffects(newDomain);
+            InsertConditionalEffectsToFollowerActions(newDomain);
             UpdateAndInsertMetaActionToFit(newDomain, metaAction);
-            InsertTurnPredicate(newDomain);
-            if (newProblem.Goal != null)
-                AddFollowerReachGoalAction(newDomain, newProblem.Goal);
+            InsertTurnPredicateIntoActions(newDomain);
 
             return new PDDLDecl(newDomain, newProblem);
         }
 
-        private void AddFollowerReachGoalAction(DomainDecl domain, GoalDecl goal)
-        {
-            domain.Actions.Add(new ActionDecl(
-                null,
-                ReservedNames.FollowerReachGoalAction,
-                new ParameterExp(
-                    null,
-                    new List<NameExp>()),
-                new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()),
-                new NotExp(null, new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()))
-                ));
-        }
-
         private void TurnAllActionEffectsToAnd(DomainDecl domain)
         {
-            foreach(var act in domain.Actions)
-            {
+            foreach (var act in domain.Actions)
                 if (act.Effects is not AndExp)
-                {
-                    var newAnd = new AndExp(null, new List<IExp>()
+                    act.Effects = new AndExp(null, new List<IExp>()
                     {
                         act.Effects
                     });
-                    act.Effects = newAnd;
-                }
-            }
         }
 
-        private void InsertTurnPredicate(DomainDecl domain)
+        private void InsertTurnPredicateIntoActions(DomainDecl domain)
         {
             if (domain.Predicates != null)
                 domain.Predicates.Predicates.Add(
@@ -100,7 +74,7 @@ namespace StacklebergCompiler
             }
         }
 
-        private void InsertTurnPredicate(ProblemDecl problem)
+        private void InsertTurnPredicateIntoInit(ProblemDecl problem)
         {
             if (problem.Init != null)
                 problem.Init.Predicates.Add(
@@ -149,7 +123,7 @@ namespace StacklebergCompiler
             domain.Actions.Add(metaAction);
         }
 
-        private void UpdateLeaderActionsPredicates(DomainDecl domain)
+        private void UpdateLeaderActionsPredicatesAndEffects(DomainDecl domain)
         {
             foreach (var action in domain.Actions.Where(x => x.Name.StartsWith(ReservedNames.LeaderActionPrefix)))
             {
@@ -177,7 +151,7 @@ namespace StacklebergCompiler
             }
         }
 
-        private void UpdateFollowerActionsEffects(DomainDecl domain)
+        private void InsertConditionalEffectsToFollowerActions(DomainDecl domain)
         {
             foreach (var action in domain.Actions.Where(x => x.Name.StartsWith(ReservedNames.FollowerActionPrefix)))
             {
@@ -240,41 +214,32 @@ namespace StacklebergCompiler
             }
         }
 
-        private List<PredicateExp> GenerateLeaderPredicates(DomainDecl domain)
+        private void GenerateDomainPredicates(DomainDecl domain)
         {
-            var newLeaderPredicates = new List<PredicateExp>();
             if (domain.Predicates != null)
             {
-                foreach (var predicate in domain.Predicates.Predicates)
-                {
-                    if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
-                        newLeaderPredicates.Add(new PredicateExp(
-                            domain.Predicates,
-                            $"{ReservedNames.LeaderStatePrefix}{predicate.Name}",
-                            predicate.Arguments));
-                }
+                var newPredicates = new List<PredicateExp>();
+                newPredicates.AddRange(GeneratePrefixPredicates(domain.Predicates.Predicates, ReservedNames.LeaderStatePrefix));
+                newPredicates.AddRange(GeneratePrefixPredicates(domain.Predicates.Predicates, ReservedNames.IsGoalPrefix));
+                domain.Predicates.Predicates.AddRange(newPredicates);
+            }
+        }
+
+        private List<PredicateExp> GeneratePrefixPredicates(List<PredicateExp> predicates, string prefix)
+        {
+            var newLeaderPredicates = new List<PredicateExp>();
+            foreach (var predicate in predicates)
+            {
+                if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
+                    newLeaderPredicates.Add(new PredicateExp(
+                        null,
+                        $"{prefix}{predicate.Name}",
+                        predicate.Arguments));
             }
             return newLeaderPredicates;
         }
 
-        private List<PredicateExp> GenerateGoalPredicates(DomainDecl domain)
-        {
-            var newGoalPredicates = new List<PredicateExp>();
-            if (domain.Predicates != null)
-            {
-                foreach (var predicate in domain.Predicates.Predicates)
-                {
-                    if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
-                        newGoalPredicates.Add(new PredicateExp(
-                            domain.Predicates,
-                            $"{ReservedNames.IsGoalPrefix}{predicate.Name}",
-                            predicate.Arguments));
-                }
-            }
-            return newGoalPredicates;
-        }
-
-        private void GenerateLeaderFollowerActions(DomainDecl domain)
+        private void SplitActionsIntoLeaderFollowerVariants(DomainDecl domain)
         {
             List<ActionDecl> newActions = new List<ActionDecl>();
             foreach(var action in domain.Actions)
@@ -293,93 +258,23 @@ namespace StacklebergCompiler
         {
             if (problem.Init != null)
             {
-                var initPredicates = new List<PredicateExp>();
-                foreach (var item in problem.Init.Predicates)
-                    if (item is PredicateExp pred)
-                        initPredicates.Add(pred);
-
-                problem.Init.Predicates.AddRange(GenerateLeaderInits(initPredicates));
-                problem.Init.Predicates.AddRange(IsGoal.Copy());
+                var initPredicates = problem.Init.FindTypes<PredicateExp>();
+                problem.Init.Predicates.AddRange(GeneratePrefixPredicates(initPredicates, ReservedNames.LeaderStatePrefix));
+                problem.Init.Predicates.AddRange(TotalGoalGenerator.IsGoal.Copy());
             }
-        }
-
-        private List<PredicateExp> GenerateLeaderInits(List<PredicateExp> inits)
-        {
-            var newInits = new List<PredicateExp>();
-            foreach (var init in inits)
-            {
-                if (init is PredicateExp pred)
-                    if (!StaticPredicateDetector.StaticPredicates.Contains(pred.Name))
-                        newInits.Add(new PredicateExp(
-                            null,
-                            $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
-                            pred.Arguments));
-            }
-            return newInits;
         }
 
         private void GenerateNewGoal(ProblemDecl problem, DomainDecl domain)
         {
             if (problem.Goal != null && problem.Init != null && problem.Objects != null && domain.Predicates != null)
             {
-                var goals = IsGoal.Copy();
+                var goals = TotalGoalGenerator.IsGoal.Copy();
                 List<IExp> newGoals = new List<IExp>();
                 foreach (var goal in goals)
                     newGoals.Add(goal);
 
                 problem.Goal.GoalExp = new AndExp(null, newGoals);
             }
-        }
-
-        private List<PredicateExp> IsGoal = new List<PredicateExp>();
-        private void GenerateIsGoal(ProblemDecl problem, DomainDecl domain)
-        {
-            if (problem.Goal != null && problem.Init != null && problem.Objects != null && domain.Predicates != null)
-            {
-                List<PredicateExp> newGoals = new List<PredicateExp>();
-                var objDict = DictionaryObjectsOfType(problem.Objects.Objs);
-
-                foreach (var predicate in domain.Predicates.Predicates)
-                    newGoals.AddRange(GeneratePossibles(predicate, 0, objDict));
-                newGoals.RemoveAll(x => StaticPredicateDetector.StaticPredicates.Contains((x as PredicateExp).Name));
-                foreach (var predicate in newGoals)
-                    predicate.Name = $"{ReservedNames.IsGoalPrefix}{predicate.Name}";
-                IsGoal = newGoals;
-            }
-        }
-
-        private List<PredicateExp> GeneratePossibles(PredicateExp parentPredicate, int argIndex, Dictionary<string, List<string>> objDict)
-        {
-            List<PredicateExp> returnList = new List<PredicateExp>();
-            if (argIndex >= parentPredicate.Arguments.Count)
-                return returnList;
-
-            foreach (var obj in objDict[parentPredicate.Arguments[argIndex].Type.Name])
-            {
-                var newPredicate = new PredicateExp(null, parentPredicate.Name, parentPredicate.Arguments.Copy());
-                if (argIndex == parentPredicate.Arguments.Count - 1)
-                    returnList.Add(newPredicate);
-                newPredicate.Arguments.RemoveAt(argIndex);
-                newPredicate.Arguments.Insert(argIndex, new NameExp(null, obj));
-
-                returnList.AddRange(GeneratePossibles(newPredicate, argIndex + 1, objDict));
-            }
-
-            return returnList;
-        }
-
-        private Dictionary<string, List<string>> DictionaryObjectsOfType(List<NameExp> objs)
-        {
-            Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
-
-            foreach (var obj in objs)
-            {
-                if (!dict.ContainsKey(obj.Type.Name))
-                    dict.Add(obj.Type.Name, new List<string>());
-                dict[obj.Type.Name].Add(obj.Name);
-            }
-
-            return dict;
         }
     }
 }

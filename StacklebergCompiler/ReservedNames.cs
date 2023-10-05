@@ -18,10 +18,6 @@ namespace StacklebergCompiler
         // Sufixes
         public static readonly string GoalActionSufix = "_goal";
 
-        // Reserved Actions
-        public static readonly string FollowerReachGoalAction = $"{FollowerActionPrefix}reach-goal";
-        public static readonly string LeaderPassTurnAction = $"{LeaderActionPrefix}pass-turn";
-
         // Reserved Predicates
         public static readonly string LeaderTurnPredicate = "leader-turn";
 
