@@ -399,5 +399,6 @@ FodyWeavers.xsd
 
 /Dependencies/**
 /PlanSamples/**
+/StackelbergDomains/**
 !/Dependencies/readme.md
 !/Dependencies/setup.sh

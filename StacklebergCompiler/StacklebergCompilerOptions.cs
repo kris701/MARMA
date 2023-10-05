@@ -15,5 +15,7 @@ namespace StacklebergCompiler
         public string ProblemFilePath { get; set; } = "";
         [Option("meta-action", Required = true, HelpText = "Path to the meta action file")]
         public string MetaActionFile { get; set; } = "";
+        [Option("output", Required = false, HelpText = "Path to where to output the generated files.")]
+        public string OutputPath { get; set; } = "";
     }
 }

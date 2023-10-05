@@ -1,3 +1,0 @@
-[{"attacker cost": 0, "defender cost": 0, "sequences": [  []], "attacker plan":  []},
-{"attacker cost": 1, "defender cost": 1, "sequences": [  ["fix_meta_$tele-pick ball2 rooma right"]], "attacker plan":  ["attack_pick_3 ball2 rooma right"]},
-{"attacker cost": 3, "defender cost": 2, "sequences": [  ["fix_move rooma roomb", "fix_meta_$tele-pick ball2 rooma right"]], "attacker plan":  ["attack_move_2 roomb rooma", "attack_pick_3 ball2 rooma right", "attack_move_1 rooma roomb"]}]
