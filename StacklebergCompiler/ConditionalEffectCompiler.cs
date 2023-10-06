@@ -47,7 +47,7 @@ namespace StacklebergCompiler
         {
             foreach (var act in domain.Actions)
                 if (act.Effects is not AndExp)
-                    act.Effects = new AndExp(null, new List<IExp>()
+                    act.Effects = new AndExp(new List<IExp>()
                     {
                         act.Effects
                     });
@@ -57,19 +57,19 @@ namespace StacklebergCompiler
         {
             if (domain.Predicates != null)
                 domain.Predicates.Predicates.Add(
-                    new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()));
+                    new PredicateExp(ReservedNames.LeaderTurnPredicate));
 
             foreach(var action in domain.Actions)
             {
                 if (action.Name.Contains(ReservedNames.LeaderActionPrefix))
                 {
                     if (action.Preconditions is AndExp leaderPreconditions)
-                        leaderPreconditions.Children.Add(new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()));
+                        leaderPreconditions.Children.Add(new PredicateExp(ReservedNames.LeaderTurnPredicate));
                 }
                 else if (action.Name.Contains(ReservedNames.FollowerActionPrefix))
                 {
                     if (action.Preconditions is AndExp leaderPreconditions)
-                        leaderPreconditions.Children.Add(new NotExp(null, new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>())));
+                        leaderPreconditions.Children.Add(new NotExp(new PredicateExp(ReservedNames.LeaderTurnPredicate)));
                 }
             }
         }
@@ -78,7 +78,7 @@ namespace StacklebergCompiler
         {
             if (problem.Init != null)
                 problem.Init.Predicates.Add(
-                    new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>()));
+                    new PredicateExp(ReservedNames.LeaderTurnPredicate));
         }
 
         private void UpdateAndInsertMetaActionToFit(DomainDecl domain, ActionDecl metaAction)
@@ -102,7 +102,7 @@ namespace StacklebergCompiler
                     {
                         var newNormalEffect = effect.Copy();
                         newNormalEffect.Name = $"{ReservedNames.LeaderStatePrefix}{newNormalEffect.Name}";
-                        newChildren.Add(new NotExp(null, newNormalEffect));
+                        newChildren.Add(new NotExp(newNormalEffect));
                     }
                     else
                     {
@@ -113,11 +113,11 @@ namespace StacklebergCompiler
 
                     var newGoalEffect = effect.Copy();
                     newGoalEffect.Name = $"{ReservedNames.IsGoalPrefix}{newGoalEffect.Name}";
-                    newChildren.Add(new NotExp(null, newGoalEffect));
+                    newChildren.Add(new NotExp(newGoalEffect));
                 }
             }
-            newChildren.Add(new NotExp(null, new PredicateExp(null, ReservedNames.LeaderTurnPredicate, new List<NameExp>())));
-            metaAction.Effects = new AndExp(null, newChildren);
+            newChildren.Add(new NotExp(new PredicateExp(ReservedNames.LeaderTurnPredicate)));
+            metaAction.Effects = new AndExp(newChildren);
 
             metaAction.Name = $"{ReservedNames.LeaderActionPrefix}{ReservedNames.MetaActionPrefix}{metaAction.Name}";
             domain.Actions.Add(metaAction);
@@ -147,7 +147,7 @@ namespace StacklebergCompiler
                     newChildren.AddRange(leaderAnd.Children);
                 if (followerEffect is AndExp followerAnd)
                     newChildren.AddRange(followerAnd.Children);
-                action.Effects = new AndExp(null, newChildren);
+                action.Effects = new AndExp(newChildren);
             }
         }
 
@@ -177,7 +177,7 @@ namespace StacklebergCompiler
                             falseWhen,
                             $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
                             pred.Arguments);
-                        falseWhen.Effect = new NotExp(null, new PredicateExp(
+                        falseWhen.Effect = new NotExp(new PredicateExp(
                             falseWhen,
                             $"{ReservedNames.IsGoalPrefix}{pred.Name}",
                             pred.Arguments));
@@ -197,11 +197,11 @@ namespace StacklebergCompiler
                         newExpressions.Add(trueWhen);
 
                         var falseWhen = new WhenExp(action, null, null);
-                        falseWhen.Condition = new NotExp(null, new PredicateExp(
+                        falseWhen.Condition = new NotExp(new PredicateExp(
                             falseWhen,
                             $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
                             pred.Arguments));
-                        falseWhen.Effect = new NotExp(null, new PredicateExp(
+                        falseWhen.Effect = new NotExp(new PredicateExp(
                             falseWhen,
                             $"{ReservedNames.IsGoalPrefix}{pred.Name}",
                             pred.Arguments));
@@ -232,7 +232,6 @@ namespace StacklebergCompiler
             {
                 if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
                     newLeaderPredicates.Add(new PredicateExp(
-                        null,
                         $"{prefix}{predicate.Name}",
                         predicate.Arguments));
             }
@@ -273,7 +272,7 @@ namespace StacklebergCompiler
                 foreach (var goal in goals)
                     newGoals.Add(goal);
 
-                problem.Goal.GoalExp = new AndExp(null, newGoals);
+                problem.Goal.GoalExp = new AndExp(newGoals);
             }
         }
     }

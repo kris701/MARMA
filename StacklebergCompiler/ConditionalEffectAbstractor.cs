@@ -61,13 +61,13 @@ namespace StacklebergCompiler
                                 if (trues[i])
                                     effAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix));
                                 else
-                                    effAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix)));
+                                    effAnd.Children.Add(new NotExp(CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix)));
                             }
                             else
                             {
-                                preAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.LeaderStatePrefix)));
+                                preAnd.Children.Add(new NotExp(CopyAndPrefixPredicate(pred, ReservedNames.LeaderStatePrefix)));
                                 if (trues[i])
-                                    effAnd.Children.Add(new NotExp(null, CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix)));
+                                    effAnd.Children.Add(new NotExp(CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix)));
                                 else
                                     effAnd.Children.Add(CopyAndPrefixPredicate(pred, ReservedNames.IsGoalPrefix));
                             }

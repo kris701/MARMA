@@ -10,6 +10,7 @@ using PDDLSharp.Models.Problem;
 using PDDLSharp.Models.Domain;
 using PDDLSharp.CodeGenerators;
 using PDDLSharp.Analysers;
+using PDDLSharp.Models;
 
 namespace StacklebergCompiler
 {
@@ -42,7 +43,7 @@ namespace StacklebergCompiler
 
             ConsoleHelper.WriteLineColor("Parsing files...", ConsoleColor.DarkGray);
             IErrorListener listener = new ErrorListener();
-            IParser parser = new PDDLParser(listener);
+            IParser<INode> parser = new PDDLParser(listener);
 
             var domain = parser.ParseAs<DomainDecl>(opts.DomainFilePath);
             var problem = parser.ParseAs<ProblemDecl>(opts.ProblemFilePath);
