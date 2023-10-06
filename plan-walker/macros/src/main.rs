@@ -10,11 +10,11 @@ use state::{
     state::{generate_state, State},
 };
 
-use crate::{block_deordering::deorder, blocks::block_decomposition};
+use crate::{blocks::block_decomposition, deordering::deorder};
 
-mod block_deordering;
 mod blocks;
 mod constraints;
+pub mod deordering;
 
 #[derive(Parser, Default, Debug)]
 #[command(term_width = 0)]
@@ -60,17 +60,7 @@ fn main() -> Result<()> {
     println!("Steps: {}", solution.steps.len());
     println!("{} Converting solution...", run_time());
     let plan = Plan::new(&domain, &problem, &facts, solution);
-    println!("{} Decomposing plan...", run_time());
-    let blocks = block_decomposition(&state, plan);
-    println!("Blocks: {}", blocks.len());
-    for i in 0..blocks.len() {
-        let block = &blocks[i];
-        println!("---{}---", i);
-        for step in &block.steps {
-            println!("{}", domain.actions[step.action_index].name);
-        }
-    }
-    let deordered = deorder(&domain, &problem, &facts, &state, blocks);
+    let deordered = deorder(&domain, &problem, &facts, &state, plan);
     println!("Deordered len: {}", deordered.len());
     for i in 0..deordered.len() {
         println!("Layer: {}", i);

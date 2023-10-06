@@ -3,6 +3,7 @@ use std::collections::HashSet;
 use parsing::{domain::Domain, problem::Problem};
 use state::{
     instance::fact::Facts,
+    plan::Plan,
     state::{apply_to_state, State},
 };
 
@@ -19,11 +20,16 @@ pub fn deorder(
     problem: &Problem,
     facts: &Facts,
     init: &State,
-    blocks: Vec<Block>,
+    plan: Plan,
 ) -> DeorderedPlan {
-    if blocks.is_empty() {
+    if plan.steps.is_empty() {
         return vec![];
     }
+
+    let mut plan = vec![];
+
+    let mut ordered: bool = true;
+    while ordered {}
 
     plan
 }
