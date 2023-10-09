@@ -76,9 +76,23 @@ fn convert_step(
 }
 
 pub fn next_init(instance: &Instance, sas_plan: &SASPlan) -> Plan {
-    todo!()
+    let steps = sas_plan.steps[0..sas_plan.meta_pos().unwrap()]
+        .iter()
+        .map(|i| convert_step(&instance.domain, &instance.problem, &instance.facts, &i.0))
+        .collect();
+    Plan { steps }
 }
 
 pub fn next_goal(instance: &Instance, meta_domain: &Domain, sas_plan: &SASPlan) -> Plan {
-    todo!()
+    let mut steps: Vec<Step> = sas_plan.steps[0..sas_plan.meta_pos().unwrap()]
+        .iter()
+        .map(|i| convert_step(&instance.domain, &instance.problem, &instance.facts, &i.0))
+        .collect();
+    steps.push(convert_step(
+        meta_domain,
+        &instance.problem,
+        &instance.facts,
+        &sas_plan.steps[sas_plan.meta_pos().unwrap()].0,
+    ));
+    Plan { steps }
 }

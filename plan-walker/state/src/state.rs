@@ -4,9 +4,12 @@ use bitvec::vec::BitVec;
 use itertools::Itertools;
 use parsing::{domain::Domain, problem::Problem};
 
-use crate::instance::{
-    fact::{Fact, Facts},
-    operator::Operator,
+use crate::{
+    instance::{
+        fact::{Fact, Facts},
+        operator::Operator,
+    },
+    plan::Plan,
 };
 
 pub type State = BitVec;
@@ -51,6 +54,14 @@ pub fn generate_state(domain: &Domain, problem: &Problem, facts: &Facts) -> Stat
 }
 
 pub fn apply_to_state(state: &mut State, operator: &Operator) {
-    state.bitand_assign(operator.del.to_owned());
+    state.bitand_assign(!operator.del.to_owned());
     state.bitor_assign(operator.add.to_owned());
+}
+
+pub fn apply_plan_to_state(state: &State, plan: &Plan) -> State {
+    let mut temp_state = state.to_owned();
+    for step in plan.steps.iter() {
+        apply_to_state(&mut temp_state, &step.operator);
+    }
+    temp_state
 }
