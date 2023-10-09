@@ -13,6 +13,13 @@ namespace StacklebergCompiler
     public static class TotalGoalGenerator
     {
         public static List<PredicateExp> TotalGoal = new List<PredicateExp>();
+        public static List<PredicateExp> CopyTotalGoal()
+        {
+            List<PredicateExp> retList = new List<PredicateExp>();
+            foreach(var pred in TotalGoal)
+                retList.Add(pred.Copy(null));
+            return retList;
+        }
         public static void GenerateTotalGoal(ProblemDecl problem, DomainDecl domain)
         {
             if (problem.Goal != null && problem.Init != null && problem.Objects != null && domain.Predicates != null)
@@ -37,7 +44,7 @@ namespace StacklebergCompiler
 
             foreach (var obj in objDict[parentPredicate.Arguments[argIndex].Type.Name])
             {
-                var newPredicate = new PredicateExp(null, parentPredicate.Name, parentPredicate.Arguments.Copy());
+                var newPredicate = parentPredicate.Copy(null);
                 if (argIndex == parentPredicate.Arguments.Count - 1)
                     returnList.Add(newPredicate);
                 newPredicate.Arguments.RemoveAt(argIndex);

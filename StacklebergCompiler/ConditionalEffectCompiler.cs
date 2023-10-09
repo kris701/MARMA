@@ -18,8 +18,8 @@ namespace StacklebergCompiler
     {
         public PDDLDecl GenerateConditionalEffects(DomainDecl domain, ProblemDecl problem, ActionDecl metaAction)
         {
-            var newDomain = domain.Copy();
-            var newProblem = problem.Copy();
+            var newDomain = domain.Copy(null);
+            var newProblem = problem.Copy(null);
 
             // Find static predicates
             StaticPredicateDetector.GenerateStaticPredicates(domain);
@@ -69,7 +69,7 @@ namespace StacklebergCompiler
             {
                 var initPredicates = problem.Init.FindTypes<PredicateExp>();
                 problem.Init.Predicates.AddRange(GeneratePrefixPredicates(initPredicates, ReservedNames.LeaderStatePrefix));
-                problem.Init.Predicates.AddRange(TotalGoalGenerator.TotalGoal.Copy());
+                problem.Init.Predicates.AddRange(TotalGoalGenerator.CopyTotalGoal());
             }
         }
 
@@ -81,7 +81,7 @@ namespace StacklebergCompiler
         {
             if (problem.Goal != null)
             {
-                var goals = TotalGoalGenerator.TotalGoal.Copy();
+                var goals = TotalGoalGenerator.CopyTotalGoal();
                 List<IExp> newGoals = new List<IExp>();
                 foreach (var goal in goals)
                     newGoals.Add(goal);
@@ -172,18 +172,18 @@ namespace StacklebergCompiler
                 {
                     if (effect.Parent is NotExp not)
                     {
-                        var newNormalEffect = effect.Copy();
+                        var newNormalEffect = effect.Copy(null);
                         newNormalEffect.Name = $"{ReservedNames.LeaderStatePrefix}{newNormalEffect.Name}";
                         newChildren.Add(new NotExp(newNormalEffect));
                     }
                     else
                     {
-                        var newNormalEffect = effect.Copy();
+                        var newNormalEffect = effect.Copy(null);
                         newNormalEffect.Name = $"{ReservedNames.LeaderStatePrefix}{newNormalEffect.Name}";
                         newChildren.Add(newNormalEffect);
                     }
 
-                    var newGoalEffect = effect.Copy();
+                    var newGoalEffect = effect.Copy(null);
                     newGoalEffect.Name = $"{ReservedNames.IsGoalPrefix}{newGoalEffect.Name}";
                     newChildren.Add(new NotExp(newGoalEffect));
                 }
@@ -211,8 +211,8 @@ namespace StacklebergCompiler
                     ReservedNames.LeaderStatePrefix);
 
                 // Effects
-                var leaderEffect = action.Effects.Copy();
-                var followerEffect = action.Effects.Copy();
+                var leaderEffect = action.Effects.Copy(null);
+                var followerEffect = action.Effects.Copy(null);
                 PrefixPredicatesInNode(
                     leaderEffect.FindTypes<PredicateExp>(),
                     ReservedNames.LeaderStatePrefix);
@@ -318,9 +318,9 @@ namespace StacklebergCompiler
             List<ActionDecl> newActions = new List<ActionDecl>();
             foreach(var action in domain.Actions)
             {
-                var leaderAct = action.Copy();
+                var leaderAct = action.Copy(null);
                 leaderAct.Name = $"{ReservedNames.LeaderActionPrefix}{leaderAct.Name}";
-                var followerAct = action.Copy();
+                var followerAct = action.Copy(null);
                 followerAct.Name = $"{ReservedNames.FollowerActionPrefix}{followerAct.Name}";
                 newActions.Add(leaderAct);
                 newActions.Add(followerAct);
@@ -338,7 +338,9 @@ namespace StacklebergCompiler
         /// <returns></returns>
         private List<PredicateExp> GeneratePrefixPredicates(List<PredicateExp> predicates, string prefix)
         {
-            var copyPredicates = predicates.Copy();
+            var copyPredicates = new List<PredicateExp>();
+            foreach (var pred in predicates)
+                copyPredicates.Add(pred.Copy(null));
             PrefixPredicatesInNode(copyPredicates, prefix);
             return copyPredicates;
         }
