@@ -30,7 +30,7 @@ namespace Tools
             if (visited.ContainsKey(originalObject)) return visited[originalObject];
             if (typeof(Delegate).IsAssignableFrom(typeToReflect)) return null;
             var cloneObject = CloneMethod.Invoke(originalObject, null);
-            if (typeToReflect.IsArray)
+            if (typeToReflect.IsArray && typeToReflect != typeof(PropertyInfo[]))
             {
                 var arrayType = typeToReflect.GetElementType();
                 if (IsPrimitive(arrayType) == false)

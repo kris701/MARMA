@@ -6,11 +6,12 @@ using PDDLSharp;
 using Tools;
 using PDDLSharp.Parsers;
 using PDDLSharp.ErrorListeners;
-using PDDLSharp.Models.Problem;
-using PDDLSharp.Models.Domain;
 using PDDLSharp.CodeGenerators;
 using PDDLSharp.Analysers;
 using PDDLSharp.Models;
+using PDDLSharp.Models.PDDL;
+using PDDLSharp.Models.PDDL.Domain;
+using PDDLSharp.Models.PDDL.Problem;
 
 namespace StacklebergCompiler
 {
@@ -72,7 +73,7 @@ namespace StacklebergCompiler
 
             ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
             watch.Restart();
-            ICodeGenerator generator = new PDDLCodeGenerator(listener);
+            ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
             generator.Readable = true;
 
             generator.Generate(conditionalDecl.Domain, Path.Combine(opts.OutputPath, "conditional_domain.pddl"));
