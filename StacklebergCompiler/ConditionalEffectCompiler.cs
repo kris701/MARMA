@@ -24,7 +24,7 @@ namespace StacklebergCompiler
             StaticPredicateDetector.GenerateStaticPredicates(domain);
 
             // Generate total goal
-            TotalGoalGenerator.GenerateIsGoal(newProblem, newDomain);
+            TotalGoalGenerator.GenerateTotalGoal(newProblem, newDomain);
 
             // Problem
             GenerateNewInits(newProblem);
@@ -42,6 +42,43 @@ namespace StacklebergCompiler
 
             return new PDDLDecl(newDomain, newProblem);
         }
+
+        #region Problem
+
+        private void InsertTurnPredicateIntoInit(ProblemDecl problem)
+        {
+            if (problem.Init != null)
+                problem.Init.Predicates.Add(
+                    new PredicateExp(ReservedNames.LeaderTurnPredicate));
+        }
+
+
+        private void GenerateNewInits(ProblemDecl problem)
+        {
+            if (problem.Init != null)
+            {
+                var initPredicates = problem.Init.FindTypes<PredicateExp>();
+                problem.Init.Predicates.AddRange(GeneratePrefixPredicates(initPredicates, ReservedNames.LeaderStatePrefix));
+                problem.Init.Predicates.AddRange(TotalGoalGenerator.TotalGoal.Copy());
+            }
+        }
+
+        private void GenerateNewGoal(ProblemDecl problem, DomainDecl domain)
+        {
+            if (problem.Goal != null)
+            {
+                var goals = TotalGoalGenerator.TotalGoal.Copy();
+                List<IExp> newGoals = new List<IExp>();
+                foreach (var goal in goals)
+                    newGoals.Add(goal);
+
+                problem.Goal.GoalExp = new AndExp(newGoals);
+            }
+        }
+
+        #endregion
+
+        #region Domain
 
         private void TurnAllActionEffectsToAnd(DomainDecl domain)
         {
@@ -74,12 +111,7 @@ namespace StacklebergCompiler
             }
         }
 
-        private void InsertTurnPredicateIntoInit(ProblemDecl problem)
-        {
-            if (problem.Init != null)
-                problem.Init.Predicates.Add(
-                    new PredicateExp(ReservedNames.LeaderTurnPredicate));
-        }
+
 
         private void UpdateAndInsertMetaActionToFit(DomainDecl domain, ActionDecl metaAction)
         {
@@ -253,27 +285,6 @@ namespace StacklebergCompiler
             domain.Actions = newActions;
         }
 
-        private void GenerateNewInits(ProblemDecl problem)
-        {
-            if (problem.Init != null)
-            {
-                var initPredicates = problem.Init.FindTypes<PredicateExp>();
-                problem.Init.Predicates.AddRange(GeneratePrefixPredicates(initPredicates, ReservedNames.LeaderStatePrefix));
-                problem.Init.Predicates.AddRange(TotalGoalGenerator.IsGoal.Copy());
-            }
-        }
-
-        private void GenerateNewGoal(ProblemDecl problem, DomainDecl domain)
-        {
-            if (problem.Goal != null && problem.Init != null && problem.Objects != null && domain.Predicates != null)
-            {
-                var goals = TotalGoalGenerator.IsGoal.Copy();
-                List<IExp> newGoals = new List<IExp>();
-                foreach (var goal in goals)
-                    newGoals.Add(goal);
-
-                problem.Goal.GoalExp = new AndExp(newGoals);
-            }
-        }
+        #endregion
     }
 }

@@ -11,7 +11,7 @@ using PDDLSharp.Models.Expressions;
 
 namespace StacklebergCompiler
 {
-    public class ConditionalEffectAbstractor
+    public class ConditionalEffectSimplifyer
     {
         public PDDLDecl AbstractConditionalEffects(DomainDecl domain, ProblemDecl problem)
         {

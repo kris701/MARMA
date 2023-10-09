@@ -12,8 +12,8 @@ namespace StacklebergCompiler
 {
     public static class TotalGoalGenerator
     {
-        public static List<PredicateExp> IsGoal = new List<PredicateExp>();
-        public static void GenerateIsGoal(ProblemDecl problem, DomainDecl domain)
+        public static List<PredicateExp> TotalGoal = new List<PredicateExp>();
+        public static void GenerateTotalGoal(ProblemDecl problem, DomainDecl domain)
         {
             if (problem.Goal != null && problem.Init != null && problem.Objects != null && domain.Predicates != null)
             {
@@ -25,7 +25,7 @@ namespace StacklebergCompiler
                 newGoals.RemoveAll(x => StaticPredicateDetector.StaticPredicates.Contains((x as PredicateExp).Name));
                 foreach (var predicate in newGoals)
                     predicate.Name = $"{ReservedNames.IsGoalPrefix}{predicate.Name}";
-                IsGoal = newGoals;
+                TotalGoal = newGoals;
             }
         }
 
