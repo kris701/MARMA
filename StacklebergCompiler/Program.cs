@@ -56,7 +56,7 @@ namespace StacklebergCompiler
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Generating abstracted domain/problem...", ConsoleColor.DarkGray);
-            ConditionalEffectAbstractor abstractor = new ConditionalEffectAbstractor();
+            ConditionalEffectSimplifyer abstractor = new ConditionalEffectSimplifyer();
             var abstractedConditionalDec = abstractor.AbstractConditionalEffects(conditionalDecl.Domain, conditionalDecl.Problem);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
