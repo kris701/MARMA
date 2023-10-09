@@ -10,7 +10,7 @@ use crate::shared::{named, spaced};
 
 use super::parameter::{parse_parameters, Parameters};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Predicate {
     pub name: String,
     pub parameters: Parameters,

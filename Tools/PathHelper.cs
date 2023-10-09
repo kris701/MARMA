@@ -12,6 +12,7 @@ namespace Tools
         {
             if (!Path.IsPathRooted(path))
                 path = Path.Join(Directory.GetCurrentDirectory(), path);
+            path = path.Replace("\\", "/");
             return path;
         }
     }

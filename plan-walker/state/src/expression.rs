@@ -76,8 +76,8 @@ fn convert(
 ) -> Expression {
     match expression {
         StringExpression::Predicate(e) => convert_term(domain, facts, action, parameters, e),
-        StringExpression::Equal(e) => {
-            Expression::Equal(convert_children(domain, facts, action, parameters, e))
+        StringExpression::Equal(_) => {
+            todo!()
         }
         StringExpression::And(e) => {
             Expression::And(convert_children(domain, facts, action, parameters, e))

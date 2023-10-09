@@ -1,3 +1,4 @@
+mod bit_expression;
 mod expression;
 pub mod instance;
 pub mod plan;

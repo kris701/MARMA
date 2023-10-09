@@ -8,14 +8,17 @@ use nom::{
 };
 
 use crate::{
-    shared::spaced,
-    term::{parse_term, Term},
+    domain::parameter::Parameters,
+    shared::{named, spaced},
+    term::{parse_term, Term, Terms},
 };
 
-#[derive(Debug, PartialEq)]
+use super::parse_parameters;
+
+#[derive(Debug, PartialEq, Clone)]
 pub enum StringExpression {
     Predicate(Term),
-    Equal(StringExpressions),
+    Equal(Vec<String>),
     And(StringExpressions),
     Or(StringExpressions),
     Not(Box<StringExpression>),
@@ -29,7 +32,9 @@ fn parse_predicate(input: &str) -> IResult<&str, StringExpression> {
 
 fn parse_equal(input: &str) -> IResult<&str, StringExpression> {
     let (remainder, _) = preceded(multispace0, tag_no_case("="))(input)?;
-    let (remainder, children) = many1(parse_expression)(remainder)?;
+    println!("{}", remainder);
+    let (remainder, children) =
+        many1(preceded(multispace0, preceded(char('?'), named)))(remainder)?;
     Ok((remainder, StringExpression::Equal(children)))
 }
 
@@ -44,7 +49,6 @@ fn parse_or(input: &str) -> IResult<&str, StringExpression> {
     let (remainder, children) = many1(parse_expression)(remainder)?;
     Ok((remainder, StringExpression::Or(children)))
 }
-
 fn parse_not(input: &str) -> IResult<&str, StringExpression> {
     let (remainder, _) = preceded(multispace0, tag_no_case("not"))(input)?;
     let (remainder, child) = parse_expression(remainder)?;
@@ -156,17 +160,8 @@ fn test() {
     assert_eq!(
         Ok((
             "",
-            StringExpression::Equal(vec![
-                StringExpression::Predicate(Term {
-                    name: "predicate".to_string(),
-                    parameters: vec!["a".to_string()]
-                }),
-                StringExpression::Predicate(Term {
-                    name: "predicate".to_string(),
-                    parameters: vec!["b".to_string()]
-                }),
-            ])
+            StringExpression::Equal(vec!["a".to_string(), "b".to_string(),])
         )),
-        parse_expression("(= (predicate ?a) (predicate ?b))")
+        parse_expression("(= ?a ?b)")
     );
 }

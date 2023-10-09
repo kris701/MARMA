@@ -27,9 +27,6 @@ fn is_valid_object(types: &Types, parameter: &Parameter, o: &Object) -> bool {
 }
 
 fn permute_all(types: &Types, problem: &Problem, parameters: &Parameters) -> Vec<Vec<usize>> {
-    if parameters.is_empty() {
-        return vec![];
-    }
     parameters
         .iter()
         .map(|parameter| {
@@ -51,6 +48,9 @@ pub fn permute(
     problem: &Problem,
     parameters: &Parameters,
 ) -> Vec<Vec<usize>> {
+    if parameters.is_empty() {
+        return vec![vec![]];
+    }
     if let Some(types) = types {
         return permute_all(&types, problem, parameters);
     } else {
