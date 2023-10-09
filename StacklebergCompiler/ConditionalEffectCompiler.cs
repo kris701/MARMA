@@ -40,6 +40,7 @@ namespace StacklebergCompiler
             InsertConditionalEffectsToFollowerActions(newDomain);
             UpdateAndInsertMetaActionToFit(newDomain, metaAction);
             InsertTurnPredicateIntoActions(newDomain);
+            InsertTurnPredicateIntoPredicates(newDomain);
 
             return new PDDLDecl(newDomain, newProblem);
         }
@@ -94,40 +95,53 @@ namespace StacklebergCompiler
         #region Domain
 
         /// <summary>
+        /// Insert the `leader-turn` predicate to the domain predicates
+        /// </summary>
+        /// <param name="problem"></param>
+        private void InsertTurnPredicateIntoPredicates(DomainDecl domain)
+        {
+            if (domain.Predicates != null)
+                domain.Predicates.Predicates.Add(
+                    new PredicateExp(ReservedNames.LeaderTurnPredicate));
+        }
+
+        /// <summary>
         /// Convert all actions' Preconditions and Effects into having a root 'AndExp' (this makes some things easier later on)
         /// </summary>
         /// <param name="domain"></param>
         private void InsertAndIntoAllActions(DomainDecl domain)
         {
             foreach (var act in domain.Actions)
-            {
-                if (act.Effects is not AndExp)
-                    act.Effects = new AndExp(new List<IExp>()
+                InsertAndIntoAction(act);
+        }
+        private void InsertAndIntoAction(ActionDecl act)
+        {
+            if (act.Effects is not AndExp)
+                act.Effects = new AndExp(new List<IExp>()
                     {
                         act.Effects
                     });
-                if (act.Preconditions is not AndExp)
-                    act.Preconditions = new AndExp(new List<IExp>()
+            if (act.Preconditions is not AndExp)
+                act.Preconditions = new AndExp(new List<IExp>()
                     {
                         act.Preconditions
                     });
-            }
         }
 
+        /// <summary>
+        /// Inserts the the `leader-turn` into the "fix" actions and the `not (leader-turn)` into the "attack" actions
+        /// </summary>
+        /// <param name="domain"></param>
         private void InsertTurnPredicateIntoActions(DomainDecl domain)
         {
-            if (domain.Predicates != null)
-                domain.Predicates.Predicates.Add(
-                    new PredicateExp(ReservedNames.LeaderTurnPredicate));
-
             foreach(var action in domain.Actions)
             {
-                if (action.Name.Contains(ReservedNames.LeaderActionPrefix))
+                if (action.Name.StartsWith(ReservedNames.LeaderActionPrefix))
                 {
                     if (action.Preconditions is AndExp leaderPreconditions)
                         leaderPreconditions.Children.Add(new PredicateExp(ReservedNames.LeaderTurnPredicate));
                 }
-                else if (action.Name.Contains(ReservedNames.FollowerActionPrefix))
+                else if (action.Name.StartsWith(ReservedNames.FollowerActionPrefix))
                 {
                     if (action.Preconditions is AndExp leaderPreconditions)
                         leaderPreconditions.Children.Add(new NotExp(new PredicateExp(ReservedNames.LeaderTurnPredicate)));
@@ -135,17 +149,21 @@ namespace StacklebergCompiler
             }
         }
 
+        /// <summary>
+        /// Insert the meta action, and update its preconditions and effects
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="metaAction"></param>
         private void UpdateAndInsertMetaActionToFit(DomainDecl domain, ActionDecl metaAction)
         {
-            if (metaAction.Preconditions is AndExp preAnd)
-            {
-                var preconditions = preAnd.FindTypes<PredicateExp>();
-                foreach (var predicate in preconditions)
-                {
-                    if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
-                        predicate.Name = $"{ReservedNames.LeaderStatePrefix}{predicate.Name}";
-                }
-            }
+            InsertAndIntoAction(metaAction);
+
+            // Update preconditions
+            PrefixPredicatesInNode(
+                metaAction.Preconditions.FindTypes<PredicateExp>(),
+                ReservedNames.LeaderStatePrefix);
+
+            // Update effects
             List<IExp> newChildren = new List<IExp>();
             var effects = metaAction.Effects.FindTypes<PredicateExp>();
             foreach (var effect in effects)
@@ -173,28 +191,31 @@ namespace StacklebergCompiler
             newChildren.Add(new NotExp(new PredicateExp(ReservedNames.LeaderTurnPredicate)));
             metaAction.Effects = new AndExp(newChildren);
 
+            // Update name
             metaAction.Name = $"{ReservedNames.LeaderActionPrefix}{ReservedNames.MetaActionPrefix}{metaAction.Name}";
             domain.Actions.Add(metaAction);
         }
 
+        /// <summary>
+        /// Updates the leader actions to contain both the follower and leader effects.
+        /// Only the leader preconditions are present, since the two states follow each other.
+        /// </summary>
+        /// <param name="domain"></param>
         private void UpdateLeaderActionsPredicatesAndEffects(DomainDecl domain)
         {
             foreach (var action in domain.Actions.Where(x => x.Name.StartsWith(ReservedNames.LeaderActionPrefix)))
             {
                 // Preconditions
-                var preconditions = action.Preconditions.FindTypes<PredicateExp>();
-                foreach (var predicate in preconditions)
-                    if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
-                        predicate.Name = $"{ReservedNames.LeaderStatePrefix}{predicate.Name}";
+                PrefixPredicatesInNode(
+                    action.Preconditions.FindTypes<PredicateExp>(),
+                    ReservedNames.LeaderStatePrefix);
 
                 // Effects
                 var leaderEffect = action.Effects.Copy();
-                var predicates = leaderEffect.FindTypes<PredicateExp>();
-                foreach (var predicate in predicates)
-                    if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
-                        predicate.Name = $"{ReservedNames.LeaderStatePrefix}{predicate.Name}";
-
                 var followerEffect = action.Effects.Copy();
+                PrefixPredicatesInNode(
+                    leaderEffect.FindTypes<PredicateExp>(),
+                    ReservedNames.LeaderStatePrefix);
 
                 List<IExp> newChildren = new List<IExp>();
                 if (leaderEffect is AndExp leaderAnd)
@@ -205,6 +226,11 @@ namespace StacklebergCompiler
             }
         }
 
+        /// <summary>
+        /// Adds conditional effects to all the follower actions.
+        /// Basically takes and says if the leader is having the same predicate, then the "is-goal-" variant is also sets to true.
+        /// </summary>
+        /// <param name="domain"></param>
         private void InsertConditionalEffectsToFollowerActions(DomainDecl domain)
         {
             foreach (var action in domain.Actions.Where(x => x.Name.StartsWith(ReservedNames.FollowerActionPrefix)))
@@ -268,6 +294,10 @@ namespace StacklebergCompiler
             }
         }
 
+        /// <summary>
+        /// Generates all the leader state predicates and is-goal predicates
+        /// </summary>
+        /// <param name="domain"></param>
         private void GenerateDomainPredicates(DomainDecl domain)
         {
             if (domain.Predicates != null)
@@ -279,6 +309,10 @@ namespace StacklebergCompiler
             }
         }
 
+        /// <summary>
+        /// Takes all actions and copies them into a leader and follower variant
+        /// </summary>
+        /// <param name="domain"></param>
         private void SplitActionsIntoLeaderFollowerVariants(DomainDecl domain)
         {
             List<ActionDecl> newActions = new List<ActionDecl>();
@@ -304,15 +338,21 @@ namespace StacklebergCompiler
         /// <returns></returns>
         private List<PredicateExp> GeneratePrefixPredicates(List<PredicateExp> predicates, string prefix)
         {
-            var newPredicates = new List<PredicateExp>();
+            var copyPredicates = predicates.Copy();
+            PrefixPredicatesInNode(copyPredicates, prefix);
+            return copyPredicates;
+        }
+
+        /// <summary>
+        /// Takes a list of predicates and prefixes them
+        /// </summary>
+        /// <param name="predicates"></param>
+        /// <param name="prefix"></param>
+        private void PrefixPredicatesInNode(List<PredicateExp> predicates, string prefix)
+        {
             foreach (var predicate in predicates)
-            {
                 if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
-                    newPredicates.Add(new PredicateExp(
-                        $"{prefix}{predicate.Name}",
-                        predicate.Arguments));
-            }
-            return newPredicates;
+                    predicate.Name = $"{prefix}{predicate.Name}";
         }
     }
 }
