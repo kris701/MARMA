@@ -28,12 +28,12 @@ namespace StacklebergCompiler
 
             // Problem
             GenerateNewInits(newProblem);
-            GenerateNewGoal(newProblem, newDomain);
+            GenerateNewGoal(newProblem);
             InsertTurnPredicateIntoInit(newProblem);
 
             // Domain
             SplitActionsIntoLeaderFollowerVariants(newDomain);
-            TurnAllActionEffectsToAnd(newDomain);
+            InsertAndIntoAllActions(newDomain);
             GenerateDomainPredicates(newDomain);
             UpdateLeaderActionsPredicatesAndEffects(newDomain);
             InsertConditionalEffectsToFollowerActions(newDomain);
@@ -45,6 +45,10 @@ namespace StacklebergCompiler
 
         #region Problem
 
+        /// <summary>
+        /// Insert the `leader-turn` predicate to the goal init
+        /// </summary>
+        /// <param name="problem"></param>
         private void InsertTurnPredicateIntoInit(ProblemDecl problem)
         {
             if (problem.Init != null)
@@ -52,7 +56,11 @@ namespace StacklebergCompiler
                     new PredicateExp(ReservedNames.LeaderTurnPredicate));
         }
 
-
+        /// <summary>
+        /// Insert leader prefix predicates and copy them into the existing problem inits.
+        /// Also fills the init with the total goal predicates.
+        /// </summary>
+        /// <param name="problem"></param>
         private void GenerateNewInits(ProblemDecl problem)
         {
             if (problem.Init != null)
@@ -63,7 +71,11 @@ namespace StacklebergCompiler
             }
         }
 
-        private void GenerateNewGoal(ProblemDecl problem, DomainDecl domain)
+        /// <summary>
+        /// Replace the existing goal expression with the total goal predicates.
+        /// </summary>
+        /// <param name="problem"></param>
+        private void GenerateNewGoal(ProblemDecl problem)
         {
             if (problem.Goal != null)
             {
@@ -80,14 +92,25 @@ namespace StacklebergCompiler
 
         #region Domain
 
-        private void TurnAllActionEffectsToAnd(DomainDecl domain)
+        /// <summary>
+        /// Convert all actions' Preconditions and Effects into having a root 'AndExp' (this makes some things easier later on)
+        /// </summary>
+        /// <param name="domain"></param>
+        private void InsertAndIntoAllActions(DomainDecl domain)
         {
             foreach (var act in domain.Actions)
+            {
                 if (act.Effects is not AndExp)
                     act.Effects = new AndExp(new List<IExp>()
                     {
                         act.Effects
                     });
+                if (act.Preconditions is not AndExp)
+                    act.Preconditions = new AndExp(new List<IExp>()
+                    {
+                        act.Preconditions
+                    });
+            }
         }
 
         private void InsertTurnPredicateIntoActions(DomainDecl domain)
@@ -257,19 +280,6 @@ namespace StacklebergCompiler
             }
         }
 
-        private List<PredicateExp> GeneratePrefixPredicates(List<PredicateExp> predicates, string prefix)
-        {
-            var newLeaderPredicates = new List<PredicateExp>();
-            foreach (var predicate in predicates)
-            {
-                if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
-                    newLeaderPredicates.Add(new PredicateExp(
-                        $"{prefix}{predicate.Name}",
-                        predicate.Arguments));
-            }
-            return newLeaderPredicates;
-        }
-
         private void SplitActionsIntoLeaderFollowerVariants(DomainDecl domain)
         {
             List<ActionDecl> newActions = new List<ActionDecl>();
@@ -286,5 +296,24 @@ namespace StacklebergCompiler
         }
 
         #endregion
+
+        /// <summary>
+        /// Takes a list of predicates, and "copies" them but with a prefix.
+        /// </summary>
+        /// <param name="predicates"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        private List<PredicateExp> GeneratePrefixPredicates(List<PredicateExp> predicates, string prefix)
+        {
+            var newPredicates = new List<PredicateExp>();
+            foreach (var predicate in predicates)
+            {
+                if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
+                    newPredicates.Add(new PredicateExp(
+                        $"{prefix}{predicate.Name}",
+                        predicate.Arguments));
+            }
+            return newPredicates;
+        }
     }
 }
