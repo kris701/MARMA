@@ -15,11 +15,7 @@ namespace StacklebergCompiler
         public static readonly string LeaderStatePrefix = "leader-state-";
         public static readonly string IsGoalPrefix = "is-goal-";
 
-        // Sufixes
-        public static readonly string GoalActionSufix = "_goal";
-
         // Reserved Predicates
         public static readonly string LeaderTurnPredicate = "leader-turn";
-
     }
 }

@@ -14,7 +14,7 @@ namespace StacklebergCompiler
 {
     public class ConditionalEffectSimplifyer
     {
-        public PDDLDecl AbstractConditionalEffects(DomainDecl domain, ProblemDecl problem)
+        public PDDLDecl SimplifyConditionalEffects(DomainDecl domain, ProblemDecl problem)
         {
             var newDomain = domain.Copy();
 

@@ -67,7 +67,7 @@ namespace StacklebergCompiler
             ConsoleHelper.WriteLineColor("Generating simplified domain/problem...", ConsoleColor.DarkGray);
             watch.Restart();
             ConditionalEffectSimplifyer abstractor = new ConditionalEffectSimplifyer();
-            var simplifiedConditionalDec = abstractor.AbstractConditionalEffects(conditionalDecl.Domain, conditionalDecl.Problem);
+            var simplifiedConditionalDec = abstractor.SimplifyConditionalEffects(conditionalDecl.Domain, conditionalDecl.Problem);
             watch.Stop();
             ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 

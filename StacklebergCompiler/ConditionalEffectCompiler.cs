@@ -39,7 +39,7 @@ namespace StacklebergCompiler
             UpdateLeaderActionsPredicatesAndEffects(newDomain);
             InsertConditionalEffectsToFollowerActions(newDomain);
             UpdateAndInsertMetaActionToFit(newDomain, metaAction);
-            InsertTurnPredicateIntoActions(newDomain);
+            InsertTurnPredicateIntoActionsPreconditions(newDomain);
             InsertTurnPredicateIntoPredicates(newDomain);
 
             return new PDDLDecl(newDomain, newProblem);
@@ -132,7 +132,7 @@ namespace StacklebergCompiler
         /// Inserts the the `leader-turn` into the "fix" actions and the `not (leader-turn)` into the "attack" actions
         /// </summary>
         /// <param name="domain"></param>
-        private void InsertTurnPredicateIntoActions(DomainDecl domain)
+        private void InsertTurnPredicateIntoActionsPreconditions(DomainDecl domain)
         {
             foreach(var action in domain.Actions)
             {
