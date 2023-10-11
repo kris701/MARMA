@@ -12,6 +12,8 @@ using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Problem;
 using PDDLSharp.Models.PDDL;
 using Tools;
+using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography;
 
 namespace MetaActionGenerator
 {
@@ -70,9 +72,28 @@ namespace MetaActionGenerator
             metaActions.AddRange(cinv.Generate(macros));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
+            ConsoleHelper.WriteLineColor("Removing duplicate meta actions...", ConsoleColor.DarkGray);
+            int preCount = metaActions.Count;
+            metaActions = metaActions.DistinctBy(x => x.GetHashCode()).ToList();
+            ConsoleHelper.WriteLineColor($"Removed {preCount - metaActions.Count} actions out of {preCount} [{100 - Math.Round(((double)metaActions.Count / (double)preCount) * 100,0)}%]", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor("Sanetizing meta actions...", ConsoleColor.DarkGray);
+            preCount = metaActions.Count;
+            metaActions.RemoveAll(x => 
+                (x.Preconditions is IWalkable preWalke && preWalke.Count() == 0) ||
+                (x.Effects is IWalkable effWalk && effWalk.Count() == 0)
+                );
+            ConsoleHelper.WriteLineColor($"Removed {preCount - metaActions.Count} actions out of {preCount} [{100 - Math.Round(((double)metaActions.Count / (double)preCount) * 100, 0)}%]", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+
             ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor($"A total of {metaActions.Count} meta action was found.", ConsoleColor.DarkGray);
             if (!Directory.Exists(opts.OutputPath))
                 Directory.CreateDirectory(opts.OutputPath);
+            else
+                foreach (FileInfo file in new DirectoryInfo(opts.OutputPath).GetFiles())
+                    file.Delete();
 
             ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
             generator.Readable = true;

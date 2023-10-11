@@ -31,6 +31,7 @@ namespace MetaActionGenerator
                         RemoveMe(newMetaAction.Preconditions, arg.Name);
                         RemoveMe(newMetaAction.Effects, arg.Name);
 
+                        RemoveUnusedParameters(newMetaAction);
                         metaActions.Add(newMetaAction);
                     }
                 }
