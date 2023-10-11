@@ -10,9 +10,9 @@ namespace MetaActionGenerator
 {
     public class RemoveEffectParameters : ICandidateGenerator
     {
-        public PDDLDecl Declaration { get; }
+        public DomainDecl Declaration { get; }
 
-        public RemoveEffectParameters(PDDLDecl declaration)
+        public RemoveEffectParameters(DomainDecl declaration)
         {
             Declaration = declaration;
         }

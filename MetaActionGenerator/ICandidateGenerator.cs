@@ -10,7 +10,7 @@ namespace MetaActionGenerator
 {
     public interface ICandidateGenerator
     {
-        public PDDLDecl Declaration { get; }
+        public DomainDecl Declaration { get; }
         public List<ActionDecl> Generate(List<ActionDecl> actions);
     }
 }
