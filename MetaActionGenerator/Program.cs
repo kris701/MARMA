@@ -77,8 +77,9 @@ namespace MetaActionGenerator
             ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
             generator.Readable = true;
 
+            int counter = 0;
             foreach(var metaAction in metaActions)
-                generator.Generate(metaAction, Path.Combine(opts.OutputPath, $"meta_{metaAction.Name}.pddl"));
+                generator.Generate(metaAction, Path.Combine(opts.OutputPath, $"meta_{counter++}.pddl"));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
         }
     }

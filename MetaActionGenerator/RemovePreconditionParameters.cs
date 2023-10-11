@@ -10,16 +10,13 @@ using System.Threading.Tasks;
 
 namespace MetaActionGenerator
 {
-    public class RemovePreconditionParameters : ICandidateGenerator
+    public class RemovePreconditionParameters : BaseMetaGenerator
     {
-        public DomainDecl Declaration { get; }
-
-        public RemovePreconditionParameters(DomainDecl declaration)
+        public RemovePreconditionParameters(DomainDecl declaration) : base(declaration)
         {
-            Declaration = declaration;
         }
 
-        public List<ActionDecl> Generate(List<ActionDecl> actions)
+        public override List<ActionDecl> Generate(List<ActionDecl> actions)
         {
             List<ActionDecl> metaActions = new List<ActionDecl>();
 
@@ -46,22 +43,5 @@ namespace MetaActionGenerator
             return metaActions;
         }
 
-        private bool RemoveMe(INode node, string name)
-        {
-            if (node is PredicateExp pred)
-            {
-                if (pred.FindNames(name).Count > 0)
-                    return true;
-            }
-            else if (node is AndExp and)
-            {
-                List<IExp> newChildren = new List<IExp>();
-                foreach (var child in and.Children)
-                    if (!RemoveMe(child, name))
-                        newChildren.Add(child);
-                and.Children = newChildren;
-            }
-            return false;
-        }
     }
 }

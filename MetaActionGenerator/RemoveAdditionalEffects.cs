@@ -8,16 +8,13 @@ using System.Threading.Tasks;
 
 namespace MetaActionGenerator
 {
-    public class RemoveAdditionalEffects : ICandidateGenerator
+    public class RemoveAdditionalEffects : BaseMetaGenerator
     {
-        public DomainDecl Declaration { get; }
-
-        public RemoveAdditionalEffects(DomainDecl declaration)
+        public RemoveAdditionalEffects(DomainDecl declaration) : base(declaration)
         {
-            Declaration = declaration;
         }
 
-        public List<ActionDecl> Generate(List<ActionDecl> actions)
+        public override List<ActionDecl> Generate(List<ActionDecl> actions)
         {
             List<ActionDecl> metaActions = new List<ActionDecl>();
 
