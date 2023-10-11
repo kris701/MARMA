@@ -23,6 +23,34 @@ pub enum StringExpression {
     Or(StringExpressions),
     Not(Box<StringExpression>),
 }
+
+impl StringExpression {
+    pub fn to_string(&self) -> String {
+        match self {
+            StringExpression::Predicate(p) => {
+                let mut parameters = "".to_string();
+                for parameter in &p.parameters {
+                    parameters += " ?";
+                    parameters += &parameter;
+                }
+                format!("({}{})", p.name, parameters)
+            }
+            StringExpression::Equal(_) => todo!(),
+            StringExpression::And(ps) => {
+                let mut s = "(and".to_string();
+                for p in ps {
+                    s += " ";
+                    s += &p.to_string();
+                }
+                s += ")";
+                s
+            }
+            StringExpression::Or(_) => todo!(),
+            StringExpression::Not(n) => format!("(not {})", n.to_string()).to_string(),
+        }
+    }
+}
+
 pub type StringExpressions = Vec<StringExpression>;
 
 fn parse_predicate(input: &str) -> IResult<&str, StringExpression> {
