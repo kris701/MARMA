@@ -8,7 +8,7 @@
     "WSL": {
       "commandName": "WSL",
       "distributionName": "",
-      "commandLineArgs": "PlanWalkerWrapper/bin/Debug/net7.0/PlanWalkerWrapper.dll --domain plan-walker\\walking\\tests\\data\\satellite\\original_domain.pddl\r\n--problem plan-walker\\walking\\tests\\data\\satellite\\instance-1.pddl\r\n--meta-domain plan-walker\\walking\\tests\\data\\satellite\\meta_domain.pddl\r\n--walker plan-walker\r\n--fastdownward Dependencies\\fast-downward\\fast-downward.py",
+      "commandLineArgs": "PlanWalkerWrapper/bin/Debug/net7.0/PlanWalkerWrapper.dll --domain plan-walker\\walking\\tests\\data\\satellite\\domain.pddl\r\n--problem plan-walker\\walking\\tests\\data\\satellite\\instance-1.pddl\r\n--meta-domain plan-walker\\walking\\tests\\data\\satellite\\meta_domain.pddl\r\n--walker plan-walker\r\n--fastdownward Dependencies\\fast-downward\\fast-downward.py",
       "workingDirectory": "PlanWalkerWrapper/../"
     }
   }
