@@ -401,5 +401,6 @@ FodyWeavers.xsd
 /PlanSamples/**
 /StackelbergDomains/**
 /VerifiedDomains/**
+/MetaActions/**
 !/Dependencies/readme.md
 !/Dependencies/setup.sh
