@@ -48,6 +48,7 @@ namespace MetaActionGenerator
 
             var domain = parser.ParseAs<DomainDecl>(opts.DomainFilePath);
             var problem = parser.ParseAs<ProblemDecl>(opts.ProblemFilePath);
+            var decl = new PDDLDecl(domain, problem);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Parsing meta actions...", ConsoleColor.DarkGray);
@@ -60,17 +61,17 @@ namespace MetaActionGenerator
             List<ActionDecl> metaActions = new List<ActionDecl>();
 
             ConsoleHelper.WriteLineColor("Generating 'Remove Precondition Parameters' meta actions...", ConsoleColor.DarkGray);
-            ICandidateGenerator cpre = new RemovePreconditionParameters();
+            ICandidateGenerator cpre = new RemovePreconditionParameters(decl);
             metaActions.AddRange(cpre.Generate(macros));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Generating 'Remove Effect Parameters' meta actions...", ConsoleColor.DarkGray);
-            ICandidateGenerator ceff = new RemoveEffectParameters();
+            ICandidateGenerator ceff = new RemoveEffectParameters(decl);
             metaActions.AddRange(ceff.Generate(macros));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Generating 'Remove Additional Effects' meta actions...", ConsoleColor.DarkGray);
-            ICandidateGenerator cinv = new RemoveAdditionalEffects();
+            ICandidateGenerator cinv = new RemoveAdditionalEffects(decl);
             metaActions.AddRange(cinv.Generate(macros));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
