@@ -15,7 +15,7 @@ use crate::{
 
 use super::parse_parameters;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq, Hash)]
 pub enum StringExpression {
     Predicate(Term),
     Equal(Vec<String>),
@@ -35,7 +35,15 @@ impl StringExpression {
                 }
                 format!("({}{})", p.name, parameters)
             }
-            StringExpression::Equal(_) => todo!(),
+            StringExpression::Equal(e) => {
+                let mut parameters = "".to_string();
+                for parameter in e.iter() {
+                    parameters += " ?";
+                    parameters += &parameter;
+                }
+
+                format!("(= {})", parameters)
+            }
             StringExpression::And(ps) => {
                 let mut s = "(and".to_string();
                 for p in ps {
@@ -60,7 +68,6 @@ fn parse_predicate(input: &str) -> IResult<&str, StringExpression> {
 
 fn parse_equal(input: &str) -> IResult<&str, StringExpression> {
     let (remainder, _) = preceded(multispace0, tag_no_case("="))(input)?;
-    println!("{}", remainder);
     let (remainder, children) =
         many1(preceded(multispace0, preceded(char('?'), named)))(remainder)?;
     Ok((remainder, StringExpression::Equal(children)))

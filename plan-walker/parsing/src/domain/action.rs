@@ -13,7 +13,7 @@ use crate::{
 
 use super::parameter::{self, Parameters};
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq, Hash)]
 pub struct Action {
     pub name: String,
     pub parameters: Parameters,
