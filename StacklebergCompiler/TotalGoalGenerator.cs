@@ -1,6 +1,6 @@
-﻿using PDDLSharp.Models.Domain;
-using PDDLSharp.Models.Expressions;
-using PDDLSharp.Models.Problem;
+﻿using PDDLSharp.Models.PDDL.Domain;
+using PDDLSharp.Models.PDDL.Expressions;
+using PDDLSharp.Models.PDDL.Problem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +12,15 @@ namespace StacklebergCompiler
 {
     public static class TotalGoalGenerator
     {
-        public static List<PredicateExp> IsGoal = new List<PredicateExp>();
-        public static void GenerateIsGoal(ProblemDecl problem, DomainDecl domain)
+        public static List<PredicateExp> TotalGoal = new List<PredicateExp>();
+        public static List<PredicateExp> CopyTotalGoal()
+        {
+            List<PredicateExp> retList = new List<PredicateExp>();
+            foreach(var pred in TotalGoal)
+                retList.Add(pred.Copy(null));
+            return retList;
+        }
+        public static void GenerateTotalGoal(ProblemDecl problem, DomainDecl domain)
         {
             if (problem.Goal != null && problem.Init != null && problem.Objects != null && domain.Predicates != null)
             {
@@ -25,7 +32,7 @@ namespace StacklebergCompiler
                 newGoals.RemoveAll(x => StaticPredicateDetector.StaticPredicates.Contains((x as PredicateExp).Name));
                 foreach (var predicate in newGoals)
                     predicate.Name = $"{ReservedNames.IsGoalPrefix}{predicate.Name}";
-                IsGoal = newGoals;
+                TotalGoal = newGoals;
             }
         }
 
@@ -37,7 +44,7 @@ namespace StacklebergCompiler
 
             foreach (var obj in objDict[parentPredicate.Arguments[argIndex].Type.Name])
             {
-                var newPredicate = new PredicateExp(null, parentPredicate.Name, parentPredicate.Arguments.Copy());
+                var newPredicate = parentPredicate.Copy(null);
                 if (argIndex == parentPredicate.Arguments.Count - 1)
                     returnList.Add(newPredicate);
                 newPredicate.Arguments.RemoveAt(argIndex);

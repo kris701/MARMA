@@ -6,11 +6,12 @@ using PDDLSharp;
 using Tools;
 using PDDLSharp.Parsers;
 using PDDLSharp.ErrorListeners;
-using PDDLSharp.Models.Problem;
-using PDDLSharp.Models.Domain;
 using PDDLSharp.CodeGenerators;
 using PDDLSharp.Analysers;
 using PDDLSharp.Models;
+using PDDLSharp.Models.PDDL;
+using PDDLSharp.Models.PDDL.Domain;
+using PDDLSharp.Models.PDDL.Problem;
 
 namespace StacklebergCompiler
 {
@@ -25,12 +26,15 @@ namespace StacklebergCompiler
 
         public static void RunStacklebergCompiler(StacklebergCompilerOptions opts)
         {
+            Stopwatch watch = new Stopwatch();
+
             opts.DomainFilePath = PathHelper.RootPath(opts.DomainFilePath);
             opts.ProblemFilePath = PathHelper.RootPath(opts.ProblemFilePath);
             opts.MetaActionFile = PathHelper.RootPath(opts.MetaActionFile);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
 
             ConsoleHelper.WriteLineColor("Verifying paths...", ConsoleColor.DarkGray);
+            watch.Start();
             if (!Directory.Exists(opts.OutputPath))
                 Directory.CreateDirectory(opts.OutputPath);
             if (!File.Exists(opts.DomainFilePath))
@@ -39,36 +43,45 @@ namespace StacklebergCompiler
                 throw new FileNotFoundException($"Problem file not found: {opts.ProblemFilePath}");
             if (!File.Exists(opts.MetaActionFile))
                 throw new FileNotFoundException($"Meta action file not found: {opts.MetaActionFile}");
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            watch.Stop();
+            ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Parsing files...", ConsoleColor.DarkGray);
+            watch.Restart();
             IErrorListener listener = new ErrorListener();
             IParser<INode> parser = new PDDLParser(listener);
 
             var domain = parser.ParseAs<DomainDecl>(opts.DomainFilePath);
             var problem = parser.ParseAs<ProblemDecl>(opts.ProblemFilePath);
             var metaAction = parser.ParseAs<ActionDecl>(opts.MetaActionFile);
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            watch.Stop();
+            ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Generating conditional domain/problem...", ConsoleColor.DarkGray);
+            watch.Restart();
             ConditionalEffectCompiler compiler = new ConditionalEffectCompiler();
             var conditionalDecl = compiler.GenerateConditionalEffects(domain, problem, metaAction);
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            watch.Stop();
+            ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Generating abstracted domain/problem...", ConsoleColor.DarkGray);
-            ConditionalEffectAbstractor abstractor = new ConditionalEffectAbstractor();
-            var abstractedConditionalDec = abstractor.AbstractConditionalEffects(conditionalDecl.Domain, conditionalDecl.Problem);
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            ConsoleHelper.WriteLineColor("Generating simplified domain/problem...", ConsoleColor.DarkGray);
+            watch.Restart();
+            ConditionalEffectSimplifyer abstractor = new ConditionalEffectSimplifyer();
+            var simplifiedConditionalDec = abstractor.SimplifyConditionalEffects(conditionalDecl.Domain, conditionalDecl.Problem);
+            watch.Stop();
+            ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
-            ICodeGenerator generator = new PDDLCodeGenerator(listener);
+            watch.Restart();
+            ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
             generator.Readable = true;
 
             generator.Generate(conditionalDecl.Domain, Path.Combine(opts.OutputPath, "conditional_domain.pddl"));
             generator.Generate(conditionalDecl.Problem, Path.Combine(opts.OutputPath, "conditional_problem.pddl"));
-            generator.Generate(abstractedConditionalDec.Domain, Path.Combine(opts.OutputPath, "abstracted_domain.pddl"));
-            generator.Generate(abstractedConditionalDec.Problem, Path.Combine(opts.OutputPath, "abstracted_problem.pddl"));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            generator.Generate(simplifiedConditionalDec.Domain, Path.Combine(opts.OutputPath, "simplified_domain.pddl"));
+            generator.Generate(simplifiedConditionalDec.Problem, Path.Combine(opts.OutputPath, "simplified_problem.pddl"));
+            watch.Stop();
+            ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
         }
     }
 }

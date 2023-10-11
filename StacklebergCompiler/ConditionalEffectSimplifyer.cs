@@ -1,21 +1,22 @@
-﻿using PDDLSharp.Models.Domain;
-using PDDLSharp.Models.Problem;
-using PDDLSharp.Models;
+﻿using PDDLSharp.Models;
+using PDDLSharp.Models.PDDL;
+using PDDLSharp.Models.PDDL.Domain;
+using PDDLSharp.Models.PDDL.Expressions;
+using PDDLSharp.Models.PDDL.Problem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tools;
-using PDDLSharp.Models.Expressions;
 
 namespace StacklebergCompiler
 {
-    public class ConditionalEffectAbstractor
+    public class ConditionalEffectSimplifyer
     {
-        public PDDLDecl AbstractConditionalEffects(DomainDecl domain, ProblemDecl problem)
+        public PDDLDecl SimplifyConditionalEffects(DomainDecl domain, ProblemDecl problem)
         {
-            var newDomain = domain.Copy();
+            var newDomain = domain.Copy(null);
 
             newDomain.Actions = GenerateAbstractedActions(newDomain.Actions);
 
@@ -48,7 +49,7 @@ namespace StacklebergCompiler
                 int counter = 0;
                 foreach (var permutation in permutations)
                 {
-                    var newAct = source.Copy();
+                    var newAct = source.Copy(null);
 
                     for (int i = 0; i < permutation.Count; i++)
                     {
@@ -93,7 +94,7 @@ namespace StacklebergCompiler
 
         private PredicateExp CopyAndPrefixPredicate(PredicateExp pred, string name)
         {
-            var copy = pred.Copy();
+            var copy = pred.Copy(null);
             copy.Name = $"{name}{copy.Name}";
             return copy;
         }
@@ -122,11 +123,11 @@ namespace StacklebergCompiler
                 return returnList;
             }
 
-            var trueSource = source.Copy();
+            var trueSource = new List<bool>(source);
             trueSource.Insert(index, true);
             returnList.AddRange(GeneratePermutations(count, index + 1, trueSource));
 
-            var falseSource = source.Copy();
+            var falseSource = new List<bool>(source);
             falseSource.Insert(index, false);
             returnList.AddRange(GeneratePermutations(count, index + 1, falseSource));
 
