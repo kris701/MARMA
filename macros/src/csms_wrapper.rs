@@ -64,7 +64,11 @@ fn run(
                 Err(err) => {
                     panic!("csms gave error: {}", err);
                 }
-                _ => (),
+                Ok(out) => panic!(
+                    "CSMS suceeded with args:\nstdout:\n{}err:\n{}",
+                    String::from_utf8(out.stdout).unwrap(),
+                    String::from_utf8(out.stderr).unwrap()
+                ),
             }
             let domain_name = format!("domain_{}.pddl", csm_type);
             let domain_path = temp_path.join(domain_name);
