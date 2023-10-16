@@ -48,7 +48,7 @@ fn run(
         ScriptType::CSM(csm_type) => {
             generate_script(fastdownward_path, script_path);
 
-            let _ = Command::new(scripts_path.join("learn-csm.sh"))
+            let out = Command::new(scripts_path.join("learn-csm.sh"))
                 .current_dir(scripts_path)
                 .args(&[
                     fs::canonicalize(temp_path).unwrap().to_str().unwrap(),
@@ -56,6 +56,12 @@ fn run(
                     &csm_type,
                 ])
                 .output();
+            match out {
+                Err(err) => {
+                    panic!("csms gave error: {}", err);
+                }
+                _ => (),
+            }
             let domain_name = format!("domain_{}.pddl", csm_type);
             let domain_path = temp_path.join(domain_name);
             if domain_path.exists() {
