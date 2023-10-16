@@ -13,19 +13,18 @@ namespace Tools
         public event DataReceivedEventHandler? StdErr;
         public event DataReceivedEventHandler? StdOut;
 
-        public string WorkingDirectory { get; set; } = "temp";
         public string Program { get; }
         public Dictionary<string, string> Arguments { get; }
 
         public ArgsCaller(string program, Dictionary<string, string> arguments)
         {
-            Program = PathHelper.RootPath(program);
+            Program = program;
             Arguments = arguments;
         }
 
         public ArgsCaller(string program)
         {
-            Program = PathHelper.RootPath(program);
+            Program = program;
             Arguments = new Dictionary<string, string>();
         }
 
@@ -36,7 +35,7 @@ namespace Tools
                     Arguments[key] = PathHelper.RootPath(Arguments[key]);
             StringBuilder sb = new StringBuilder("");
             foreach (var key in Arguments.Keys)
-                sb.Append($"{key} \"{Arguments[key]}\" ");
+                sb.Append($"{key} {Arguments[key]} ");
 
             var process = new Process
             {
@@ -46,7 +45,6 @@ namespace Tools
                     Arguments = sb.ToString(),
                     CreateNoWindow = true,
                     UseShellExecute = false,
-                    WorkingDirectory = WorkingDirectory
                 }
             };
             if (StdErr != null)

@@ -18,12 +18,12 @@ namespace MetaActions.Learn
         {
             opts.DomainPath = PathHelper.RootPath(opts.DomainPath);
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
-            opts.MetaPath = PathHelper.RootPath(opts.MetaPath);
+            opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
 
             if (!Directory.Exists(opts.TempPath))
                 Directory.CreateDirectory(opts.TempPath);
-            if (!Directory.Exists(opts.MetaPath))
-                Directory.CreateDirectory(opts.MetaPath);
+            if (!Directory.Exists(opts.OutputPath))
+                Directory.CreateDirectory(opts.OutputPath);
 
             foreach (var problem in opts.TrainProblems)
             {
@@ -33,12 +33,11 @@ namespace MetaActions.Learn
                 var rootedProblem = PathHelper.RootPath(problem);
 
                 // Generate Macros
-
+                Directory.CreateDirectory(Path.Combine(opts.TempPath, "macros"));
+                File.WriteAllText(Path.Combine(opts.TempPath, "macros", "macro1"), "(:action pick_mcr_move_mcr_drop\r\n:parameters ( ?r - robot ?obj - object ?room - room ?g - gripper ?tox4 - room)\r\n:precondition (and (at ?obj ?room)(at-robby ?r ?room)(free ?r ?g)(stai_at ?obj ?room)(stai_free ?r ?g)(stag_at ?obj ?tox4))\r\n:effect (and (at-robby ?r ?tox4)(at ?obj ?tox4)(free ?r ?g)(not (at ?obj ?room))(not (at-robby ?r ?room))(not (carry ?r ?obj ?g)))\r\n)");
 
                 // Generate Meta Actions
-                ArgsCaller metaCaller = new ArgsCaller("MetaActionGenerator/bin/Debug/net7.0/MetaActionGenerator.exe");
-                metaCaller.StdOut += PrintStdOut;
-                metaCaller.StdErr += PrintStdErr;
+                ArgsCaller metaCaller = GetDotnetRunner("MetaActionGenerator");
                 metaCaller.Arguments.Add("--domain", opts.DomainPath);
                 metaCaller.Arguments.Add("--macros", Path.Combine(opts.TempPath, "macros"));
                 metaCaller.Arguments.Add("--output", Path.Combine(opts.TempPath, "metaActions"));
@@ -50,22 +49,18 @@ namespace MetaActions.Learn
                 int counter = 0;
                 foreach (var metaAction in new DirectoryInfo(Path.Combine(opts.TempPath, "metaActions")).GetFiles())
                 {
-                    ArgsCaller stackelCompiler = new ArgsCaller("StacklebergCompiler/bin/Debug/net7.0/StacklebergCompiler.exe");
-                    metaCaller.StdOut += PrintStdOut;
-                    metaCaller.StdErr += PrintStdErr;
-                    metaCaller.Arguments.Add("--domain", opts.DomainPath);
-                    metaCaller.Arguments.Add("--problem", rootedProblem);
-                    metaCaller.Arguments.Add("--meta-action", metaAction.FullName);
-                    metaCaller.Arguments.Add("--output", Path.Combine(opts.TempPath, "compiled"));
-                    metaCaller.Run();
+                    ArgsCaller stackelCompiler = GetDotnetRunner("StacklebergCompiler");
+                    stackelCompiler.Arguments.Add("--domain", opts.DomainPath);
+                    stackelCompiler.Arguments.Add("--problem", rootedProblem);
+                    stackelCompiler.Arguments.Add("--meta-action", metaAction.FullName);
+                    stackelCompiler.Arguments.Add("--output", Path.Combine(opts.TempPath, "compiled"));
+                    stackelCompiler.Run();
                     if (Failed)
                         return;
 
                     // Verify Meta Actions
-                    ArgsCaller stackelVerifier = new ArgsCaller("StackelbergVerifier/bin/Debug/net7.0/StackelbergVerifier.exe");
-                    isValid = false;
+                    ArgsCaller stackelVerifier = GetDotnetRunner("StackelbergVerifier");
                     stackelVerifier.StdOut += PrintStdOutVerifier;
-                    stackelVerifier.StdErr += PrintStdErr;
                     stackelVerifier.Arguments.Add("--domain", opts.DomainPath);
                     stackelVerifier.Arguments.Add("--problem", rootedProblem);
                     stackelVerifier.Arguments.Add("--output", Path.Combine(opts.TempPath, "verification"));
@@ -76,10 +71,21 @@ namespace MetaActions.Learn
 
                     // Output Valid Meta Actions
                     if (isValid)
-                        File.WriteAllText(Path.Combine(opts.MetaPath, "valid", $"meta{counter++}.pddl"), File.ReadAllText(metaAction.FullName));
+                        File.WriteAllText(Path.Combine(opts.OutputPath, "valid", $"meta{counter++}.pddl"), File.ReadAllText(metaAction.FullName));
                     isValid = false;
                 }
             }
+        }
+
+        private static ArgsCaller GetDotnetRunner(string project)
+        {
+            ArgsCaller runner = new ArgsCaller("dotnet");
+            isValid = false;
+            runner.StdOut += PrintStdOut;
+            runner.StdErr += PrintStdErr;
+            runner.Arguments.Add("run", "");
+            runner.Arguments.Add("--project", project);
+            return runner;
         }
 
         private static bool isValid = false;

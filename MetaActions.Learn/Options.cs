@@ -15,7 +15,7 @@ namespace MetaActions.Learn
         public IEnumerable<string> TrainProblems { get; set; }
         [Option("tempDir", Required = false, HelpText = "Path where all the intermediate files can be saved.", Default = "temp")]
         public string TempPath { get; set; } = "temp";
-        [Option("metaDir", Required = false, HelpText = "Path where all the valid meta actions will be saved..", Default = "MetaDir")]
-        public string MetaPath { get; set; } = "MetaDir";
+        [Option("output", Required = false, HelpText = "Path where all the output will be saved", Default = "output")]
+        public string OutputPath { get; set; } = "output";
     }
 }
