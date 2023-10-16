@@ -37,7 +37,7 @@ echo
 
 echo == Installing CSMs ==
 echo 
-git clone git@github.com:lchrpa/CSMs.git
+git clone https://github.com/lchrpa/CSMs.git
 cd CSMs
 cd src
 make -j
