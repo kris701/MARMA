@@ -51,6 +51,9 @@ fn main() -> Result<()> {
             args.domain.to_str().unwrap()
         );
     }
+    if !args.csms.is_dir() {
+        panic!("Could not CSMS at {}", args.domain.to_str().unwrap());
+    }
     if !args.domain.is_file() {
         panic!("Could not find domain at {}", args.domain.to_str().unwrap());
     }
