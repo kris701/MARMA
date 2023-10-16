@@ -33,7 +33,10 @@ pub fn generate_script(fastdownward_path: &PathBuf, script_path: &PathBuf) {
         cd ..
         rmdir $dir
         ",
-        fastdownward_path.to_str().unwrap()
+        fs::canonicalize(fastdownward_path)
+            .unwrap()
+            .to_str()
+            .unwrap()
     );
     let _ = fs::remove_file(script_path);
     let _ = fs::OpenOptions::new()
