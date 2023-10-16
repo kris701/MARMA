@@ -1,3 +1,0 @@
-[workspace]
-members = ["shared", "parsing", "state", "walking"]
-resolver = "2"

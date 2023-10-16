@@ -1,0 +1,15 @@
+[package]
+name = "state"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+shared = { path = "../shared" }
+itertools = "*"
+criterion = "0.5.1"
+bitvec = "1.0.1"
+spingus = { git = "https://github.com/jamadaha/spingus.git" }
+
+[[bench]]
+name = "init"
+harness = false
