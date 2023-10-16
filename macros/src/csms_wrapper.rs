@@ -48,11 +48,11 @@ fn run(
         ScriptType::CSM(csm_type) => {
             generate_script(fastdownward_path, script_path);
 
-            let learn_path = scripts_path.join("learn-csm.sh");
+            let learn_path = scripts_path.join("./learn-csm.sh");
             if !learn_path.is_file() {
                 panic!("Could not find: {}", learn_path.to_str().unwrap());
             }
-            let out = Command::new(learn_path)
+            let out = Command::new("./learn-csm.sh")
                 .current_dir(scripts_path)
                 .args(&[
                     fs::canonicalize(temp_path).unwrap().to_str().unwrap(),
