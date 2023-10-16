@@ -34,7 +34,7 @@ namespace MetaActions.Learn
 
                 // Generate Macros
                 Directory.CreateDirectory(Path.Combine(opts.TempPath, "macros"));
-                File.WriteAllText(Path.Combine(opts.TempPath, "macros", "macro1"), "(:action pick_mcr_move_mcr_drop\r\n:parameters ( ?r - robot ?obj - object ?room - room ?g - gripper ?tox4 - room)\r\n:precondition (and (at ?obj ?room)(at-robby ?r ?room)(free ?r ?g)(stai_at ?obj ?room)(stai_free ?r ?g)(stag_at ?obj ?tox4))\r\n:effect (and (at-robby ?r ?tox4)(at ?obj ?tox4)(free ?r ?g)(not (at ?obj ?room))(not (at-robby ?r ?room))(not (carry ?r ?obj ?g)))\r\n)");
+                File.WriteAllText(Path.Combine(opts.TempPath, "macros", "macro1.pddl"), "(:action pick_mcr_move_mcr_drop\r\n:parameters ( ?r - robot ?obj - object ?room - room ?g - gripper ?tox4 - room)\r\n:precondition (and (at ?obj ?room)(at-robby ?r ?room)(free ?r ?g)(stai_at ?obj ?room)(stai_free ?r ?g)(stag_at ?obj ?tox4))\r\n:effect (and (at-robby ?r ?tox4)(at ?obj ?tox4)(free ?r ?g)(not (at ?obj ?room))(not (at-robby ?r ?room))(not (carry ?r ?obj ?g)))\r\n)");
 
                 // Generate Meta Actions
                 ArgsCaller metaCaller = GetDotnetRunner("MetaActionGenerator");
@@ -61,8 +61,8 @@ namespace MetaActions.Learn
                     // Verify Meta Actions
                     ArgsCaller stackelVerifier = GetDotnetRunner("StackelbergVerifier");
                     stackelVerifier.StdOut += PrintStdOutVerifier;
-                    stackelVerifier.Arguments.Add("--domain", opts.DomainPath);
-                    stackelVerifier.Arguments.Add("--problem", rootedProblem);
+                    stackelVerifier.Arguments.Add("--domain", Path.Combine(opts.TempPath, "compiled", "simplified_domain.pddl"));
+                    stackelVerifier.Arguments.Add("--problem", Path.Combine(opts.TempPath, "compiled", "simplified_problem.pddl"));
                     stackelVerifier.Arguments.Add("--output", Path.Combine(opts.TempPath, "verification"));
                     stackelVerifier.Arguments.Add("--stackelberg", "Dependencies/stackelberg-sls/src/fast-downward.py");
                     stackelVerifier.Run();
@@ -84,7 +84,9 @@ namespace MetaActions.Learn
             runner.StdOut += PrintStdOut;
             runner.StdErr += PrintStdErr;
             runner.Arguments.Add("run", "");
-            runner.Arguments.Add("--project", project);
+            runner.Arguments.Add("--no-restore", "");
+            runner.Arguments.Add("--no-build", "");
+            runner.Arguments.Add("--project", $"{project} --");
             return runner;
         }
 
