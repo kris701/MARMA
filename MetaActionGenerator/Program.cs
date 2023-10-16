@@ -14,6 +14,8 @@ using PDDLSharp.Models.PDDL;
 using Tools;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
+using PDDLSharp.CodeGenerators.PDDL;
+using PDDLSharp.Parsers.PDDL;
 
 namespace MetaActionGenerator
 {
