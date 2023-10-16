@@ -1,5 +1,6 @@
 use std::{
     ffi::OsString,
+    fs,
     path::{Path, PathBuf},
 };
 
@@ -54,7 +55,10 @@ fn generate_replacement(
     assert_ne!(init, goal);
     let problem_path = Path::new(".temp_problem.pddl").to_path_buf();
     write_problem(instance, &init, &goal, &problem_path);
-    downward.solve(domain_path, &problem_path)
+    let solution = downward.solve(domain_path, &problem_path);
+    let _ = fs::remove_file(&problem_path);
+    let _ = fs::remove_file("sas_plan");
+    solution
 }
 
 pub fn reconstruct(
