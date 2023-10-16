@@ -45,6 +45,12 @@ fn main() -> Result<()> {
 
     let args = Args::parse();
 
+    if !args.fast_downward.is_file() {
+        panic!(
+            "Could not fast downward at {}",
+            args.domain.to_str().unwrap()
+        );
+    }
     if !args.domain.is_file() {
         panic!("Could not find domain at {}", args.domain.to_str().unwrap());
     }
