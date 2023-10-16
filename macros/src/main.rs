@@ -44,6 +44,20 @@ fn main() -> Result<()> {
     color_eyre::install()?;
 
     let args = Args::parse();
+
+    if !args.domain.is_file() {
+        panic!("Could not find domain at {}", args.domain.to_str().unwrap());
+    }
+    if !args.problems.is_dir() {
+        panic!(
+            "Could not find problem folder at {}",
+            args.domain.to_str().unwrap()
+        );
+    }
+    if args.problems.read_dir().unwrap().next().is_none() {
+        panic!("Found no problems in dir {}", args.domain.to_str().unwrap());
+    }
+
     let macros = csms_wrapper::generate_macros(
         &args.fast_downward,
         &args.csms,
