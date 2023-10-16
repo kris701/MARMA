@@ -47,14 +47,14 @@ namespace MetaActionGenerator
             IErrorListener listener = new ErrorListener();
             IParser<INode> parser = new PDDLParser(listener);
 
-            var domain = parser.ParseAs<DomainDecl>(opts.DomainFilePath);
+            var domain = parser.ParseAs<DomainDecl>(new FileInfo(opts.DomainFilePath));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Parsing meta actions...", ConsoleColor.DarkGray);
             List<ActionDecl> macros = new List<ActionDecl>();
             foreach(var file in Directory.GetFiles(opts.MacroActionPath))
                 if (file.ToLower().EndsWith(".pddl"))
-                    macros.Add(parser.ParseAs<ActionDecl>(file));
+                    macros.Add(parser.ParseAs<ActionDecl>(new FileInfo(file)));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             List<ActionDecl> metaActions = new List<ActionDecl>();

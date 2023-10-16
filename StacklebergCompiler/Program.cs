@@ -53,9 +53,9 @@ namespace StacklebergCompiler
             IErrorListener listener = new ErrorListener();
             IParser<INode> parser = new PDDLParser(listener);
 
-            var domain = parser.ParseAs<DomainDecl>(opts.DomainFilePath);
-            var problem = parser.ParseAs<ProblemDecl>(opts.ProblemFilePath);
-            var metaAction = parser.ParseAs<ActionDecl>(opts.MetaActionFile);
+            var domain = parser.ParseAs<DomainDecl>(new FileInfo(opts.DomainFilePath));
+            var problem = parser.ParseAs<ProblemDecl>(new FileInfo(opts.ProblemFilePath));
+            var metaAction = parser.ParseAs<ActionDecl>(new FileInfo(opts.MetaActionFile));
             watch.Stop();
             ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 
