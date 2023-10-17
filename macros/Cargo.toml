@@ -8,5 +8,5 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.4.4", features = ["derive"] }
 color-eyre = "0.6.2"
-spingus = { git = "https://github.com/jamadaha/spingus.git", rev = "8e23d4e" }
+spingus = { git = "https://github.com/jamadaha/spingus.git" }
 itertools = "*"
