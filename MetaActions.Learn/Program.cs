@@ -114,9 +114,9 @@ namespace MetaActions.Learn
             macroGenerator.Arguments.Add("-o", Path.Combine(tempPath, "macros"));
             macroGenerator.Arguments.Add("-c", PathHelper.RootPath("Dependencies/CSMs"));
             macroGenerator.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
-            Failed = false;
-            if (macroGenerator.Run() != 0)
-                Failed = true;
+            //Failed = false;
+            //if (macroGenerator.Run() != 0)
+            //    Failed = true;
             return new DirectoryInfo(Path.Combine(tempPath, "macros")).GetFiles().ToList();
         }
 
@@ -138,8 +138,9 @@ namespace MetaActions.Learn
             runner.StdOut += PrintStdOut;
             runner.StdErr += PrintStdErr;
             runner.Arguments.Add("run", "");
-            runner.Arguments.Add("--no-restore", "");
-            runner.Arguments.Add("--no-build", "");
+            runner.Arguments.Add("--configuration", "Release");
+            //runner.Arguments.Add("--no-restore", "");
+            //runner.Arguments.Add("--no-build", "");
             runner.Arguments.Add("--project", $"{project} --");
             return runner;
         }
