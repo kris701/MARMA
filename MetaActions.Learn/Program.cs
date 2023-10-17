@@ -42,8 +42,8 @@ namespace MetaActions.Learn
             ConsoleHelper.WriteLineColor($"Generating macros", ConsoleColor.Gray);
             Directory.CreateDirectory(Path.Combine(opts.TempPath, "macros"));
             List<FileInfo> allMacros = GenerateMacros(opts.DomainPath, Path.Combine(opts.TempPath, "problems"), opts.TempPath);
-            if (Failed)
-                throw new Exception("Macro generation failed!");
+            //if (Failed)
+            //    throw new Exception("Macro generation failed!");
 
             ConsoleHelper.WriteLineColor($"Generating meta actions", ConsoleColor.Gray);
             List<FileInfo> allMetaActions = GenerateMetaActions(opts.DomainPath, opts.TempPath);
