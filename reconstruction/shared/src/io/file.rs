@@ -2,7 +2,6 @@ use std::{
     ffi::OsString,
     fs::{self, File},
     io::Write,
-    path::Path,
 };
 
 pub fn read_file(path: &OsString) -> String {

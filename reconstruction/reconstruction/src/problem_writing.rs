@@ -1,9 +1,8 @@
-use shared::io::file::write_file;
 use spingus::problem::Problem;
 use state::state::State;
 
 use crate::Instance;
-use std::{ffi::OsString, fs, path::PathBuf};
+use std::{fs, path::PathBuf};
 
 fn generate_objects(problem: &Problem) -> String {
     let mut s = "".to_string();

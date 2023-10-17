@@ -1,5 +1,4 @@
 use std::{
-    ffi::OsString,
     fs,
     path::{Path, PathBuf},
 };
@@ -19,8 +18,8 @@ use crate::{downward_wrapper::Downward, problem_writing::write_problem, stiching
 fn generate_operators(
     instance: &Instance,
     meta_domain: &Domain,
-    domain_path: &PathBuf,
-    downward: &Downward,
+    _domain_path: &PathBuf,
+    _downward: &Downward,
     plan: &SASPlan,
 ) -> Vec<Operator> {
     plan.iter()

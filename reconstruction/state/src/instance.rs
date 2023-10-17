@@ -1,9 +1,6 @@
-use spingus::{
-    domain::{action::Action, Domain},
-    problem::Problem,
-};
+use spingus::{domain::Domain, problem::Problem};
 
-use self::{facts::Facts, operator::Operator};
+use self::facts::Facts;
 
 pub mod facts;
 pub mod operator;
