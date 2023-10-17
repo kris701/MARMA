@@ -26,6 +26,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencie
 	ProjectSection(SolutionItems) = preProject
 		Dependencies\readme.md = Dependencies\readme.md
 		Dependencies\setup.sh = Dependencies\setup.sh
+		Dependencies\setup_data.sh = Dependencies\setup_data.sh
+		Dependencies\setup_packages.sh = Dependencies\setup_packages.sh
+		Dependencies\setup_programs.sh = Dependencies\setup_programs.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanWalkerWrapper", "PlanWalkerWrapper\PlanWalkerWrapper.csproj", "{3296DA38-5947-452E-9F65-5545BEF00BA8}"
@@ -36,9 +39,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergVerifier", "Stac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator", "MetaActionGenerator\MetaActionGenerator.csproj", "{6E04D1D4-065F-4CCA-B657-021ADBB1B032}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaActions.Learn", "MetaActions.Learn\MetaActions.Learn.csproj", "{2A4828D6-88F9-40F9-A4E2-F5513717A257}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Learn", "MetaActions.Learn\MetaActions.Learn.csproj", "{2A4828D6-88F9-40F9-A4E2-F5513717A257}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaActions.Test", "MetaActions.Test\MetaActions.Test.csproj", "{159040FE-F33E-45E1-A293-D13A54D2CA3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Test", "MetaActions.Test\MetaActions.Test.csproj", "{159040FE-F33E-45E1-A293-D13A54D2CA3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
