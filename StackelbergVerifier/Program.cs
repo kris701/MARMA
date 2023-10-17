@@ -10,11 +10,12 @@ namespace StacklebergVerifier
 {
     internal class Program : BaseCLI
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             Parser.Default.ParseArguments<StackelbergVerifierOptions>(args)
               .WithNotParsed(HandleParseError)
               .WithParsed(RunStacklebergVerifier);
+            return 0;
         }
 
         public static void RunStacklebergVerifier(StackelbergVerifierOptions opts)

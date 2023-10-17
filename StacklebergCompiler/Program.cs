@@ -19,11 +19,12 @@ namespace StacklebergCompiler
 {
     internal class Program : BaseCLI
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             Parser.Default.ParseArguments<StacklebergCompilerOptions>(args)
               .WithParsed(RunStacklebergCompiler)
               .WithNotParsed(HandleParseError);
+            return 0;
         }
 
         public static void RunStacklebergCompiler(StacklebergCompilerOptions opts)

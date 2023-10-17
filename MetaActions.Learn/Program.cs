@@ -8,11 +8,12 @@ namespace MetaActions.Learn
 {
     internal class Program : BaseCLI
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
               .WithParsed(Run)
               .WithNotParsed(HandleParseError);
+            return 0;
         }
 
         private static void Run(Options opts)
@@ -41,9 +42,13 @@ namespace MetaActions.Learn
             ConsoleHelper.WriteLineColor($"Generating macros", ConsoleColor.Gray);
             Directory.CreateDirectory(Path.Combine(opts.TempPath, "macros"));
             List<FileInfo> allMacros = GenerateMacros(opts.DomainPath, Path.Combine(opts.TempPath, "problems"), opts.TempPath);
+            if (Failed)
+                return;
 
             ConsoleHelper.WriteLineColor($"Generating meta actions", ConsoleColor.Gray);
             List<FileInfo> allMetaActions = GenerateMetaActions(opts.DomainPath, opts.TempPath);
+            if (Failed)
+                return;
 
             ConsoleHelper.WriteLineColor($"Testing meta actions", ConsoleColor.Gray);
             int totalValidMetaActions = 0;
@@ -63,9 +68,9 @@ namespace MetaActions.Learn
                     stackelCompiler.Arguments.Add("--problem", problem.FullName);
                     stackelCompiler.Arguments.Add("--meta-action", metaAction.FullName);
                     stackelCompiler.Arguments.Add("--output", Path.Combine(opts.TempPath, "compiled"));
-                    stackelCompiler.Run();
-                    if (Failed)
-                        return;
+                    Failed = false;
+                    if (stackelCompiler.Run() != 0)
+                        Failed = true;
 
                     // Verify Meta Actions
                     ConsoleHelper.WriteLineColor($"Verifying meta action.", ConsoleColor.Gray);
@@ -76,9 +81,9 @@ namespace MetaActions.Learn
                     stackelVerifier.Arguments.Add("--problem", Path.Combine(opts.TempPath, "compiled", "simplified_problem.pddl"));
                     stackelVerifier.Arguments.Add("--output", Path.Combine(opts.TempPath, "verification"));
                     stackelVerifier.Arguments.Add("--stackelberg", "Dependencies/stackelberg-planner/src/fast-downward.py");
-                    stackelVerifier.Run();
-                    if (Failed)
-                        return;
+                    Failed = false;
+                    if (stackelVerifier.Run() != 0)
+                        Failed = true;
 
                     // Output Valid Meta Actions
                     if (!isValid) { 
@@ -109,7 +114,9 @@ namespace MetaActions.Learn
             macroGenerator.Arguments.Add("-o", Path.Combine(tempPath, "macros"));
             macroGenerator.Arguments.Add("-c", PathHelper.RootPath("Dependencies/CSMs"));
             macroGenerator.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
-            macroGenerator.Run();
+            Failed = false;
+            if (macroGenerator.Run() != 0)
+                Failed = true;
             return new DirectoryInfo(Path.Combine(tempPath, "macros")).GetFiles().ToList();
         }
 
@@ -119,13 +126,14 @@ namespace MetaActions.Learn
             metaCaller.Arguments.Add("--domain", domain);
             metaCaller.Arguments.Add("--macros", Path.Combine(tempPath, "macros"));
             metaCaller.Arguments.Add("--output", Path.Combine(tempPath, "metaActions"));
-            metaCaller.Run();
+            Failed = false;
+            if (metaCaller.Run() != 0)
+                Failed = true;
             return new DirectoryInfo(Path.Combine(tempPath, "metaActions")).GetFiles().ToList();
         }
 
         private static ArgsCaller GetDotnetRunner(string project)
         {
-            Failed = false;
             ArgsCaller runner = new ArgsCaller("dotnet");
             runner.StdOut += PrintStdOut;
             runner.StdErr += PrintStdErr;
@@ -138,7 +146,6 @@ namespace MetaActions.Learn
 
         private static ArgsCaller GetRustRunner(string project)
         {
-            Failed = false;
             ArgsCaller runner = new ArgsCaller("cargo");
             runner.StdOut += PrintStdOut;
             runner.StdErr += PrintStdErr;

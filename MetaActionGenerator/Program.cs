@@ -21,11 +21,12 @@ namespace MetaActionGenerator
 {
     internal class Program : BaseCLI
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             Parser.Default.ParseArguments<MetaActionGeneratorOptions>(args)
               .WithParsed(GenerateMetaActions)
               .WithNotParsed(HandleParseError);
+            return 0;
         }
 
         public static void GenerateMetaActions(MetaActionGeneratorOptions opts)

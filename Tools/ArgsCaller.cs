@@ -15,20 +15,23 @@ namespace Tools
 
         public string Program { get; }
         public Dictionary<string, string> Arguments { get; }
+        public Dictionary<string, string> Environment { get; }
 
         public ArgsCaller(string program, Dictionary<string, string> arguments)
         {
             Program = program;
             Arguments = arguments;
+            Environment = new Dictionary<string, string>();
         }
 
         public ArgsCaller(string program)
         {
             Program = program;
             Arguments = new Dictionary<string, string>();
+            Environment = new Dictionary<string, string>();
         }
 
-        public void Run()
+        public int Run()
         {
             foreach (var key in Arguments.Keys)
                 if (Path.IsPathFullyQualified(Arguments[key]))
@@ -47,6 +50,8 @@ namespace Tools
                     UseShellExecute = false,
                 }
             };
+            foreach (var key in Environment.Keys)
+                process.StartInfo.Environment.Add(key, Environment[key]);
             if (StdErr != null)
             {
                 process.StartInfo.RedirectStandardError = true;
@@ -66,6 +71,7 @@ namespace Tools
                 process.BeginOutputReadLine();
 
             process.WaitForExit();
+            return process.ExitCode;
         }
     }
 }
