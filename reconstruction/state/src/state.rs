@@ -6,7 +6,7 @@ use bitvec::vec::BitVec;
 use spingus::domain::Domain;
 use spingus::problem::Problem;
 
-use crate::instance::facts::{Fact, Facts};
+use crate::instance::facts::Facts;
 use crate::instance::operator::Operator;
 
 #[derive(Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Debug)]
