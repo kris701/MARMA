@@ -1,20 +1,12 @@
 use color_eyre::eyre::Result;
 use spingus::domain::action::Action;
-use spingus::domain::Domain;
-use spingus::problem::parse_problem;
-use spingus::problem::Problem;
 
 use itertools::Itertools;
-use std::ffi::OsString;
 use std::fs;
-use std::fs::remove_dir_all;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
 
 use clap::Parser;
-
-use crate::script_writing::generate_script;
 
 mod csms_wrapper;
 mod script_writing;
