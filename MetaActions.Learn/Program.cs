@@ -137,8 +137,6 @@ namespace MetaActions.Learn
             runner.StdErr += PrintStdErr;
             runner.Arguments.Add("run", "");
             runner.Arguments.Add("--configuration", "Release");
-            //runner.Arguments.Add("--no-restore", "");
-            //runner.Arguments.Add("--no-build", "");
             runner.Arguments.Add("--project", $"{project} --");
             return runner;
         }

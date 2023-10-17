@@ -84,11 +84,11 @@ namespace MetaActions.Test
             ArgsCaller reconstructionFixer = new ArgsCaller("cargo");
             reconstructionFixer.Arguments.Add("run", "");
             reconstructionFixer.Arguments.Add("--release", "");
-            reconstructionFixer.Arguments.Add("--manifest-path", "plan-walker/Cargo.toml --");
+            reconstructionFixer.Arguments.Add("--manifest-path", "reconstruction/Cargo.toml --");
             reconstructionFixer.Arguments.Add("-d", originalDomain);
             reconstructionFixer.Arguments.Add("-p", problem);
             reconstructionFixer.Arguments.Add("-m", Path.Combine(tempPath, "reformulated_domain.pddl"));
-            reconstructionFixer.Arguments.Add("-f", "Dependencies/fast-downward/fast-downward.py");
+            reconstructionFixer.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
             reconstructionFixer.Arguments.Add("-o", Path.Combine(outPath, "reconstructed_metaPlan.plan"));
             reconstructionFixer.Run();
 
