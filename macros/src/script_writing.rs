@@ -1,4 +1,4 @@
-use std::{ffi::OsString, fs, os::unix::prelude::OpenOptionsExt, path::PathBuf};
+use std::{fs, os::unix::prelude::OpenOptionsExt, path::PathBuf};
 
 pub fn generate_script(fastdownward_path: &PathBuf, script_path: &PathBuf) {
     let content = format!(
