@@ -406,3 +406,6 @@ FodyWeavers.xsd
 /output/**
 !/Dependencies/readme.md
 !/Dependencies/setup.sh
+!/Dependencies/setup_data.sh
+!/Dependencies/setup_packages.sh
+!/Dependencies/setup_programs.sh
