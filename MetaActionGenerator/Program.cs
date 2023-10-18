@@ -60,9 +60,9 @@ namespace MetaActionGenerator
 
             List<ActionDecl> metaActions = new List<ActionDecl>();
 
-            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Precondition Parameters' meta actions...", new RemovePreconditionParameters(domain));
-            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Effect Parameters' meta actions...", new RemoveEffectParameters(domain));
-            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Additional Effects' meta actions...", new RemoveAdditionalEffects(domain));
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Precondition Parameters' meta actions...", new RemovePreconditionParameters(domain)));
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Effect Parameters' meta actions...", new RemoveEffectParameters(domain)));
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Additional Effects' meta actions...", new RemoveAdditionalEffects(domain)));
 
             RemoveActionsBy(metaActions, "Sanetizing meta actions...", 
                 (acts) => { 
@@ -85,15 +85,8 @@ namespace MetaActionGenerator
                 metaAction.Name = $"$meta_{counter++}";
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
-            ConsoleHelper.WriteLineColor($"A total of {metaActions.Count} meta action was found.", ConsoleColor.DarkGray);
-
-            ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
-            generator.Readable = true;
-
-            foreach(var metaAction in metaActions)
-                generator.Generate(metaAction, Path.Combine(opts.OutputPath, $"{metaAction.Name}.pddl"));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            OutputActions(metaActions, opts.OutputPath, listener);
+            ConsoleHelper.WriteLineColor($"A total of {metaActions.Count} meta action was found.", ConsoleColor.Green);
         }
 
         private static void RecratePath(string path)
@@ -101,6 +94,17 @@ namespace MetaActionGenerator
             if (Directory.Exists(path))
                 new DirectoryInfo(path).Delete(true);
             Directory.CreateDirectory(path);
+        }
+
+        private static void OutputActions(List<ActionDecl> actions, string outPath, IErrorListener listener)
+        {
+            ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
+            ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
+            generator.Readable = true;
+
+            foreach (var metaAction in actions)
+                generator.Generate(metaAction, Path.Combine(outPath, $"{metaAction.Name}.pddl"));
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
         }
 
         private static List<ActionDecl> GenerateCandidates(List<ActionDecl> macros, string info, ICandidateGenerator generator)
