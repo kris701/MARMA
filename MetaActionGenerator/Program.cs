@@ -90,6 +90,12 @@ namespace MetaActionGenerator
             ConsoleHelper.WriteLineColor($"Removed {preCount - metaActions.Count} actions out of {preCount} [{100 - Math.Round(((double)metaActions.Count / (double)preCount) * 100, 0)}%]", ConsoleColor.DarkGray);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
+            ConsoleHelper.WriteLineColor("Renaming meta actions...", ConsoleColor.DarkGray);
+            int counter = 1;
+            foreach (var metaAction in metaActions)
+                metaAction.Name = $"$meta_{counter++}";
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+
             ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
             ConsoleHelper.WriteLineColor($"A total of {metaActions.Count} meta action was found.", ConsoleColor.DarkGray);
             if (!Directory.Exists(opts.OutputPath))
@@ -101,9 +107,8 @@ namespace MetaActionGenerator
             ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
             generator.Readable = true;
 
-            int counter = 0;
             foreach(var metaAction in metaActions)
-                generator.Generate(metaAction, Path.Combine(opts.OutputPath, $"meta_{counter++}.pddl"));
+                generator.Generate(metaAction, Path.Combine(opts.OutputPath, $"{metaAction.Name}.pddl"));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
         }
     }
