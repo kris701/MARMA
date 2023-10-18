@@ -1,6 +1,6 @@
 use std::{
     fs::{self, remove_dir_all},
-    path::{Path, PathBuf},
+    path::PathBuf,
     process::Command,
 };
 
