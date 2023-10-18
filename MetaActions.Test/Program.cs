@@ -26,6 +26,9 @@ namespace MetaActions.Test
         {
             opts.DomainPath = PathHelper.RootPath(opts.DomainPath);
             opts.MetaActionsPath = PathHelper.RootPath(opts.MetaActionsPath);
+            opts.TempPath = PathHelper.RootPath(opts.TempPath);
+            opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
+
             IErrorListener listener = new ErrorListener();
             IParser<INode> parser = new PDDLParser(listener);
             ICodeGenerator<INode> codeGenerator = new PDDLCodeGenerator(listener);
@@ -40,8 +43,13 @@ namespace MetaActions.Test
             foreach (var problem in opts.TestingProblems)
             {
                 var rootedProblem = PathHelper.RootPath(problem);
-                var normalTime = ExecuteAsNormal(opts.DomainPath, rootedProblem, Path.Combine(opts.OutputPath, "normalPlan.plan"));
-                var metaTime = ExecuteAsMeta(domainDecl.Copy(), opts.DomainPath, rootedProblem, metaActions, opts.TempPath, opts.OutputPath, codeGenerator);
+                var name = new FileInfo(problem).Name.Replace(".pddl", "");
+                var outPath = Path.Combine(opts.OutputPath, name);
+                var tempPath = Path.Combine(opts.TempPath, name);
+                RecratePath(outPath);
+                RecratePath(tempPath);
+                var normalTime = ExecuteAsNormal(opts.DomainPath, rootedProblem, Path.Combine(outPath, "normalPlan.plan"), Path.Combine(tempPath, "normalOutput.sas"));
+                var metaTime = ExecuteAsMeta(domainDecl.Copy(), opts.DomainPath, rootedProblem, metaActions, tempPath, outPath, codeGenerator);
                 Console.WriteLine($"Normal took: {normalTime}ms");
                 Console.WriteLine($"Meta took:   {metaTime}ms");
             }
@@ -54,7 +62,7 @@ namespace MetaActions.Test
             Directory.CreateDirectory(path);
         }
 
-        private static float ExecuteAsNormal(string domain, string problem, string planName)
+        private static float ExecuteAsNormal(string domain, string problem, string planName, string sasName)
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
@@ -63,6 +71,7 @@ namespace MetaActions.Test
             fdCaller.Arguments.Add(PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"), "");
             fdCaller.Arguments.Add("--alias", "lama-first");
             fdCaller.Arguments.Add("--plan-file", planName);
+            fdCaller.Arguments.Add("--sas-file", sasName);
             fdCaller.Arguments.Add(domain, "");
             fdCaller.Arguments.Add(problem, "");
             fdCaller.Run();
@@ -81,15 +90,16 @@ namespace MetaActions.Test
             codeGenerator.Generate(domain, Path.Combine(tempPath, "reformulated_domain.pddl"));
 
             // Execute with FD
-            ExecuteAsNormal(Path.Combine(tempPath, "reformulated_domain.pddl"), problem, Path.Combine(outPath, "metaPlan.plan"));
+            ExecuteAsNormal(Path.Combine(tempPath, "reformulated_domain.pddl"), problem, Path.Combine(outPath, "metaPlan.plan"), Path.Combine(tempPath, "metaOutput.sas"));
 
             // Reconstruct plan
             ArgsCaller reconstructionFixer = ArgsCallerBuilder.GetRustRunner("reconstruction");
             reconstructionFixer.Arguments.Add("-d", originalDomain);
             reconstructionFixer.Arguments.Add("-p", problem);
             reconstructionFixer.Arguments.Add("-m", Path.Combine(tempPath, "reformulated_domain.pddl"));
+            reconstructionFixer.Arguments.Add("-s", Path.Combine(outPath, "metaPlan.plan"));
             reconstructionFixer.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
-            reconstructionFixer.Arguments.Add("-o", Path.Combine(outPath, "reconstructed_metaPlan.plan"));
+            reconstructionFixer.Arguments.Add("-o", Path.Combine(outPath, "reconstructedPlan.plan"));
             reconstructionFixer.Run();
 
             timer.Stop();
