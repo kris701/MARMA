@@ -38,6 +38,7 @@ namespace MetaActions.Learn
             _tempMacroTempPath = Path.Combine(opts.TempPath, _tempMacroTempPath);
             _tempMetaActionPath = Path.Combine(opts.TempPath, _tempMetaActionPath);
             _tempCompiledPath = Path.Combine(opts.TempPath, _tempCompiledPath);
+            _tempVerificationPath = Path.Combine(opts.TempPath, _tempVerificationPath);
             _outValidMetaActionPath = Path.Combine(opts.OutputPath, _outValidMetaActionPath);
 
             RecratePath(_tempProblemPath);
@@ -45,6 +46,7 @@ namespace MetaActions.Learn
             RecratePath(_tempMacroTempPath);
             RecratePath(_tempMetaActionPath);
             RecratePath(_tempCompiledPath);
+            RecratePath(_tempVerificationPath);
             RecratePath(_outValidMetaActionPath);
 
             var problems = CopyProblemsToTemp(opts.Problems);
@@ -95,7 +97,7 @@ namespace MetaActions.Learn
                 }
                 metaActionCounter++;
             }
-            ConsoleHelper.WriteLineColor($"A total of {totalValidMetaActions} valid meta actions was found.", ConsoleColor.Green);
+            ConsoleHelper.WriteLineColor($"A total of {totalValidMetaActions} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green);
         }
 
         private static void RecratePath(string path)
