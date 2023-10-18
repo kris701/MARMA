@@ -80,7 +80,7 @@ namespace MetaActionGenerator
                     foreach(var action in acts)
                     {
                         bool isGood = true;
-                        var predicates = action.FindTypes<PredicateExp>();
+                        var predicates = action.Effects.FindTypes<PredicateExp>();
                         foreach (var mutex in mutexPredicates)
                         {
                             var possitives = predicates.Count(x => x.Name == mutex.Name && x.Parent is not NotExp);
