@@ -35,9 +35,9 @@ namespace MetaActionGenerator
             opts.MacroActionPath = PathHelper.RootPath(opts.MacroActionPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
 
+            RecratePath(opts.OutputPath);
+
             ConsoleHelper.WriteLineColor("Verifying paths...", ConsoleColor.DarkGray);
-            if (!Directory.Exists(opts.OutputPath))
-                Directory.CreateDirectory(opts.OutputPath);
             if (!File.Exists(opts.DomainFilePath))
                 throw new FileNotFoundException($"Domain file not found: {opts.DomainFilePath}");
             if (!Directory.Exists(opts.MacroActionPath))
@@ -60,35 +60,24 @@ namespace MetaActionGenerator
 
             List<ActionDecl> metaActions = new List<ActionDecl>();
 
-            ConsoleHelper.WriteLineColor("Generating 'Remove Precondition Parameters' meta actions...", ConsoleColor.DarkGray);
-            ICandidateGenerator cpre = new RemovePreconditionParameters(domain);
-            metaActions.AddRange(cpre.Generate(macros));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Precondition Parameters' meta actions...", new RemovePreconditionParameters(domain));
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Effect Parameters' meta actions...", new RemoveEffectParameters(domain));
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Additional Effects' meta actions...", new RemoveAdditionalEffects(domain));
 
-            ConsoleHelper.WriteLineColor("Generating 'Remove Effect Parameters' meta actions...", ConsoleColor.DarkGray);
-            ICandidateGenerator ceff = new RemoveEffectParameters(domain);
-            metaActions.AddRange(ceff.Generate(macros));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
-
-            ConsoleHelper.WriteLineColor("Generating 'Remove Additional Effects' meta actions...", ConsoleColor.DarkGray);
-            ICandidateGenerator cinv = new RemoveAdditionalEffects(domain);
-            metaActions.AddRange(cinv.Generate(macros));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
-
-            ConsoleHelper.WriteLineColor("Removing duplicate meta actions...", ConsoleColor.DarkGray);
-            int preCount = metaActions.Count;
-            metaActions = metaActions.DistinctBy(x => x.GetHashCode()).ToList();
-            ConsoleHelper.WriteLineColor($"Removed {preCount - metaActions.Count} actions out of {preCount} [{100 - Math.Round(((double)metaActions.Count / (double)preCount) * 100,0)}%]", ConsoleColor.DarkGray);
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
-
-            ConsoleHelper.WriteLineColor("Sanetizing meta actions...", ConsoleColor.DarkGray);
-            preCount = metaActions.Count;
-            metaActions.RemoveAll(x => 
-                (x.Preconditions is IWalkable preWalke && preWalke.Count() == 0) ||
-                (x.Effects is IWalkable effWalk && effWalk.Count() == 0)
-                );
-            ConsoleHelper.WriteLineColor($"Removed {preCount - metaActions.Count} actions out of {preCount} [{100 - Math.Round(((double)metaActions.Count / (double)preCount) * 100, 0)}%]", ConsoleColor.DarkGray);
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            RemoveActionsBy(metaActions, "Sanetizing meta actions...", 
+                (acts) => { 
+                    acts.RemoveAll(x => (x.Effects is IWalkable effWalk && effWalk.Count() == 0)); 
+                    return acts; 
+                } );
+            RemoveActionsBy(metaActions, "Removing duplicate meta actions...",
+                (acts) => {
+                    return acts.DistinctBy(x => x.GetHashCode()).ToList();
+                });
+            RemoveActionsBy(metaActions, "Removing meta actions equivalent normal action effects...",
+                (acts) => {
+                    acts.RemoveAll(x => domain.Actions.Any(y => y.Effects.GetHashCode() == x.Effects.GetHashCode()));
+                    return acts;
+                });
 
             ConsoleHelper.WriteLineColor("Renaming meta actions...", ConsoleColor.DarkGray);
             int counter = 1;
@@ -98,17 +87,37 @@ namespace MetaActionGenerator
 
             ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
             ConsoleHelper.WriteLineColor($"A total of {metaActions.Count} meta action was found.", ConsoleColor.DarkGray);
-            if (!Directory.Exists(opts.OutputPath))
-                Directory.CreateDirectory(opts.OutputPath);
-            else
-                foreach (FileInfo file in new DirectoryInfo(opts.OutputPath).GetFiles())
-                    file.Delete();
 
             ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
             generator.Readable = true;
 
             foreach(var metaAction in metaActions)
                 generator.Generate(metaAction, Path.Combine(opts.OutputPath, $"{metaAction.Name}.pddl"));
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+        }
+
+        private static void RecratePath(string path)
+        {
+            if (Directory.Exists(path))
+                new DirectoryInfo(path).Delete(true);
+            Directory.CreateDirectory(path);
+        }
+
+        private static List<ActionDecl> GenerateCandidates(List<ActionDecl> macros, string info, ICandidateGenerator generator)
+        {
+            ConsoleHelper.WriteLineColor(info, ConsoleColor.DarkGray);
+            var items = generator.Generate(macros);
+            ConsoleHelper.WriteLineColor($"Generated {items.Count} candidates.", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            return items;
+        }
+
+        private static void RemoveActionsBy(List<ActionDecl> actions, string info, Func<List<ActionDecl>, List<ActionDecl>> by)
+        {
+            ConsoleHelper.WriteLineColor(info, ConsoleColor.DarkGray);
+            int preCount = actions.Count;
+            actions = by(actions);
+            ConsoleHelper.WriteLineColor($"Removed {preCount - actions.Count} actions out of {preCount} [{100 - Math.Round(((double)actions.Count / (double)preCount) * 100, 0)}%]", ConsoleColor.DarkGray);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
         }
     }
