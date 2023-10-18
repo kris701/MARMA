@@ -12,10 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\rust.yml = .github\workflows\rust.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolchain", "Toolchain\Toolchain.csproj", "{7EF7A773-11F4-49B8-980B-161156689DB3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolchainTests", "ToolchainTests\ToolchainTests.csproj", "{C1E2AFB4-9F51-4917-B805-BE8291EE058B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanSampleGenerator", "PlanSampleGenerator\PlanSampleGenerator.csproj", "{F75C13FC-8E07-4338-98DB-3E9B37F40438}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{C30F6589-5ABA-4CA9-8518-9F646682B474}"
@@ -30,15 +26,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencie
 	ProjectSection(SolutionItems) = preProject
 		Dependencies\readme.md = Dependencies\readme.md
 		Dependencies\setup.sh = Dependencies\setup.sh
+		Dependencies\setup_data.sh = Dependencies\setup_data.sh
+		Dependencies\setup_packages.sh = Dependencies\setup_packages.sh
+		Dependencies\setup_programs.sh = Dependencies\setup_programs.sh
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlanWalkerWrapper", "PlanWalkerWrapper\PlanWalkerWrapper.csproj", "{3296DA38-5947-452E-9F65-5545BEF00BA8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StacklebergCompiler", "StacklebergCompiler\StacklebergCompiler.csproj", "{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergVerifier", "StackelbergVerifier\StackelbergVerifier.csproj", "{5DB596AE-CB35-4439-AB62-0502C42F7586}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaActionGenerator", "MetaActionGenerator\MetaActionGenerator.csproj", "{6E04D1D4-065F-4CCA-B657-021ADBB1B032}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator", "MetaActionGenerator\MetaActionGenerator.csproj", "{6E04D1D4-065F-4CCA-B657-021ADBB1B032}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Learn", "MetaActions.Learn\MetaActions.Learn.csproj", "{2A4828D6-88F9-40F9-A4E2-F5513717A257}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Test", "MetaActions.Test\MetaActions.Test.csproj", "{159040FE-F33E-45E1-A293-D13A54D2CA3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,14 +47,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7EF7A773-11F4-49B8-980B-161156689DB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7EF7A773-11F4-49B8-980B-161156689DB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7EF7A773-11F4-49B8-980B-161156689DB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7EF7A773-11F4-49B8-980B-161156689DB3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C1E2AFB4-9F51-4917-B805-BE8291EE058B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1E2AFB4-9F51-4917-B805-BE8291EE058B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C1E2AFB4-9F51-4917-B805-BE8291EE058B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C1E2AFB4-9F51-4917-B805-BE8291EE058B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F75C13FC-8E07-4338-98DB-3E9B37F40438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F75C13FC-8E07-4338-98DB-3E9B37F40438}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F75C13FC-8E07-4338-98DB-3E9B37F40438}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -62,10 +55,6 @@ Global
 		{8DE4836F-AF6B-4219-96DE-3FF729F664A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DE4836F-AF6B-4219-96DE-3FF729F664A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DE4836F-AF6B-4219-96DE-3FF729F664A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3296DA38-5947-452E-9F65-5545BEF00BA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3296DA38-5947-452E-9F65-5545BEF00BA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3296DA38-5947-452E-9F65-5545BEF00BA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3296DA38-5947-452E-9F65-5545BEF00BA8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -78,6 +67,14 @@ Global
 		{6E04D1D4-065F-4CCA-B657-021ADBB1B032}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E04D1D4-065F-4CCA-B657-021ADBB1B032}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E04D1D4-065F-4CCA-B657-021ADBB1B032}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A4828D6-88F9-40F9-A4E2-F5513717A257}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A4828D6-88F9-40F9-A4E2-F5513717A257}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A4828D6-88F9-40F9-A4E2-F5513717A257}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A4828D6-88F9-40F9-A4E2-F5513717A257}.Release|Any CPU.Build.0 = Release|Any CPU
+		{159040FE-F33E-45E1-A293-D13A54D2CA3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{159040FE-F33E-45E1-A293-D13A54D2CA3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{159040FE-F33E-45E1-A293-D13A54D2CA3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{159040FE-F33E-45E1-A293-D13A54D2CA3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

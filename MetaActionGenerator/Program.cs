@@ -14,16 +14,19 @@ using PDDLSharp.Models.PDDL;
 using Tools;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
+using PDDLSharp.CodeGenerators.PDDL;
+using PDDLSharp.Parsers.PDDL;
 
 namespace MetaActionGenerator
 {
     internal class Program : BaseCLI
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             Parser.Default.ParseArguments<MetaActionGeneratorOptions>(args)
               .WithParsed(GenerateMetaActions)
               .WithNotParsed(HandleParseError);
+            return 0;
         }
 
         public static void GenerateMetaActions(MetaActionGeneratorOptions opts)
@@ -45,14 +48,14 @@ namespace MetaActionGenerator
             IErrorListener listener = new ErrorListener();
             IParser<INode> parser = new PDDLParser(listener);
 
-            var domain = parser.ParseAs<DomainDecl>(opts.DomainFilePath);
+            var domain = parser.ParseAs<DomainDecl>(new FileInfo(opts.DomainFilePath));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Parsing meta actions...", ConsoleColor.DarkGray);
             List<ActionDecl> macros = new List<ActionDecl>();
             foreach(var file in Directory.GetFiles(opts.MacroActionPath))
                 if (file.ToLower().EndsWith(".pddl"))
-                    macros.Add(parser.ParseAs<ActionDecl>(file));
+                    macros.Add(parser.ParseAs<ActionDecl>(new FileInfo(file)));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             List<ActionDecl> metaActions = new List<ActionDecl>();

@@ -12,16 +12,19 @@ using PDDLSharp.Models;
 using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Problem;
+using PDDLSharp.Parsers.PDDL;
+using PDDLSharp.CodeGenerators.PDDL;
 
 namespace StacklebergCompiler
 {
     internal class Program : BaseCLI
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             Parser.Default.ParseArguments<StacklebergCompilerOptions>(args)
               .WithParsed(RunStacklebergCompiler)
               .WithNotParsed(HandleParseError);
+            return 0;
         }
 
         public static void RunStacklebergCompiler(StacklebergCompilerOptions opts)
@@ -51,9 +54,9 @@ namespace StacklebergCompiler
             IErrorListener listener = new ErrorListener();
             IParser<INode> parser = new PDDLParser(listener);
 
-            var domain = parser.ParseAs<DomainDecl>(opts.DomainFilePath);
-            var problem = parser.ParseAs<ProblemDecl>(opts.ProblemFilePath);
-            var metaAction = parser.ParseAs<ActionDecl>(opts.MetaActionFile);
+            var domain = parser.ParseAs<DomainDecl>(new FileInfo(opts.DomainFilePath));
+            var problem = parser.ParseAs<ProblemDecl>(new FileInfo(opts.ProblemFilePath));
+            var metaAction = parser.ParseAs<ActionDecl>(new FileInfo(opts.MetaActionFile));
             watch.Stop();
             ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 

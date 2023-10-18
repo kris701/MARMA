@@ -11,11 +11,12 @@ namespace PlanSampleGenerator
 {
     public class Program : BaseCLI
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             Parser.Default.ParseArguments<PlanSampleGeneratorOptions>(args)
               .WithParsed(RunPlanSampleGeneration)
               .WithNotParsed(HandleParseError);
+            return 0;
         }
 
         public static void RunPlanSampleGeneration(PlanSampleGeneratorOptions opts)

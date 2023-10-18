@@ -10,11 +10,13 @@ namespace StacklebergVerifier
 {
     internal class Program : BaseCLI
     {
-        static void Main(string[] args)
+        private static int _returnCode = int.MaxValue;
+        static int Main(string[] args)
         {
             Parser.Default.ParseArguments<StackelbergVerifierOptions>(args)
               .WithNotParsed(HandleParseError)
               .WithParsed(RunStacklebergVerifier);
+            return _returnCode;
         }
 
         public static void RunStacklebergVerifier(StackelbergVerifierOptions opts)
@@ -48,9 +50,15 @@ namespace StacklebergVerifier
 
             ConsoleHelper.WriteLineColor("Checking Frontier...", ConsoleColor.DarkGray);
             if (IsFrontierValid(Path.Combine(opts.OutputPath, "pareto_frontier.json")))
+            {
+                _returnCode = 0;
                 ConsoleHelper.WriteLineColor("== Frontier is valid ==", ConsoleColor.Green);
+            }
             else
+            {
+                _returnCode = 1;
                 ConsoleHelper.WriteLineColor("== Frontier is not valid ==", ConsoleColor.Red);
+            }
         }
 
         private static bool IsFrontierValid(string file)
