@@ -23,6 +23,7 @@ fn is_valid_object(types: &Types, parameter: &Parameter, o: &Object) -> bool {
     match parameter {
         Parameter::Untyped { name: _ } => true,
         Parameter::Typed { name: _, type_name } => is_valid_type(types, type_name, &o.type_name),
+        _ => todo!(),
     }
 }
 

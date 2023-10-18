@@ -1,7 +1,4 @@
-use spingus::{
-    domain::action::{string_expression::StringExpression, Action},
-    term::Term,
-};
+use spingus::domain::action::{string_expression::StringExpression, Action};
 
 fn clean_string_expression(expression: StringExpression) -> Option<StringExpression> {
     match expression {
