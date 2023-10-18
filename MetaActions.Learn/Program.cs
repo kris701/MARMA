@@ -10,6 +10,7 @@ namespace MetaActions.Learn
     {
         private static string _tempProblemPath = "problems";
         private static string _tempMacroPath = "macros";
+        private static string _tempMacroTempPath = "macrosTemp";
         private static string _tempMetaActionPath = "metaActions";
         private static string _tempCompiledPath = "compiled";
         private static string _tempVerificationPath = "verification";
@@ -34,12 +35,14 @@ namespace MetaActions.Learn
 
             _tempProblemPath = Path.Combine(opts.TempPath, _tempProblemPath);
             _tempMacroPath = Path.Combine(opts.TempPath, _tempMacroPath);
+            _tempMacroTempPath = Path.Combine(opts.TempPath, _tempMacroTempPath);
             _tempMetaActionPath = Path.Combine(opts.TempPath, _tempMetaActionPath);
             _tempCompiledPath = Path.Combine(opts.TempPath, _tempCompiledPath);
             _outValidMetaActionPath = Path.Combine(opts.OutputPath, _outValidMetaActionPath);
 
             RecratePath(_tempProblemPath);
             RecratePath(_tempMacroPath);
+            RecratePath(_tempMacroTempPath);
             RecratePath(_tempMetaActionPath);
             RecratePath(_tempCompiledPath);
             RecratePath(_outValidMetaActionPath);
@@ -116,6 +119,7 @@ namespace MetaActions.Learn
             macroGenerator.Arguments.Add("-d", domain);
             macroGenerator.Arguments.Add("-p", _tempProblemPath);
             macroGenerator.Arguments.Add("-o", _tempMacroPath);
+            macroGenerator.Arguments.Add("-t", _tempMacroTempPath);
             macroGenerator.Arguments.Add("-c", PathHelper.RootPath("Dependencies/CSMs"));
             macroGenerator.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
             if (macroGenerator.Run() != 0)
