@@ -4,7 +4,7 @@ use itertools::Itertools;
 use spingus::{
     domain::{
         action::{string_expression::StringExpression, Action},
-        parameter::Parameter::{Typed, Untyped},
+        parameter::Parameter::{Either, Typed, Untyped},
     },
     term::Term,
 };
@@ -25,6 +25,7 @@ fn match_parameter(action: &Action, parameters: &Vec<usize>, parameter: &str) ->
                 .position(|p2| match p2 {
                     Untyped { name } => name == parameter,
                     Typed { name, type_name: _ } => name == parameter,
+                    Either { name, type_names } => todo!(),
                 })
                 .unwrap(),
         )
