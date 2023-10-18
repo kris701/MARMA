@@ -80,5 +80,5 @@ pub fn reconstruct(
         .iter()
         .map(|i| generate_replacement(&instance, domain_path, downward, &operators, *i))
         .collect();
-    stich(plan, meta_steps.iter().zip(replacements.iter()).collect())
+    stich(&plan, meta_steps.iter().zip(replacements.iter()).collect())
 }
