@@ -52,10 +52,14 @@ namespace MetaActions.Learn
             ConsoleHelper.WriteLineColor($"Generating macros", ConsoleColor.Gray);
             List<FileInfo> allMacros = GenerateMacros(opts.DomainPath);
             ConsoleHelper.WriteLineColor($"A total of {allMacros.Count} macros was found.", ConsoleColor.Gray);
+            if (allMacros.Count == 0)
+                return;
 
             ConsoleHelper.WriteLineColor($"Generating meta actions", ConsoleColor.Gray);
             List<FileInfo> allMetaActions = GenerateMetaActions(opts.DomainPath);
             ConsoleHelper.WriteLineColor($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Gray);
+            if (allMetaActions.Count == 0)
+                return;
 
             ConsoleHelper.WriteLineColor($"Testing meta actions", ConsoleColor.Gray);
             int totalValidMetaActions = 0;

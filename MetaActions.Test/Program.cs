@@ -33,12 +33,8 @@ namespace MetaActions.Test
             foreach (var file in new DirectoryInfo(opts.MetaActionsPath).GetFiles())
                 metaActions.Add(parser.ParseAs<ActionDecl>(file));
 
-            if (Directory.Exists(opts.TempPath))
-                new DirectoryInfo(opts.TempPath).Delete(true);
-            Directory.CreateDirectory(opts.TempPath);
-            if (Directory.Exists(opts.OutputPath))
-                new DirectoryInfo(opts.OutputPath).Delete(true);
-            Directory.CreateDirectory(opts.OutputPath);
+            RecratePath(opts.TempPath);
+            RecratePath(opts.OutputPath);
 
             foreach (var problem in opts.TestingProblems)
             {
@@ -50,13 +46,20 @@ namespace MetaActions.Test
             }
         }
 
+        private static void RecratePath(string path)
+        {
+            if (Directory.Exists(path))
+                new DirectoryInfo(path).Delete(true);
+            Directory.CreateDirectory(path);
+        }
+
         private static float ExecuteAsNormal(string domain, string problem, string planName)
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
             ArgsCaller fdCaller = new ArgsCaller("python3");
-            fdCaller.Arguments.Add("Dependencies/fast-downward/fast-downward.py", "");
+            fdCaller.Arguments.Add(PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"), "");
             fdCaller.Arguments.Add("--alias", "lama-first");
             fdCaller.Arguments.Add("--plan-file", planName);
             fdCaller.Arguments.Add(domain, "");
@@ -81,10 +84,7 @@ namespace MetaActions.Test
             ExecuteAsNormal(Path.Combine(tempPath, "reformulated_domain.pddl"), problem, Path.Combine(outPath, "metaPlan.plan"));
 
             // Reconstruct plan
-            ArgsCaller reconstructionFixer = new ArgsCaller("cargo");
-            reconstructionFixer.Arguments.Add("run", "");
-            reconstructionFixer.Arguments.Add("--release", "");
-            reconstructionFixer.Arguments.Add("--manifest-path", "reconstruction/Cargo.toml --");
+            ArgsCaller reconstructionFixer = ArgsCallerBuilder.GetRustRunner("reconstruction");
             reconstructionFixer.Arguments.Add("-d", originalDomain);
             reconstructionFixer.Arguments.Add("-p", problem);
             reconstructionFixer.Arguments.Add("-m", Path.Combine(tempPath, "reformulated_domain.pddl"));
