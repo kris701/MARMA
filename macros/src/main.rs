@@ -8,6 +8,9 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
+use crate::action_cleaning::clean_action;
+
+mod action_cleaning;
 mod csms_wrapper;
 mod script_writing;
 
@@ -71,7 +74,11 @@ fn main() -> Result<()> {
         &args.temp.unwrap(),
     );
 
-    let macros: Vec<&Action> = macros.iter().unique().collect();
+    let macros: Vec<Action> = macros
+        .iter()
+        .unique()
+        .map(|a| clean_action(a.to_owned()))
+        .collect();
     println!("Found {} macro actions", macros.len());
 
     match args.out {
