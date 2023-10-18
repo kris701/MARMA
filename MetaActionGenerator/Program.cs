@@ -16,6 +16,8 @@ using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using PDDLSharp.CodeGenerators.PDDL;
 using PDDLSharp.Parsers.PDDL;
+using PDDLSharp.Models.PDDL.Expressions;
+using PDDLSharp.Toolkit.MutexDetector;
 
 namespace MetaActionGenerator
 {
@@ -56,20 +58,45 @@ namespace MetaActionGenerator
             metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Effect Parameters' meta actions...", new RemoveEffectParameters(domain)));
             metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Additional Effects' meta actions...", new RemoveAdditionalEffects(domain)));
 
-            RemoveActionsBy(metaActions, "Sanetizing meta actions...", 
+            metaActions = RemoveActionsBy(metaActions, "Sanetizing meta actions...", 
                 (acts) => { 
                     acts.RemoveAll(x => (x.Effects is IWalkable effWalk && effWalk.Count() == 0)); 
                     return acts; 
                 } );
-            RemoveActionsBy(metaActions, "Removing duplicate meta actions...",
+            metaActions = RemoveActionsBy(metaActions, "Removing duplicate meta actions...",
                 (acts) => {
                     return acts.DistinctBy(x => x.GetHashCode()).ToList();
                 });
-            RemoveActionsBy(metaActions, "Removing meta actions equivalent normal action effects...",
+            metaActions = RemoveActionsBy(metaActions, "Removing meta actions with equivalent normal action effects...",
                 (acts) => {
                     acts.RemoveAll(x => domain.Actions.Any(y => y.Effects.GetHashCode() == x.Effects.GetHashCode()));
                     return acts;
                 });
+            metaActions = RemoveActionsBy(metaActions, "Removing meta actions with bad mutex groups...",
+                (acts) => {
+                    var newActs = new List<ActionDecl>();
+                    IMutexDetectors mutexDetector = new SimpleMutexDetector();
+                    var mutexPredicates = mutexDetector.FindMutexes(new PDDLDecl(domain, new ProblemDecl()));
+                    foreach(var action in acts)
+                    {
+                        bool isGood = true;
+                        var predicates = action.FindTypes<PredicateExp>();
+                        foreach (var mutex in mutexPredicates)
+                        {
+                            var possitives = predicates.Count(x => x.Name == mutex.Name && x.Parent is not NotExp);
+                            var negatives = predicates.Count(x => x.Name == mutex.Name && x.Parent is NotExp);
+                            if (possitives != negatives)
+                            {
+                                isGood = false;
+                                break;
+                            }
+                        }
+                        if (isGood)
+                            newActs.Add(action);
+                    }
+                    return newActs;
+                });
+
 
             ConsoleHelper.WriteLineColor("Renaming meta actions...", ConsoleColor.DarkGray);
             int counter = 1;
@@ -130,13 +157,14 @@ namespace MetaActionGenerator
             return items;
         }
 
-        private static void RemoveActionsBy(List<ActionDecl> actions, string info, Func<List<ActionDecl>, List<ActionDecl>> by)
+        private static List<ActionDecl> RemoveActionsBy(List<ActionDecl> actions, string info, Func<List<ActionDecl>, List<ActionDecl>> by)
         {
             ConsoleHelper.WriteLineColor(info, ConsoleColor.DarkGray);
             int preCount = actions.Count;
-            actions = by(actions);
-            ConsoleHelper.WriteLineColor($"Removed {preCount - actions.Count} actions out of {preCount} [{100 - Math.Round(((double)actions.Count / (double)preCount) * 100, 0)}%]", ConsoleColor.DarkGray);
+            var newActions = by(actions);
+            ConsoleHelper.WriteLineColor($"Removed {preCount - newActions.Count} actions out of {preCount} [{100 - Math.Round(((double)newActions.Count / (double)preCount) * 100, 0)}%]", ConsoleColor.DarkGray);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            return newActions;
         }
     }
 }
