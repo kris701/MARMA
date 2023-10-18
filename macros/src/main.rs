@@ -30,6 +30,10 @@ pub struct Args {
     /// If not given, simply prints to stdout
     #[arg(short = 'o')]
     out: Option<PathBuf>,
+    /// Dir for temp files
+    /// Should only outlive the program if it crashes
+    #[arg(short = 't', default_value = ".temp")]
+    temp: Option<PathBuf>,
 }
 
 fn main() -> Result<()> {
@@ -64,6 +68,7 @@ fn main() -> Result<()> {
         &args.csms,
         &args.domain,
         &args.problems,
+        &args.temp.unwrap(),
     );
 
     let macros: Vec<&Action> = macros.iter().unique().collect();

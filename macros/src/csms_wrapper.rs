@@ -82,10 +82,10 @@ pub fn generate_macros(
     csms_path: &PathBuf,
     domain_path: &PathBuf,
     problems_path: &PathBuf,
+    temp_path: &PathBuf,
 ) -> Vec<Action> {
     let scripts_path = csms_path.join("scripts");
     let script_path = scripts_path.join(".temp.sh");
-    let temp_path: PathBuf = Path::new(".temp").to_path_buf();
     let mut enhanced_domains: Vec<String> = vec![];
     for script_type in [
         ScriptType::CSM("csm".to_owned()),
