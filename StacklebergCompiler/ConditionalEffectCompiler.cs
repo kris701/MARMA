@@ -241,7 +241,7 @@ namespace StacklebergCompiler
                 {
                     if (pred.Parent is NotExp)
                     {
-                        var trueWhen = new WhenExp(action, null, null);
+                        var trueWhen = new WhenExp(action);
                         trueWhen.Condition = new NotExp(trueWhen, new PredicateExp(
                             trueWhen,
                             $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
@@ -252,7 +252,7 @@ namespace StacklebergCompiler
                             pred.Arguments);
                         newExpressions.Add(trueWhen);
 
-                        var falseWhen = new WhenExp(action, null, null);
+                        var falseWhen = new WhenExp(action);
                         falseWhen.Condition = new PredicateExp(
                             falseWhen,
                             $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
@@ -265,7 +265,7 @@ namespace StacklebergCompiler
                     }
                     else
                     {
-                        var trueWhen = new WhenExp(action, null, null);
+                        var trueWhen = new WhenExp(action);
                         trueWhen.Condition = new PredicateExp(
                             trueWhen,
                             $"{ReservedNames.LeaderStatePrefix}{pred.Name}",
@@ -276,7 +276,7 @@ namespace StacklebergCompiler
                             pred.Arguments);
                         newExpressions.Add(trueWhen);
 
-                        var falseWhen = new WhenExp(action, null, null);
+                        var falseWhen = new WhenExp(action);
                         falseWhen.Condition = new NotExp(new PredicateExp(
                             falseWhen,
                             $"{ReservedNames.LeaderStatePrefix}{pred.Name}",

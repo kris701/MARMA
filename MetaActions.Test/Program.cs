@@ -28,6 +28,7 @@ namespace MetaActions.Test
             opts.MetaActionsPath = PathHelper.RootPath(opts.MetaActionsPath);
             IErrorListener listener = new ErrorListener();
             IParser<INode> parser = new PDDLParser(listener);
+            ICodeGenerator<INode> codeGenerator = new PDDLCodeGenerator(listener);
             DomainDecl domainDecl = parser.ParseAs<DomainDecl>(new FileInfo(opts.DomainPath));
             List<ActionDecl> metaActions = new List<ActionDecl>();
             foreach (var file in new DirectoryInfo(opts.MetaActionsPath).GetFiles())
@@ -40,7 +41,7 @@ namespace MetaActions.Test
             {
                 var rootedProblem = PathHelper.RootPath(problem);
                 var normalTime = ExecuteAsNormal(opts.DomainPath, rootedProblem, Path.Combine(opts.OutputPath, "normalPlan.plan"));
-                var metaTime = ExecuteAsMeta(domainDecl.Copy(), opts.DomainPath, rootedProblem, metaActions, opts.TempPath, opts.OutputPath);
+                var metaTime = ExecuteAsMeta(domainDecl.Copy(), opts.DomainPath, rootedProblem, metaActions, opts.TempPath, opts.OutputPath, codeGenerator);
                 Console.WriteLine($"Normal took: {normalTime}ms");
                 Console.WriteLine($"Meta took:   {metaTime}ms");
             }
@@ -70,14 +71,13 @@ namespace MetaActions.Test
             return timer.ElapsedMilliseconds;
         }
 
-        private static float ExecuteAsMeta(DomainDecl domain, string originalDomain, string problem, List<ActionDecl> metaActions, string tempPath, string outPath)
+        private static float ExecuteAsMeta(DomainDecl domain, string originalDomain, string problem, List<ActionDecl> metaActions, string tempPath, string outPath, ICodeGenerator<INode> codeGenerator)
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
             // Reformulate domain
             foreach (var act in metaActions)
                 domain.Actions.Add(act);
-            ICodeGenerator<INode> codeGenerator = new PDDLCodeGenerator(null);
             codeGenerator.Generate(domain, Path.Combine(tempPath, "reformulated_domain.pddl"));
 
             // Execute with FD
