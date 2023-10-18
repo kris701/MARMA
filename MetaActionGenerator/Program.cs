@@ -44,19 +44,11 @@ namespace MetaActionGenerator
                 throw new FileNotFoundException($"Macro action path not found: {opts.MacroActionPath}");
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Parsing domain...", ConsoleColor.DarkGray);
             IErrorListener listener = new ErrorListener();
-            IParser<INode> parser = new PDDLParser(listener);
 
-            var domain = parser.ParseAs<DomainDecl>(new FileInfo(opts.DomainFilePath));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            var domain = ParseDomain(opts.DomainFilePath, listener);
 
-            ConsoleHelper.WriteLineColor("Parsing meta actions...", ConsoleColor.DarkGray);
-            List<ActionDecl> macros = new List<ActionDecl>();
-            foreach(var file in Directory.GetFiles(opts.MacroActionPath))
-                if (file.ToLower().EndsWith(".pddl"))
-                    macros.Add(parser.ParseAs<ActionDecl>(new FileInfo(file)));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            List<ActionDecl> macros = ParseMacros(opts.MacroActionPath, listener);
 
             List<ActionDecl> metaActions = new List<ActionDecl>();
 
@@ -94,6 +86,28 @@ namespace MetaActionGenerator
             if (Directory.Exists(path))
                 new DirectoryInfo(path).Delete(true);
             Directory.CreateDirectory(path);
+        }
+
+        private static DomainDecl ParseDomain(string path, IErrorListener listener)
+        {
+            ConsoleHelper.WriteLineColor("Parsing domain...", ConsoleColor.DarkGray);
+            IParser<INode> parser = new PDDLParser(listener);
+            var domain = parser.ParseAs<DomainDecl>(new FileInfo(path));
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            return domain;
+        }
+
+        private static List<ActionDecl> ParseMacros(string path, IErrorListener listener)
+        {
+            IParser<INode> parser = new PDDLParser(listener);
+            ConsoleHelper.WriteLineColor("Parsing macros...", ConsoleColor.DarkGray);
+            List<ActionDecl> macros = new List<ActionDecl>();
+            foreach (var file in new DirectoryInfo(path).GetFiles())
+                if (file.Extension == ".pddl")
+                    macros.Add(parser.ParseAs<ActionDecl>(file));
+            ConsoleHelper.WriteLineColor($"A total of {macros.Count} macros was found.", ConsoleColor.Green);
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            return macros;
         }
 
         private static void OutputActions(List<ActionDecl> actions, string outPath, IErrorListener listener)
