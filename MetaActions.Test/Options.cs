@@ -12,7 +12,7 @@ namespace MetaActions.Test
         [Option("domain", Required = true, HelpText = "Path to the domain file to use.")]
         public string DomainPath { get; set; } = "";
         [Option("problems", Required = true, HelpText = "Problems to test on.")]
-        public IEnumerable<string> TestingProblems { get; set; }
+        public IEnumerable<string> TestingProblems { get; set; } = new List<string>();
         [Option("meta-actions", Required = true, HelpText = "Folder containing valid meta actions.")]
         public string MetaActionsPath { get; set; } = "";
         [Option("tempDir", Required = false, HelpText = "Path where all the intermediate files can be saved.", Default = "temp/test")]
