@@ -115,7 +115,7 @@ namespace MetaActions.Learn
 
         private static List<FileInfo> GenerateMacros(string domain)
         {
-            var macroGenerator = GetRustRunner("macros");
+            var macroGenerator = ArgsCallerBuilder.GetRustRunner("macros");
             macroGenerator.Arguments.Add("-d", domain);
             macroGenerator.Arguments.Add("-p", _tempProblemPath);
             macroGenerator.Arguments.Add("-o", _tempMacroPath);
@@ -129,7 +129,7 @@ namespace MetaActions.Learn
 
         private static List<FileInfo> GenerateMetaActions(string domain)
         {
-            ArgsCaller metaCaller = GetDotnetRunner("MetaActionGenerator");
+            ArgsCaller metaCaller = ArgsCallerBuilder.GetDotnetRunner("MetaActionGenerator");
             metaCaller.Arguments.Add("--domain", domain);
             metaCaller.Arguments.Add("--macros", _tempMacroPath);
             metaCaller.Arguments.Add("--output", _tempMetaActionPath);
@@ -140,7 +140,7 @@ namespace MetaActions.Learn
 
         private static void CompileMetaAction(string domain, string problem, string metaAction)
         {
-            ArgsCaller stackelCompiler = GetDotnetRunner("StacklebergCompiler");
+            ArgsCaller stackelCompiler = ArgsCallerBuilder.GetDotnetRunner("StacklebergCompiler");
             stackelCompiler.Arguments.Add("--domain", domain);
             stackelCompiler.Arguments.Add("--problem", problem);
             stackelCompiler.Arguments.Add("--meta-action", metaAction);
@@ -151,7 +151,7 @@ namespace MetaActions.Learn
 
         private static bool VerifyMetaAction()
         {
-            ArgsCaller stackelVerifier = GetDotnetRunner("StackelbergVerifier");
+            ArgsCaller stackelVerifier = ArgsCallerBuilder.GetDotnetRunner("StackelbergVerifier");
             stackelVerifier.Arguments.Add("--domain", Path.Combine(_tempCompiledPath, "simplified_domain.pddl"));
             stackelVerifier.Arguments.Add("--problem", Path.Combine(_tempCompiledPath, "simplified_problem.pddl"));
             stackelVerifier.Arguments.Add("--output", _tempVerificationPath);
@@ -160,44 +160,6 @@ namespace MetaActions.Learn
             if (code != 0 && code != 1)
                 throw new Exception("Stackelberg verifier failed!");
             return code == 0;
-        }
-
-        private static ArgsCaller GetDotnetRunner(string project)
-        {
-            ArgsCaller runner = new ArgsCaller("dotnet");
-            runner.StdOut += PrintStdOut;
-            runner.StdErr += PrintStdErr;
-            runner.Arguments.Add("run", "");
-            runner.Arguments.Add("--configuration", "Release");
-            runner.Arguments.Add("--project", $"{project} --");
-            return runner;
-        }
-
-        private static ArgsCaller GetRustRunner(string project)
-        {
-            ArgsCaller runner = new ArgsCaller("cargo");
-            runner.StdOut += PrintStdOut;
-            runner.StdErr += PrintStdErr;
-            runner.Arguments.Add("run", "");
-            runner.Arguments.Add("--release", "");
-            runner.Arguments.Add("--manifest-path", $"{project}/Cargo.toml --");
-            return runner;
-        }
-
-        private static void PrintStdOut(object sender, DataReceivedEventArgs e)
-        {
-#if DEBUG
-            if (e.Data != null)
-                ConsoleHelper.WriteLineColor(e.Data, ConsoleColor.Gray);
-#endif
-        }
-
-        private static void PrintStdErr(object sender, DataReceivedEventArgs e)
-        {
-#if DEBUG
-            if (e.Data != null)
-                ConsoleHelper.WriteLineColor(e.Data, ConsoleColor.Red);
-#endif
         }
     }
 }
