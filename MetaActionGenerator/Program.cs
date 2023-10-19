@@ -16,6 +16,8 @@ using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using PDDLSharp.CodeGenerators.PDDL;
 using PDDLSharp.Parsers.PDDL;
+using PDDLSharp.Models.PDDL.Expressions;
+using PDDLSharp.Toolkit.MutexDetector;
 
 namespace MetaActionGenerator
 {
@@ -35,60 +37,66 @@ namespace MetaActionGenerator
             opts.MacroActionPath = PathHelper.RootPath(opts.MacroActionPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
 
+            RecratePath(opts.OutputPath);
+
             ConsoleHelper.WriteLineColor("Verifying paths...", ConsoleColor.DarkGray);
-            if (!Directory.Exists(opts.OutputPath))
-                Directory.CreateDirectory(opts.OutputPath);
             if (!File.Exists(opts.DomainFilePath))
                 throw new FileNotFoundException($"Domain file not found: {opts.DomainFilePath}");
             if (!Directory.Exists(opts.MacroActionPath))
                 throw new FileNotFoundException($"Macro action path not found: {opts.MacroActionPath}");
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Parsing domain...", ConsoleColor.DarkGray);
             IErrorListener listener = new ErrorListener();
-            IParser<INode> parser = new PDDLParser(listener);
 
-            var domain = parser.ParseAs<DomainDecl>(new FileInfo(opts.DomainFilePath));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            var domain = ParseDomain(opts.DomainFilePath, listener);
 
-            ConsoleHelper.WriteLineColor("Parsing meta actions...", ConsoleColor.DarkGray);
-            List<ActionDecl> macros = new List<ActionDecl>();
-            foreach(var file in Directory.GetFiles(opts.MacroActionPath))
-                if (file.ToLower().EndsWith(".pddl"))
-                    macros.Add(parser.ParseAs<ActionDecl>(new FileInfo(file)));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            List<ActionDecl> macros = ParseMacros(opts.MacroActionPath, listener);
 
             List<ActionDecl> metaActions = new List<ActionDecl>();
 
-            ConsoleHelper.WriteLineColor("Generating 'Remove Precondition Parameters' meta actions...", ConsoleColor.DarkGray);
-            ICandidateGenerator cpre = new RemovePreconditionParameters(domain);
-            metaActions.AddRange(cpre.Generate(macros));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Precondition Parameters' meta actions...", new RemovePreconditionParameters(domain)));
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Effect Parameters' meta actions...", new RemoveEffectParameters(domain)));
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Additional Effects' meta actions...", new RemoveAdditionalEffects(domain)));
 
-            ConsoleHelper.WriteLineColor("Generating 'Remove Effect Parameters' meta actions...", ConsoleColor.DarkGray);
-            ICandidateGenerator ceff = new RemoveEffectParameters(domain);
-            metaActions.AddRange(ceff.Generate(macros));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            metaActions = RemoveActionsBy(metaActions, "Sanetizing meta actions...", 
+                (acts) => { 
+                    acts.RemoveAll(x => (x.Effects is IWalkable effWalk && effWalk.Count() == 0)); 
+                    return acts; 
+                } );
+            metaActions = RemoveActionsBy(metaActions, "Removing duplicate meta actions...",
+                (acts) => {
+                    return acts.DistinctBy(x => x.GetHashCode()).ToList();
+                });
+            metaActions = RemoveActionsBy(metaActions, "Removing meta actions with equivalent normal action effects...",
+                (acts) => {
+                    acts.RemoveAll(x => domain.Actions.Any(y => y.Effects.GetHashCode() == x.Effects.GetHashCode()));
+                    return acts;
+                });
+            metaActions = RemoveActionsBy(metaActions, "Removing meta actions with bad mutex groups...",
+                (acts) => {
+                    var newActs = new List<ActionDecl>();
+                    IMutexDetectors mutexDetector = new SimpleMutexDetector();
+                    var mutexPredicates = mutexDetector.FindMutexes(new PDDLDecl(domain, new ProblemDecl()));
+                    foreach(var action in acts)
+                    {
+                        bool isGood = true;
+                        var predicates = action.Effects.FindTypes<PredicateExp>();
+                        foreach (var mutex in mutexPredicates)
+                        {
+                            var possitives = predicates.Count(x => x.Name == mutex.Name && x.Parent is not NotExp);
+                            var negatives = predicates.Count(x => x.Name == mutex.Name && x.Parent is NotExp);
+                            if (possitives != negatives)
+                            {
+                                isGood = false;
+                                break;
+                            }
+                        }
+                        if (isGood)
+                            newActs.Add(action);
+                    }
+                    return newActs;
+                });
 
-            ConsoleHelper.WriteLineColor("Generating 'Remove Additional Effects' meta actions...", ConsoleColor.DarkGray);
-            ICandidateGenerator cinv = new RemoveAdditionalEffects(domain);
-            metaActions.AddRange(cinv.Generate(macros));
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
-
-            ConsoleHelper.WriteLineColor("Removing duplicate meta actions...", ConsoleColor.DarkGray);
-            int preCount = metaActions.Count;
-            metaActions = metaActions.DistinctBy(x => x.GetHashCode()).ToList();
-            ConsoleHelper.WriteLineColor($"Removed {preCount - metaActions.Count} actions out of {preCount} [{100 - Math.Round(((double)metaActions.Count / (double)preCount) * 100,0)}%]", ConsoleColor.DarkGray);
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
-
-            ConsoleHelper.WriteLineColor("Sanetizing meta actions...", ConsoleColor.DarkGray);
-            preCount = metaActions.Count;
-            metaActions.RemoveAll(x => 
-                (x.Preconditions is IWalkable preWalke && preWalke.Count() == 0) ||
-                (x.Effects is IWalkable effWalk && effWalk.Count() == 0)
-                );
-            ConsoleHelper.WriteLineColor($"Removed {preCount - metaActions.Count} actions out of {preCount} [{100 - Math.Round(((double)metaActions.Count / (double)preCount) * 100, 0)}%]", ConsoleColor.DarkGray);
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Renaming meta actions...", ConsoleColor.DarkGray);
             int counter = 1;
@@ -96,20 +104,67 @@ namespace MetaActionGenerator
                 metaAction.Name = $"$meta_{counter++}";
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
-            ConsoleHelper.WriteLineColor($"A total of {metaActions.Count} meta action was found.", ConsoleColor.DarkGray);
-            if (!Directory.Exists(opts.OutputPath))
-                Directory.CreateDirectory(opts.OutputPath);
-            else
-                foreach (FileInfo file in new DirectoryInfo(opts.OutputPath).GetFiles())
-                    file.Delete();
+            OutputActions(metaActions, opts.OutputPath, listener);
+            ConsoleHelper.WriteLineColor($"A total of {metaActions.Count} meta action was found.", ConsoleColor.Green);
+        }
 
+        private static void RecratePath(string path)
+        {
+            if (Directory.Exists(path))
+                new DirectoryInfo(path).Delete(true);
+            Directory.CreateDirectory(path);
+        }
+
+        private static DomainDecl ParseDomain(string path, IErrorListener listener)
+        {
+            ConsoleHelper.WriteLineColor("Parsing domain...", ConsoleColor.DarkGray);
+            IParser<INode> parser = new PDDLParser(listener);
+            var domain = parser.ParseAs<DomainDecl>(new FileInfo(path));
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            return domain;
+        }
+
+        private static List<ActionDecl> ParseMacros(string path, IErrorListener listener)
+        {
+            IParser<INode> parser = new PDDLParser(listener);
+            ConsoleHelper.WriteLineColor("Parsing macros...", ConsoleColor.DarkGray);
+            List<ActionDecl> macros = new List<ActionDecl>();
+            foreach (var file in new DirectoryInfo(path).GetFiles())
+                if (file.Extension == ".pddl")
+                    macros.Add(parser.ParseAs<ActionDecl>(file));
+            ConsoleHelper.WriteLineColor($"A total of {macros.Count} macros was found.", ConsoleColor.Green);
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            return macros;
+        }
+
+        private static void OutputActions(List<ActionDecl> actions, string outPath, IErrorListener listener)
+        {
+            ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
             ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
             generator.Readable = true;
 
-            foreach(var metaAction in metaActions)
-                generator.Generate(metaAction, Path.Combine(opts.OutputPath, $"{metaAction.Name}.pddl"));
+            foreach (var metaAction in actions)
+                generator.Generate(metaAction, Path.Combine(outPath, $"{metaAction.Name}.pddl"));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+        }
+
+        private static List<ActionDecl> GenerateCandidates(List<ActionDecl> macros, string info, ICandidateGenerator generator)
+        {
+            ConsoleHelper.WriteLineColor(info, ConsoleColor.DarkGray);
+            var items = generator.Generate(macros);
+            ConsoleHelper.WriteLineColor($"Generated {items.Count} candidates.", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            return items;
+        }
+
+        private static List<ActionDecl> RemoveActionsBy(List<ActionDecl> actions, string info, Func<List<ActionDecl>, List<ActionDecl>> by)
+        {
+            ConsoleHelper.WriteLineColor(info, ConsoleColor.DarkGray);
+            int preCount = actions.Count;
+            var newActions = by(actions);
+            ConsoleHelper.WriteLineColor($"Removed {preCount - newActions.Count} actions out of {preCount} [{100 - Math.Round(((double)newActions.Count / (double)preCount) * 100, 0)}%]", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+            return newActions;
         }
     }
 }
