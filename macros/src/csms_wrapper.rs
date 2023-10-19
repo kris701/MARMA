@@ -8,11 +8,12 @@ use spingus::domain::{action::Action, parse_domain};
 
 use crate::script_writing::generate_script;
 
+#[derive(Debug)]
 enum ScriptType {
     CSM(String),
-    //CCSM(CSMType),
-    //MUM,
-    //BloMa,
+    CCSM(String),
+    MUM,
+    BloMa,
 }
 
 fn generate_temp_dir(temp_path: &PathBuf, domain_path: &PathBuf, problems_path: &PathBuf) {
@@ -44,36 +45,55 @@ fn run(
     temp_path: &PathBuf,
     script_type: &ScriptType,
 ) -> Option<String> {
-    match script_type {
-        ScriptType::CSM(csm_type) => {
-            generate_script(fastdownward_path, script_path);
+    generate_script(fastdownward_path, script_path);
+    let name = match script_type {
+        ScriptType::CSM(n) => n,
+        ScriptType::CCSM(n) => n,
+        ScriptType::MUM => "mum",
+        ScriptType::BloMa => "bloma",
+    };
+    let learn_path = match script_type {
+        ScriptType::CSM(_) => "learn-csm.sh",
+        ScriptType::CCSM(_) => "learn-c-csm.sh",
+        ScriptType::MUM => "learn-mum.sh",
+        ScriptType::BloMa => "learn-bloma.sh",
+    };
+    let cannonical_temp_path: String = fs::canonicalize(temp_path)
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_owned();
 
-            let learn_path = scripts_path.join("./learn-csm.sh");
-            if !learn_path.is_file() {
-                panic!("Could not find: {}", learn_path.to_str().unwrap());
-            }
-            let out = Command::new("./learn-csm.sh")
-                .current_dir(scripts_path)
-                .args(&[
-                    fs::canonicalize(temp_path).unwrap().to_str().unwrap(),
-                    ".temp.sh",
-                    &csm_type,
-                ])
-                .output();
-            match out {
-                Err(err) => {
-                    panic!("csms gave error: {}", err);
-                }
-                _ => {}
-            }
-            let domain_name = format!("domain_{}.pddl", csm_type);
-            let domain_path = temp_path.join(domain_name);
-            if domain_path.exists() {
-                return Some(fs::read_to_string(domain_path).unwrap());
-            } else {
-                return None;
-            }
+    if !scripts_path.join(learn_path).is_file() {
+        panic!("Could not find: {}", learn_path);
+    }
+
+    let mut command = Command::new(scripts_path.join(learn_path).canonicalize().unwrap());
+    command.current_dir(scripts_path);
+    command.arg(cannonical_temp_path);
+    command.arg(".temp.sh");
+    match script_type {
+        ScriptType::CSM(n) => {
+            command.arg(n);
         }
+        ScriptType::CCSM(n) => {
+            command.arg(n);
+        }
+        _ => {}
+    }
+    let out = command.output();
+    match out {
+        Err(err) => {
+            panic!("csms gave error: {}", err);
+        }
+        _ => {}
+    }
+    let domain_name = format!("domain_{}.pddl", name);
+    let domain_path = temp_path.join(domain_name);
+    if domain_path.exists() {
+        return Some(fs::read_to_string(domain_path).unwrap());
+    } else {
+        return None;
     }
 }
 
@@ -92,10 +112,16 @@ pub fn generate_macros(
         ScriptType::CSM("ncsm".to_owned()),
         ScriptType::CSM("acsm".to_owned()),
         ScriptType::CSM("ancsm".to_owned()),
+        ScriptType::CCSM("csm".to_owned()),
+        ScriptType::CCSM("ncsm".to_owned()),
+        ScriptType::CCSM("acsm".to_owned()),
+        ScriptType::CCSM("ancsm".to_owned()),
+        ScriptType::MUM,
+        ScriptType::BloMa,
     ] {
         println!("Generating temp dir...");
         generate_temp_dir(&temp_path, domain_path, problems_path);
-        println!("Generating macros...");
+        println!("Using {:?} to generate macros...", script_type);
         let enhanced_domain = run(
             fastdownward_path,
             &script_path,
