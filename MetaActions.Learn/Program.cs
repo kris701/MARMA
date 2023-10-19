@@ -69,12 +69,12 @@ namespace MetaActions.Learn
             int metaActionCounter = 1;
             foreach (var metaAction in allMetaActions)
             {
-                ConsoleHelper.WriteLineColor($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{100 - Math.Round(((double)metaActionCounter / (double)allMetaActions.Count) * 100, 0)}%]", ConsoleColor.Magenta);
+                ConsoleHelper.WriteLineColor($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(((double)metaActionCounter / (double)allMetaActions.Count) * 100, 0)}%]", ConsoleColor.Magenta);
                 int problemCounter = 1;
                 bool allValid = true;
                 foreach (var problem in problems)
                 {
-                    ConsoleHelper.WriteLineColor($"\t\tProblem {problemCounter} out of {problems.Count} [{100 - Math.Round(((double)problemCounter / (double)problems.Count) * 100, 0)}%].", ConsoleColor.DarkMagenta);
+                    ConsoleHelper.WriteLineColor($"\t\tProblem {problemCounter} out of {problems.Count} [{Math.Round(((double)problemCounter / (double)problems.Count) * 100, 0)}%].", ConsoleColor.DarkMagenta);
                     // Compile Meta Actions
                     ConsoleHelper.WriteLineColor($"\t\tCompiling meta action.", ConsoleColor.DarkMagenta);
                     CompileMetaAction(opts.DomainPath, problem.FullName, metaAction.FullName);
