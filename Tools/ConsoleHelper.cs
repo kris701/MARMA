@@ -8,7 +8,7 @@ namespace Tools
 {
     public static class ConsoleHelper
     {
-        public static void WriteLineColor(string text, ConsoleColor? color)
+        public static void WriteLineColor(string text, ConsoleColor? color = null)
         {
             if (color != null)
                 Console.ForegroundColor = (ConsoleColor)color;
@@ -18,7 +18,7 @@ namespace Tools
             Console.ResetColor();
         }
 
-        public static void WriteColor(string text, ConsoleColor? color)
+        public static void WriteColor(string text, ConsoleColor? color = null)
         {
             if (color != null)
                 Console.ForegroundColor = (ConsoleColor)color;

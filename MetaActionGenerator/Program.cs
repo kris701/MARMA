@@ -39,7 +39,7 @@ namespace MetaActionGenerator
 
             RecratePath(opts.OutputPath);
 
-            ConsoleHelper.WriteLineColor("Verifying paths...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Verifying paths...");
             if (!File.Exists(opts.DomainFilePath))
                 throw new FileNotFoundException($"Domain file not found: {opts.DomainFilePath}");
             if (!Directory.Exists(opts.MacroActionPath))
@@ -98,7 +98,7 @@ namespace MetaActionGenerator
                 });
 
 
-            ConsoleHelper.WriteLineColor("Renaming meta actions...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Renaming meta actions...");
             int counter = 1;
             foreach (var metaAction in metaActions)
                 metaAction.Name = $"$meta_{counter++}";
@@ -117,7 +117,7 @@ namespace MetaActionGenerator
 
         private static DomainDecl ParseDomain(string path, IErrorListener listener)
         {
-            ConsoleHelper.WriteLineColor("Parsing domain...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Parsing domain...");
             IParser<INode> parser = new PDDLParser(listener);
             var domain = parser.ParseAs<DomainDecl>(new FileInfo(path));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
@@ -127,7 +127,7 @@ namespace MetaActionGenerator
         private static List<ActionDecl> ParseMacros(string path, IErrorListener listener)
         {
             IParser<INode> parser = new PDDLParser(listener);
-            ConsoleHelper.WriteLineColor("Parsing macros...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Parsing macros...");
             List<ActionDecl> macros = new List<ActionDecl>();
             foreach (var file in new DirectoryInfo(path).GetFiles())
                 if (file.Extension == ".pddl")
@@ -139,7 +139,7 @@ namespace MetaActionGenerator
 
         private static void OutputActions(List<ActionDecl> actions, string outPath, IErrorListener listener)
         {
-            ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Outputting files...");
             ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
             generator.Readable = true;
 
@@ -150,19 +150,19 @@ namespace MetaActionGenerator
 
         private static List<ActionDecl> GenerateCandidates(List<ActionDecl> macros, string info, ICandidateGenerator generator)
         {
-            ConsoleHelper.WriteLineColor(info, ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor(info);
             var items = generator.Generate(macros);
-            ConsoleHelper.WriteLineColor($"Generated {items.Count} candidates.", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor($"Generated {items.Count} candidates.");
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
             return items;
         }
 
         private static List<ActionDecl> RemoveActionsBy(List<ActionDecl> actions, string info, Func<List<ActionDecl>, List<ActionDecl>> by)
         {
-            ConsoleHelper.WriteLineColor(info, ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor(info);
             int preCount = actions.Count;
             var newActions = by(actions);
-            ConsoleHelper.WriteLineColor($"Removed {preCount - newActions.Count} actions out of {preCount} [{100 - Math.Round(((double)newActions.Count / (double)preCount) * 100, 0)}%]", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor($"Removed {preCount - newActions.Count} actions out of {preCount} [{100 - Math.Round(((double)newActions.Count / (double)preCount) * 100, 0)}%]");
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
             return newActions;
         }

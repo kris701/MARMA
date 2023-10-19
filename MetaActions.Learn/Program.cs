@@ -51,19 +51,19 @@ namespace MetaActions.Learn
 
             var problems = CopyProblemsToTemp(opts.Problems);
 
-            ConsoleHelper.WriteLineColor($"Generating macros", ConsoleColor.Gray);
+            ConsoleHelper.WriteLineColor($"Generating macros");
             List<FileInfo> allMacros = GenerateMacros(opts.DomainPath);
-            ConsoleHelper.WriteLineColor($"A total of {allMacros.Count} macros was found.", ConsoleColor.Gray);
+            ConsoleHelper.WriteLineColor($"A total of {allMacros.Count} macros was found.");
             if (allMacros.Count == 0)
                 return;
 
-            ConsoleHelper.WriteLineColor($"Generating meta actions", ConsoleColor.Gray);
+            ConsoleHelper.WriteLineColor($"Generating meta actions");
             List<FileInfo> allMetaActions = GenerateMetaActions(opts.DomainPath);
-            ConsoleHelper.WriteLineColor($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Gray);
+            ConsoleHelper.WriteLineColor($"A total of {allMetaActions.Count} meta actions was found.");
             if (allMetaActions.Count == 0)
                 return;
 
-            ConsoleHelper.WriteLineColor($"Testing meta actions", ConsoleColor.Gray);
+            ConsoleHelper.WriteLineColor($"Testing meta actions");
             int totalValidMetaActions = 0;
             int metaActionCounter = 1;
             foreach (var metaAction in allMetaActions)
@@ -72,13 +72,13 @@ namespace MetaActions.Learn
                 bool allValid = true;
                 foreach (var problem in problems)
                 {
-                    ConsoleHelper.WriteLineColor($"Testing meta action {metaActionCounter} of {allMetaActions.Count} on problem {problemCounter++} out of {problems.Count}.", ConsoleColor.Gray);
+                    ConsoleHelper.WriteLineColor($"Testing meta action {metaActionCounter} of {allMetaActions.Count} on problem {problemCounter++} out of {problems.Count}.");
                     // Compile Meta Actions
-                    ConsoleHelper.WriteLineColor($"Compiling meta action.", ConsoleColor.Gray);
+                    ConsoleHelper.WriteLineColor($"Compiling meta action.");
                     CompileMetaAction(opts.DomainPath, problem.FullName, metaAction.FullName);
 
                     // Verify Meta Actions
-                    ConsoleHelper.WriteLineColor($"Verifying meta action.", ConsoleColor.Gray);
+                    ConsoleHelper.WriteLineColor($"Verifying meta action.");
                     var isMetaActionValid = VerifyMetaAction();
 
                     // Stop if invalid

@@ -36,7 +36,7 @@ namespace StacklebergCompiler
             opts.MetaActionFile = PathHelper.RootPath(opts.MetaActionFile);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
 
-            ConsoleHelper.WriteLineColor("Verifying paths...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Verifying paths...");
             watch.Start();
             if (!Directory.Exists(opts.OutputPath))
                 Directory.CreateDirectory(opts.OutputPath);
@@ -49,7 +49,7 @@ namespace StacklebergCompiler
             watch.Stop();
             ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Parsing files...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Parsing files...");
             watch.Restart();
             IErrorListener listener = new ErrorListener();
             IParser<INode> parser = new PDDLParser(listener);
@@ -60,21 +60,21 @@ namespace StacklebergCompiler
             watch.Stop();
             ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Generating conditional domain/problem...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Generating conditional domain/problem...");
             watch.Restart();
             ConditionalEffectCompiler compiler = new ConditionalEffectCompiler();
             var conditionalDecl = compiler.GenerateConditionalEffects(domain, problem, metaAction);
             watch.Stop();
             ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Generating simplified domain/problem...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Generating simplified domain/problem...");
             watch.Restart();
             ConditionalEffectSimplifyer abstractor = new ConditionalEffectSimplifyer();
             var simplifiedConditionalDec = abstractor.SimplifyConditionalEffects(conditionalDecl.Domain, conditionalDecl.Problem);
             watch.Stop();
             ConsoleHelper.WriteLineColor($"Done! [{watch.ElapsedMilliseconds}ms]", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Outputting files...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Outputting files...");
             watch.Restart();
             ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
             generator.Readable = true;

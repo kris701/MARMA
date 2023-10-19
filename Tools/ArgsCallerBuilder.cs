@@ -35,7 +35,7 @@ namespace Tools
         {
 #if DEBUG
             if (e.Data != null)
-                ConsoleHelper.WriteLineColor(e.Data, ConsoleColor.Gray);
+                ConsoleHelper.WriteLineColor(e.Data);
 #endif
         }
 
