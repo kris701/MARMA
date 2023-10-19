@@ -1,9 +1,7 @@
 ﻿using CommandLine;
 using StackelbergVerifier;
-using System;
 using System.Diagnostics;
 using System.Text;
-using System.Xml.Linq;
 using Tools;
 
 namespace StacklebergVerifier
@@ -40,7 +38,7 @@ namespace StacklebergVerifier
             ConsoleHelper.WriteLineColor("Executing Stackelberg Planner");
             ConsoleHelper.WriteLineColor("(Note, this may take a while)");
             var process = ExecutePlanner(opts);
-            while(!process.HasExited)
+            while (!process.HasExited)
             {
                 ConsoleHelper.WriteColor(".");
                 Thread.Sleep(1000);

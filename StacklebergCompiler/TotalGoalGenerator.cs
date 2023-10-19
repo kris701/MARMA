@@ -1,12 +1,6 @@
 ﻿using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tools;
 
 namespace StacklebergCompiler
 {
@@ -16,7 +10,7 @@ namespace StacklebergCompiler
         public static List<PredicateExp> CopyTotalGoal()
         {
             List<PredicateExp> retList = new List<PredicateExp>();
-            foreach(var pred in TotalGoal)
+            foreach (var pred in TotalGoal)
                 retList.Add(pred.Copy(null));
             return retList;
         }

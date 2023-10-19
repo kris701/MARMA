@@ -1,19 +1,14 @@
-﻿using System;
-using CommandLine;
-using System.Diagnostics;
-using System.Text;
-using PDDLSharp;
-using Tools;
-using PDDLSharp.Parsers;
-using PDDLSharp.ErrorListeners;
+﻿using CommandLine;
 using PDDLSharp.CodeGenerators;
-using PDDLSharp.Analysers;
-using PDDLSharp.Models;
+using PDDLSharp.CodeGenerators.PDDL;
+using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Problem;
+using PDDLSharp.Parsers;
 using PDDLSharp.Parsers.PDDL;
-using PDDLSharp.CodeGenerators.PDDL;
+using System.Diagnostics;
+using Tools;
 
 namespace StacklebergCompiler
 {

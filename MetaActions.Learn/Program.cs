@@ -1,7 +1,4 @@
 ﻿using CommandLine;
-using System;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using Tools;
 
 namespace MetaActions.Learn
@@ -82,8 +79,8 @@ namespace MetaActions.Learn
                     var isMetaActionValid = VerifyMetaAction();
 
                     // Stop if invalid
-                    if (!isMetaActionValid) 
-                    { 
+                    if (!isMetaActionValid)
+                    {
                         ConsoleHelper.WriteLineColor($"Meta action was invalid.", ConsoleColor.Red);
                         allValid = false;
                         break;

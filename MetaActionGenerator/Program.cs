@@ -1,23 +1,16 @@
-﻿using System;
-using CommandLine;
-using System.Diagnostics;
-using System.Text;
-using PDDLSharp;
-using PDDLSharp.Parsers;
-using PDDLSharp.ErrorListeners;
+﻿using CommandLine;
 using PDDLSharp.CodeGenerators;
-using PDDLSharp.Analysers;
-using PDDLSharp.Models;
-using PDDLSharp.Models.PDDL.Domain;
-using PDDLSharp.Models.PDDL.Problem;
-using PDDLSharp.Models.PDDL;
-using Tools;
-using System.Runtime.Intrinsics.Arm;
-using System.Security.Cryptography;
 using PDDLSharp.CodeGenerators.PDDL;
-using PDDLSharp.Parsers.PDDL;
+using PDDLSharp.ErrorListeners;
+using PDDLSharp.Models;
+using PDDLSharp.Models.PDDL;
+using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
+using PDDLSharp.Models.PDDL.Problem;
+using PDDLSharp.Parsers;
+using PDDLSharp.Parsers.PDDL;
 using PDDLSharp.Toolkit.MutexDetector;
+using Tools;
 
 namespace MetaActionGenerator
 {
@@ -58,26 +51,30 @@ namespace MetaActionGenerator
             metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Effect Parameters' meta actions...", new RemoveEffectParameters(domain)));
             metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Additional Effects' meta actions...", new RemoveAdditionalEffects(domain)));
 
-            metaActions = RemoveActionsBy(metaActions, "Sanetizing meta actions...", 
-                (acts) => { 
-                    acts.RemoveAll(x => (x.Effects is IWalkable effWalk && effWalk.Count() == 0)); 
-                    return acts; 
-                } );
+            metaActions = RemoveActionsBy(metaActions, "Sanetizing meta actions...",
+                (acts) =>
+                {
+                    acts.RemoveAll(x => (x.Effects is IWalkable effWalk && effWalk.Count() == 0));
+                    return acts;
+                });
             metaActions = RemoveActionsBy(metaActions, "Removing duplicate meta actions...",
-                (acts) => {
+                (acts) =>
+                {
                     return acts.DistinctBy(x => x.GetHashCode()).ToList();
                 });
             metaActions = RemoveActionsBy(metaActions, "Removing meta actions with equivalent normal action effects...",
-                (acts) => {
+                (acts) =>
+                {
                     acts.RemoveAll(x => domain.Actions.Any(y => y.Effects.GetHashCode() == x.Effects.GetHashCode()));
                     return acts;
                 });
             metaActions = RemoveActionsBy(metaActions, "Removing meta actions with bad mutex groups...",
-                (acts) => {
+                (acts) =>
+                {
                     var newActs = new List<ActionDecl>();
                     IMutexDetectors mutexDetector = new SimpleMutexDetector();
                     var mutexPredicates = mutexDetector.FindMutexes(new PDDLDecl(domain, new ProblemDecl()));
-                    foreach(var action in acts)
+                    foreach (var action in acts)
                     {
                         bool isGood = true;
                         var predicates = action.Effects.FindTypes<PredicateExp>();

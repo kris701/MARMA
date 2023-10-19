@@ -1,11 +1,5 @@
-﻿using PDDLSharp.Models;
-using PDDLSharp.Models.PDDL.Domain;
+﻿using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StacklebergCompiler
 {
@@ -17,13 +11,13 @@ namespace StacklebergCompiler
         {
             _staticPredicates = new List<string>();
 
-            if (domain.Predicates != null) 
+            if (domain.Predicates != null)
             {
                 var allPredicates = domain.FindTypes<PredicateExp>();
                 allPredicates = allPredicates.OrderBy(x => x.Name).ToList();
 
-                if (allPredicates.Count > 0) 
-                { 
+                if (allPredicates.Count > 0)
+                {
                     string currentName = allPredicates[0].Name;
                     bool isStatic = true;
                     foreach (var predicate in allPredicates)
@@ -50,7 +44,7 @@ namespace StacklebergCompiler
 
         private static bool IsInEffects(DomainDecl domain, PredicateExp predicate)
         {
-            foreach(var action in domain.Actions)
+            foreach (var action in domain.Actions)
             {
                 var allPredicates = action.Effects.FindTypes<PredicateExp>();
                 if (allPredicates.Contains(predicate))
