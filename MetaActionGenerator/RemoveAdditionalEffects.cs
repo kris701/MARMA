@@ -9,6 +9,11 @@ namespace MetaActionGenerator
         {
         }
 
+        /// <summary>
+        /// "C_{inv} takes the C_{eff} candidates, and remove other preconditions and effects with the same predicate as the ones removed by the C_{eff} method."
+        /// </summary>
+        /// <param name="actions"></param>
+        /// <returns></returns>
         public override List<ActionDecl> Generate(List<ActionDecl> actions)
         {
             List<ActionDecl> metaActions = new List<ActionDecl>();
@@ -19,16 +24,14 @@ namespace MetaActionGenerator
             {
                 var removedPredicates = GetRemovedPredicates(actions.First(x => x.Name == act.Name), act);
 
+                var newMetaAction = act.Copy(null);
                 foreach (var pred in removedPredicates)
                 {
-                    var newMetaAction = act.Copy(null);
-
                     RemoveMe(newMetaAction.Preconditions, pred.Name);
                     RemoveMe(newMetaAction.Effects, pred.Name);
-
-                    RemoveUnusedParameters(newMetaAction);
-                    metaActions.Add(newMetaAction);
                 }
+                RemoveUnusedParameters(newMetaAction);
+                metaActions.Add(newMetaAction);
             }
 
             return metaActions;

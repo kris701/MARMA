@@ -62,12 +62,6 @@ namespace MetaActionGenerator
                 {
                     return acts.DistinctBy(x => x.GetHashCode()).ToList();
                 });
-            metaActions = RemoveActionsBy(metaActions, "Removing meta actions with equivalent normal action effects...",
-                (acts) =>
-                {
-                    acts.RemoveAll(x => domain.Actions.Any(y => y.Effects.GetHashCode() == x.Effects.GetHashCode()));
-                    return acts;
-                });
             metaActions = RemoveActionsBy(metaActions, "Removing meta actions with bad mutex groups...",
                 (acts) =>
                 {

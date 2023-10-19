@@ -9,6 +9,11 @@ namespace MetaActionGenerator
         {
         }
 
+        /// <summary>
+        /// "C_{pre} removes parameters that are absent in the effect of the macro"
+        /// </summary>
+        /// <param name="actions"></param>
+        /// <returns></returns>
         public override List<ActionDecl> Generate(List<ActionDecl> actions)
         {
             List<ActionDecl> metaActions = new List<ActionDecl>();
