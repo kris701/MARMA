@@ -4,6 +4,14 @@ namespace Tools
 {
     public static class ArgsCallerBuilder
     {
+        public static ArgsCaller GetGenericRunner(string executable)
+        {
+            ArgsCaller runner = new ArgsCaller(executable);
+            runner.StdOut += PrintStdOut;
+            runner.StdErr += PrintStdErr;
+            return runner;
+        }
+
         public static ArgsCaller GetDotnetRunner(string project)
         {
             ArgsCaller runner = new ArgsCaller("dotnet");
