@@ -1,16 +1,8 @@
-﻿using PDDLSharp.Contextualisers;
-using PDDLSharp.Models;
-using PDDLSharp.Models.AST;
+﻿using PDDLSharp.Models;
 using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tools;
 
 namespace StacklebergCompiler
 {
@@ -134,7 +126,7 @@ namespace StacklebergCompiler
         /// <param name="domain"></param>
         private void InsertTurnPredicateIntoActionsPreconditions(DomainDecl domain)
         {
-            foreach(var action in domain.Actions)
+            foreach (var action in domain.Actions)
             {
                 if (action.Name.StartsWith(ReservedNames.LeaderActionPrefix))
                 {
@@ -316,7 +308,7 @@ namespace StacklebergCompiler
         private void SplitActionsIntoLeaderFollowerVariants(DomainDecl domain)
         {
             List<ActionDecl> newActions = new List<ActionDecl>();
-            foreach(var action in domain.Actions)
+            foreach (var action in domain.Actions)
             {
                 var leaderAct = action.Copy(null);
                 leaderAct.Name = $"{ReservedNames.LeaderActionPrefix}{leaderAct.Name}";

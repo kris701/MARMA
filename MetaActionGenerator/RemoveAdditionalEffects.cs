@@ -1,11 +1,5 @@
-﻿using PDDLSharp.Models;
-using PDDLSharp.Models.PDDL.Domain;
+﻿using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MetaActionGenerator
 {
@@ -21,11 +15,11 @@ namespace MetaActionGenerator
             ICandidateGenerator removeEffect = new RemoveEffectParameters(Declaration);
             var removed = removeEffect.Generate(actions);
 
-            foreach(var act in removed)
+            foreach (var act in removed)
             {
                 var removedPredicates = GetRemovedPredicates(actions.First(x => x.Name == act.Name), act);
 
-                foreach(var pred in removedPredicates)
+                foreach (var pred in removedPredicates)
                 {
                     var newMetaAction = act.Copy(null);
 

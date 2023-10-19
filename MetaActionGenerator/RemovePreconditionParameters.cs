@@ -1,12 +1,5 @@
-﻿using PDDLSharp.Models;
-using PDDLSharp.Models.PDDL;
-using PDDLSharp.Models.PDDL.Domain;
+﻿using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MetaActionGenerator
 {
@@ -20,16 +13,16 @@ namespace MetaActionGenerator
         {
             List<ActionDecl> metaActions = new List<ActionDecl>();
 
-            foreach(var act in actions)
+            foreach (var act in actions)
             {
                 List<NameExp> removeable = new List<NameExp>();
-                foreach(var arg in act.Parameters.Values)
+                foreach (var arg in act.Parameters.Values)
                 {
                     if (act.Effects.FindNames(arg.Name).Count == 0)
                         removeable.Add(arg);
                 }
 
-                foreach(var remove in removeable)
+                foreach (var remove in removeable)
                 {
                     var newMetaAction = act.Copy(null);
 

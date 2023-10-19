@@ -1,11 +1,4 @@
-﻿using PDDLSharp.Models;
-using PDDLSharp.Models.PDDL.Domain;
-using PDDLSharp.Models.PDDL.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PDDLSharp.Models.PDDL.Domain;
 
 namespace MetaActionGenerator
 {
@@ -21,7 +14,7 @@ namespace MetaActionGenerator
 
             foreach (var act in actions)
             {
-                foreach(var arg in act.Parameters.Values)
+                foreach (var arg in act.Parameters.Values)
                 {
                     if (act.Effects.FindNames(arg.Name).Count > 0)
                     {

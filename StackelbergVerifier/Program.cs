@@ -1,9 +1,7 @@
 ﻿using CommandLine;
 using StackelbergVerifier;
-using System;
 using System.Diagnostics;
 using System.Text;
-using System.Xml.Linq;
 using Tools;
 
 namespace StacklebergVerifier
@@ -26,7 +24,7 @@ namespace StacklebergVerifier
             opts.ProblemFilePath = PathHelper.RootPath(opts.ProblemFilePath);
             opts.StackelbergPath = PathHelper.RootPath(opts.StackelbergPath);
 
-            ConsoleHelper.WriteLineColor("Verifying paths...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Verifying paths...");
             if (!Directory.Exists(opts.OutputPath))
                 Directory.CreateDirectory(opts.OutputPath);
             if (!File.Exists(opts.DomainFilePath))
@@ -37,18 +35,18 @@ namespace StacklebergVerifier
                 throw new FileNotFoundException($"Stackelberg planner file not found: {opts.StackelbergPath}");
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Executing Stackelberg Planner", ConsoleColor.DarkGray);
-            ConsoleHelper.WriteLineColor("(Note, this may take a while)", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Executing Stackelberg Planner");
+            ConsoleHelper.WriteLineColor("(Note, this may take a while)");
             var process = ExecutePlanner(opts);
-            while(!process.HasExited)
+            while (!process.HasExited)
             {
-                ConsoleHelper.WriteColor(".", ConsoleColor.DarkGray);
+                ConsoleHelper.WriteColor(".");
                 Thread.Sleep(1000);
             }
             Console.WriteLine();
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Checking Frontier...", ConsoleColor.DarkGray);
+            ConsoleHelper.WriteLineColor("Checking Frontier...");
             if (IsFrontierValid(Path.Combine(opts.OutputPath, "pareto_frontier.json")))
             {
                 _returnCode = 0;

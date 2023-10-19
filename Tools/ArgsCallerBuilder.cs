@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace Tools
 {
     public static class ArgsCallerBuilder
     {
+        public static ArgsCaller GetGenericRunner(string executable)
+        {
+            ArgsCaller runner = new ArgsCaller(executable);
+            runner.StdOut += PrintStdOut;
+            runner.StdErr += PrintStdErr;
+            return runner;
+        }
+
         public static ArgsCaller GetDotnetRunner(string project)
         {
             ArgsCaller runner = new ArgsCaller("dotnet");
@@ -35,7 +38,7 @@ namespace Tools
         {
 #if DEBUG
             if (e.Data != null)
-                ConsoleHelper.WriteLineColor(e.Data, ConsoleColor.Gray);
+                ConsoleHelper.WriteLineColor(e.Data);
 #endif
         }
 

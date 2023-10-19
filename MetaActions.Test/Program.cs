@@ -4,10 +4,8 @@ using PDDLSharp.CodeGenerators.PDDL;
 using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
-using PDDLSharp.Models.PDDL.Problem;
 using PDDLSharp.Parsers;
 using PDDLSharp.Parsers.PDDL;
-using System;
 using System.Diagnostics;
 using Tools;
 
@@ -24,6 +22,8 @@ namespace MetaActions.Test
 
         private static void Run(Options opts)
         {
+            ConsoleHelper.WriteLineColor($"Starting meta action testing", ConsoleColor.Blue);
+
             opts.DomainPath = PathHelper.RootPath(opts.DomainPath);
             opts.MetaActionsPath = PathHelper.RootPath(opts.MetaActionsPath);
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
@@ -40,19 +40,29 @@ namespace MetaActions.Test
             RecratePath(opts.TempPath);
             RecratePath(opts.OutputPath);
 
+            ConsoleHelper.WriteLineColor($"There is a total of {opts.TestingProblems.Count()} problems to test with.", ConsoleColor.Blue);
+
+            int count = 1;
+            float totalNormalTime = 0;
+            float totalMetaTime = 0;
             foreach (var problem in opts.TestingProblems)
             {
+                ConsoleHelper.WriteLineColor($"\tTesting problem {count++} out of {opts.TestingProblems.Count()}", ConsoleColor.Magenta);
                 var rootedProblem = PathHelper.RootPath(problem);
                 var name = new FileInfo(problem).Name.Replace(".pddl", "");
                 var outPath = Path.Combine(opts.OutputPath, name);
                 var tempPath = Path.Combine(opts.TempPath, name);
                 RecratePath(outPath);
                 RecratePath(tempPath);
+                ConsoleHelper.WriteLineColor($"\tExecuting normal problem", ConsoleColor.Magenta);
                 var normalTime = ExecuteAsNormal(opts.DomainPath, rootedProblem, Path.Combine(outPath, "normalPlan.plan"), Path.Combine(tempPath, "normalOutput.sas"));
+                ConsoleHelper.WriteLineColor($"\tExecuting meta problem", ConsoleColor.Magenta);
                 var metaTime = ExecuteAsMeta(domainDecl.Copy(), opts.DomainPath, rootedProblem, metaActions, tempPath, outPath, codeGenerator);
-                Console.WriteLine($"Normal took: {normalTime}ms");
-                Console.WriteLine($"Meta took:   {metaTime}ms");
+                PrintResult(normalTime, metaTime);
+                totalNormalTime += normalTime;
+                totalMetaTime += metaTime;
             }
+            ConsoleHelper.WriteLineColor($"Testing finished!", ConsoleColor.Green);
         }
 
         private static void RecratePath(string path)
@@ -67,7 +77,7 @@ namespace MetaActions.Test
             Stopwatch timer = new Stopwatch();
             timer.Start();
 
-            ArgsCaller fdCaller = new ArgsCaller("python3");
+            ArgsCaller fdCaller = ArgsCallerBuilder.GetGenericRunner("python3");
             fdCaller.Arguments.Add(PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"), "");
             fdCaller.Arguments.Add("--alias", "lama-first");
             fdCaller.Arguments.Add("--plan-file", planName);
@@ -104,6 +114,22 @@ namespace MetaActions.Test
 
             timer.Stop();
             return timer.ElapsedMilliseconds;
+        }
+
+        private static void PrintResult(float normalTime, float metaTime)
+        {
+            ConsoleHelper.WriteColor($"\tNormal took: ", ConsoleColor.Magenta);
+            if (normalTime < metaTime)
+                ConsoleHelper.WriteColor($"{normalTime}", ConsoleColor.Green);
+            else
+                ConsoleHelper.WriteColor($"{normalTime}", ConsoleColor.Red);
+            ConsoleHelper.WriteLineColor($"ms", ConsoleColor.Magenta);
+            ConsoleHelper.WriteColor($"\tMeta took:   ", ConsoleColor.Magenta);
+            if (normalTime < metaTime)
+                ConsoleHelper.WriteColor($"{metaTime}", ConsoleColor.Red);
+            else
+                ConsoleHelper.WriteColor($"{metaTime}", ConsoleColor.Green);
+            ConsoleHelper.WriteLineColor($"ms", ConsoleColor.Magenta);
         }
     }
 }
