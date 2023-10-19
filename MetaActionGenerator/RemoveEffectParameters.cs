@@ -8,6 +8,11 @@ namespace MetaActionGenerator
         {
         }
 
+        /// <summary>
+        /// "C_{eff}, eliminates a parameter appearing in the effects, removing any precondition and/or effect that depends on it."
+        /// </summary>
+        /// <param name="actions"></param>
+        /// <returns></returns>
         public override List<ActionDecl> Generate(List<ActionDecl> actions)
         {
             List<ActionDecl> metaActions = new List<ActionDecl>();
