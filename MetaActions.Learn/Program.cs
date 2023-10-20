@@ -23,8 +23,6 @@ namespace MetaActions.Learn
 
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor($"Starting to learn meta actions...", ConsoleColor.Blue);
-
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
 
@@ -32,10 +30,13 @@ namespace MetaActions.Learn
             PathHelper.RecratePath(opts.OutputPath);
 
             var domains = PathHelper.ResolveWildcards(opts.Domains.ToList());
+            domains.RemoveAll(x => x.Directory.Name == "transport");
             var trainProblems = PathHelper.ResolveWildcards(opts.TrainProblems.ToList());
             var testProblems = PathHelper.ResolveWildcards(opts.TestProblems.ToList());
 
-            List<Task> runTasks = new List<Task>();
+            ConsoleHelper.WriteLineColor($"Starting to learn meta actions of {domains.Count} domains...", ConsoleColor.Blue);
+
+            List<Task<string>> runTasks = new List<Task<string>>();
             CancellationToken token = new CancellationToken();
 
             foreach(var domain in domains)
@@ -49,16 +50,32 @@ namespace MetaActions.Learn
                 var tempPath = Path.Combine(opts.TempPath, domainName);
                 var outPath = Path.Combine(opts.OutputPath, domainName);
 
-                runTasks.Add(new Task(() => new LearningTask().LearnDomain(tempPath, outPath, domain, domainTrainProblems, domainTestProblems), token));
+                runTasks.Add(new Task<string>(() => new LearningTask().LearnDomain(tempPath, outPath, domain, domainTrainProblems, domainTestProblems), token));
             }
 
-            Parallel.ForEach(runTasks, task => task.Start());
-            Task.WaitAll(runTasks.ToArray());
+            try
+            {
+                Parallel.ForEach(runTasks, task => task.Start());
+                int preCount = runTasks.Count;
+                while (runTasks.Count > 0)
+                {
+                    var task = Task.WhenAny(runTasks).Result;
+                    runTasks.Remove(task);
+                    ConsoleHelper.WriteLineColor($"Training for domain {task.Result} complete! [{100 - (100 * ((double)runTasks.Count / (double)preCount))}%]", ConsoleColor.Green);
+                }
+            }
+            catch (Exception ex)
+            {
+                ConsoleHelper.WriteLineColor($"Something failed in the learning!", ConsoleColor.Red);
+                ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
+                return;
+            }
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Compressing testing dataset...", ConsoleColor.Blue);
 
-            ZipFile.CreateFromDirectory(opts.OutputPath, Path.Combine(opts.OutputPath, "testing-set.zip"));
+            ZipFile.CreateFromDirectory(opts.OutputPath, Path.Combine(opts.TempPath, "testing-set.zip"));
+            File.Move(Path.Combine(opts.TempPath, "testing-set.zip"), Path.Combine(opts.OutputPath, "testing-set.zip"));
 
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
         }

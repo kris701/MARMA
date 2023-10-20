@@ -20,6 +20,13 @@ namespace StacklebergCompiler
             {
                 List<PredicateExp> newGoals = new List<PredicateExp>();
                 var objDict = DictionaryObjectsOfType(problem.Objects.Objs);
+                if (!objDict.ContainsKey("object"))
+                    objDict.Add("object", new List<string>());
+
+                if (domain.Types != null)
+                    foreach (var type in domain.Types.Types)
+                        if (!objDict.ContainsKey(type.Name))
+                            objDict.Add(type.Name, new List<string>());
 
                 foreach (var predicate in domain.Predicates.Predicates)
                     newGoals.AddRange(GeneratePossibles(predicate, 0, objDict));

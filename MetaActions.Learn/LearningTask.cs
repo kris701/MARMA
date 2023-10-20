@@ -19,20 +19,28 @@ namespace MetaActions.Learn
         private string _tempProblemPath = "problems";
         private string _tempMacroPath = "macros";
         private string _tempMacroTempPath = "macrosTemp";
+        private string _tempCSMPath = "CSMsTemp";
         private string _tempMetaActionPath = "metaActions";
         private string _tempCompiledPath = "compiled";
         private string _tempVerificationPath = "verification";
 
-        public bool DebugMode { get; set; } = false;
+        private string _domainName = "";
 
-        public void LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems)
+        public string LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems)
         {
+            if (domain.Directory == null)
+                throw new FileNotFoundException("Domain does not have a parent directory!");
+            _domainName = domain.Directory.Name;
+
+            Print($"Training started", ConsoleColor.Blue);
+
             PathHelper.RecratePath(tempPath);
             PathHelper.RecratePath(outPath);
 
             _tempProblemPath = Path.Combine(tempPath, _tempProblemPath);
             _tempMacroPath = Path.Combine(tempPath, _tempMacroPath);
             _tempMacroTempPath = Path.Combine(tempPath, _tempMacroTempPath);
+            _tempCSMPath = Path.Combine(tempPath, _tempCSMPath);
             _tempMetaActionPath = Path.Combine(tempPath, _tempMetaActionPath);
             _tempCompiledPath = Path.Combine(tempPath, _tempCompiledPath);
             _tempVerificationPath = Path.Combine(tempPath, _tempVerificationPath);
@@ -40,6 +48,7 @@ namespace MetaActions.Learn
             PathHelper.RecratePath(_tempProblemPath);
             PathHelper.RecratePath(_tempMacroPath);
             PathHelper.RecratePath(_tempMacroTempPath);
+            PathHelper.RecratePath(_tempCSMPath);
             PathHelper.RecratePath(_tempMetaActionPath);
             PathHelper.RecratePath(_tempCompiledPath);
             PathHelper.RecratePath(_tempVerificationPath);
@@ -48,19 +57,22 @@ namespace MetaActions.Learn
 
             Print($"There is a total of {problems.Count} problems to train with.", ConsoleColor.Blue);
 
-            Print($"Generating macros", ConsoleColor.Blue);
+            Print($"Generating macros", ConsoleColor.Blue, false);
+            // Make a temp copy of CSMs, since it cant handle multiple runs at the same time.
+            CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/src"), Path.Combine(_tempCSMPath, "src"));
+            CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/scripts"), Path.Combine(_tempCSMPath, "scripts"));
             List<FileInfo> allMacros = GenerateMacros(domain.FullName);
-            Print($"A total of {allMacros.Count} macros was found.", ConsoleColor.Blue);
+            Print($"A total of {allMacros.Count} macros was found.", ConsoleColor.Blue, false);
             if (allMacros.Count == 0)
-                return;
+                return _domainName;
 
-            Print($"Generating meta actions", ConsoleColor.Blue);
+            Print($"Generating meta actions", ConsoleColor.Blue, false);
             List<FileInfo> allMetaActions = GenerateMetaActions(domain.FullName);
-            Print($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Blue);
+            Print($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Blue, false);
             if (allMetaActions.Count == 0)
-                return;
+                return _domainName;
 
-            Print($"Testing meta actions", ConsoleColor.Blue);
+            Print($"Validating meta actions", ConsoleColor.Blue, false);
             List<FileInfo> validMetaActions = new List<FileInfo>();
             int metaActionCounter = 1;
             foreach (var metaAction in allMetaActions)
@@ -95,7 +107,7 @@ namespace MetaActions.Learn
                 }
                 metaActionCounter++;
             }
-            Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green);
+            Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green, false);
             Print($"Generating meta domain...", ConsoleColor.Blue);
 
             GenerateMetaDomain(domain, validMetaActions, outPath);
@@ -107,20 +119,44 @@ namespace MetaActions.Learn
             CopyTestingProblems(testProblems, outPath);
 
             Print($"Done!", ConsoleColor.Green);
+
+            return _domainName;
         }
 
-        private void Print(string text, ConsoleColor color)
+        private void Print(string text, ConsoleColor color, bool debugOnly = true)
         {
-            if (DebugMode)
-                Print(text, color);
+# if DEBUG
+            ConsoleHelper.WriteLineColor($"\t[{_domainName}] {text}", color);
+# endif
+            if (!debugOnly)
+            {
+#if !DEBUG
+            ConsoleHelper.WriteLineColor($"\t[{_domainName}] {text}", color);
+#endif
+            }
+        }
+
+        private static void CopyFilesRecursively(string sourcePath, string targetPath)
+        {
+            PathHelper.RecratePath(targetPath);
+
+            //Now Create all of the directories
+            foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
+            {
+                Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
+            }
+
+            //Copy all the files & Replaces any files with the same name
+            foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
+            {
+                File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
+            }
         }
 
         private void CopyTestingProblems(List<FileInfo> testingProblems, string outFolder)
         {
             foreach(var problem in testingProblems)
-            {
                 File.Copy(problem.FullName, Path.Combine(outFolder, problem.Name));
-            }
         }
 
         private void GenerateMetaDomain(FileInfo domainFile, List<FileInfo> metaActionFiles, string outFolder)
@@ -159,7 +195,7 @@ namespace MetaActions.Learn
             macroGenerator.Arguments.Add("-p", _tempProblemPath);
             macroGenerator.Arguments.Add("-o", _tempMacroPath);
             macroGenerator.Arguments.Add("-t", _tempMacroTempPath);
-            macroGenerator.Arguments.Add("-c", PathHelper.RootPath("Dependencies/CSMs"));
+            macroGenerator.Arguments.Add("-c", _tempCSMPath);
             macroGenerator.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
             if (macroGenerator.Run() != 0)
                 throw new Exception("Macro generation failed!");
