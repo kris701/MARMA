@@ -6,8 +6,8 @@
     "WSL": {
       "commandName": "WSL",
       "distributionName": "",
-      //"commandLineArgs": "StacklebergCompiler/bin/Debug/net7.0/StacklebergCompiler.dll --domain StacklebergCompiler/bin/Debug/net7.0/TestData/satellite-domain.pddl --problem StacklebergCompiler/bin/Debug/net7.0/TestData/satellite-prob1.pddl --meta-action StacklebergCompiler/bin/Debug/net7.0/TestData/satellite-metaaction.pddl --output StackelbergDomains/satellite",
-      "commandLineArgs": "StacklebergCompiler/bin/Debug/net7.0/StacklebergCompiler.dll --domain StacklebergCompiler/bin/Debug/net7.0/TestData/gripper-domain.pddl --problem StacklebergCompiler/bin/Debug/net7.0/TestData/gripper-prob1.pddl --meta-action StacklebergCompiler/bin/Debug/net7.0/TestData/gripper-metaaction.pddl --output StackelbergDomains/gripper",
+      "commandLineArgs": "StacklebergCompiler/bin/Debug/net7.0/StacklebergCompiler.dll --domain StacklebergCompiler/bin/Debug/net7.0/TestData/satellite-domain.pddl --problem StacklebergCompiler/bin/Debug/net7.0/TestData/satellite-prob1.pddl --meta-action StacklebergCompiler/bin/Debug/net7.0/TestData/satellite-metaaction.pddl --output StackelbergDomains/satellite",
+      //"commandLineArgs": "StacklebergCompiler/bin/Debug/net7.0/StacklebergCompiler.dll --domain StacklebergCompiler/bin/Debug/net7.0/TestData/gripper-domain.pddl --problem StacklebergCompiler/bin/Debug/net7.0/TestData/gripper-prob1.pddl --meta-action StacklebergCompiler/bin/Debug/net7.0/TestData/gripper-metaaction.pddl --output StackelbergDomains/gripper",
       "workingDirectory": "StacklebergCompiler/../"
     }
   }

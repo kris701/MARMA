@@ -3,6 +3,7 @@ using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
+using System;
 
 namespace StacklebergCompiler
 {
@@ -332,7 +333,8 @@ namespace StacklebergCompiler
         {
             var copyPredicates = new List<PredicateExp>();
             foreach (var pred in predicates)
-                copyPredicates.Add(pred.Copy(null));
+                if (!StaticPredicateDetector.StaticPredicates.Contains(pred.Name))
+                    copyPredicates.Add(pred.Copy());
             PrefixPredicatesInNode(copyPredicates, prefix);
             return copyPredicates;
         }

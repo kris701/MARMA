@@ -18,10 +18,8 @@ namespace MetaActionGenerator
             {
                 List<NameExp> removeable = new List<NameExp>();
                 foreach (var arg in act.Parameters.Values)
-                {
                     if (act.Effects.FindNames(arg.Name).Count == 0)
                         removeable.Add(arg);
-                }
 
                 foreach (var remove in removeable)
                 {
