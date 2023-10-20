@@ -13,13 +13,15 @@ namespace MetaActions.Test
 
         public double SearchTime { get; set; }
         public double TotalTime { get; set; }
+        public bool WasSolutionFound { get; set; }
 
-        public RunReport(string domain, string problem, double searchTime, double totalTime)
+        public RunReport(string domain, string problem, double searchTime, double totalTime, bool wasSolutionFound)
         {
             Domain = domain;
             Problem = problem;
             SearchTime = searchTime;
             TotalTime = totalTime;
+            WasSolutionFound = wasSolutionFound;
         }
     }
 }

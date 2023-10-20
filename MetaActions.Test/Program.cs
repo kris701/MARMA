@@ -6,8 +6,10 @@ using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Parsers;
 using PDDLSharp.Parsers.PDDL;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Text;
 using Tools;
 
 namespace MetaActions.Test
@@ -28,12 +30,14 @@ namespace MetaActions.Test
             if (opts.Rebuild)
             {
                 ConsoleHelper.WriteLineColor($"Rebuilding toolchain...", ConsoleColor.Blue);
-                ArgsCallerBuilder.GetRustBuilder("reconstruction").Run();
+                if (ArgsCallerBuilder.GetRustBuilder("reconstruction").Run() != 0)
+                    throw new Exception("Reconstruction build failed!");
                 ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
             }
 
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
+            opts.OutputPath = Path.Combine(opts.OutputPath, DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss"));
             opts.DataFile = PathHelper.RootPath(opts.DataFile);
 
             //PathHelper.RecratePath(opts.TempPath);
@@ -44,10 +48,25 @@ namespace MetaActions.Test
             //ZipFile.ExtractToDirectory(opts.DataFile, _tempDataPath);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor($"Testing suite started", ConsoleColor.Blue);
+            ConsoleHelper.WriteLineColor($"Initializing tests...", ConsoleColor.Blue);
+            var runTasks = GenerateTasks(opts);
+            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
+            ConsoleHelper.WriteLineColor($"Executing a total of {runTasks.Count} tasks...", ConsoleColor.Blue);
+            var results = ExecuteTasks(runTasks, opts.MultiTask);
+            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor($"Generating final run report", ConsoleColor.Blue);
+            GenerateReport(results, opts.OutputPath);
+            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor($"Testing suite finished!", ConsoleColor.Green);
+        }
+
+        private static List<Task<RunReport>> GenerateTasks(Options opts)
+        {
             List<Task<RunReport>> runTasks = new List<Task<RunReport>>();
-            foreach(var domain in new DirectoryInfo(_tempDataPath).GetDirectories())
+            foreach (var domain in new DirectoryInfo(_tempDataPath).GetDirectories())
             {
                 var domainName = domain.Name;
 
@@ -63,45 +82,97 @@ namespace MetaActions.Test
 
                 foreach (var problem in allProblems)
                 {
-                    var problemName = problem.Name.Replace(".pddl","");
-                    runTasks.Add(new Task<RunReport>(() => new TestingTask().RunTest(
-                        normalDomain.FullName,
-                        "",
-                        problem.FullName,
+                    var problemName = problem.Name.Replace(".pddl", "");
+                    runTasks.Add(new Task<RunReport>(() => new TestingTask(opts.TimeLimit, opts.Alias, opts.ReconstructionMethod).RunTest(
+                        normalDomain,
+                        null,
+                        problem,
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}.plan"),
                         "",
                         Path.Combine(opts.TempPath, domainName, $"{problemName}.sas")
                         )));
-                    runTasks.Add(new Task<RunReport>(() => new TestingTask().RunTest(
-                        normalDomain.FullName,
-                        metaDomain.FullName,
-                        problem.FullName,
-                        Path.Combine(opts.OutputPath, domainName, $"reconstructed_{problemName}.plan"),
-                        Path.Combine(opts.OutputPath, domainName, $"meta_{problemName}.plan"),
+                    runTasks.Add(new Task<RunReport>(() => new TestingTask(opts.TimeLimit, opts.Alias, opts.ReconstructionMethod).RunTest(
+                        normalDomain,
+                        metaDomain,
+                        problem,
+                        Path.Combine(opts.OutputPath, domainName, $"{problemName}_reconstructed.plan"),
+                        Path.Combine(opts.OutputPath, domainName, $"{problemName}_meta.plan"),
                         Path.Combine(opts.TempPath, domainName, $"{problemName}.sas")
                         )));
                 }
             }
 
+            Shuffle(runTasks);
+
+            return runTasks;
+        }
+
+        private static Random rng = new Random();
+        public static void Shuffle<T>(IList<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
+
+        private static List<RunReport> ExecuteTasks(List<Task<RunReport>> runTasks, bool multitask)
+        {
+            List<RunReport> results = new List<RunReport>();
             try
             {
-                Parallel.ForEach(runTasks, task => task.Start());
                 int preCount = runTasks.Count;
-                while (runTasks.Count > 0)
+                if (multitask)
                 {
-                    var task = Task.WhenAny(runTasks).Result;
-                    runTasks.Remove(task);
-                    ConsoleHelper.WriteLineColor($"Training for problem {task.Result.Problem} complete! [{Math.Round(100 - (100 * ((double)runTasks.Count / (double)preCount)), 0)}%]", ConsoleColor.Green);
+                    Parallel.ForEach(runTasks, task => task.Start());
+                    while (runTasks.Count > 0)
+                    {
+                        var task = Task.WhenAny(runTasks).Result;
+                        runTasks.Remove(task);
+                        var result = task.Result;
+                        results.Add(result);
+                        ConsoleHelper.WriteLineColor($"Training for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 - (100 * ((double)runTasks.Count / (double)preCount)), 0)}%]", ConsoleColor.Green);
+                    }
+                }
+                else
+                {
+                    int counter = 1;
+                    foreach (var task in runTasks)
+                    {
+                        task.Start();
+                        task.Wait();
+                        var result = task.Result;
+                        results.Add(result);
+                        ConsoleHelper.WriteLineColor($"Training for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 ConsoleHelper.WriteLineColor($"Something failed in the testing!", ConsoleColor.Red);
                 ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
-                return;
+            }
+            return results;
+        }
+
+        private static void GenerateReport(List<RunReport> results, string outPath)
+        {
+            var csv = new StringBuilder();
+            csv.AppendLine("isMeta,domain,problem,searchTime,totalTime,wasSolutionFound");
+            foreach (var result in results)
+            {
+                if (result.Domain.StartsWith("(meta)"))
+                    csv.AppendLine($"true,{result.Domain.Replace("(meta) ","")},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}");
+                else
+                    csv.AppendLine($"false,{result.Domain},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}");
             }
 
-            ConsoleHelper.WriteLineColor($"Testing suite finished!", ConsoleColor.Green);
+            File.WriteAllText(Path.Combine(outPath, "results.csv"), csv.ToString());
         }
     }
 }
