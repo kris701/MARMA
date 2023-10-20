@@ -8,7 +8,7 @@ namespace MetaActions.Learn
         public IEnumerable<string> Domains { get; set; } = new List<string>();
         [Option("train-problems", Required = true, HelpText = "Problems to train from. You can use wildcards (*) for full directory names, and partial file names.")]
         public IEnumerable<string> TrainProblems { get; set; } = new List<string>();
-        [Option("test-problems", Required = true, HelpText = "Problems to test on later.")]
+        [Option("test-problems", Required = true, HelpText = "Problems to test on later. You can use wildcards (*) for full directory names, and partial file names.\")]")]
         public IEnumerable<string> TestProblems { get; set; } = new List<string>();
         [Option("tempDir", Required = false, HelpText = "Path where all the intermediate files can be saved.", Default = "temp/train")]
         public string TempPath { get; set; } = "temp/train";
