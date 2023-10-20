@@ -25,7 +25,7 @@ namespace MetaActions.Learn
 
         public bool DebugMode { get; set; } = false;
 
-        public void LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> sourceProblems)
+        public void LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems)
         {
             RecratePath(tempPath);
             RecratePath(outPath);
@@ -44,7 +44,7 @@ namespace MetaActions.Learn
             RecratePath(_tempCompiledPath);
             RecratePath(_tempVerificationPath);
 
-            var problems = CopyProblemsToTemp(sourceProblems);
+            var problems = CopyProblemsToTemp(trainProblems);
 
             Print($"There is a total of {problems.Count} problems to train with.", ConsoleColor.Blue);
 
@@ -125,6 +125,8 @@ namespace MetaActions.Learn
             ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
 
             var domain = parser.ParseAs<DomainDecl>(domainFile);
+            generator.Generate(domain, Path.Combine(outFolder, "domain.pddl"));
+
             foreach (var file in metaActionFiles)
             {
                 var metaAction = parser.ParseAs<ActionDecl>(file);

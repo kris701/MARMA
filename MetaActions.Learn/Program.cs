@@ -28,7 +28,8 @@ namespace MetaActions.Learn
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
 
             var domains = PathHelper.ResolveWildcards(opts.Domains.ToList());
-            var problems = PathHelper.ResolveWildcards(opts.Problems.ToList());
+            var trainProblems = PathHelper.ResolveWildcards(opts.TrainProblems.ToList());
+            var testProblems = PathHelper.ResolveWildcards(opts.TestProblems.ToList());
 
             List<Task> runTasks = new List<Task>();
             CancellationToken token = new CancellationToken();
@@ -38,12 +39,13 @@ namespace MetaActions.Learn
                 if (domain.Directory == null)
                     throw new ArgumentNullException();
                 var domainName = domain.Directory.Name;
-                var domainProblems = problems.Where(x => x.FullName.Contains(domainName)).ToList();
+                var domainTrainProblems = trainProblems.Where(x => x.FullName.Contains(domainName)).ToList();
+                var domainTestProblems = testProblems.Where(x => x.FullName.Contains(domainName)).ToList();
 
                 var tempPath = Path.Combine(opts.TempPath, domainName);
                 var outPath = Path.Combine(opts.OutputPath, domainName);
 
-                runTasks.Add(new Task(() => new LearningTask().LearnDomain(tempPath, outPath, domain, domainProblems), token));
+                runTasks.Add(new Task(() => new LearningTask().LearnDomain(tempPath, outPath, domain, domainTrainProblems, domainTestProblems), token));
             }
 
             Parallel.ForEach(runTasks, task => task.Start());
