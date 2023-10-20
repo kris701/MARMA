@@ -27,8 +27,8 @@ namespace MetaActions.Learn
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
 
-            var domains = ResolveWildcards(opts.Domains.ToList());
-            var problems = ResolveWildcards(opts.Problems.ToList());
+            var domains = PathHelper.ResolveWildcards(opts.Domains.ToList());
+            var problems = PathHelper.ResolveWildcards(opts.Problems.ToList());
 
             List<Task> runTasks = new List<Task>();
             CancellationToken token = new CancellationToken();
@@ -49,51 +49,6 @@ namespace MetaActions.Learn
             Parallel.ForEach(runTasks, task => task.Start());
             Task.WaitAll(runTasks.ToArray());
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
-        }
-
-        private static List<FileInfo> ResolveWildcards(List<string> items)
-        {
-            List<FileInfo> returnFiles = new List<FileInfo>();
-
-            foreach(var item in items)
-            {
-                if (item.Contains('*'))
-                {
-                    List<string> subItems = new List<string>();
-                    var currentWildcard = item.IndexOf('*');
-                    var preChar = item.LastIndexOf('/', currentWildcard - 1);
-                    var postChar = item.IndexOf('/', currentWildcard);
-                    if (preChar == currentWildcard - 1 && postChar == currentWildcard + 1)
-                    {
-                        var route = item.Substring(0, currentWildcard);
-                        var remaining = item.Substring(currentWildcard + 2);
-                        foreach (var option in new DirectoryInfo(route).GetDirectories())
-                            subItems.Add(Path.Combine(route, option.Name, remaining));
-
-                        returnFiles.AddRange(ResolveWildcards(subItems));
-                    }
-                    else if (postChar == -1)
-                    {
-                        var route = item.Substring(0, preChar);
-                        if (Directory.Exists(route))
-                        {
-                            var remaining = item.Substring(preChar + 1);
-                            foreach (var option in Directory.GetFiles(route, remaining))
-                                subItems.Add(option);
-
-                            returnFiles.AddRange(ResolveWildcards(subItems));
-                        }
-                    }
-                }
-                else
-                {
-                    var target = PathHelper.RootPath(item);
-                    if (File.Exists(target))
-                        returnFiles.Add(new FileInfo(target));
-                }
-            }
-
-            return returnFiles;
         }
     }
 }
