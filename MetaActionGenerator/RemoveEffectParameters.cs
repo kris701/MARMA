@@ -4,10 +4,6 @@ namespace MetaActionGenerator
 {
     public class RemoveEffectParameters : BaseMetaGenerator
     {
-        public RemoveEffectParameters(DomainDecl declaration) : base(declaration)
-        {
-        }
-
         /// <summary>
         /// "C_{eff}, eliminates a parameter appearing in the effects, removing any precondition and/or effect that depends on it."
         /// </summary>
@@ -23,7 +19,7 @@ namespace MetaActionGenerator
                 {
                     if (act.Effects.FindNames(arg.Name).Count > 0)
                     {
-                        var newMetaAction = act.Copy(null);
+                        var newMetaAction = act.Copy();
 
                         newMetaAction.Parameters.Values.RemoveAll(x => x.Name == arg.Name);
                         RemoveMe(newMetaAction.Preconditions, arg.Name);

@@ -6,13 +6,6 @@ namespace MetaActionGenerator
 {
     public abstract class BaseMetaGenerator : ICandidateGenerator
     {
-        public DomainDecl Declaration { get; }
-
-        protected BaseMetaGenerator(DomainDecl declaration)
-        {
-            Declaration = declaration;
-        }
-
         public abstract List<ActionDecl> Generate(List<ActionDecl> actions);
 
         internal bool RemoveMe(INode node, string name)
