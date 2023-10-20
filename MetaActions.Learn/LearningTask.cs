@@ -27,8 +27,8 @@ namespace MetaActions.Learn
 
         public void LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems)
         {
-            RecratePath(tempPath);
-            RecratePath(outPath);
+            PathHelper.RecratePath(tempPath);
+            PathHelper.RecratePath(outPath);
 
             _tempProblemPath = Path.Combine(tempPath, _tempProblemPath);
             _tempMacroPath = Path.Combine(tempPath, _tempMacroPath);
@@ -37,12 +37,12 @@ namespace MetaActions.Learn
             _tempCompiledPath = Path.Combine(tempPath, _tempCompiledPath);
             _tempVerificationPath = Path.Combine(tempPath, _tempVerificationPath);
 
-            RecratePath(_tempProblemPath);
-            RecratePath(_tempMacroPath);
-            RecratePath(_tempMacroTempPath);
-            RecratePath(_tempMetaActionPath);
-            RecratePath(_tempCompiledPath);
-            RecratePath(_tempVerificationPath);
+            PathHelper.RecratePath(_tempProblemPath);
+            PathHelper.RecratePath(_tempMacroPath);
+            PathHelper.RecratePath(_tempMacroTempPath);
+            PathHelper.RecratePath(_tempMetaActionPath);
+            PathHelper.RecratePath(_tempCompiledPath);
+            PathHelper.RecratePath(_tempVerificationPath);
 
             var problems = CopyProblemsToTemp(trainProblems);
 
@@ -62,7 +62,6 @@ namespace MetaActions.Learn
 
             Print($"Testing meta actions", ConsoleColor.Blue);
             List<FileInfo> validMetaActions = new List<FileInfo>();
-            int totalValidMetaActions = 0;
             int metaActionCounter = 1;
             foreach (var metaAction in allMetaActions)
             {
@@ -92,15 +91,20 @@ namespace MetaActions.Learn
                 if (allValid)
                 {
                     Print($"\tMeta action was valid in all {problems.Count} problems.", ConsoleColor.Green);
-                    totalValidMetaActions++;
                     validMetaActions.Add(metaAction);
                 }
                 metaActionCounter++;
             }
-            Print($"A total of {totalValidMetaActions} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green);
+            Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green);
             Print($"Generating meta domain...", ConsoleColor.Blue);
 
             GenerateMetaDomain(domain, validMetaActions, outPath);
+
+            Print($"Done!", ConsoleColor.Green);
+
+            Print($"Copying testing problems...", ConsoleColor.Blue);
+
+            CopyTestingProblems(testProblems, outPath);
 
             Print($"Done!", ConsoleColor.Green);
         }
@@ -111,11 +115,12 @@ namespace MetaActions.Learn
                 Print(text, color);
         }
 
-        private void RecratePath(string path)
+        private void CopyTestingProblems(List<FileInfo> testingProblems, string outFolder)
         {
-            if (Directory.Exists(path))
-                new DirectoryInfo(path).Delete(true);
-            Directory.CreateDirectory(path);
+            foreach(var problem in testingProblems)
+            {
+                File.Copy(problem.FullName, Path.Combine(outFolder, problem.Name));
+            }
         }
 
         private void GenerateMetaDomain(FileInfo domainFile, List<FileInfo> metaActionFiles, string outFolder)
@@ -123,6 +128,7 @@ namespace MetaActions.Learn
             IErrorListener listener = new ErrorListener();
             IParser<INode> parser = new PDDLParser(listener);
             ICodeGenerator<INode> generator = new PDDLCodeGenerator(listener);
+            generator.Readable = true;
 
             var domain = parser.ParseAs<DomainDecl>(domainFile);
             generator.Generate(domain, Path.Combine(outFolder, "domain.pddl"));

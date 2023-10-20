@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using System.IO.Compression;
 using System.Threading;
 using Tools;
 
@@ -27,6 +28,9 @@ namespace MetaActions.Learn
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
 
+            PathHelper.RecratePath(opts.TempPath);
+            PathHelper.RecratePath(opts.OutputPath);
+
             var domains = PathHelper.ResolveWildcards(opts.Domains.ToList());
             var trainProblems = PathHelper.ResolveWildcards(opts.TrainProblems.ToList());
             var testProblems = PathHelper.ResolveWildcards(opts.TestProblems.ToList());
@@ -50,6 +54,12 @@ namespace MetaActions.Learn
 
             Parallel.ForEach(runTasks, task => task.Start());
             Task.WaitAll(runTasks.ToArray());
+            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor($"Compressing testing dataset...", ConsoleColor.Blue);
+
+            ZipFile.CreateFromDirectory(opts.OutputPath, Path.Combine(opts.OutputPath, "testing-set.zip"));
+
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
         }
     }

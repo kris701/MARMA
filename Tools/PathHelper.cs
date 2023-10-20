@@ -54,5 +54,12 @@
 
             return returnFiles;
         }
+
+        public static void RecratePath(string path)
+        {
+            if (Directory.Exists(path))
+                new DirectoryInfo(path).Delete(true);
+            Directory.CreateDirectory(path);
+        }
     }
 }
