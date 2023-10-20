@@ -14,5 +14,7 @@ namespace MetaActions.Learn
         public string TempPath { get; set; } = "temp/train";
         [Option("output", Required = false, HelpText = "Path where all the output will be saved", Default = "output/train")]
         public string OutputPath { get; set; } = "output/train";
+        [Option("rebuild", Required = false, HelpText = "Rebuild toolchain?", Default = false)]
+        public bool Rebuild { get; set; } = false;
     }
 }

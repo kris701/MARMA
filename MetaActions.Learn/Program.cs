@@ -17,11 +17,12 @@ namespace MetaActions.Learn
 
         private static void Run(Options opts)
         {
-            ConsoleHelper.WriteLineColor($"Building Toolchain", ConsoleColor.Blue);
-            
-            //PreBuilder.BuildToolchain();
-
-            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+            if (opts.Rebuild)
+            {
+                ConsoleHelper.WriteLineColor($"Building Toolchain", ConsoleColor.Blue);
+                PreBuilder.BuildToolchain();
+                ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+            }
 
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
@@ -30,9 +31,14 @@ namespace MetaActions.Learn
             PathHelper.RecratePath(opts.OutputPath);
 
             var domains = PathHelper.ResolveWildcards(opts.Domains.ToList());
-            domains.RemoveAll(x => x.Directory.Name == "transport");
+            if (domains.Any(x => !File.Exists(x.FullName)))
+                throw new FileNotFoundException("Domain file not found!");
             var trainProblems = PathHelper.ResolveWildcards(opts.TrainProblems.ToList());
+            if (trainProblems.Any(x => !File.Exists(x.FullName)))
+                throw new FileNotFoundException("Train problem file not found!");
             var testProblems = PathHelper.ResolveWildcards(opts.TestProblems.ToList());
+            if (testProblems.Any(x => !File.Exists(x.FullName)))
+                throw new FileNotFoundException("Test problem file not found!");
 
             ConsoleHelper.WriteLineColor($"Starting to learn meta actions of {domains.Count} domains...", ConsoleColor.Blue);
 
@@ -61,7 +67,7 @@ namespace MetaActions.Learn
                 {
                     var task = Task.WhenAny(runTasks).Result;
                     runTasks.Remove(task);
-                    ConsoleHelper.WriteLineColor($"Training for domain {task.Result} complete! [{100 - (100 * ((double)runTasks.Count / (double)preCount))}%]", ConsoleColor.Green);
+                    ConsoleHelper.WriteLineColor($"Training for domain {task.Result} complete! [{Math.Round(100 - (100 * ((double)runTasks.Count / (double)preCount)),0)}%]", ConsoleColor.Green);
                 }
             }
             catch (Exception ex)
