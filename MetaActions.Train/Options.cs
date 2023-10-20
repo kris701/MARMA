@@ -4,9 +4,9 @@ namespace MetaActions.Learn
 {
     public class Options
     {
-        [Option("domains", Required = true, HelpText = "Path to the domain files to use.")]
+        [Option("domains", Required = true, HelpText = "Path to the domain files to use. You can use wildcards (*) for full directory names, and partial file names.")]
         public IEnumerable<string> Domains { get; set; } = new List<string>();
-        [Option("train-problems", Required = true, HelpText = "Problems to train from.")]
+        [Option("train-problems", Required = true, HelpText = "Problems to train from. You can use wildcards (*) for full directory names, and partial file names.")]
         public IEnumerable<string> TrainProblems { get; set; } = new List<string>();
         [Option("test-problems", Required = true, HelpText = "Problems to test on later.")]
         public IEnumerable<string> TestProblems { get; set; } = new List<string>();
