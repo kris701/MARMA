@@ -1,12 +1,14 @@
 use std::{
     fs::{self, remove_dir_all},
-    path::{Path, PathBuf},
+    path::PathBuf,
     process::Command,
 };
 
 use spingus::domain::{action::Action, parse_domain};
 
 use crate::script_writing::generate_script;
+
+use rand::{distributions::Alphanumeric, Rng};
 
 #[derive(Debug)]
 enum ScriptType {
@@ -71,7 +73,7 @@ fn run(
     let mut command = Command::new(scripts_path.join(learn_path).canonicalize().unwrap());
     command.current_dir(scripts_path);
     command.arg(cannonical_temp_path);
-    command.arg(".temp.sh");
+    command.arg(script_path.file_name().unwrap());
     match script_type {
         ScriptType::CSM(n) => {
             command.arg(n);
@@ -90,6 +92,9 @@ fn run(
     }
     let domain_name = format!("domain_{}.pddl", name);
     let domain_path = temp_path.join(domain_name);
+    if script_path.is_file() {
+        let _ = fs::remove_file(script_path);
+    }
     if domain_path.exists() {
         return Some(fs::read_to_string(domain_path).unwrap());
     } else {
@@ -105,7 +110,12 @@ pub fn generate_macros(
     temp_path: &PathBuf,
 ) -> Vec<Action> {
     let scripts_path = csms_path.join("scripts");
-    let script_path = scripts_path.join(".temp.sh");
+    let script_name: String = rand::thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(16)
+        .map(char::from)
+        .collect();
+    let script_path = scripts_path.join(format!(".{}.sh", script_name));
     let mut enhanced_domains: Vec<String> = vec![];
     for script_type in [
         ScriptType::CSM("csm".to_owned()),
