@@ -18,47 +18,6 @@ namespace StacklebergCompiler
             foreach (var staticPred in statics)
                 _staticPredicates.Add(staticPred.Name);
             return _staticPredicates;
-
-            if (domain.Predicates != null)
-            {
-                var allPredicates = domain.FindTypes<PredicateExp>();
-                allPredicates = allPredicates.OrderBy(x => x.Name).ToList();
-
-                if (allPredicates.Count > 0)
-                {
-                    string currentName = allPredicates[0].Name;
-                    bool isStatic = true;
-                    foreach (var predicate in allPredicates)
-                    {
-                        if (predicate.Name != currentName)
-                        {
-                            if (isStatic)
-                                _staticPredicates.Add(currentName);
-                            isStatic = true;
-                            currentName = predicate.Name;
-                        }
-                        if (!isStatic)
-                            continue;
-                        if (IsInEffects(domain, predicate))
-                            isStatic = false;
-                    }
-                    if (isStatic)
-                        _staticPredicates.Add(currentName);
-                }
-            }
-
-            return _staticPredicates;
-        }
-
-        private static bool IsInEffects(DomainDecl domain, PredicateExp predicate)
-        {
-            foreach (var action in domain.Actions)
-            {
-                var allPredicates = action.Effects.FindTypes<PredicateExp>();
-                if (allPredicates.Contains(predicate))
-                    return true;
-            }
-            return false;
         }
     }
 }
