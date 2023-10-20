@@ -1,6 +1,9 @@
 use std::{fs, os::unix::prelude::OpenOptionsExt, path::PathBuf};
 
 pub fn generate_script(fastdownward_path: &PathBuf, script_path: &PathBuf) {
+    if script_path.is_file() {
+        return;
+    }
     let content = format!(
         "
         #!/bin/bash
@@ -38,12 +41,23 @@ pub fn generate_script(fastdownward_path: &PathBuf, script_path: &PathBuf) {
             .to_str()
             .unwrap()
     );
-    let _ = fs::remove_file(script_path);
-    let _ = fs::OpenOptions::new()
+    match fs::OpenOptions::new()
         .create(true)
         .write(true)
         .mode(0o770)
         .open(script_path)
-        .unwrap();
-    let _ = fs::write(script_path, content);
+    {
+        Ok(_) => {}
+        Err(err) => panic!(
+            "Could not create script to path {:?} with error {}",
+            script_path, err,
+        ),
+    };
+    match fs::write(script_path, content) {
+        Ok(_) => {}
+        Err(err) => panic!(
+            "Could not write to script {:?} with error {}",
+            script_path, err
+        ),
+    };
 }
