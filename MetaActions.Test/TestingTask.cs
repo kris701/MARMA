@@ -18,6 +18,7 @@ namespace MetaActions.Test
         public Options.ReconstructionMethods ReconstructionMethod { get; set; }
 
         private string _log = "";
+        private string _fastDownward = PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py");
 
         public TestingTask(int timeLimit, string alias, Options.ReconstructionMethods reconstructionMethod)
         {
@@ -46,10 +47,7 @@ namespace MetaActions.Test
             timer.Stop();
 
             ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Task finished!", ConsoleColor.Magenta);
-            if (metaDomain != null)
-                return new RunReport(domainName, problemName, GetSearchTimeFromLog(), timer.ElapsedMilliseconds, GetWasSolutionFound());
-            else
-                return new RunReport(domainName, problemName, GetSearchTimeFromLog(), timer.ElapsedMilliseconds, GetWasSolutionFound());
+            return new RunReport(domainName, problemName, GetSearchTimeFromLog(), timer.ElapsedMilliseconds, GetWasSolutionFound());
         }
 
         private double GetSearchTimeFromLog()
@@ -69,7 +67,7 @@ namespace MetaActions.Test
         {
             ArgsCaller fdCaller = new ArgsCaller("python3");
             fdCaller.StdOut += LogStdOut;
-            fdCaller.Arguments.Add(PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"), "");
+            fdCaller.Arguments.Add(_fastDownward, "");
             fdCaller.Arguments.Add("--alias", Alias);
             fdCaller.Arguments.Add("--plan-file", planName);
             fdCaller.Arguments.Add("--sas-file", sasName);
@@ -91,7 +89,7 @@ namespace MetaActions.Test
             reconstructionFixer.Arguments.Add("-p", problem.FullName);
             reconstructionFixer.Arguments.Add("-m", metaDomain.FullName);
             reconstructionFixer.Arguments.Add("-s", metaPlan);
-            reconstructionFixer.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
+            reconstructionFixer.Arguments.Add("-f", _fastDownward);
             reconstructionFixer.Arguments.Add("-o", planName);
             if (reconstructionFixer.Run() != 0)
                 throw new Exception("Reconstruction failed!");
