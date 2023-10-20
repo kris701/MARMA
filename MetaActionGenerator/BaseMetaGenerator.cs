@@ -8,35 +8,24 @@ namespace MetaActionGenerator
     {
         public abstract List<ActionDecl> Generate(List<ActionDecl> actions);
 
-        internal bool RemoveMe(INode node, string name)
+        internal void RemoveName(INode node, string name)
         {
-            if (node is NameExp named)
+            var allRefs = node.FindNames(name);
+            foreach (var sub in allRefs)
             {
-                return named.Name == name;
+                var usefullParent = GetMostUsefullParent(sub);
+                if (usefullParent.Parent is IListable list)
+                    list.Remove(usefullParent);
             }
-            else if (node is PredicateExp pred)
-            {
-                if (pred.Name == name)
-                    return true;
-                foreach (var arg in pred.Arguments)
-                    if (RemoveMe(arg, name))
-                        return true;
-                return false;
-            }
-            else if (node is NotExp not)
-            {
-                return RemoveMe(not.Child, name);
-            }
-            else if (node is AndExp and)
-            {
-                List<IExp> newChildren = new List<IExp>();
-                foreach (var child in and.Children)
-                    if (!RemoveMe(child, name))
-                        newChildren.Add(child);
-                and.Children = newChildren;
-                return and.Children.Count > 0;
-            }
-            return false;
+        }
+
+        private INode GetMostUsefullParent(INode from)
+        {
+            if (from.Parent is AndExp || from.Parent is OrExp)
+                return from;
+            if (from.Parent == null)
+                throw new ArgumentNullException("Expected a parent");
+            return GetMostUsefullParent(from.Parent);
         }
 
         internal void RemoveUnusedParameters(ActionDecl action)

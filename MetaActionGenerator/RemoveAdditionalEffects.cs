@@ -23,8 +23,8 @@ namespace MetaActionGenerator
                 var newMetaAction = act.Copy();
                 foreach (var pred in removedPredicates)
                 {
-                    RemoveMe(newMetaAction.Preconditions, pred.Name);
-                    RemoveMe(newMetaAction.Effects, pred.Name);
+                    RemoveName(newMetaAction.Preconditions, pred.Name);
+                    RemoveName(newMetaAction.Effects, pred.Name);
                 }
                 RemoveUnusedParameters(newMetaAction);
                 metaActions.Add(newMetaAction);

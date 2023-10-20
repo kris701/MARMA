@@ -22,8 +22,8 @@ namespace MetaActionGenerator
                         var newMetaAction = act.Copy();
 
                         newMetaAction.Parameters.Values.RemoveAll(x => x.Name == arg.Name);
-                        RemoveMe(newMetaAction.Preconditions, arg.Name);
-                        RemoveMe(newMetaAction.Effects, arg.Name);
+                        RemoveName(newMetaAction.Preconditions, arg.Name);
+                        RemoveName(newMetaAction.Effects, arg.Name);
 
                         RemoveUnusedParameters(newMetaAction);
                         metaActions.Add(newMetaAction);

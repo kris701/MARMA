@@ -28,7 +28,7 @@ namespace MetaActionGenerator
                     var newMetaAction = act.Copy();
 
                     newMetaAction.Parameters.Values.RemoveAll(x => x.Name == remove.Name);
-                    RemoveMe(newMetaAction.Preconditions, remove.Name);
+                    RemoveName(newMetaAction.Preconditions, remove.Name);
 
                     metaActions.Add(newMetaAction);
                 }
