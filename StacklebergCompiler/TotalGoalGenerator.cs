@@ -13,7 +13,7 @@ namespace StacklebergCompiler
         {
             List<PredicateExp> retList = new List<PredicateExp>();
             foreach (var pred in TotalGoal)
-                retList.Add(pred.Copy(null));
+                retList.Add(pred.Copy());
             return retList;
         }
         public static void GenerateTotalGoal(ProblemDecl problem, DomainDecl domain)
