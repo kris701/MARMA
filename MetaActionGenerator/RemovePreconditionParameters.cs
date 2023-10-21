@@ -5,10 +5,6 @@ namespace MetaActionGenerator
 {
     public class RemovePreconditionParameters : BaseMetaGenerator
     {
-        public RemovePreconditionParameters(DomainDecl declaration) : base(declaration)
-        {
-        }
-
         /// <summary>
         /// "C_{pre} removes parameters that are absent in the effect of the macro"
         /// </summary>
@@ -22,17 +18,15 @@ namespace MetaActionGenerator
             {
                 List<NameExp> removeable = new List<NameExp>();
                 foreach (var arg in act.Parameters.Values)
-                {
                     if (act.Effects.FindNames(arg.Name).Count == 0)
                         removeable.Add(arg);
-                }
 
                 foreach (var remove in removeable)
                 {
-                    var newMetaAction = act.Copy(null);
+                    var newMetaAction = act.Copy();
 
                     newMetaAction.Parameters.Values.RemoveAll(x => x.Name == remove.Name);
-                    RemoveMe(newMetaAction.Preconditions, remove.Name);
+                    RemoveName(newMetaAction.Preconditions, remove.Name);
 
                     metaActions.Add(newMetaAction);
                 }

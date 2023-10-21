@@ -47,9 +47,9 @@ namespace MetaActionGenerator
 
             List<ActionDecl> metaActions = new List<ActionDecl>();
 
-            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Precondition Parameters' meta actions...", new RemovePreconditionParameters(domain)));
-            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Effect Parameters' meta actions...", new RemoveEffectParameters(domain)));
-            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Additional Effects' meta actions...", new RemoveAdditionalEffects(domain)));
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Precondition Parameters' meta actions...", new RemovePreconditionParameters()));
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Effect Parameters' meta actions...", new RemoveEffectParameters()));
+            metaActions.AddRange(GenerateCandidates(macros, "Generating 'Remove Additional Effects' meta actions...", new RemoveAdditionalEffects()));
 
             metaActions = RemoveActionsBy(metaActions, "Sanetizing meta actions...",
                 (acts) =>
@@ -66,7 +66,7 @@ namespace MetaActionGenerator
                 (acts) =>
                 {
                     var newActs = new List<ActionDecl>();
-                    IMutexDetectors mutexDetector = new SimpleMutexDetector();
+                    IMutexDetectors mutexDetector = new EffectBalanceMutexes();
                     var mutexPredicates = mutexDetector.FindMutexes(new PDDLDecl(domain, new ProblemDecl()));
                     foreach (var action in acts)
                     {

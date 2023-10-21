@@ -5,10 +5,6 @@ namespace MetaActionGenerator
 {
     public class RemoveAdditionalEffects : BaseMetaGenerator
     {
-        public RemoveAdditionalEffects(DomainDecl declaration) : base(declaration)
-        {
-        }
-
         /// <summary>
         /// "C_{inv} takes the C_{eff} candidates, and remove other preconditions and effects with the same predicate as the ones removed by the C_{eff} method."
         /// </summary>
@@ -17,18 +13,18 @@ namespace MetaActionGenerator
         public override List<ActionDecl> Generate(List<ActionDecl> actions)
         {
             List<ActionDecl> metaActions = new List<ActionDecl>();
-            ICandidateGenerator removeEffect = new RemoveEffectParameters(Declaration);
+            ICandidateGenerator removeEffect = new RemoveEffectParameters();
             var removed = removeEffect.Generate(actions);
 
             foreach (var act in removed)
             {
                 var removedPredicates = GetRemovedPredicates(actions.First(x => x.Name == act.Name), act);
 
-                var newMetaAction = act.Copy(null);
+                var newMetaAction = act.Copy();
                 foreach (var pred in removedPredicates)
                 {
-                    RemoveMe(newMetaAction.Preconditions, pred.Name);
-                    RemoveMe(newMetaAction.Effects, pred.Name);
+                    RemoveName(newMetaAction.Preconditions, pred.Name);
+                    RemoveName(newMetaAction.Effects, pred.Name);
                 }
                 RemoveUnusedParameters(newMetaAction);
                 metaActions.Add(newMetaAction);
