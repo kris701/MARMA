@@ -10,7 +10,7 @@ namespace StacklebergCompiler
     {
         public PDDLDecl SimplifyConditionalEffects(DomainDecl domain, ProblemDecl problem)
         {
-            var newDomain = domain.Copy(null);
+            var newDomain = domain.Copy();
 
             newDomain.Actions = GenerateAbstractedActions(newDomain.Actions);
 
@@ -43,7 +43,7 @@ namespace StacklebergCompiler
                 int counter = 0;
                 foreach (var permutation in permutations)
                 {
-                    var newAct = source.Copy(null);
+                    var newAct = source.Copy();
 
                     for (int i = 0; i < permutation.Count; i++)
                     {
@@ -88,7 +88,7 @@ namespace StacklebergCompiler
 
         private PredicateExp CopyAndPrefixPredicate(PredicateExp pred, string name)
         {
-            var copy = pred.Copy(null);
+            var copy = pred.Copy();
             copy.Name = $"{name}{copy.Name}";
             return copy;
         }

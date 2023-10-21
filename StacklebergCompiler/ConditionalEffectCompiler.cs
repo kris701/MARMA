@@ -3,6 +3,7 @@ using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
+using System;
 
 namespace StacklebergCompiler
 {
@@ -10,8 +11,8 @@ namespace StacklebergCompiler
     {
         public PDDLDecl GenerateConditionalEffects(DomainDecl domain, ProblemDecl problem, ActionDecl metaAction)
         {
-            var newDomain = domain.Copy(null);
-            var newProblem = problem.Copy(null);
+            var newDomain = domain.Copy();
+            var newProblem = problem.Copy();
 
             // Find static predicates
             StaticPredicateDetector.GenerateStaticPredicates(domain);
@@ -164,18 +165,18 @@ namespace StacklebergCompiler
                 {
                     if (effect.Parent is NotExp not)
                     {
-                        var newNormalEffect = effect.Copy(null);
+                        var newNormalEffect = effect.Copy();
                         newNormalEffect.Name = $"{ReservedNames.LeaderStatePrefix}{newNormalEffect.Name}";
                         newChildren.Add(new NotExp(newNormalEffect));
                     }
                     else
                     {
-                        var newNormalEffect = effect.Copy(null);
+                        var newNormalEffect = effect.Copy();
                         newNormalEffect.Name = $"{ReservedNames.LeaderStatePrefix}{newNormalEffect.Name}";
                         newChildren.Add(newNormalEffect);
                     }
 
-                    var newGoalEffect = effect.Copy(null);
+                    var newGoalEffect = effect.Copy();
                     newGoalEffect.Name = $"{ReservedNames.IsGoalPrefix}{newGoalEffect.Name}";
                     newChildren.Add(new NotExp(newGoalEffect));
                 }
@@ -203,8 +204,8 @@ namespace StacklebergCompiler
                     ReservedNames.LeaderStatePrefix);
 
                 // Effects
-                var leaderEffect = action.Effects.Copy(null);
-                var followerEffect = action.Effects.Copy(null);
+                var leaderEffect = action.Effects.Copy();
+                var followerEffect = action.Effects.Copy();
                 PrefixPredicatesInNode(
                     leaderEffect.FindTypes<PredicateExp>(),
                     ReservedNames.LeaderStatePrefix);
@@ -310,9 +311,9 @@ namespace StacklebergCompiler
             List<ActionDecl> newActions = new List<ActionDecl>();
             foreach (var action in domain.Actions)
             {
-                var leaderAct = action.Copy(null);
+                var leaderAct = action.Copy();
                 leaderAct.Name = $"{ReservedNames.LeaderActionPrefix}{leaderAct.Name}";
-                var followerAct = action.Copy(null);
+                var followerAct = action.Copy();
                 followerAct.Name = $"{ReservedNames.FollowerActionPrefix}{followerAct.Name}";
                 newActions.Add(leaderAct);
                 newActions.Add(followerAct);
@@ -332,7 +333,8 @@ namespace StacklebergCompiler
         {
             var copyPredicates = new List<PredicateExp>();
             foreach (var pred in predicates)
-                copyPredicates.Add(pred.Copy(null));
+                if (!StaticPredicateDetector.StaticPredicates.Contains(pred.Name))
+                    copyPredicates.Add(pred.Copy());
             PrefixPredicatesInNode(copyPredicates, prefix);
             return copyPredicates;
         }
