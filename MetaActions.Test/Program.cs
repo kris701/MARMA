@@ -40,12 +40,12 @@ namespace MetaActions.Test
             opts.OutputPath = Path.Combine(opts.OutputPath, DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss"));
             opts.DataFile = PathHelper.RootPath(opts.DataFile);
 
-            //PathHelper.RecratePath(opts.TempPath);
+            PathHelper.RecratePath(opts.TempPath);
             PathHelper.RecratePath(opts.OutputPath);
 
             ConsoleHelper.WriteLineColor($"Extracting testing data", ConsoleColor.Blue);
             _tempDataPath = Path.Combine(opts.TempPath, _tempDataPath);
-            //ZipFile.ExtractToDirectory(opts.DataFile, _tempDataPath);
+            ZipFile.ExtractToDirectory(opts.DataFile, _tempDataPath);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Initializing tests...", ConsoleColor.Blue);
