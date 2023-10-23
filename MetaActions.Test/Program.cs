@@ -97,7 +97,7 @@ namespace MetaActions.Test
                         problem,
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}_reconstructed.plan"),
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}_meta.plan"),
-                        Path.Combine(opts.TempPath, domainName, $"{problemName}.sas")
+                        Path.Combine(opts.TempPath, domainName, $"{problemName}_meta.sas")
                         )));
                 }
             }
