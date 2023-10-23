@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Tools
 {
-    public class ArgsCaller
+    public class ArgsCaller : IDisposable
     {
         public event DataReceivedEventHandler? StdErr;
         public event DataReceivedEventHandler? StdOut;
@@ -11,12 +11,24 @@ namespace Tools
         public string Program { get; }
         public Dictionary<string, string> Arguments { get; }
         public Dictionary<string, string> Environment { get; }
+        public Process Process { get; internal set; }
 
         public ArgsCaller(string program, Dictionary<string, string> arguments)
         {
             Program = program;
             Arguments = arguments;
             Environment = new Dictionary<string, string>();
+
+            Process = new Process
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = Program,
+                    Arguments = "",
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                }
+            };
         }
 
         public ArgsCaller(string program)
@@ -24,6 +36,17 @@ namespace Tools
             Program = program;
             Arguments = new Dictionary<string, string>();
             Environment = new Dictionary<string, string>();
+
+            Process = new Process
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = Program,
+                    Arguments = "",
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                }
+            };
         }
 
         public int Run()
@@ -35,38 +58,35 @@ namespace Tools
             foreach (var key in Arguments.Keys)
                 sb.Append($"{key} {Arguments[key]} ");
 
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo()
-                {
-                    FileName = Program,
-                    Arguments = sb.ToString(),
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                }
-            };
+            Process.StartInfo.Arguments = sb.ToString();
             foreach (var key in Environment.Keys)
-                process.StartInfo.Environment.Add(key, Environment[key]);
+                Process.StartInfo.Environment.Add(key, Environment[key]);
             if (StdErr != null)
             {
-                process.StartInfo.RedirectStandardError = true;
-                process.ErrorDataReceived += StdErr;
+                Process.StartInfo.RedirectStandardError = true;
+                Process.ErrorDataReceived += StdErr;
             }
             if (StdOut != null)
             {
-                process.StartInfo.RedirectStandardOutput = true;
-                process.OutputDataReceived += StdOut;
+                Process.StartInfo.RedirectStandardOutput = true;
+                Process.OutputDataReceived += StdOut;
             }
 
-            process.Start();
+            Process.Start();
             if (StdErr != null)
-                process.BeginErrorReadLine();
+                Process.BeginErrorReadLine();
 
             if (StdOut != null)
-                process.BeginOutputReadLine();
+                Process.BeginOutputReadLine();
 
-            process.WaitForExit();
-            return process.ExitCode;
+            Process.WaitForExit();
+            return Process.ExitCode;
+        }
+
+        public void Dispose()
+        {
+            if (Process != null && !Process.HasExited)
+                Process.Kill();
         }
     }
 }

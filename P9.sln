@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergVerifier", "Stac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator", "MetaActionGenerator\MetaActionGenerator.csproj", "{6E04D1D4-065F-4CCA-B657-021ADBB1B032}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Learn", "MetaActions.Learn\MetaActions.Learn.csproj", "{2A4828D6-88F9-40F9-A4E2-F5513717A257}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Train", "MetaActions.Train\MetaActions.Train.csproj", "{2A4828D6-88F9-40F9-A4E2-F5513717A257}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Test", "MetaActions.Test\MetaActions.Test.csproj", "{159040FE-F33E-45E1-A293-D13A54D2CA3B}"
 EndProject
