@@ -45,7 +45,11 @@ fn generate_facts_all(domain: &Domain, problem: &Problem) -> Vec<Fact> {
         .predicates
         .iter()
         .enumerate()
-        .flat_map(|(i, predicate)| generate_facts_predicate(domain, problem, predicate, i))
+        .flat_map(|(i, predicate)| {
+            let facts = generate_facts_predicate(domain, problem, predicate, i);
+            println!("{}: {}", predicate.name, facts.len());
+            facts
+        })
         .collect()
 }
 
