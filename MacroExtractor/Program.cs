@@ -1,4 +1,6 @@
 ﻿using CommandLine;
+using PDDLSharp.CodeGenerators;
+using PDDLSharp.CodeGenerators.PDDL;
 using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
@@ -25,7 +27,10 @@ namespace MacroExtractor
 
         public static void ExtractMacros(Options opts)
         {
-            ConsoleHelper.WriteLineColor("");
+            opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
+            PathHelper.RecratePath(opts.OutputPath);
+
+            ConsoleHelper.WriteLineColor("Parsing plans...");
 
             List<FileInfo> leaderPlans = new List<FileInfo>();
             foreach (var plan in opts.LeaderPlans)
@@ -41,9 +46,13 @@ namespace MacroExtractor
                 foreach (var match in matches)
                     planPairs.Add(new PlanPair(leaderPlan, match));
             }
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
+            ConsoleHelper.WriteLineColor("Parsing domain...");
             var domain = ParseDomain(opts.Domain);
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
+            ConsoleHelper.WriteLineColor("Extracting reconstruction data...");
             List<ReconstructionPair> macros = new List<ReconstructionPair>();
             SimpleActionCombiner combiner = new SimpleActionCombiner();
             foreach (var pair in planPairs)
@@ -57,12 +66,26 @@ namespace MacroExtractor
                         break;
                     }
                 }
+                var metaAction = pair.LeaderPlan.Plan[index];
                 var groundedMacroSequence = pair.FollowerPlan.Plan.GetRange(index, pair.FollowerPlan.Plan.Count - index);
                 var macroSequence = GenerateSequence(groundedMacroSequence, domain);
                 var macro = combiner.Combine(macroSequence);
 
-                macros.Add(new ReconstructionPair(macro, new ActionSequence(groundedMacroSequence)));
+                macros.Add(new ReconstructionPair(macro, metaAction));
             }
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor("Outputting reconstruction data...");
+            IErrorListener listener = new ErrorListener();
+            ICodeGenerator<INode> codeGenerator = new PDDLCodeGenerator(listener);
+            int id = 1;
+            foreach (var macro in macros)
+            {
+                var reconstructionString = $"; {macro.MetaAction}{Environment.NewLine}";
+                reconstructionString += codeGenerator.Generate(macro.Macro);
+                File.WriteAllText(Path.Combine(opts.OutputPath, $"repair{id++}.pddl"), reconstructionString);
+            }
+            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
         }
 
         private static DomainDecl ParseDomain(string file)
