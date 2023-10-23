@@ -33,11 +33,11 @@ fn clean_string_expression(expression: StringExpression) -> Option<StringExpress
                 Some(StringExpression::And(out))
             }
         }
-        StringExpression::Or(_) => todo!(),
         StringExpression::Not(e) => {
             let out = clean_string_expression(*e);
             out.map_or(None, |o| Some(StringExpression::Not(Box::new(o))))
         }
+        _ => todo!(),
     }
 }
 
