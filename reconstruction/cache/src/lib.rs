@@ -26,7 +26,7 @@ use state::{
 #[derive(Debug)]
 pub struct Cache {
     lifted_macros: Vec<Action>,
-    entries: Vec<Operator>,
+    entries: Vec<(Operator, Vec<usize>)>,
     effect_map: HashMap<BitExp, Vec<usize>>,
     entry_macro: HashMap<usize, usize>,
 }
@@ -39,14 +39,23 @@ impl Cache {
         match candidates {
             Some(candidates) => candidates
                 .iter()
-                .find(|i| state.is_legal(&self.entries[**i]))
+                .find(|i| state.is_legal(&self.entries[**i].0))
                 .copied(),
             None => return None,
         }
     }
 
-    pub fn get_replacement(&self, index: usize) -> SASPlan {
-        todo!()
+    pub fn get_replacement(&self, domain: &Domain, problem: &Problem, index: usize) -> SASPlan {
+        let macro_index = self.entry_macro[&index];
+        let lifted_macro = self.lifted_macros.get(macro_index).unwrap();
+        let actions: Vec<&str> = lifted_macro.name.split("#").collect();
+        let actions: Vec<&Action> = actions
+            .iter()
+            .map(|n| domain.actions.iter().find(|a| a.name == **n).unwrap())
+            .collect();
+        let permutation: Vec<usize> = self.entries[index].1.to_owned();
+        println!("{:?}", permutation);
+        vec![]
     }
 }
 
@@ -57,14 +66,14 @@ pub fn generate_cache(
     macros: Vec<Action>,
 ) -> Cache {
     let mut lifted_macros: Vec<Action> = Vec::new();
-    let mut entries: Vec<Operator> = Vec::new();
+    let mut entries: Vec<(Operator, Vec<usize>)> = Vec::new();
     let mut effect_map: HashMap<BitExp, Vec<usize>> = HashMap::new();
     let mut entry_macro: HashMap<usize, usize> = HashMap::new();
     for action in &macros {
         let action_index = lifted_macros.len();
         lifted_macros.push(action.to_owned());
         let operators = generate_operators(domain, problem, facts, &action);
-        for operator in operators {
+        for (operator, permutation) in operators {
             let entry_index = entries.len();
             entry_macro.insert(entry_index, action_index);
             let mut c_effect = operator.eff_neg.to_owned();
@@ -77,7 +86,7 @@ pub fn generate_cache(
                     effect_map.insert(c_effect.to_owned(), vec![entry_index]);
                 }
             };
-            entries.push(operator);
+            entries.push((operator, permutation));
         }
     }
     let c = Cache {

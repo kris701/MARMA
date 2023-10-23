@@ -5,7 +5,10 @@ use std::{
 
 use cache::Cache;
 use shared::time::run_time;
-use spingus::{domain::Domain, sas_plan::SASPlan};
+use spingus::{
+    domain::Domain,
+    sas_plan::{export_sas, SASPlan},
+};
 use state::{
     instance::{
         operator::{generate_operator_string, Operator},
@@ -59,6 +62,7 @@ fn generate_replacement(
         let replacement = cache.get(&init, &goal);
         if let Some(replacement) = replacement {
             println!("Found replacement");
+            return cache.get_replacement(&instance.domain, &instance.problem, replacement);
         } else {
             println!("None found");
         }

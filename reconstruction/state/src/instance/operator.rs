@@ -49,10 +49,10 @@ pub fn generate_operators(
     problem: &Problem,
     facts: &Facts,
     action: &Action,
-) -> Vec<Operator> {
+) -> Vec<(Operator, Vec<usize>)> {
     let permutations = permute(&domain.types, problem, &action.parameters);
     permutations
         .iter()
-        .map(|p| extract_from_action(p, action, facts).unwrap())
+        .map(|p| (extract_from_action(p, action, facts).unwrap(), p.to_owned()))
         .collect()
 }
