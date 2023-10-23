@@ -42,6 +42,9 @@ pub struct Args {
     /// If not given, simply prints to stdout
     #[arg(short = 'o')]
     out: Option<PathBuf>,
+    /// Path to a set of lifted macros used to cache meta action reconstruction
+    #[arg(short = 'c')]
+    cache: Option<PathBuf>,
 }
 
 fn main() -> Result<()> {

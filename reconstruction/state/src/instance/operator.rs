@@ -1,8 +1,11 @@
-use spingus::domain::{action::Action, Domain};
+use spingus::{
+    domain::{action::Action, Domain},
+    problem::Problem,
+};
 
 use crate::bit_expression::{extract, BitExp};
 
-use super::facts::Facts;
+use super::{facts::Facts, permutation::permute};
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Operator {
@@ -39,4 +42,17 @@ pub fn generate_operator_string(
         .map(|p| facts.object_map.get(p).unwrap().to_owned())
         .collect();
     extract_from_action(&parameters, action, facts).unwrap()
+}
+
+pub fn generate_operators(
+    domain: &Domain,
+    problem: &Problem,
+    facts: &Facts,
+    action: &Action,
+) -> Vec<Operator> {
+    let permutations = permute(&domain.types, problem, &action.parameters);
+    permutations
+        .iter()
+        .map(|p| extract_from_action(p, action, facts).unwrap())
+        .collect()
 }
