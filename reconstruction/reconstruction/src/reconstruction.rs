@@ -62,7 +62,6 @@ fn generate_replacement(
     write_problem(instance, &init, &goal, &problem_path);
     let solution = downward.solve(domain_path, &problem_path);
     let _ = fs::remove_file(&problem_path);
-    let _ = fs::remove_file("sas_plan");
     solution
 }
 
