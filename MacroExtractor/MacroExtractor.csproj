@@ -16,13 +16,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\FollowerPlans\plan1.plan">
+    <None Update="TestData\FollowerPlans\$meta-pick-pick-move-drop-drop\$meta-pick-pick-move-drop-drop1_2.plan">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\gripper.pddl">
+    <None Update="TestData\FollowerPlans\$meta-pick-pick-move-drop-drop\$meta-pick-pick-move-drop-drop1_1.plan">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\LeaderPlans\plan1.plan">
+    <None Update="TestData\FollowerPlans\$meta-pick-pick-move-drop-drop\$meta-pick-pick-move-drop-drop2_1.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LeaderPlans\$meta-pick-pick-move-drop-drop\$meta-pick-pick-move-drop-drop1.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\LeaderPlans\$meta-pick-pick-move-drop-drop\$meta-pick-pick-move-drop-drop2.plan">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
