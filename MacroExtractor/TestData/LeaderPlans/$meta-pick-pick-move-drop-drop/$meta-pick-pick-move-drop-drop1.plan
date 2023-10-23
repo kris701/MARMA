@@ -4,5 +4,5 @@
 (drop ball1 roomb left)
 (drop ball2 roomb right)
 (move roomb rooma)
-($meta-pick-pick-move-drop-drop ball1 ball2 rooma roomb left right)
+($meta-pick-pick-move-drop-drop ball3 ball4 rooma roomb left right)
 ; cost = 7 (unit cost)
