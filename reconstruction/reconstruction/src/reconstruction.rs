@@ -3,6 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use cache::Cache;
 use shared::time::run_time;
 use spingus::{domain::Domain, sas_plan::SASPlan};
 use state::{
@@ -45,6 +46,7 @@ fn generate_replacement(
     domain_path: &PathBuf,
     downward: &Downward,
     operators: &Vec<Operator>,
+    cache: Option<&Cache>,
     i: usize,
 ) -> SASPlan {
     let init = State::new(&instance.domain, &instance.problem, &instance.facts);
@@ -52,6 +54,15 @@ fn generate_replacement(
     let init = init.apply_multiple(&operators[0..i].to_owned());
     let goal = init.apply_clone(&operators[i]);
     assert_ne!(init, goal);
+    if let Some(cache) = cache {
+        println!("{} Checking cache...", run_time());
+        let replacement = cache.get(&init, &goal);
+        if let Some(replacement) = replacement {
+            println!("Found replacement");
+        } else {
+            println!("None found");
+        }
+    }
     let problem_path = Path::new(".temp_problem.pddl").to_path_buf();
     write_problem(instance, &init, &goal, &problem_path);
     let solution = downward.solve(domain_path, &problem_path);
@@ -65,6 +76,7 @@ pub fn reconstruct(
     meta_domain: &Domain,
     domain_path: &PathBuf,
     downward: &Downward,
+    cache: Option<&Cache>,
     plan: SASPlan,
 ) -> SASPlan {
     let meta_steps: Vec<usize> = plan
@@ -78,7 +90,7 @@ pub fn reconstruct(
     let operators = generate_operators(&instance, meta_domain, domain_path, downward, &plan);
     let replacements: Vec<SASPlan> = meta_steps
         .iter()
-        .map(|i| generate_replacement(&instance, domain_path, downward, &operators, *i))
+        .map(|i| generate_replacement(&instance, domain_path, downward, &operators, cache, *i))
         .collect();
     stich(&plan, meta_steps.iter().zip(replacements.iter()).collect())
 }

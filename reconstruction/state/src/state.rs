@@ -1,4 +1,4 @@
-use std::ops::{BitAndAssign, BitOrAssign};
+use std::ops::{BitAnd, BitAndAssign, BitOrAssign};
 
 use bitvec::prelude::*;
 use bitvec::vec::BitVec;
@@ -56,7 +56,13 @@ impl State {
         clone
     }
 
-    pub fn get_all(&self) -> BitVec {
+    pub fn get(&self) -> BitVec {
         self.internal.clone()
+    }
+
+    pub fn is_legal(&self, operator: &Operator) -> bool {
+        let has_pos = self.get().bitand(&operator.pre_pos) == operator.pre_pos;
+        let has_neg = self.get().bitand(&operator.pre_neg).not_any();
+        has_pos && has_neg
     }
 }

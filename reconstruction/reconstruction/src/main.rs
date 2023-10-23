@@ -1,3 +1,4 @@
+use cache::{generate_cache, read_cache_input, Cache};
 use color_eyre::eyre::Result;
 use reconstruction::reconstruct;
 use shared::time::{init_time, run_time};
@@ -73,12 +74,41 @@ fn main() -> Result<()> {
     println!("{} Finding meta solution...", run_time());
     let meta_plan = downward.solve_or_find(&args.meta_domain, &args.problem, &args.solution);
 
-    let plan = reconstruct(instance, &meta_domain, &args.domain, &downward, meta_plan);
+    println!("{} Checking for cache...", run_time());
+    let cache: Option<Cache> = match args.cache {
+        Some(p) => {
+            println!("{} Reading cache files...", run_time());
+            let files = match read_cache_input(&p) {
+                Ok(f) => f,
+                Err(e) => panic!("Could not read cache files with err: {}", e),
+            };
+            println!("Found {} lifted macros", files.len());
+            println!("{} Generating cache...", run_time());
+            Some(generate_cache(
+                &instance.domain,
+                &instance.problem,
+                &instance.facts,
+                files,
+            ))
+        }
+        None => {
+            println!("{} No cache given", run_time());
+            None
+        }
+    };
+    let plan = reconstruct(
+        instance,
+        &meta_domain,
+        &args.domain,
+        &downward,
+        cache.as_ref(),
+        meta_plan,
+    );
     let plan_export = export_sas(&plan);
     match args.out {
         Some(path) => fs::write(path, plan_export).unwrap(),
         None => {
-            println!("{} Final plan\n{}", run_time(), plan_export);
+            println!("Final plan\n{}", plan_export);
         }
     }
 
