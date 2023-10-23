@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Train", "MetaAc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Test", "MetaActions.Test\MetaActions.Test.csproj", "{159040FE-F33E-45E1-A293-D13A54D2CA3B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacroExtractor", "MacroExtractor\MacroExtractor.csproj", "{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{159040FE-F33E-45E1-A293-D13A54D2CA3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{159040FE-F33E-45E1-A293-D13A54D2CA3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{159040FE-F33E-45E1-A293-D13A54D2CA3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

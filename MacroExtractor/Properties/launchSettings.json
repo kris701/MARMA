@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "MetaActionGenerator": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL",
+      "distributionName": "",
+      "commandLineArgs": "MacroExtractor/bin/Debug/net7.0/MacroExtractor.dll --leader-plans MacroExtractor/bin/Debug/net7.0/TestData/LeaderPlans/plan1.plan --follower-plans MacroExtractor/bin/Debug/net7.0/TestData/FollowerPlans/plan1.plan",
+      "workingDirectory": "MacroExtractor/../"
+    }
+  }
+}
