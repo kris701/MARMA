@@ -28,7 +28,7 @@ namespace MetaActions.Test
         private string _log = "";
         private string _errLog = "";
         private string _fastDownward = PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py");
-        private CancellationTokenSource _tokenSource;
+        private CancellationTokenSource? _tokenSource;
 
         public TestingTask(int timeLimit, string alias, FileInfo domain, FileInfo? metaDomain, FileInfo problem, string planName, string metaPlan, string sasName, Options.ReconstructionMethods reconstructionMethod)
         {
@@ -52,6 +52,7 @@ namespace MetaActions.Test
         public RunReport RunTest(CancellationTokenSource tokenSource)
         {
             _tokenSource = tokenSource;
+            tokenSource.Token.Register(Kill);
             if (Domain.Directory == null)
                 throw new Exception();
             var domainName = Domain.Directory.Name;
@@ -116,7 +117,7 @@ namespace MetaActions.Test
                 fdCaller.Arguments.Add("--overall-time-limit", $"{TimeLimit}m");
                 fdCaller.Arguments.Add(domain.FullName, "");
                 fdCaller.Arguments.Add(problem.FullName, "");
-                if (fdCaller.Run() != 0 && !_tokenSource.IsCancellationRequested)
+                if (fdCaller.Run() != 0 && _tokenSource != null && !_tokenSource.IsCancellationRequested)
                 {
                     ConsoleHelper.WriteLineColor($"Fast Downward Failed!", ConsoleColor.Red);
                     ConsoleHelper.WriteLineColor(_errLog, ConsoleColor.Red);
@@ -137,7 +138,7 @@ namespace MetaActions.Test
                 reconstructionFixer.Arguments.Add("-s", metaPlan);
                 reconstructionFixer.Arguments.Add("-f", _fastDownward);
                 reconstructionFixer.Arguments.Add("-o", planName);
-                if (reconstructionFixer.Run() != 0 && !_tokenSource.IsCancellationRequested)
+                if (reconstructionFixer.Run() != 0 && _tokenSource != null && !_tokenSource.IsCancellationRequested)
                 {
                     ConsoleHelper.WriteLineColor($"Reconstruction Failed!", ConsoleColor.Red);
                     ConsoleHelper.WriteLineColor(_errLog, ConsoleColor.Red);
@@ -160,7 +161,8 @@ namespace MetaActions.Test
 
         public void Dispose()
         {
-            _tokenSource.Cancel();
+            if (_tokenSource != null)
+                _tokenSource.Cancel();
             Kill();
         }
     }

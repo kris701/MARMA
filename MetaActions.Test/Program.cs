@@ -158,10 +158,6 @@ namespace MetaActions.Test
                         return;
                     }));
                 }
-                tokenSource.Token.Register(() => {
-                    foreach (var item in runTasks)
-                        item.Kill();
-                });
                 Task.WaitAll(tasks.ToArray());
             }
             else
