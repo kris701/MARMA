@@ -41,7 +41,7 @@ namespace MetaActions.Test
             if (metaDomain != null)
             {
                 ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Finding meta plan...", ConsoleColor.Magenta);
-                ExecuteAsNormal(domain, problem, planName, sasName);
+                ExecuteAsNormal(domain, problem, planName, metaPlan);
                 ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Repairing Plan...", ConsoleColor.Magenta);
                 RepairPlan(domain, metaDomain, problem, planName, metaPlan);
             }
