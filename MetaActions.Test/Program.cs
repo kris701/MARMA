@@ -63,9 +63,9 @@ namespace MetaActions.Test
             ConsoleHelper.WriteLineColor($"Testing suite finished!", ConsoleColor.Green);
         }
 
-        private static List<Task<RunReport>> GenerateTasks(Options opts)
+        private static List<TestingTask> GenerateTasks(Options opts)
         {
-            List<Task<RunReport>> runTasks = new List<Task<RunReport>>();
+            List<TestingTask> runTasks = new List<TestingTask>();
             foreach (var domain in new DirectoryInfo(_tempDataPath).GetDirectories())
             {
                 var domainName = domain.Name;
@@ -83,22 +83,26 @@ namespace MetaActions.Test
                 foreach (var problem in allProblems)
                 {
                     var problemName = problem.Name.Replace(".pddl", "");
-                    runTasks.Add(new Task<RunReport>(() => new TestingTask(opts.TimeLimit, opts.Alias, opts.ReconstructionMethod).RunTest(
+                    runTasks.Add(new TestingTask(
+                        opts.TimeLimit, 
+                        opts.Alias,
                         normalDomain,
                         null,
                         problem,
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}.plan"),
                         "",
-                        Path.Combine(opts.TempPath, domainName, $"{problemName}.sas")
-                        )));
-                    runTasks.Add(new Task<RunReport>(() => new TestingTask(opts.TimeLimit, opts.Alias, opts.ReconstructionMethod).RunTest(
+                        Path.Combine(opts.TempPath, domainName, $"{problemName}.sas"),
+                        opts.ReconstructionMethod));
+                    runTasks.Add(new TestingTask(
+                        opts.TimeLimit,
+                        opts.Alias,
                         normalDomain,
                         metaDomain,
                         problem,
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}_reconstructed.plan"),
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}_meta.plan"),
-                        Path.Combine(opts.TempPath, domainName, $"{problemName}_meta.sas")
-                        )));
+                        Path.Combine(opts.TempPath, domainName, $"{problemName}_meta.sas"),
+                        opts.ReconstructionMethod));
                 }
             }
 
@@ -121,41 +125,65 @@ namespace MetaActions.Test
             }
         }
 
-        private static List<RunReport> ExecuteTasks(List<Task<RunReport>> runTasks, bool multitask)
+        private static List<RunReport> ExecuteTasks(List<TestingTask> runTasks, bool multitask)
         {
             List<RunReport> results = new List<RunReport>();
-            try
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            if (multitask)
             {
-                int preCount = runTasks.Count;
-                if (multitask)
+                int counter = 1;
+                List<Task> tasks = new List<Task>();
+                foreach (var task in runTasks)
                 {
-                    Parallel.ForEach(runTasks, task => task.Start());
-                    while (runTasks.Count > 0)
-                    {
-                        var task = Task.WhenAny(runTasks).Result;
-                        runTasks.Remove(task);
-                        var result = task.Result;
-                        results.Add(result);
-                        ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 - (100 * ((double)runTasks.Count / (double)preCount)), 0)}%]", ConsoleColor.Green);
-                    }
+                    tasks.Add(Task.Run(() => {
+                        try
+                        {
+                            if (tokenSource.IsCancellationRequested)
+                                return;
+                            var result = task.RunTest(tokenSource);
+                            results.Add(result);
+                            if (tokenSource.IsCancellationRequested)
+                                ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Red);
+                            else
+                                ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                        }
+                        catch (Exception ex)
+                        {
+                            tokenSource.Cancel();
+                            ConsoleHelper.WriteLineColor($"Something failed in the testing;", ConsoleColor.Red);
+                            ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
+                            ConsoleHelper.WriteLineColor($"", ConsoleColor.Red);
+                            ConsoleHelper.WriteLineColor($"Killing tasks...!", ConsoleColor.Red);
+                        }
+                        return;
+                    }));
                 }
-                else
+                tokenSource.Token.Register(() => {
+                    foreach (var item in runTasks)
+                        item.Kill();
+                });
+                Task.WaitAll(tasks.ToArray());
+            }
+            else
+            {
+                int counter = 1;
+                foreach (var task in runTasks)
                 {
-                    int counter = 1;
-                    foreach (var task in runTasks)
+                    try
                     {
-                        task.Start();
-                        task.Wait();
-                        var result = task.Result;
+                        if (tokenSource.IsCancellationRequested)
+                            break;
+                        var result = task.RunTest(tokenSource);
                         results.Add(result);
                         ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                     }
+                    catch (Exception ex)
+                    {
+                        tokenSource.Cancel();
+                        ConsoleHelper.WriteLineColor($"Something failed in the testing!", ConsoleColor.Red);
+                        ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                ConsoleHelper.WriteLineColor($"Something failed in the testing!", ConsoleColor.Red);
-                ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
             }
             return results;
         }

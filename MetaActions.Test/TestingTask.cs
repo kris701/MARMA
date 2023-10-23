@@ -11,49 +11,85 @@ using Tools;
 
 namespace MetaActions.Test
 {
-    public class TestingTask
+    public class TestingTask : IDisposable
     {
+        public FileInfo Domain { get; set; }
+        public FileInfo? MetaDomain { get; set; }
+        public FileInfo Problem { get; set; }
+        public string PlanName { get; set; }
+        public string MetaPlanName { get; set; }
+        public string SASName { get; set; }
         public int TimeLimit { get; set; }
         public string Alias { get; set; }
         public Options.ReconstructionMethods ReconstructionMethod { get; set; }
 
+        private Task? _runningTask;
+        private Process? _activeProcess;
         private string _log = "";
+        private string _errLog = "";
         private string _fastDownward = PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py");
+        private CancellationTokenSource _tokenSource;
 
-        public TestingTask(int timeLimit, string alias, Options.ReconstructionMethods reconstructionMethod)
+        public TestingTask(int timeLimit, string alias, FileInfo domain, FileInfo? metaDomain, FileInfo problem, string planName, string metaPlan, string sasName, Options.ReconstructionMethods reconstructionMethod)
         {
             TimeLimit = timeLimit;
             Alias = alias;
             ReconstructionMethod = reconstructionMethod;
+            Domain = domain;
+            MetaDomain = metaDomain;
+            Problem = problem;
+            PlanName = planName;
+            MetaPlanName = metaPlan;
+            SASName = sasName;
         }
 
-        public RunReport RunTest(FileInfo domain, FileInfo? metaDomain, FileInfo problem, string planName, string metaPlan, string sasName)
+        public void Kill()
         {
-            if (domain.Directory == null)
+            if (_activeProcess != null)
+                _activeProcess.Kill(true);
+        }
+
+        public RunReport RunTest(CancellationTokenSource tokenSource)
+        {
+            _tokenSource = tokenSource;
+            if (Domain.Directory == null)
                 throw new Exception();
-            var domainName = domain.Directory.Name;
-            if (metaDomain != null)
+            var domainName = Domain.Directory.Name;
+            if (MetaDomain != null)
                 domainName = $"(meta) {domainName}";
-            var problemName = problem.Name.Replace(".pddl","");
+            var problemName = Problem.Name.Replace(".pddl", "");
+            ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Starting...", ConsoleColor.Magenta);
 
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-            if (metaDomain != null)
-            {
-                ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Finding meta plan...", ConsoleColor.Magenta);
-                ExecuteAsNormal(metaDomain, problem, metaPlan, sasName);
-                ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Repairing Plan...", ConsoleColor.Magenta);
-                RepairPlan(domain, metaDomain, problem, planName, metaPlan);
-            }
-            else
-            {
-                ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Finding plan...", ConsoleColor.Magenta);
-                ExecuteAsNormal(domain, problem, planName, sasName);
-            }
-            timer.Stop();
+            RunReport? runReport = null;
+            _runningTask = Task.Run(() => {
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
+                if (MetaDomain != null)
+                {
+                    ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Finding meta plan...", ConsoleColor.Magenta);
+                    ExecuteAsNormal(MetaDomain, Problem, MetaPlanName, SASName);
+                    if (tokenSource.IsCancellationRequested)
+                        return;
+                    ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Repairing Plan...", ConsoleColor.Magenta);
+                    RepairPlan(Domain, MetaDomain, Problem, PlanName, MetaPlanName);
+                    if (tokenSource.IsCancellationRequested)
+                        return;
+                }
+                else
+                {
+                    ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Finding plan...", ConsoleColor.Magenta);
+                    ExecuteAsNormal(Domain, Problem, PlanName, SASName);
+                    if (tokenSource.IsCancellationRequested)
+                        return;
+                }
+                timer.Stop();
 
-            ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Task finished!", ConsoleColor.Magenta);
-            return new RunReport(domainName, problemName, GetSearchTimeFromLog(), timer.ElapsedMilliseconds, GetWasSolutionFound());
+                runReport = new RunReport(domainName, problemName, GetSearchTimeFromLog(), timer.ElapsedMilliseconds, GetWasSolutionFound());
+            });
+            _runningTask.Wait();
+            if (runReport == null)
+                return new RunReport(domainName, problemName, 0, 0, false);
+            return runReport;
         }
 
         private double GetSearchTimeFromLog()
@@ -64,43 +100,68 @@ namespace MetaActions.Test
             return double.Parse(timeStr) * 1000;
         }
 
-        private bool GetWasSolutionFound()
-        {
-            return _log.Contains("Solution found.");
-        }
+        private bool GetWasSolutionFound() => _log.Contains("Solution found.");
 
         private void ExecuteAsNormal(FileInfo domain, FileInfo problem, string planName, string sasName)
         {
-            ArgsCaller fdCaller = new ArgsCaller("python3");
-            fdCaller.StdOut += LogStdOut;
-            fdCaller.Arguments.Add(_fastDownward, "");
-            fdCaller.Arguments.Add("--alias", Alias);
-            fdCaller.Arguments.Add("--plan-file", planName);
-            fdCaller.Arguments.Add("--sas-file", sasName);
-            fdCaller.Arguments.Add("--overall-time-limit", $"{TimeLimit}m");
-            fdCaller.Arguments.Add(domain.FullName, "");
-            fdCaller.Arguments.Add(problem.FullName, "");
-            if (fdCaller.Run() != 0)
-                throw new Exception("Fast Downward failed!");
+            using (ArgsCaller fdCaller = new ArgsCaller("python3"))
+            {
+                _activeProcess = fdCaller.Process;
+                fdCaller.StdOut += LogStdOut;
+                fdCaller.StdErr += LogStdErr;
+                fdCaller.Arguments.Add(_fastDownward, "");
+                fdCaller.Arguments.Add("--alias", Alias);
+                fdCaller.Arguments.Add("--plan-file", planName);
+                fdCaller.Arguments.Add("--sas-file", sasName);
+                fdCaller.Arguments.Add("--overall-time-limit", $"{TimeLimit}m");
+                fdCaller.Arguments.Add(domain.FullName, "");
+                fdCaller.Arguments.Add(problem.FullName, "");
+                if (fdCaller.Run() != 0 && !_tokenSource.IsCancellationRequested)
+                {
+                    ConsoleHelper.WriteLineColor($"Fast Downward Failed!", ConsoleColor.Red);
+                    ConsoleHelper.WriteLineColor(_errLog, ConsoleColor.Red);
+                    _tokenSource.Cancel();
+                }
+            }
         }
 
         private void RepairPlan(FileInfo domain, FileInfo metaDomain, FileInfo problem, string planName, string metaPlan)
         {
-            ArgsCaller reconstructionFixer = ArgsCallerBuilder.GetRustRunner("reconstruction");
-            reconstructionFixer.Arguments.Add("-d", domain.FullName);
-            reconstructionFixer.Arguments.Add("-p", problem.FullName);
-            reconstructionFixer.Arguments.Add("-m", metaDomain.FullName);
-            reconstructionFixer.Arguments.Add("-s", metaPlan);
-            reconstructionFixer.Arguments.Add("-f", _fastDownward);
-            reconstructionFixer.Arguments.Add("-o", planName);
-            if (reconstructionFixer.Run() != 0)
-                throw new Exception("Reconstruction failed!");
+            using (ArgsCaller reconstructionFixer = ArgsCallerBuilder.GetRustRunner("reconstruction"))
+            {
+                _activeProcess = reconstructionFixer.Process;
+                reconstructionFixer.StdErr += LogStdErr;
+                reconstructionFixer.Arguments.Add("-d", domain.FullName);
+                reconstructionFixer.Arguments.Add("-p", problem.FullName);
+                reconstructionFixer.Arguments.Add("-m", metaDomain.FullName);
+                reconstructionFixer.Arguments.Add("-s", metaPlan);
+                reconstructionFixer.Arguments.Add("-f", _fastDownward);
+                reconstructionFixer.Arguments.Add("-o", planName);
+                if (reconstructionFixer.Run() != 0 && !_tokenSource.IsCancellationRequested)
+                {
+                    ConsoleHelper.WriteLineColor($"Reconstruction Failed!", ConsoleColor.Red);
+                    ConsoleHelper.WriteLineColor(_errLog, ConsoleColor.Red);
+                    _tokenSource.Cancel();
+                }
+            }
         }
 
         private void LogStdOut(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
                 _log += $"{e.Data}{Environment.NewLine}";
+        }
+
+        private void LogStdErr(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+                _errLog += $"{e.Data}{Environment.NewLine}";
+        }
+
+        public void Dispose()
+        {
+            _tokenSource.Cancel();
+            Kill();
         }
     }
 }
