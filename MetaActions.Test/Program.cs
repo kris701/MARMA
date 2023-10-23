@@ -136,7 +136,7 @@ namespace MetaActions.Test
                         runTasks.Remove(task);
                         var result = task.Result;
                         results.Add(result);
-                        ConsoleHelper.WriteLineColor($"Training for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 - (100 * ((double)runTasks.Count / (double)preCount)), 0)}%]", ConsoleColor.Green);
+                        ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 - (100 * ((double)runTasks.Count / (double)preCount)), 0)}%]", ConsoleColor.Green);
                     }
                 }
                 else
@@ -148,7 +148,7 @@ namespace MetaActions.Test
                         task.Wait();
                         var result = task.Result;
                         results.Add(result);
-                        ConsoleHelper.WriteLineColor($"Training for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                        ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                     }
                 }
             }

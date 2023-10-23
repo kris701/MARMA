@@ -36,14 +36,20 @@ namespace MetaActions.Test
                 domainName = $"(meta) {domainName}";
             var problemName = problem.Name.Replace(".pddl","");
 
-            ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Starting task...", ConsoleColor.Magenta);
-
             Stopwatch timer = new Stopwatch();
             timer.Start();
             if (metaDomain != null)
-                ExecuteAsMeta(domain, metaDomain, problem, planName, metaPlan, sasName);
-            else
+            {
+                ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Finding meta plan...", ConsoleColor.Magenta);
                 ExecuteAsNormal(domain, problem, planName, sasName);
+                ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Repairing Plan...", ConsoleColor.Magenta);
+                RepairPlan(domain, metaDomain, problem, planName, metaPlan);
+            }
+            else
+            {
+                ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Finding plan...", ConsoleColor.Magenta);
+                ExecuteAsNormal(domain, problem, planName, sasName);
+            }
             timer.Stop();
 
             ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Task finished!", ConsoleColor.Magenta);
@@ -78,12 +84,8 @@ namespace MetaActions.Test
                 throw new Exception("Fast Downward failed!");
         }
 
-        private void ExecuteAsMeta(FileInfo domain, FileInfo metaDomain, FileInfo problem, string planName, string metaPlan, string sasName)
+        private void RepairPlan(FileInfo domain, FileInfo metaDomain, FileInfo problem, string planName, string metaPlan)
         {
-            // Execute with FD
-            ExecuteAsNormal(metaDomain, problem, metaPlan, sasName);
-
-            // Reconstruct plan
             ArgsCaller reconstructionFixer = ArgsCallerBuilder.GetRustRunner("reconstruction");
             reconstructionFixer.Arguments.Add("-d", domain.FullName);
             reconstructionFixer.Arguments.Add("-p", problem.FullName);
