@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencie
 		Dependencies\setup_programs.sh = Dependencies\setup_programs.sh
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StacklebergCompiler", "StacklebergCompiler\StacklebergCompiler.csproj", "{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergCompiler", "StackelbergCompiler\StackelbergCompiler.csproj", "{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergVerifier", "StackelbergVerifier\StackelbergVerifier.csproj", "{5DB596AE-CB35-4439-AB62-0502C42F7586}"
 EndProject
