@@ -10,5 +10,5 @@ state = { path = "../state" }
 shared = { path = "../shared" }
 clap = { version = "4.4.4", features = ["derive"] }
 color-eyre = "0.6.2"
-spingus = { git = "https://github.com/jamadaha/spingus.git", rev = "d5c6dd4" }
+spingus = { git = "https://github.com/jamadaha/spingus.git", rev = "9cc2d0f" }
 rand = "*"
