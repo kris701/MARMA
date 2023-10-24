@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use shared::time::run_time;
 use spingus::{
     domain::{
         predicate::{Predicate, Predicates},
@@ -41,7 +42,8 @@ fn generate_facts_predicate(
 }
 
 fn generate_facts_all(domain: &Domain, problem: &Problem) -> Vec<Fact> {
-    domain
+    println!("{} Generating facts...", run_time());
+    let facts: Vec<Fact> = domain
         .predicates
         .iter()
         .enumerate()
@@ -50,7 +52,9 @@ fn generate_facts_all(domain: &Domain, problem: &Problem) -> Vec<Fact> {
             println!("{}: {}", predicate.name, facts.len());
             facts
         })
-        .collect()
+        .collect();
+    println!("total: {}", facts.len());
+    facts
 }
 
 fn generate_fact_map(facts: &Vec<Fact>) -> HashMap<Fact, usize> {

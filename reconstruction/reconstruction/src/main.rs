@@ -11,12 +11,25 @@ use std::fs;
 use std::path::PathBuf;
 
 use crate::downward_wrapper::Downward;
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 
 mod downward_wrapper;
 mod problem_writing;
 mod reconstruction;
 mod stiching;
+
+#[derive(Debug, Copy, Clone, PartialEq, Default, ValueEnum)]
+enum ReconstructionMethod {
+    #[default]
+    None,
+    FastDownward,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Default, ValueEnum)]
+enum CacheMethod {
+    #[default]
+    BitExp,
+}
 
 #[derive(Parser, Default, Debug)]
 #[command(term_width = 0)]
@@ -46,6 +59,12 @@ pub struct Args {
     /// Path to a set of lifted macros used to cache meta action reconstruction
     #[arg(short = 'c')]
     cache: Option<PathBuf>,
+    /// Type of caching
+    #[arg(long = "cache_method", default_value = "bit-exp")]
+    cache_method: CacheMethod,
+    /// Method of reconstruction
+    #[arg(long = "reconstruction_method", default_value = "none")]
+    reconstruction_method: ReconstructionMethod,
 }
 
 fn main() -> Result<()> {
