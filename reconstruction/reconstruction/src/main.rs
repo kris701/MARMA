@@ -115,19 +115,21 @@ fn main() -> Result<()> {
             None
         }
     };
-    let plan = reconstruct(
-        instance,
-        &meta_domain,
-        &args.domain,
-        &downward,
-        cache.as_ref(),
-        meta_plan,
-    );
-    let plan_export = export_sas(&plan);
-    match args.out {
-        Some(path) => fs::write(path, plan_export).unwrap(),
-        None => {
-            println!("Final plan\n{}", plan_export);
+    if args.reconstruction_method != ReconstructionMethod::None {
+        let plan = reconstruct(
+            instance,
+            &meta_domain,
+            &args.domain,
+            &downward,
+            cache.as_ref(),
+            meta_plan,
+        );
+        let plan_export = export_sas(&plan);
+        match args.out {
+            Some(path) => fs::write(path, plan_export).unwrap(),
+            None => {
+                println!("Final plan\n{}", plan_export);
+            }
         }
     }
 
