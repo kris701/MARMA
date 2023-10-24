@@ -4,7 +4,6 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use clap::ValueEnum;
 use shared::{io::file::file_name, time::run_time};
 use spingus::{
     domain::action::{parse_action, Action},

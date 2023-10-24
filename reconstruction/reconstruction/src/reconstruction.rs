@@ -58,7 +58,6 @@ fn generate_replacement(
             return replacement;
         }
     }
-    let problem_path = Path::new(".temp_problem.pddl").to_path_buf();
     let problem_file_name: String = rand::thread_rng()
         .sample_iter(&Alphanumeric)
         .take(16)
