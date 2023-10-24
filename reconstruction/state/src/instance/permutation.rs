@@ -7,14 +7,18 @@ use spingus::{
     problem::{object::Object, Problem},
 };
 
-fn is_valid_type(types: &Types, t1: &String, t2: &Option<String>) -> bool {
-    match t2 {
-        Some(t2) => {
-            t2 == t1
-                || types
+fn is_valid_type(types: &Types, expected_type: &String, actual_type: &Option<String>) -> bool {
+    match actual_type {
+        Some(t) => match t == expected_type {
+            true => true,
+            false => match types.iter().find(|a| a.name == *t) {
+                Some(t) => t
+                    .sub_types
                     .iter()
-                    .any(|t| t.name == *t1 && t.sub_types.contains(t2))
-        }
+                    .any(|t| is_valid_type(types, expected_type, &Some(t.to_owned()))),
+                None => false,
+            },
+        },
         None => false,
     }
 }
