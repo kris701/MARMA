@@ -37,10 +37,7 @@ pub fn generate_operator_string(
     parameters: &Vec<String>,
 ) -> Operator {
     let action: &Action = domain.actions.iter().find(|a| a.name == action).unwrap();
-    let parameters: Vec<usize> = parameters
-        .iter()
-        .map(|p| facts.object_map.get(p).unwrap().to_owned())
-        .collect();
+    let parameters: Vec<usize> = parameters.iter().map(|p| facts.object_index(p)).collect();
     extract_from_action(&parameters, action, facts).unwrap()
 }
 

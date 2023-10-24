@@ -99,5 +99,6 @@ fn main() -> Result<()> {
         }
     }
 
+    println!("{} Done", run_time());
     Ok(())
 }

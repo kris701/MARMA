@@ -17,7 +17,7 @@ fn generate_objects(problem: &Problem) -> String {
 
 fn generate_fact(instance: &Instance, i: usize) -> String {
     let mut s = "".to_string();
-    let fact = &instance.facts.facts[i];
+    let fact = instance.facts.get_fact(i);
     s.push_str(&instance.domain.predicates[fact.predicate].name);
     fact.parameters
         .iter()

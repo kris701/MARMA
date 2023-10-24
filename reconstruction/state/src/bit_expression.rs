@@ -43,7 +43,7 @@ fn evaluate_term(
     val: bool,
 ) -> bool {
     let exp = if val { pos } else { neg };
-    let pred_index = facts.predicate_map[&term.name];
+    let pred_index = facts.predicate_index(&term.name);
     let parameter_indexes: Vec<usize> = term
         .parameters
         .iter()

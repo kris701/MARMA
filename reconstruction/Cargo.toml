@@ -1,3 +1,7 @@
 [workspace]
 members = ["shared", "state", "cache", "reconstruction"]
 resolver = "2"
+
+[profile.release-with-debug]
+inherits = "release"
+debug = true

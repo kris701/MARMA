@@ -19,10 +19,10 @@ pub struct Fact {
 
 #[derive(Debug, PartialEq)]
 pub struct Facts {
-    pub facts: Vec<Fact>,
-    pub fact_map: HashMap<Fact, usize>,
-    pub predicate_map: HashMap<String, usize>,
-    pub object_map: HashMap<String, usize>,
+    facts: Vec<Fact>,
+    fact_map: HashMap<Fact, usize>,
+    predicate_map: HashMap<String, usize>,
+    object_map: HashMap<String, usize>,
 }
 
 fn generate_facts_predicate(
@@ -105,5 +105,17 @@ impl Facts {
             parameters: parameters.to_owned(),
         };
         self.fact_map[&fact]
+    }
+
+    pub fn get_fact(&self, index: usize) -> &Fact {
+        &self.facts[index]
+    }
+
+    pub fn predicate_index(&self, predicate: &String) -> usize {
+        self.predicate_map[predicate]
+    }
+
+    pub fn object_index(&self, object: &String) -> usize {
+        self.object_map[object]
     }
 }
