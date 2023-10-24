@@ -88,11 +88,6 @@ fn main() -> Result<()> {
     println!("{} Converting instance....", run_time());
     let instance = Instance::new(domain, problem);
 
-    println!("{} Finding fast downward...", run_time());
-    let downward = Downward::new(&args.downward);
-    println!("{} Finding meta solution...", run_time());
-    let meta_plan = downward.solve_or_find(&args.meta_domain, &args.problem, &args.solution);
-
     println!("{} Checking for cache...", run_time());
     let cache: Option<Cache> = match args.cache {
         Some(p) => {
@@ -116,6 +111,10 @@ fn main() -> Result<()> {
         }
     };
     if args.reconstruction_method != ReconstructionMethod::None {
+        println!("{} Finding fast downward...", run_time());
+        let downward = Downward::new(&args.downward);
+        println!("{} Finding meta solution...", run_time());
+        let meta_plan = downward.solve_or_find(&args.meta_domain, &args.problem, &args.solution);
         let plan = reconstruct(
             instance,
             &meta_domain,

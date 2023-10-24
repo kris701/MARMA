@@ -1,114 +1,109 @@
 use std::{
     collections::HashMap,
-    fs,
-    io::{self},
-    ops::BitAnd,
-    path::PathBuf,
+    fs, io,
+    path::{Path, PathBuf},
 };
 
 use spingus::{
-    domain::{
-        action::{parse_action, Action},
-        Domain,
-    },
-    problem::Problem,
-    sas_plan::SASPlan,
+    domain::action::{parse_action, Action},
+    sas_plan::{parse_sas, SASPlan},
 };
-use state::{
-    bit_expression::BitExp,
-    instance::{
-        facts::Facts,
-        operator::{generate_operators, Operator},
-    },
-    state::State,
-};
+use state::{instance::Instance, state::State};
 
-#[derive(Debug)]
-pub struct Cache {
-    lifted_macros: Vec<Action>,
-    entries: Vec<(Operator, Vec<usize>)>,
-    effect_map: HashMap<BitExp, Vec<usize>>,
-    entry_macro: HashMap<usize, usize>,
+mod bit_cache;
+
+pub trait Cache {
+    /// Initializes cache from files at given path
+    fn init(instance: &Instance, path: &PathBuf) -> Self;
+    /// Retrives replacement from cache from given init to goal
+    fn get_replacement(&self, instance: &Instance, init: &State, goal: &State) -> Option<SASPlan>;
 }
 
-impl Cache {
-    pub fn get(&self, state: &State, goal: &State) -> Option<usize> {
-        let mut desired = state.get().bitand(!goal.get());
-        desired.append(&mut goal.get().bitand(!state.get()));
-        let candidates: Option<&Vec<usize>> = self.effect_map.get(&(desired as BitExp));
-        match candidates {
-            Some(candidates) => candidates
-                .iter()
-                .find(|i| state.is_legal(&self.entries[**i].0))
-                .copied(),
-            None => return None,
+fn read_cache_dir(path: &PathBuf) -> io::Result<Vec<PathBuf>> {
+    let iter = fs::read_dir(path)?;
+    let paths: Vec<PathBuf> = iter.map(|e| e.unwrap().path()).collect();
+    Ok(paths)
+}
+
+fn read_meta_dir(path: &PathBuf) -> io::Result<Vec<(PathBuf, PathBuf)>> {
+    let iter = fs::read_dir(path)?;
+    let mut macros: Vec<PathBuf> = Vec::new();
+    let mut plans: Vec<PathBuf> = Vec::new();
+    for entry in iter {
+        let path = entry.unwrap().path();
+        let path = Path::new(&path);
+        match path.extension() {
+            None => {}
+            Some(ostr) => match ostr.to_str() {
+                Some("pddl") => macros.push(path.to_path_buf()),
+                Some("plan") => plans.push(path.to_path_buf()),
+                _ => panic!("Unexpected file ending on file {:?}", path.to_path_buf()),
+            },
         }
     }
 
-    pub fn get_replacement(&self, domain: &Domain, problem: &Problem, index: usize) -> SASPlan {
-        let macro_index = self.entry_macro[&index];
-        let lifted_macro = self.lifted_macros.get(macro_index).unwrap();
-        let actions: Vec<&str> = lifted_macro.name.split("#").collect();
-        let actions: Vec<&Action> = actions
-            .iter()
-            .map(|n| domain.actions.iter().find(|a| a.name == **n).unwrap())
-            .collect();
-        let permutation: Vec<usize> = self.entries[index].1.to_owned();
-        println!("{:?}", permutation);
-        vec![]
-    }
-}
-
-pub fn generate_cache(
-    domain: &Domain,
-    problem: &Problem,
-    facts: &Facts,
-    macros: Vec<Action>,
-) -> Cache {
-    let mut lifted_macros: Vec<Action> = Vec::new();
-    let mut entries: Vec<(Operator, Vec<usize>)> = Vec::new();
-    let mut effect_map: HashMap<BitExp, Vec<usize>> = HashMap::new();
-    let mut entry_macro: HashMap<usize, usize> = HashMap::new();
-    for action in &macros {
-        let action_index = lifted_macros.len();
-        lifted_macros.push(action.to_owned());
-        let operators = generate_operators(domain, problem, facts, &action);
-        for (operator, permutation) in operators {
-            let entry_index = entries.len();
-            entry_macro.insert(entry_index, action_index);
-            let mut c_effect = operator.eff_neg.to_owned();
-            c_effect.append(&mut operator.eff_pos.to_owned());
-            match effect_map.get_mut(&c_effect) {
-                Some(e) => {
-                    e.push(entry_index);
-                }
-                None => {
-                    effect_map.insert(c_effect.to_owned(), vec![entry_index]);
-                }
-            };
-            entries.push((operator, permutation));
-        }
-    }
-    let c = Cache {
-        lifted_macros,
-        entries,
-        effect_map,
-        entry_macro,
-    };
-    println!("Generated cache with {} entries", c.entries.len());
-    println!("Number of effects {}", c.effect_map.len());
-    c
-}
-
-pub fn read_cache_input(path: &PathBuf) -> io::Result<Vec<Action>> {
-    let files: Vec<PathBuf> = fs::read_dir(path)?.map(|p| p.unwrap().path()).collect();
-    let instances: Vec<Action> = files
+    let combined: Vec<(PathBuf, PathBuf)> = plans
         .iter()
-        .map(|path| {
-            let action_content: String = fs::read_to_string(path).unwrap();
-            let action = parse_action(&action_content).unwrap().1;
-            action
+        .map(|p| {
+            (
+                macros
+                    .iter()
+                    .find(|m| {
+                        p.file_name()
+                            .unwrap()
+                            .to_str()
+                            .unwrap()
+                            .contains(m.file_name().unwrap().to_str().unwrap())
+                    })
+                    .unwrap()
+                    .to_owned(),
+                p.to_owned(),
+            )
         })
         .collect();
-    Ok(instances)
+    Ok(combined)
+}
+
+fn parse_replacements(
+    replacements: Vec<(PathBuf, PathBuf)>,
+) -> Result<Vec<(Action, SASPlan)>, String> {
+    let replaced = replacements
+        .iter()
+        .map(|(macro_path, plan_path)| {
+            return (
+                parse_action(&fs::read_to_string(&macro_path).unwrap())
+                    .unwrap()
+                    .1,
+                parse_sas(&fs::read_to_string(&plan_path).unwrap()).unwrap(),
+            );
+        })
+        .collect();
+    Ok(replaced)
+}
+
+pub(crate) fn read_cache_input(
+    path: &PathBuf,
+) -> Result<HashMap<String, Vec<(Action, SASPlan)>>, String> {
+    let meta_paths = match read_cache_dir(path) {
+        Ok(p) => p,
+        Err(e) => return Err(format!("Reading cache dir failed with error: {}", e).to_string()),
+    };
+    let mut replacements: HashMap<String, Vec<(Action, SASPlan)>> = HashMap::new();
+    for path in meta_paths {
+        let substitutes = match read_meta_dir(&path) {
+            Ok(v) => v,
+            Err(e) => {
+                return Err(format!(
+                    "Reading meta dir {:?} failed with error: {}",
+                    path, e
+                ))
+            }
+        };
+
+        replacements.insert(
+            path.file_name().unwrap().to_str().unwrap().to_string(),
+            parse_replacements(substitutes)?,
+        );
+    }
+    Ok(replacements)
 }
