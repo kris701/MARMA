@@ -9,6 +9,8 @@ namespace MacroExtractor
 {
     public class Options
     {
+        [Option("domain", Required = true, HelpText = "Path to the domain file.")]
+        public string DomainPath { get; set; } = "";
         [Option("leader-plans", Required = true, HelpText = "Path the the leader plan files to extract macros from.")]
         public IEnumerable<string> LeaderPlans { get; set; } = new List<string>();
         [Option("follower-plans", Required = true, HelpText = "Path the the follower plan files to extract macros from.")]
