@@ -107,8 +107,12 @@ impl Facts {
         self.fact_map[&fact]
     }
 
-    pub fn get_fact(&self, index: usize) -> &Fact {
-        &self.facts[index]
+    pub fn fact_predicate(&self, fact_index: usize) -> usize {
+        self.facts[fact_index].predicate
+    }
+
+    pub fn fact_parameters(&self, fact_index: usize) -> &Vec<usize> {
+        &self.facts[fact_index].parameters
     }
 
     pub fn predicate_index(&self, predicate: &String) -> usize {

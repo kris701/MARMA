@@ -11,7 +11,7 @@ fn time() -> usize {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
-        .as_millis() as usize
+        .as_nanos() as usize
 }
 
 pub fn init_time() {
@@ -23,8 +23,11 @@ pub fn run_time() -> String {
     assert_ne!(start_time, 0); // Uninitialized - Run init_time
     let curr_time = time();
     let elapsed = curr_time - start_time;
-    match elapsed {
-        0..=9999 => format!("[{:4}ms]", elapsed),
-        _ => format!("[{:5}s]", elapsed / 1000),
+    let elapsed = elapsed as f64 / (1000.0 * 1000.0);
+
+    if elapsed < 1000.0 {
+        format!("[{: >6.2}ms]", elapsed)
+    } else {
+        format!("[{: >7.2}s]", elapsed / 1000.0)
     }
 }

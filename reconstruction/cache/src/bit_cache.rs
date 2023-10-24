@@ -34,6 +34,7 @@ impl Cache for BitCache {
             .flat_map(|(_, a)| a.to_owned())
             .collect::<Vec<(Action, SASPlan)>>()
         {
+            println!("{} Generating cache for {}", run_time(), action.name);
             let action_index = lifted_macros.len();
             let operators = generate_operators(
                 &instance.domain,
