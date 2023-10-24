@@ -25,6 +25,9 @@
     <None Update="TestData\FollowerPlans\$meta-pick-pick-move-drop-drop\$meta-pick-pick-move-drop-drop2_1.plan">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\FollowerPlans\$meta-pick-pick-move-drop-drop\$meta-pick-pick-move-drop-drop2_2.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\gripper.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

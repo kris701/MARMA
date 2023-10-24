@@ -47,7 +47,7 @@ namespace MacroExtractor
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Generating macro sequences...");
-            var macros = GenerateMacro(planSequences, domain);
+            var macros = GenerateMacros(planSequences, domain);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Outputting reconstruction data...");
@@ -129,7 +129,7 @@ namespace MacroExtractor
             return index;
         }
 
-        private static Dictionary<GroundedAction, List<ActionDecl>> GenerateMacro(Dictionary<GroundedAction, HashSet<ActionPlan>> from, DomainDecl domain)
+        private static Dictionary<GroundedAction, List<ActionDecl>> GenerateMacros(Dictionary<GroundedAction, HashSet<ActionPlan>> from, DomainDecl domain)
         {
             var returnDict = new Dictionary<GroundedAction, List<ActionDecl>>();
 
@@ -137,14 +137,19 @@ namespace MacroExtractor
             {
                 returnDict.Add(key, new List<ActionDecl>());
                 foreach (var actionPlan in from[key])
-                    returnDict[key].Add(GenerateActionInstance(key.ActionName, actionPlan, domain));
+                {
+                    var macro = GenerateMacroInstance(key.ActionName, actionPlan, domain);
+                    if (macro.Parameters.Values.Count != key.Arguments.Count)
+                        throw new ArgumentException("Macro is invalid! It does not have the same amount of parameters as the meta action it replaces.");
+                    returnDict[key].Add(macro);
+                }
                 returnDict[key] = returnDict[key].Distinct().ToList();
             }
 
             return returnDict;
         }
 
-        private static ActionDecl GenerateActionInstance(string newName, ActionPlan plan, DomainDecl domain)
+        private static ActionDecl GenerateMacroInstance(string newName, ActionPlan plan, DomainDecl domain)
         {
             SimpleActionCombiner combiner = new SimpleActionCombiner();
             List<ActionDecl> planActionInstances = new List<ActionDecl>();
