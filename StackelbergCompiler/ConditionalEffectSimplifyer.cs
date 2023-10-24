@@ -4,7 +4,7 @@ using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
 
-namespace StacklebergCompiler
+namespace StackelbergCompiler
 {
     public class ConditionalEffectSimplifyer
     {

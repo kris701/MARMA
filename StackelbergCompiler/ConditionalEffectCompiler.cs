@@ -5,7 +5,7 @@ using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
 using System;
 
-namespace StacklebergCompiler
+namespace StackelbergCompiler
 {
     public class ConditionalEffectCompiler
     {
