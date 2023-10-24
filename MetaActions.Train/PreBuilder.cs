@@ -13,8 +13,8 @@ namespace MetaActions.Learn
         {
             if (ArgsCallerBuilder.GetDotnetBuilder("MetaActionGenerator").Run() != 0)
                 throw new Exception("'MetaActionGenerator' Build failed!");
-            if (ArgsCallerBuilder.GetDotnetBuilder("StacklebergCompiler").Run() != 0)
-                throw new Exception("'StacklebergCompiler' Build failed!");
+            if (ArgsCallerBuilder.GetDotnetBuilder("StackelbergCompiler").Run() != 0)
+                throw new Exception("'StackelbergCompiler' Build failed!");
             if (ArgsCallerBuilder.GetDotnetBuilder("StackelbergVerifier").Run() != 0)
                 throw new Exception("'StackelbergVerifier' Build failed!");
             if (ArgsCallerBuilder.GetRustBuilder("macros").Run() != 0)

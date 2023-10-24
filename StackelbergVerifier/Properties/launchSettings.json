@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "StacklebergCompiler": {
+    "StackelbergVerifier": {
       "commandName": "Project"
     },
     "WSL": {

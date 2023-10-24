@@ -215,7 +215,7 @@ namespace MetaActions.Learn
 
         private void CompileMetaAction(string domain, string problem, string metaAction)
         {
-            ArgsCaller stackelCompiler = ArgsCallerBuilder.GetDotnetRunner("StacklebergCompiler");
+            ArgsCaller stackelCompiler = ArgsCallerBuilder.GetDotnetRunner("StackelbergCompiler");
             stackelCompiler.Arguments.Add("--domain", domain);
             stackelCompiler.Arguments.Add("--problem", problem);
             stackelCompiler.Arguments.Add("--meta-action", metaAction);
