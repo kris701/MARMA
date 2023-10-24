@@ -18,17 +18,38 @@ namespace Tools
             runner.StdOut += PrintStdOut;
             runner.StdErr += PrintStdErr;
             runner.Arguments.Add("run", "");
+            runner.Arguments.Add("--no-restore", "");
+            runner.Arguments.Add("--no-build", "");
             runner.Arguments.Add("--configuration", "Release");
             runner.Arguments.Add("--project", $"{project} --");
             return runner;
         }
 
+        public static ArgsCaller GetDotnetBuilder(string project)
+        {
+            ArgsCaller runner = new ArgsCaller("dotnet");
+            runner.StdOut += PrintStdOut;
+            runner.StdErr += PrintStdErr;
+            runner.Arguments.Add("build", "");
+            runner.Arguments.Add("--configuration", "Release");
+            runner.Arguments.Add(project, "");
+            return runner;
+        }
+
         public static ArgsCaller GetRustRunner(string project)
+        {
+            ArgsCaller runner = new ArgsCaller($"{project}/target/release/{project}");
+            runner.StdOut += PrintStdOut;
+            runner.StdErr += PrintStdErr;
+            return runner;
+        }
+
+        public static ArgsCaller GetRustBuilder(string project)
         {
             ArgsCaller runner = new ArgsCaller("cargo");
             runner.StdOut += PrintStdOut;
             runner.StdErr += PrintStdErr;
-            runner.Arguments.Add("run", "");
+            runner.Arguments.Add("build", "");
             runner.Arguments.Add("--release", "");
             runner.Arguments.Add("--manifest-path", $"{project}/Cargo.toml --");
             return runner;

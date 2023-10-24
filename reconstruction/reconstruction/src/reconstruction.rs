@@ -1,5 +1,6 @@
 use crate::{downward_wrapper::Downward, problem_writing::write_problem, stiching::stich};
 use cache::Cache;
+use rand::{distributions::Alphanumeric, Rng};
 use shared::time::run_time;
 use spingus::{domain::Domain, sas_plan::SASPlan};
 use state::{
@@ -58,10 +59,15 @@ fn generate_replacement(
         }
     }
     let problem_path = Path::new(".temp_problem.pddl").to_path_buf();
+    let problem_file_name: String = rand::thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(16)
+        .map(char::from)
+        .collect();
+    let problem_path = Path::new(&format!("{}.pddl", problem_file_name)).to_path_buf();
     write_problem(instance, &init, &goal, &problem_path);
     let solution = downward.solve(domain_path, &problem_path);
     let _ = fs::remove_file(&problem_path);
-    let _ = fs::remove_file("sas_plan");
     solution
 }
 

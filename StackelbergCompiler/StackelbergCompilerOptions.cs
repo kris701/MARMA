@@ -1,8 +1,8 @@
 ﻿using CommandLine;
 
-namespace StacklebergCompiler
+namespace StackelbergCompiler
 {
-    public class StacklebergCompilerOptions
+    public class StackelbergCompilerOptions
     {
         [Option("domain", Required = true, HelpText = "Path to the domain file to use")]
         public string DomainFilePath { get; set; } = "";
