@@ -38,12 +38,8 @@ namespace MacroExtractor
             var domain = ParseDomain(opts.DomainPath);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Matching plans...");
-            var leaderFollowerPairs = GetLeaderFollowerFilePairs(opts.LeaderPlans.ToList(), opts.FollowerPlans.ToList());
-            ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
-
             ConsoleHelper.WriteLineColor("Extracting plan sequences...");
-            var planSequences = ExtractUniquePlanSequences(leaderFollowerPairs);
+            var planSequences = ExtractUniquePlanSequences(opts.FollowerPlans.ToList());
             ConsoleHelper.WriteLineColor($"A total of {planSequences.Keys.Count} unique meta action instances found.");
             ConsoleHelper.WriteLineColor($"A total of {planSequences.Sum(x => x.Value.Count)} replacement sequences found.");
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
@@ -65,53 +61,31 @@ namespace MacroExtractor
             return parser.ParseAs<DomainDecl>(new FileInfo(domainFile));
         }
 
-        private static Dictionary<FileInfo, List<FileInfo>> GetLeaderFollowerFilePairs(List<string> leaderPlanFiles, List<string> followerPlanFiles)
+        private static Dictionary<GroundedAction, HashSet<ActionPlan>> ExtractUniquePlanSequences(List<string> followerPlanFiles)
         {
-            var leaderPlans = PathHelper.ResolveWildcards(leaderPlanFiles);
             var followerPlans = PathHelper.ResolveWildcards(followerPlanFiles);
 
-            var leaderFollowerPairs = new Dictionary<FileInfo, List<FileInfo>>();
-            foreach (var leaderPlan in leaderPlans)
-            {
-                var leaderName = leaderPlan.Name.Replace(leaderPlan.Extension, "");
-                leaderFollowerPairs.Add(leaderPlan, new List<FileInfo>());
-                foreach (var followerPlan in followerPlans)
-                    if (followerPlan.Name.Replace(followerPlan.Extension, "").StartsWith($"{leaderName}_"))
-                        leaderFollowerPairs[leaderPlan].Add(followerPlan);
-            }
-            return leaderFollowerPairs;
-        }
-
-        private static Dictionary<GroundedAction, HashSet<ActionPlan>> ExtractUniquePlanSequences(Dictionary<FileInfo, List<FileInfo>> leaderFollowerPairs)
-        {
             var planSequences = new Dictionary<GroundedAction, HashSet<ActionPlan>>();
             IErrorListener listener = new ErrorListener();
             IParser<ActionPlan> parser = new FastDownwardPlanParser(listener);
-            foreach (var leaderPlanFile in leaderFollowerPairs.Keys)
+
+            foreach(var planFile in followerPlans)
             {
-                var leaderPlan = parser.Parse(leaderPlanFile);
-                int metaActionIndex = IndexOfMetaAction(leaderPlan);
-                var leaderPath = leaderPlan.Plan.GetRange(0, metaActionIndex);
-                var metaAction = leaderPlan.Plan[metaActionIndex];
+                var plan = parser.Parse(planFile);
+                int metaActionIndex = IndexOfMetaAction(plan);
+                var metaAction = plan.Plan[metaActionIndex];
                 var nameDictionary = GenerateNameReplacementDict(metaAction);
                 RenameActionArguments(metaAction, nameDictionary);
-
                 if (!planSequences.ContainsKey(metaAction))
                     planSequences.Add(metaAction, new HashSet<ActionPlan>());
 
-                foreach (var followerPlanFile in leaderFollowerPairs[leaderPlanFile])
-                {
-                    var followerPlan = parser.Parse(followerPlanFile);
-                    var followerInitialPath = followerPlan.Plan.GetRange(0, metaActionIndex);
-                    if (leaderPath.Count != followerInitialPath.Count)
-                        throw new Exception("The path to the meta action was not the same between the leader and follower plans!");
-                    var actionSequence = followerPlan.Plan.GetRange(metaActionIndex, followerPlan.Plan.Count - metaActionIndex);
-                    foreach (var action in actionSequence)
-                        RenameActionArguments(action, nameDictionary);
+                var repairSequence = plan.Plan.GetRange(metaActionIndex + 1, plan.Plan.Count - metaActionIndex - 1);
+                foreach (var action in repairSequence)
+                    RenameActionArguments(action, nameDictionary);
 
-                    planSequences[metaAction].Add(new ActionPlan(actionSequence, actionSequence.Count));
-                }
+                planSequences[metaAction].Add(new ActionPlan(repairSequence, repairSequence.Count));
             }
+
             return planSequences;
         }
 
@@ -128,30 +102,32 @@ namespace MacroExtractor
         {
             foreach (var arg in action.Arguments)
                 arg.Name = replacements[arg.Name];
+            if (action.ActionName.StartsWith("attack_") || action.ActionName.StartsWith("fix_"))
+                action.ActionName = action.ActionName.Replace("attack_", "").Replace("fix_", "");
         }
 
         private static int IndexOfMetaAction(ActionPlan leaderPlan)
         {
             for (int i = 0; i < leaderPlan.Plan.Count; i++)
-                if (leaderPlan.Plan[i].ActionName.StartsWith("$meta"))
+                if (leaderPlan.Plan[i].ActionName.StartsWith("fix_$meta"))
                     return i;
             throw new Exception("No meta action found in leader plan!");
         }
 
-        private static Dictionary<GroundedAction, HashSet<ActionDecl>> GenerateMacros(Dictionary<GroundedAction, HashSet<ActionPlan>> from, DomainDecl domain)
+        private static Dictionary<GroundedAction, HashSet<RepairSequence>> GenerateMacros(Dictionary<GroundedAction, HashSet<ActionPlan>> from, DomainDecl domain)
         {
-            var returnDict = new Dictionary<GroundedAction, HashSet<ActionDecl>>();
+            var returnDict = new Dictionary<GroundedAction, HashSet<RepairSequence>>();
 
             foreach(var key in from.Keys)
             {
                 if (!returnDict.ContainsKey(key))
-                    returnDict.Add(key, new HashSet<ActionDecl>());
+                    returnDict.Add(key, new HashSet<RepairSequence>());
                 foreach (var actionPlan in from[key])
                 {
                     var macro = GenerateMacroInstance(key.ActionName, actionPlan, domain);
                     if (macro.Parameters.Values.Count != key.Arguments.Count)
                         throw new ArgumentException("Macro is invalid! It does not have the same amount of parameters as the meta action it replaces.");
-                    returnDict[key].Add(macro);
+                    returnDict[key].Add(new RepairSequence(macro, actionPlan));
                 }
             }
 
@@ -165,7 +141,7 @@ namespace MacroExtractor
             foreach(var actionPlan in plan.Plan) 
                 planActionInstances.Add(GenerateActionInstance(actionPlan, domain));
             var combined = combiner.Combine(planActionInstances);
-            combined.Name = newName;
+            combined.Name = newName.Replace("$meta", "$macro");
             return combined;
         }
 
@@ -182,16 +158,21 @@ namespace MacroExtractor
             return target;
         }
 
-        private static void OutputReconstructionData(Dictionary<GroundedAction, HashSet<ActionDecl>> macros, string outPath)
+        private static void OutputReconstructionData(Dictionary<GroundedAction, HashSet<RepairSequence>> repairSequences, string outPath)
         {
             IErrorListener listener = new ErrorListener();
             ICodeGenerator<INode> codeGenerator = new PDDLCodeGenerator(listener);
-            foreach (var key in macros.Keys)
+            ICodeGenerator<ActionPlan> planGenerator = new FastDownwardPlanGenerator(listener);
+            foreach (var key in repairSequences.Keys)
             {
                 PathHelper.RecratePath(Path.Combine(outPath, key.ActionName));
                 int id = 1;
-                foreach (var replacement in macros[key])
-                    codeGenerator.Generate(replacement, Path.Combine(outPath, key.ActionName, $"macro{id++}.pddl"));
+                foreach (var replacement in repairSequences[key])
+                {
+                    codeGenerator.Generate(replacement.Macro, Path.Combine(outPath, key.ActionName, $"macro{id}.pddl"));
+                    planGenerator.Generate(replacement.Replacement, Path.Combine(outPath, key.ActionName, $"macro{id}_replacement.plan"));
+                    id++;
+                }
             }
         }
     }
