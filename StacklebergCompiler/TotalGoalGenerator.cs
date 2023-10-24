@@ -4,7 +4,7 @@ using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
 using PDDLSharp.Toolkit.Grounders;
 
-namespace StackelbergCompiler
+namespace StacklebergCompiler
 {
     public static class TotalGoalGenerator
     {

@@ -23,17 +23,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencie
 		Dependencies\setup_programs.sh = Dependencies\setup_programs.sh
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergCompiler", "StackelbergCompiler\StackelbergCompiler.csproj", "{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StacklebergCompiler", "StacklebergCompiler\StacklebergCompiler.csproj", "{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergVerifier", "StackelbergVerifier\StackelbergVerifier.csproj", "{5DB596AE-CB35-4439-AB62-0502C42F7586}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator", "MetaActionGenerator\MetaActionGenerator.csproj", "{6E04D1D4-065F-4CCA-B657-021ADBB1B032}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Train", "MetaActions.Train\MetaActions.Train.csproj", "{2A4828D6-88F9-40F9-A4E2-F5513717A257}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Learn", "MetaActions.Learn\MetaActions.Learn.csproj", "{2A4828D6-88F9-40F9-A4E2-F5513717A257}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Test", "MetaActions.Test\MetaActions.Test.csproj", "{159040FE-F33E-45E1-A293-D13A54D2CA3B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacroExtractor", "MacroExtractor\MacroExtractor.csproj", "{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,10 +63,6 @@ Global
 		{159040FE-F33E-45E1-A293-D13A54D2CA3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{159040FE-F33E-45E1-A293-D13A54D2CA3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{159040FE-F33E-45E1-A293-D13A54D2CA3B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

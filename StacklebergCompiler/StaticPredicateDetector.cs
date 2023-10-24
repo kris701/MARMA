@@ -4,7 +4,7 @@ using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
 using PDDLSharp.Toolkit.StaticPredicateDetectors;
 
-namespace StackelbergCompiler
+namespace StacklebergCompiler
 {
     public static class StaticPredicateDetector
     {

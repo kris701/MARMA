@@ -30,7 +30,7 @@ namespace MetaActionGenerator
             opts.MacroActionPath = PathHelper.RootPath(opts.MacroActionPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
 
-            PathHelper.RecratePath(opts.OutputPath);
+            RecratePath(opts.OutputPath);
 
             ConsoleHelper.WriteLineColor("Verifying paths...");
             if (!File.Exists(opts.DomainFilePath))
@@ -97,6 +97,13 @@ namespace MetaActionGenerator
 
             OutputActions(metaActions, opts.OutputPath, listener);
             ConsoleHelper.WriteLineColor($"A total of {metaActions.Count} meta action was found.", ConsoleColor.Green);
+        }
+
+        private static void RecratePath(string path)
+        {
+            if (Directory.Exists(path))
+                new DirectoryInfo(path).Delete(true);
+            Directory.CreateDirectory(path);
         }
 
         private static DomainDecl ParseDomain(string path, IErrorListener listener)

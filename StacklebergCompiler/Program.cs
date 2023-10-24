@@ -10,19 +10,19 @@ using PDDLSharp.Parsers.PDDL;
 using System.Diagnostics;
 using Tools;
 
-namespace StackelbergCompiler
+namespace StacklebergCompiler
 {
     internal class Program : BaseCLI
     {
         static int Main(string[] args)
         {
-            Parser.Default.ParseArguments<StackelbergCompilerOptions>(args)
-              .WithParsed(RunStackelbergCompiler)
+            Parser.Default.ParseArguments<StacklebergCompilerOptions>(args)
+              .WithParsed(RunStacklebergCompiler)
               .WithNotParsed(HandleParseError);
             return 0;
         }
 
-        public static void RunStackelbergCompiler(StackelbergCompilerOptions opts)
+        public static void RunStacklebergCompiler(StacklebergCompilerOptions opts)
         {
             Stopwatch watch = new Stopwatch();
 

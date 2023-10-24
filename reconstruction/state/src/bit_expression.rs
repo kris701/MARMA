@@ -87,9 +87,6 @@ fn extract_internal(
         StringExpression::Not(e) => extract_internal(facts, action, parameters, e, pos, neg, !val),
         StringExpression::Equal(e) => evaluate_equality(action, e, parameters, val),
         StringExpression::Or(_) => todo!("Or expressions are not implemented yet for actions"),
-        StringExpression::Imply(..) => {
-            todo!("Imply expressions are not implemented yet for actions")
-        }
     }
 }
 

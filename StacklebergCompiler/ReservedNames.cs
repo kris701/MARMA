@@ -1,4 +1,4 @@
-﻿namespace StackelbergCompiler
+﻿namespace StacklebergCompiler
 {
     public static class ReservedNames
     {

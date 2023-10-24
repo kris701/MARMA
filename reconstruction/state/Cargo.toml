@@ -8,7 +8,7 @@ shared = { path = "../shared" }
 itertools = "*"
 criterion = "0.5.1"
 bitvec = "1.0.1"
-spingus = { git = "https://github.com/jamadaha/spingus.git", rev = "9cc2d0f" }
+spingus = { git = "https://github.com/jamadaha/spingus.git", rev = "d5c6dd4" }
 
 [[bench]]
 name = "init"

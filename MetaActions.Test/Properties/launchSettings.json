@@ -6,7 +6,7 @@
     "WSL": {
       "commandName": "WSL",
       "distributionName": "",
-      "commandLineArgs": "MetaActions.Test/bin/Debug/net7.0/MetaActions.Test.dll --data output/train/testing-set.zip --multitask",
+      "commandLineArgs": "MetaActions.Test/bin/Debug/net7.0/MetaActions.Test.dll --domain Dependencies/downward-benchmarks-master/gripper/domain.pddl --meta-actions output/train/valid --output output/test/gripper --problems Dependencies/downward-benchmarks-master/gripper/prob04.pddl",
       "workingDirectory": "MetaActions.Test/../"
     }
   }
