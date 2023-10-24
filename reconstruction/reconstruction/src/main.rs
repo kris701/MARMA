@@ -1,4 +1,4 @@
-use cache::{generate_cache, read_cache_input, Cache};
+use cache::generation::{generate_cache, CacheMethod};
 use color_eyre::eyre::Result;
 use reconstruction::reconstruct;
 use shared::time::{init_time, run_time};
@@ -11,25 +11,12 @@ use std::fs;
 use std::path::PathBuf;
 
 use crate::downward_wrapper::Downward;
-use clap::{Parser, ValueEnum};
+use clap::Parser;
 
 mod downward_wrapper;
 mod problem_writing;
 mod reconstruction;
 mod stiching;
-
-#[derive(Debug, Copy, Clone, PartialEq, Default, ValueEnum)]
-enum ReconstructionMethod {
-    #[default]
-    None,
-    FastDownward,
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, Default, ValueEnum)]
-enum CacheMethod {
-    #[default]
-    BitExp,
-}
 
 #[derive(Parser, Default, Debug)]
 #[command(term_width = 0)]
@@ -62,9 +49,9 @@ pub struct Args {
     /// Type of caching
     #[arg(long = "cache_method", default_value = "bit-exp")]
     cache_method: CacheMethod,
-    /// Method of reconstruction
-    #[arg(long = "reconstruction_method", default_value = "none")]
-    reconstruction_method: ReconstructionMethod,
+    /// Stop after translation, mainly used for debugging
+    #[arg(long = "translate_only", default_value = "false", action = clap::ArgAction::Set)]
+    translate_only: bool,
 }
 
 fn main() -> Result<()> {
@@ -87,30 +74,10 @@ fn main() -> Result<()> {
     let problem = parse_problem(&problem).unwrap();
     println!("{} Converting instance....", run_time());
     let instance = Instance::new(domain, problem);
-
-    println!("{} Checking for cache...", run_time());
-    let cache: Option<Cache> = match args.cache {
-        Some(p) => {
-            println!("{} Reading cache files...", run_time());
-            let files = match read_cache_input(&p) {
-                Ok(f) => f,
-                Err(e) => panic!("Could not read cache files with err: {}", e),
-            };
-            println!("Found {} lifted macros", files.len());
-            println!("{} Generating cache...", run_time());
-            Some(generate_cache(
-                &instance.domain,
-                &instance.problem,
-                &instance.facts,
-                files,
-            ))
-        }
-        None => {
-            println!("{} No cache given", run_time());
-            None
-        }
-    };
-    if args.reconstruction_method != ReconstructionMethod::None {
+    println!("{} Checking cache...", run_time());
+    let cache = generate_cache(&instance, &args.cache, args.cache_method);
+    if !args.translate_only {
+        println!("{} Beginning reconstruction...", run_time());
         println!("{} Finding fast downward...", run_time());
         let downward = Downward::new(&args.downward);
         println!("{} Finding meta solution...", run_time());
@@ -120,7 +87,7 @@ fn main() -> Result<()> {
             &meta_domain,
             &args.domain,
             &downward,
-            cache.as_ref(),
+            &cache,
             meta_plan,
         );
         let plan_export = export_sas(&plan);

@@ -4,6 +4,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use clap::ValueEnum;
+use shared::{io::file::file_name, time::run_time};
 use spingus::{
     domain::action::{parse_action, Action},
     sas_plan::{parse_sas, SASPlan},
@@ -11,6 +13,7 @@ use spingus::{
 use state::{instance::Instance, state::State};
 
 mod bit_cache;
+pub mod generation;
 
 pub trait Cache {
     /// Initializes cache from files at given path
@@ -42,25 +45,23 @@ fn read_meta_dir(path: &PathBuf) -> io::Result<Vec<(PathBuf, PathBuf)>> {
         }
     }
 
-    let combined: Vec<(PathBuf, PathBuf)> = plans
-        .iter()
-        .map(|p| {
-            (
-                macros
-                    .iter()
-                    .find(|m| {
-                        p.file_name()
-                            .unwrap()
-                            .to_str()
-                            .unwrap()
-                            .contains(m.file_name().unwrap().to_str().unwrap())
-                    })
-                    .unwrap()
-                    .to_owned(),
-                p.to_owned(),
-            )
-        })
-        .collect();
+    let mut combined: Vec<(PathBuf, PathBuf)> = Vec::new();
+    for plan_path in &plans {
+        let plan_name = file_name(plan_path);
+        let mut found = false;
+        for macro_path in &macros {
+            let macro_name = file_name(macro_path);
+            if plan_name.contains(&macro_name) {
+                combined.push((macro_path.to_owned(), plan_path.to_owned()));
+                found = true;
+                break;
+            }
+        }
+        if !found {
+            panic!("Could not find macro for plan {:?}", plan_path);
+        }
+    }
+
     Ok(combined)
 }
 
@@ -90,6 +91,11 @@ pub(crate) fn read_cache_input(
     };
     let mut replacements: HashMap<String, Vec<(Action, SASPlan)>> = HashMap::new();
     for path in meta_paths {
+        println!(
+            "{} Reading replacements for {:?}...",
+            run_time(),
+            path.file_name().unwrap()
+        );
         let substitutes = match read_meta_dir(&path) {
             Ok(v) => v,
             Err(e) => {
@@ -99,6 +105,7 @@ pub(crate) fn read_cache_input(
                 ))
             }
         };
+        println!("Found {} replacements", substitutes.len());
 
         replacements.insert(
             path.file_name().unwrap().to_str().unwrap().to_string(),

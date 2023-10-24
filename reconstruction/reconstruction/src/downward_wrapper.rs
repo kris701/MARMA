@@ -125,7 +125,7 @@ impl Downward {
         solution_path: &Option<PathBuf>,
     ) -> SASPlan {
         if let Some(path) = solution_path {
-            println!("{} Solution given", run_time());
+            println!("Solution given");
             let content = fs::read_to_string(path).unwrap();
             println!("{} Parsing solution...", run_time());
             match parse_sas(&content) {

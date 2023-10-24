@@ -2,6 +2,7 @@ use std::{
     ffi::OsString,
     fs::{self, File},
     io::Write,
+    path::PathBuf,
 };
 
 pub fn read_file(path: &OsString) -> String {
@@ -31,4 +32,9 @@ pub fn write_file(path: &OsString, content: String) {
             err
         ),
     };
+}
+
+pub fn file_name(path: &PathBuf) -> String {
+    let file_name = path.file_name().unwrap().to_str().unwrap();
+    file_name.split(".").next().unwrap().to_owned()
 }

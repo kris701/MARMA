@@ -1,10 +1,7 @@
 use std::{collections::HashMap, ops::BitAnd, path::PathBuf};
 
-use spingus::{
-    domain::{action::Action, Domain},
-    problem::Problem,
-    sas_plan::SASPlan,
-};
+use shared::time::run_time;
+use spingus::{domain::action::Action, sas_plan::SASPlan, term::Term};
 use state::{
     bit_expression::BitExp,
     instance::{
@@ -25,14 +22,16 @@ pub struct BitCache {
 }
 impl Cache for BitCache {
     fn init(instance: &Instance, path: &PathBuf) -> Self {
+        println!("{} Reading cache data...", run_time());
         let data = read_cache_input(path).unwrap();
+        println!("{} Init bitcache...", run_time());
         let mut lifted_macros: Vec<(Action, SASPlan)> = Vec::new();
         let mut entries: Vec<(Operator, Vec<usize>)> = Vec::new();
         let mut effect_map: HashMap<BitExp, Vec<usize>> = HashMap::new();
         let mut entry_macro: HashMap<usize, usize> = HashMap::new();
         for (action, plan) in data
             .iter()
-            .flat_map(|(_, a)| *a)
+            .flat_map(|(_, a)| a.to_owned())
             .collect::<Vec<(Action, SASPlan)>>()
         {
             let action_index = lifted_macros.len();
@@ -71,33 +70,41 @@ impl Cache for BitCache {
     }
 
     fn get_replacement(&self, instance: &Instance, init: &State, goal: &State) -> Option<SASPlan> {
-        todo!()
-    }
-}
-impl BitCache {
-    pub fn get(&self, state: &State, goal: &State) -> Option<usize> {
-        let mut desired = state.get().bitand(!goal.get());
-        desired.append(&mut goal.get().bitand(!state.get()));
-        let candidates: Option<&Vec<usize>> = self.effect_map.get(&(desired as BitExp));
-        match candidates {
-            Some(candidates) => candidates
-                .iter()
-                .find(|i| state.is_legal(&self.entries[**i].0))
-                .copied(),
-            None => return None,
-        }
-    }
-
-    pub fn get_replacement(&self, domain: &Domain, problem: &Problem, index: usize) -> SASPlan {
-        let macro_index = self.entry_macro[&index];
-        let lifted_macro = self.lifted_macros.get(macro_index).unwrap();
-        let actions: Vec<&str> = lifted_macro.name.split("#").collect();
-        let actions: Vec<&Action> = actions
+        let mut desired = init.get().bitand(!goal.get());
+        desired.append(&mut goal.get().bitand(!init.get()));
+        let candidates: &Vec<usize> = self.effect_map.get(&(desired as BitExp))?;
+        let index: &usize = candidates
             .iter()
-            .map(|n| domain.actions.iter().find(|a| a.name == **n).unwrap())
+            .find(|i| init.is_legal(&self.entries[**i].0))?;
+        let (_, parameters) = &self.entries[*index];
+        let macro_index = self.entry_macro[index];
+        let (lifted_macro, plan) = self.lifted_macros.get(macro_index)?;
+        let actions: Vec<&str> = lifted_macro.name.split('#').collect();
+        let replacements: Vec<&Action> = actions
+            .iter()
+            .map(|n| {
+                instance
+                    .domain
+                    .actions
+                    .iter()
+                    .find(|a| a.name == **n)
+                    .unwrap()
+            })
             .collect();
-        let permutation: Vec<usize> = self.entries[index].1.to_owned();
-        println!("{:?}", permutation);
-        vec![]
+        let mut replacement: Vec<Term> = Vec::new();
+        for (action, step) in replacements.iter().zip(plan.iter()) {
+            let name = action.name.to_owned();
+            let objects: Vec<usize> = step
+                .parameters
+                .iter()
+                .map(|i| parameters[i.parse::<usize>().unwrap()])
+                .collect();
+            let parameters: Vec<String> = objects
+                .iter()
+                .map(|i| instance.problem.objects[*i].name.to_owned())
+                .collect();
+            replacement.push(Term { name, parameters })
+        }
+        Some(replacement)
     }
 }

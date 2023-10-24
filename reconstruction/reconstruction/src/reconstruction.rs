@@ -1,14 +1,7 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
-
+use crate::{downward_wrapper::Downward, problem_writing::write_problem, stiching::stich};
 use cache::Cache;
 use shared::time::run_time;
-use spingus::{
-    domain::Domain,
-    sas_plan::{export_sas, SASPlan},
-};
+use spingus::{domain::Domain, sas_plan::SASPlan};
 use state::{
     instance::{
         operator::{generate_operator_string, Operator},
@@ -16,13 +9,14 @@ use state::{
     },
     state::State,
 };
-
-use crate::{downward_wrapper::Downward, problem_writing::write_problem, stiching::stich};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
 fn generate_operators(
     instance: &Instance,
     meta_domain: &Domain,
-    _domain_path: &PathBuf,
     _downward: &Downward,
     plan: &SASPlan,
 ) -> Vec<Operator> {
@@ -49,7 +43,7 @@ fn generate_replacement(
     domain_path: &PathBuf,
     downward: &Downward,
     operators: &Vec<Operator>,
-    cache: Option<&Cache>,
+    cache: &Option<impl Cache>,
     i: usize,
 ) -> SASPlan {
     let init = State::new(&instance.domain, &instance.problem, &instance.facts);
@@ -58,13 +52,9 @@ fn generate_replacement(
     let goal = init.apply_clone(&operators[i]);
     assert_ne!(init, goal);
     if let Some(cache) = cache {
-        println!("{} Checking cache...", run_time());
-        let replacement = cache.get(&init, &goal);
+        let replacement = cache.get_replacement(instance, &init, &goal);
         if let Some(replacement) = replacement {
-            println!("Found replacement");
-            return cache.get_replacement(&instance.domain, &instance.problem, replacement);
-        } else {
-            println!("None found");
+            return replacement;
         }
     }
     let problem_path = Path::new(".temp_problem.pddl").to_path_buf();
@@ -80,7 +70,7 @@ pub fn reconstruct(
     meta_domain: &Domain,
     domain_path: &PathBuf,
     downward: &Downward,
-    cache: Option<&Cache>,
+    cache: &Option<impl Cache>,
     plan: SASPlan,
 ) -> SASPlan {
     let meta_steps: Vec<usize> = plan
@@ -91,7 +81,8 @@ pub fn reconstruct(
             false => None,
         })
         .collect();
-    let operators = generate_operators(&instance, meta_domain, domain_path, downward, &plan);
+    println!("Solution has {} meta actions", meta_steps.len());
+    let operators = generate_operators(&instance, meta_domain, downward, &plan);
     let replacements: Vec<SASPlan> = meta_steps
         .iter()
         .map(|i| generate_replacement(&instance, domain_path, downward, &operators, cache, *i))
