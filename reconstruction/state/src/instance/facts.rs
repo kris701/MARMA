@@ -37,7 +37,7 @@ pub struct Facts {
     /// Facts that can change value
     facts: Vec<Fact>,
     /// Facts that can not change value
-    facts_static: Vec<Fact>,
+    facts_static: Vec<(Fact, bool)>,
 }
 
 impl Facts {
@@ -53,20 +53,35 @@ impl Facts {
         }
         println!("{} Generating facts...", run_time());
         let mut facts: Vec<Fact> = Vec::new();
-        let mut facts_static: Vec<Fact> = Vec::new();
+        let mut facts_static: Vec<(Fact, bool)> = Vec::new();
         for (i, predicate) in domain.predicates.iter().enumerate() {
             let temp_facts = generate_facts(domain, problem, predicate, i);
             println!("{}: {}", predicate.name, temp_facts.len());
             for fact in temp_facts {
                 match static_predicates[i] {
-                    true => facts_static.push(fact),
+                    true => facts_static.push((fact, false)),
                     false => facts.push(fact),
                 }
             }
         }
-        println!("total: {}", facts.len() + facts_static.len());
         println!("non-static: {}", facts.len());
         println!("static: {}", facts_static.len());
+        println!("total: {}", facts.len() + facts_static.len());
+
+        println!("{} Finding statically true...", run_time());
+        for fact in problem
+            .inits
+            .iter()
+            .filter(|f| static_predicates[predicate_map[&f.name]])
+        {
+            let pred_index: usize = predicate_map[&fact.name];
+            let parameters: Vec<usize> = fact.parameters.iter().map(|o| object_map[o]).collect();
+            let pos = facts_static
+                .iter()
+                .position(|(fact, _)| fact.predicate == pred_index && fact.parameters == parameters)
+                .unwrap();
+            facts_static[pos].1 = true;
+        }
 
         Self {
             predicate_map,
@@ -86,7 +101,7 @@ impl Facts {
             true => self
                 .facts_static
                 .iter()
-                .position(|fact| fact.predicate == predicate && fact.parameters == *parameters)
+                .position(|fact| fact.0.predicate == predicate && fact.0.parameters == *parameters)
                 .unwrap(),
             false => self
                 .facts
@@ -96,12 +111,18 @@ impl Facts {
         }
     }
 
-    pub fn fact_predicate(&self, fact_index: usize) -> usize {
-        todo!()
+    pub fn fact_predicate(&self, fact_index: usize, is_static: bool) -> usize {
+        match is_static {
+            true => self.facts_static[fact_index].0.predicate,
+            false => self.facts[fact_index].predicate,
+        }
     }
 
-    pub fn fact_parameters(&self, fact_index: usize) -> &Vec<usize> {
-        todo!()
+    pub fn fact_parameters(&self, fact_index: usize, is_static: bool) -> &Vec<usize> {
+        match is_static {
+            true => &self.facts_static[fact_index].0.parameters,
+            false => &self.facts[fact_index].parameters,
+        }
     }
 
     pub fn predicate_index(&self, predicate: &String) -> usize {
@@ -114,6 +135,19 @@ impl Facts {
 
     pub fn is_static(&self, predicate: usize) -> bool {
         self.static_predicates[predicate]
+    }
+
+    pub fn is_statically_true(&self, index: usize) -> bool {
+        self.facts_static[index].1
+    }
+
+    pub fn get_static_true(&self) -> Vec<usize> {
+        self.facts_static
+            .iter()
+            .enumerate()
+            .filter(|(_, (_, v))| *v)
+            .map(|(i, _)| i)
+            .collect()
     }
 }
 

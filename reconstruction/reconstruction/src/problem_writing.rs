@@ -15,10 +15,10 @@ fn generate_objects(problem: &Problem) -> String {
     s
 }
 
-fn generate_fact(instance: &Instance, i: usize) -> String {
+fn generate_fact(instance: &Instance, i: usize, is_static: bool) -> String {
     let mut s = "".to_string();
-    let predicate_index = instance.facts.fact_predicate(i);
-    let parameters = instance.facts.fact_parameters(i);
+    let predicate_index = instance.facts.fact_predicate(i, is_static);
+    let parameters = instance.facts.fact_parameters(i, is_static);
     s.push_str(&instance.domain.predicates[predicate_index].name);
     parameters
         .iter()
@@ -33,7 +33,17 @@ fn generate_state(instance: &Instance, state: &State) -> String {
         .iter()
         .enumerate()
         .filter(|(_, v)| **v)
-        .for_each(|(i, _)| s.push_str(&format!("\t\t({})\n", generate_fact(instance, i))));
+        .for_each(|(i, _)| s.push_str(&format!("\t\t({})\n", generate_fact(instance, i, false))));
+    s
+}
+
+fn generate_static(instance: &Instance) -> String {
+    let mut s = "".to_string();
+    instance
+        .facts
+        .get_static_true()
+        .iter()
+        .for_each(|i| s.push_str(&format!("\t\t({})\n", generate_fact(instance, *i, true))));
     s
 }
 
@@ -45,7 +55,8 @@ fn generate_problem(instance: &Instance, init_state: &State, goal_state: &State)
         generate_objects(&instance.problem)
     ));
     s.push_str(&format!(
-        "\t(:init\n{}\t)\n",
+        "\t(:init\n{}\n{}\t)\n",
+        generate_static(instance),
         generate_state(instance, init_state)
     ));
     s.push_str(&format!(

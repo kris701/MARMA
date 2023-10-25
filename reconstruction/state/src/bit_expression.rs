@@ -51,7 +51,7 @@ fn evaluate_term(
         .collect();
     let fact = facts.index(pred_index, &parameter_indexes);
     match facts.is_static(pred_index) {
-        true => {}
+        true => return facts.is_statically_true(fact),
         false => exp.set(fact, true),
     }
 

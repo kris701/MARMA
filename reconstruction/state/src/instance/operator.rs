@@ -49,11 +49,9 @@ pub fn generate_operators(instance: &Instance, action: &Action) -> Vec<(Operator
     );
     permutations
         .iter()
-        .map(|p| {
-            (
-                extract_from_action(p, action, &instance.facts).unwrap(),
-                p.to_owned(),
-            )
+        .filter_map(|p| {
+            let operator = extract_from_action(p, action, &instance.facts)?;
+            Some((operator, p.to_owned()))
         })
         .collect()
 }

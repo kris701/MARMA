@@ -26,13 +26,15 @@ impl State {
                 .iter()
                 .position(|predicate| predicate.name == init.name)
                 .unwrap();
-            let parameters: Vec<usize> = init
-                .parameters
-                .iter()
-                .map(|p| problem.objects.iter().position(|o| o.name == *p).unwrap())
-                .collect();
-            let fact = facts.index(predicate, &parameters);
-            internal.set(fact, true);
+            if !facts.is_static(predicate) {
+                let parameters: Vec<usize> = init
+                    .parameters
+                    .iter()
+                    .map(|p| problem.objects.iter().position(|o| o.name == *p).unwrap())
+                    .collect();
+                let fact = facts.index(predicate, &parameters);
+                internal.set(fact, true);
+            }
         }
         Self { internal }
     }
