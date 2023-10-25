@@ -4,12 +4,12 @@ use clap::ValueEnum;
 use shared::time::run_time;
 use state::instance::Instance;
 
-use crate::{bit_cache::BitCache, Cache};
+use crate::{hash_cache::HashCache, Cache};
 
 #[derive(Debug, Copy, Clone, PartialEq, Default, ValueEnum)]
 pub enum CacheMethod {
     #[default]
-    BitExp,
+    Hash,
 }
 
 pub fn generate_cache(
@@ -20,7 +20,7 @@ pub fn generate_cache(
     if let Some(path) = cache_path {
         println!("{} Generating cache...", run_time());
         match cache_type {
-            CacheMethod::BitExp => Some(BitCache::init(instance, path)),
+            CacheMethod::Hash => Some(HashCache::init(instance, path)),
         }
     } else {
         println!("No cache given");

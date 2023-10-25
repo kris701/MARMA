@@ -14,13 +14,13 @@ use state::{
 use crate::{read_cache_input, Cache};
 
 #[derive(Debug)]
-pub struct BitCache {
+pub struct HashCache {
     lifted_macros: Vec<(Action, SASPlan)>,
     entries: Vec<(Operator, Vec<usize>)>,
     effect_map: HashMap<BitExp, Vec<usize>>,
     entry_macro: Vec<usize>,
 }
-impl Cache for BitCache {
+impl Cache for HashCache {
     fn init(instance: &Instance, path: &PathBuf) -> Self {
         println!("{} Reading cache data...", run_time());
         let data = read_cache_input(path).unwrap();
@@ -54,7 +54,7 @@ impl Cache for BitCache {
             }
             lifted_macros.push((action, plan));
         }
-        let c = BitCache {
+        let c = HashCache {
             lifted_macros,
             entries,
             effect_map,

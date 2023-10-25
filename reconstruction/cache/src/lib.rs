@@ -11,8 +11,8 @@ use spingus::{
 };
 use state::{instance::Instance, state::State};
 
-mod bit_cache;
 pub mod generation;
+mod hash_cache;
 
 pub trait Cache {
     /// Initializes cache from files at given path
