@@ -36,12 +36,7 @@ impl Cache for BitCache {
         {
             println!("{} Generating cache for {}", run_time(), action.name);
             let action_index = lifted_macros.len();
-            let operators = generate_operators(
-                &instance.domain,
-                &instance.problem,
-                &instance.facts,
-                &action,
-            );
+            let operators = generate_operators(&instance, &action);
             for (operator, permutation) in operators {
                 let entry_index = entries.len();
                 entry_macro.insert(entry_index, action_index);

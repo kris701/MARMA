@@ -1,11 +1,15 @@
 use itertools::Itertools;
 use spingus::{
     domain::{
+        action::Action,
         parameter::{Parameter, Parameters},
         types::Types,
+        Domain,
     },
     problem::{object::Object, Problem},
 };
+
+use super::Instance;
 
 fn is_valid_type(types: &Types, expected_type: &String, actual_type: &Option<String>) -> bool {
     match actual_type {
@@ -61,4 +65,33 @@ pub fn permute(
     } else {
         return permute_all(&vec![], problem, parameters);
     }
+}
+
+pub fn permute_action(instance: &Instance, action: &Action) -> Vec<Vec<usize>> {
+    let candidates: Vec<Vec<usize>> = action
+        .parameters
+        .iter()
+        .map(|parameter| generate_parameter_candidates(instance, parameter))
+        .collect();
+    candidates
+}
+
+fn generate_parameter_candidates(instance: &Instance, parameter: &Parameter) -> Vec<usize> {
+    instance
+        .problem
+        .objects
+        .iter()
+        .enumerate()
+        .filter_map(|(i, o)| {
+            if is_valid_object(
+                &instance.domain.types.to_owned().unwrap_or(vec![]),
+                parameter,
+                o,
+            ) {
+                Some(i)
+            } else {
+                None
+            }
+        })
+        .collect()
 }

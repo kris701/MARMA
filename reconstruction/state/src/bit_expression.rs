@@ -50,7 +50,10 @@ fn evaluate_term(
         .map(|p| match_parameter(action, parameters, p))
         .collect();
     let fact = facts.index(pred_index, &parameter_indexes);
-    exp.set(fact, true);
+    match facts.is_static(pred_index) {
+        true => {}
+        false => exp.set(fact, true),
+    }
 
     true
 }
@@ -98,7 +101,7 @@ pub fn extract(
     action: &Action,
     parameters: &Vec<usize>,
     exp: &Option<StringExpression>,
-) -> Result<(BitExp, BitExp), &'static str> {
+) -> Option<(BitExp, BitExp)> {
     let mut neg = generate(&facts);
     let mut pos = generate(&facts);
     let valid = match exp {
@@ -106,8 +109,8 @@ pub fn extract(
         None => true,
     };
     if valid {
-        Ok((neg, pos))
+        Some((neg, pos))
     } else {
-        Err("Invalid parameters")
+        None
     }
 }
