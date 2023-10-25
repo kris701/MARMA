@@ -4,13 +4,17 @@ use clap::ValueEnum;
 use shared::time::run_time;
 use state::instance::Instance;
 
-use crate::{hash_cache::HashCache, lifted_cache::LiftedCache, read_cache_input, Cache};
+use crate::{
+    grounded_cache::GroundedCache, hash_cache::HashCache, lifted_cache::LiftedCache,
+    read_cache_input, Cache,
+};
 
 #[derive(Debug, Copy, Clone, PartialEq, Default, ValueEnum)]
 pub enum CacheMethod {
     #[default]
     Hash,
     Lifted,
+    Grounded,
 }
 
 pub fn generate_cache(
@@ -25,6 +29,7 @@ pub fn generate_cache(
         match cache_type {
             CacheMethod::Hash => Some(Box::new(HashCache::new(instance, data))),
             CacheMethod::Lifted => Some(Box::new(LiftedCache::new(instance, data))),
+            CacheMethod::Grounded => Some(Box::new(GroundedCache::new(instance, data))),
         }
     } else {
         println!("No cache given");

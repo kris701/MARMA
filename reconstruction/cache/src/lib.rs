@@ -13,6 +13,7 @@ use spingus::{
 use state::{instance::Instance, state::State};
 
 pub mod generation;
+mod grounded_cache;
 mod hash_cache;
 mod lifted_cache;
 

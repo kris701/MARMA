@@ -7,7 +7,6 @@ use state::{instance::Instance, state::State};
 use crate::Cache;
 
 use state::instance::operator::generate_operators_iterative;
-use state::instance::permutation::permute_action;
 use state::instance::permutation::permute;
 
 struct MetaReplacements {
@@ -54,7 +53,11 @@ impl Cache for LiftedCache {
         let desired_neg = init.get().bitand(!goal.get());
         let replacements = &self.replacements.get(&meta_term.name)?;
         for (i, action) in replacements.macros.iter().enumerate() {
-            let permutations = permute(&instance.domain.types, &instance.problem, &action.parameters);
+            let permutations = permute(
+                &instance.domain.types,
+                &instance.problem,
+                &action.parameters,
+            );
             for operator in generate_operators_iterative(instance, &action, &permutations) {
                 if operator.eff_pos != desired_pos || operator.eff_neg != desired_neg {
                     continue;
