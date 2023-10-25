@@ -18,7 +18,7 @@ pub struct BitCache {
     lifted_macros: Vec<(Action, SASPlan)>,
     entries: Vec<(Operator, Vec<usize>)>,
     effect_map: HashMap<BitExp, Vec<usize>>,
-    entry_macro: HashMap<usize, usize>,
+    entry_macro: Vec<usize>,
 }
 impl Cache for BitCache {
     fn init(instance: &Instance, path: &PathBuf) -> Self {
@@ -28,7 +28,7 @@ impl Cache for BitCache {
         let mut lifted_macros: Vec<(Action, SASPlan)> = Vec::new();
         let mut entries: Vec<(Operator, Vec<usize>)> = Vec::new();
         let mut effect_map: HashMap<BitExp, Vec<usize>> = HashMap::new();
-        let mut entry_macro: HashMap<usize, usize> = HashMap::new();
+        let mut entry_macro: Vec<usize> = Vec::new();
         for (action, plan) in data
             .iter()
             .flat_map(|(_, a)| a.to_owned())
@@ -39,7 +39,7 @@ impl Cache for BitCache {
             let operators = generate_operators(&instance, &action);
             for (operator, permutation) in operators {
                 let entry_index = entries.len();
-                entry_macro.insert(entry_index, action_index);
+                entry_macro.push(action_index);
                 let mut c_effect = operator.eff_neg.to_owned();
                 c_effect.append(&mut operator.eff_pos.to_owned());
                 match effect_map.get_mut(&c_effect) {
@@ -73,7 +73,7 @@ impl Cache for BitCache {
             .iter()
             .find(|i| init.is_legal(&self.entries[**i].0))?;
         let (_, parameters) = &self.entries[*index];
-        let macro_index = self.entry_macro[index];
+        let macro_index = self.entry_macro[*index];
         let (lifted_macro, plan) = self.lifted_macros.get(macro_index)?;
         let actions: Vec<&str> = lifted_macro.name.split('#').collect();
         let replacements: Vec<&Action> = actions
