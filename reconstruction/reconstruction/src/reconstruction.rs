@@ -2,7 +2,7 @@ use crate::{downward_wrapper::Downward, problem_writing::write_problem, stiching
 use cache::Cache;
 use rand::{distributions::Alphanumeric, Rng};
 use shared::time::run_time;
-use spingus::{domain::Domain, sas_plan::SASPlan};
+use spingus::{domain::Domain, sas_plan::SASPlan, term::Term};
 use state::{
     instance::{
         operator::{generate_operator_string, Operator},
@@ -44,7 +44,8 @@ fn generate_replacement(
     domain_path: &PathBuf,
     downward: &Downward,
     operators: &Vec<Operator>,
-    cache: &Option<impl Cache>,
+    cache: &Option<Box<dyn Cache>>,
+    term: &Term,
     i: usize,
 ) -> SASPlan {
     let init = State::new(&instance.domain, &instance.problem, &instance.facts);
@@ -53,8 +54,9 @@ fn generate_replacement(
     let goal = init.apply_clone(&operators[i]);
     assert_ne!(init, goal);
     if let Some(cache) = cache {
-        let replacement = cache.get_replacement(instance, &init, &goal);
+        let replacement = cache.get_replacement(instance, term, &init, &goal);
         if let Some(replacement) = replacement {
+            println!("Found in cache");
             return replacement;
         }
     }
@@ -75,14 +77,14 @@ pub fn reconstruct(
     meta_domain: &Domain,
     domain_path: &PathBuf,
     downward: &Downward,
-    cache: &Option<impl Cache>,
+    cache: &Option<Box<dyn Cache>>,
     plan: SASPlan,
 ) -> SASPlan {
-    let meta_steps: Vec<usize> = plan
+    let meta_steps: Vec<(&Term, usize)> = plan
         .iter()
         .enumerate()
         .filter_map(|(i, step)| match step.name.contains("$") {
-            true => Some(i),
+            true => Some((step, i)),
             false => None,
         })
         .collect();
@@ -90,7 +92,16 @@ pub fn reconstruct(
     let operators = generate_operators(&instance, meta_domain, downward, &plan);
     let replacements: Vec<SASPlan> = meta_steps
         .iter()
-        .map(|i| generate_replacement(&instance, domain_path, downward, &operators, cache, *i))
+        .map(|(n, i)| {
+            generate_replacement(&instance, domain_path, downward, &operators, cache, n, *i)
+        })
         .collect();
-    stich(&plan, meta_steps.iter().zip(replacements.iter()).collect())
+    stich(
+        &plan,
+        meta_steps
+            .iter()
+            .map(|(_, i)| i)
+            .zip(replacements.iter())
+            .collect(),
+    )
 }

@@ -55,3 +55,14 @@ pub fn generate_operators(instance: &Instance, action: &Action) -> Vec<(Operator
         })
         .collect()
 }
+
+pub fn generate_operators_iterative<'a>(
+    instance: &'a Instance,
+    action: &'a Action,
+    permutations: &'a Vec<Vec<usize>>,
+) -> impl Iterator<Item = Operator> + 'a {
+    permutations.into_iter().filter_map(|p| {
+        let operator = extract_from_action(&p, action, &instance.facts)?;
+        Some(operator)
+    })
+}

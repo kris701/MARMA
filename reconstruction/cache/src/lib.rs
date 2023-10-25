@@ -8,17 +8,23 @@ use shared::{io::file::file_name, time::run_time};
 use spingus::{
     domain::action::{parse_action, Action},
     sas_plan::{parse_sas, SASPlan},
+    term::Term,
 };
 use state::{instance::Instance, state::State};
 
 pub mod generation;
 mod hash_cache;
+mod lifted_cache;
 
 pub trait Cache {
-    /// Initializes cache from files at given path
-    fn init(instance: &Instance, path: &PathBuf) -> Self;
     /// Retrives replacement from cache from given init to goal
-    fn get_replacement(&self, instance: &Instance, init: &State, goal: &State) -> Option<SASPlan>;
+    fn get_replacement(
+        &self,
+        instance: &Instance,
+        meta_term: &Term,
+        init: &State,
+        goal: &State,
+    ) -> Option<SASPlan>;
 }
 
 fn read_cache_dir(path: &PathBuf) -> io::Result<Vec<PathBuf>> {

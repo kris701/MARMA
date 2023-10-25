@@ -11,7 +11,7 @@ use state::{
     state::State,
 };
 
-use crate::{read_cache_input, Cache};
+use crate::Cache;
 
 #[derive(Debug)]
 pub struct HashCache {
@@ -20,16 +20,15 @@ pub struct HashCache {
     effect_map: HashMap<BitExp, Vec<usize>>,
     entry_macro: Vec<usize>,
 }
-impl Cache for HashCache {
-    fn init(instance: &Instance, path: &PathBuf) -> Self {
-        println!("{} Reading cache data...", run_time());
-        let data = read_cache_input(path).unwrap();
-        println!("{} Init bitcache...", run_time());
+
+impl HashCache {
+    pub fn new(instance: &Instance, cache_data: HashMap<String, Vec<(Action, SASPlan)>>) -> Self {
+        println!("{} Init hash-cache...", run_time());
         let mut lifted_macros: Vec<(Action, SASPlan)> = Vec::new();
         let mut entries: Vec<(Operator, Vec<usize>)> = Vec::new();
         let mut effect_map: HashMap<BitExp, Vec<usize>> = HashMap::new();
         let mut entry_macro: Vec<usize> = Vec::new();
-        for (action, plan) in data
+        for (action, plan) in cache_data
             .iter()
             .flat_map(|(_, a)| a.to_owned())
             .collect::<Vec<(Action, SASPlan)>>()
@@ -64,8 +63,15 @@ impl Cache for HashCache {
         println!("Number of effects {}", c.effect_map.len());
         c
     }
-
-    fn get_replacement(&self, instance: &Instance, init: &State, goal: &State) -> Option<SASPlan> {
+}
+impl Cache for HashCache {
+    fn get_replacement(
+        &self,
+        instance: &Instance,
+        _meta_term: &Term,
+        init: &State,
+        goal: &State,
+    ) -> Option<SASPlan> {
         let mut desired = init.get().bitand(!goal.get());
         desired.append(&mut goal.get().bitand(!init.get()));
         let candidates: &Vec<usize> = self.effect_map.get(&(desired as BitExp))?;

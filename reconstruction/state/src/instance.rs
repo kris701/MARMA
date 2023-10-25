@@ -4,7 +4,7 @@ use self::facts::Facts;
 
 pub mod facts;
 pub mod operator;
-mod permutation;
+pub mod permutation;
 
 pub struct Instance {
     pub domain: Domain,
