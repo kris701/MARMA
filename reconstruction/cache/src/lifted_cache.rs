@@ -42,6 +42,7 @@ impl LiftedCache {
 }
 
 impl Cache for LiftedCache {
+    // TODO: Actually replace parameters
     fn get_replacement(
         &self,
         instance: &Instance,
