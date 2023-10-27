@@ -1,7 +1,14 @@
-[workspace]
-members = ["shared", "state", "cache", "reconstruction"]
-resolver = "2"
+[package]
+name = "reconstruction"
+version = "0.1.0"
+edition = "2021"
 
-[profile.release-with-debug]
-inherits = "release"
-debug = true
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+spingus = { git = "https://github.com/jamadaha/spingus.git", rev = "9cc2d0f" }
+clap = { version = "4.4.4", features = ["derive"] }
+bitvec = "1.0.1"
+itertools = "0.11.0"
+rand = "0.8.5"
+indicatif = "0.17.7"
