@@ -1,5 +1,4 @@
-use rand::{distributions::Alphanumeric, Rng};
-use spingus::{domain::Domain, sas_plan::SASPlan, term::Term};
+use spingus::{domain::Domain, sas_plan::SASPlan};
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -15,7 +14,7 @@ use crate::{
         },
         state::State,
     },
-    tools::{generate_progressbar, random_name, time::run_time},
+    tools::{generate_progressbar, random_name},
 };
 
 use super::downward_wrapper::Downward;

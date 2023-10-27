@@ -1,5 +1,3 @@
-use std::path::{Path, PathBuf};
-
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::{distributions::Alphanumeric, Rng};
 
@@ -12,11 +10,6 @@ pub fn random_name() -> String {
         .take(32)
         .map(char::from)
         .collect()
-}
-
-pub fn random_file_name(dir: &PathBuf) -> String {
-    let name = random_name();
-    Path::new(&dir).join(name).to_str().unwrap().to_string()
 }
 
 pub fn generate_progressbar(limit: usize) -> ProgressBar {

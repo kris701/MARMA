@@ -44,20 +44,6 @@ impl State {
         self.internal.bitor_assign(&operator.eff_pos);
     }
 
-    pub fn apply_clone(&self, operator: &Operator) -> State {
-        let mut clone = self.clone();
-        clone.apply(operator);
-        clone
-    }
-
-    pub fn apply_multiple(&self, operators: &Vec<Operator>) -> State {
-        let mut clone = self.clone();
-        for operator in operators {
-            clone.apply(operator);
-        }
-        clone
-    }
-
     pub fn get(&self) -> BitVec {
         self.internal.clone()
     }
