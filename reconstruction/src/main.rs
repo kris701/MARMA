@@ -31,10 +31,8 @@ pub struct Args {
     #[arg(short = 'm')]
     meta_domain: PathBuf,
     /// Path to fast-downward.
-    /// Required only if not found in env or path.
-    /// Searches for {downward, fast-downward, fastdownward} irregardles (somewhat) of casing
     #[arg(short = 'f')]
-    downward: Option<PathBuf>,
+    downward: PathBuf,
     /// Path to solution for meta domain + problem.
     /// If not provided, uses fast downward to generate it
     #[arg(short = 's')]
@@ -78,11 +76,11 @@ fn main() {
     if !args.translate_only {
         println!("{} Beginning reconstruction...", run_time());
         println!("{} Finding fast downward...", run_time());
-        let downward = Downward::new(&args.downward);
+        let downward = Downward::new(args.downward);
         println!("{} Finding meta solution...", run_time());
-        let meta_plan = downward.solve_or_find(&args.meta_domain, &args.problem, &args.solution);
+        let meta_plan = downward.find_or_solve(&args.meta_domain, &args.problem, &args.solution);
         let plan = reconstruct(
-            instance,
+            &instance,
             &meta_domain,
             &args.domain,
             &downward,

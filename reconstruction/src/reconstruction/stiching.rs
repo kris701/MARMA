@@ -1,6 +1,6 @@
 use spingus::sas_plan::SASPlan;
 
-pub fn stich(plan: &SASPlan, replacements: Vec<(&usize, &SASPlan)>) -> SASPlan {
+pub fn stich(plan: &SASPlan, replacements: Vec<(usize, SASPlan)>) -> SASPlan {
     if replacements.is_empty() {
         return plan.clone();
     }
@@ -8,8 +8,8 @@ pub fn stich(plan: &SASPlan, replacements: Vec<(&usize, &SASPlan)>) -> SASPlan {
     let mut stiched_plan = plan.to_owned();
 
     replacements.iter().rev().for_each(|(i, plan)| {
-        stiched_plan.remove(**i);
-        stiched_plan.splice(**i..**i, plan.iter().cloned());
+        stiched_plan.remove(*i);
+        stiched_plan.splice(*i..*i, plan.iter().cloned());
     });
 
     stiched_plan
@@ -68,7 +68,7 @@ mod test {
             },
         ];
 
-        let stiched = stich(&meta_plan, vec![(&index, &replacement_plan)]);
+        let stiched = stich(&meta_plan, vec![(index, replacement_plan)]);
 
         assert_eq!(
             vec![

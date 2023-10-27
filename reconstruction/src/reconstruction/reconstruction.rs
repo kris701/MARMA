@@ -15,7 +15,7 @@ use crate::{
         },
         state::State,
     },
-    tools::time::run_time,
+    tools::{generate_progressbar, random_name, time::run_time},
 };
 
 use super::downward_wrapper::Downward;
@@ -25,88 +25,73 @@ fn generate_operators(
     meta_domain: &Domain,
     _downward: &Downward,
     plan: &SASPlan,
-) -> Vec<Operator> {
-    plan.iter()
-        .map(|step| match step.name.contains("$") {
-            true => generate_operator_string(
-                &meta_domain,
+) -> (Vec<usize>, Vec<Operator>) {
+    let mut meta_actions: Vec<usize> = Vec::new();
+    let mut operators: Vec<Operator> = Vec::new();
+    for (i, step) in plan.iter().enumerate() {
+        if step.name.contains('$') {
+            meta_actions.push(i);
+            operators.push(generate_operator_string(
+                meta_domain,
                 &instance.facts,
                 &step.name,
                 &step.parameters,
-            ),
-            false => generate_operator_string(
+            ));
+        } else {
+            operators.push(generate_operator_string(
                 &instance.domain,
                 &instance.facts,
                 &step.name,
                 &step.parameters,
-            ),
-        })
-        .collect()
-}
-
-fn generate_replacement(
-    instance: &Instance,
-    domain_path: &PathBuf,
-    downward: &Downward,
-    operators: &Vec<Operator>,
-    cache: &Option<Box<dyn Cache>>,
-    term: &Term,
-    i: usize,
-) -> SASPlan {
-    let init = State::new(&instance.domain, &instance.problem, &instance.facts);
-    println!("{} Replacing action {}...", run_time(), i);
-    let init = init.apply_multiple(&operators[0..i].to_owned());
-    let goal = init.apply_clone(&operators[i]);
-    assert_ne!(init, goal);
-    if let Some(cache) = cache {
-        let replacement = cache.get_replacement(instance, term, &init, &goal);
-        if let Some(replacement) = replacement {
-            println!("Found in cache");
-            return replacement;
+            ));
         }
     }
-    let problem_file_name: String = rand::thread_rng()
-        .sample_iter(&Alphanumeric)
-        .take(16)
-        .map(char::from)
-        .collect();
-    let problem_path = Path::new(&format!("{}.pddl", problem_file_name)).to_path_buf();
-    write_problem(instance, &init, &goal, &problem_path);
-    let solution = downward.solve(domain_path, &problem_path);
-    let _ = fs::remove_file(&problem_path);
-    solution
+    (meta_actions, operators)
 }
 
 pub fn reconstruct(
-    instance: Instance,
+    instance: &Instance,
     meta_domain: &Domain,
     domain_path: &PathBuf,
     downward: &Downward,
     cache: &Option<Box<dyn Cache>>,
     plan: SASPlan,
 ) -> SASPlan {
-    let meta_steps: Vec<(&Term, usize)> = plan
-        .iter()
-        .enumerate()
-        .filter_map(|(i, step)| match step.name.contains("$") {
-            true => Some((step, i)),
-            false => None,
-        })
-        .collect();
-    println!("Solution has {} meta actions", meta_steps.len());
-    let operators = generate_operators(&instance, meta_domain, downward, &plan);
-    let replacements: Vec<SASPlan> = meta_steps
-        .iter()
-        .map(|(n, i)| {
-            generate_replacement(&instance, domain_path, downward, &operators, cache, n, *i)
-        })
-        .collect();
-    stich(
-        &plan,
-        meta_steps
-            .iter()
-            .map(|(_, i)| i)
-            .zip(replacements.iter())
-            .collect(),
-    )
+    let mut replacements: Vec<SASPlan> = Vec::new();
+    let mut state = State::new(&instance.domain, &instance.problem, &instance.facts);
+    let (meta_actions, operators) = generate_operators(&instance, meta_domain, downward, &plan);
+
+    let progress_bar = generate_progressbar(meta_actions.len());
+    for (i, operator) in operators.iter().enumerate() {
+        if !meta_actions.contains(&i) {
+            state.apply(operator);
+            continue;
+        }
+        progress_bar.inc(1);
+        let init = state.clone();
+        state.apply(operator);
+        if let Some(cache) = cache {
+            progress_bar.set_message("Checking cache");
+            if let Some(replacement) = cache.get_replacement(instance, &plan[i], &init, &state) {
+                replacements.push(replacement);
+                continue;
+            }
+        }
+        progress_bar.set_message("Using fast downward");
+        let problem_file = Path::new(&random_name()).to_path_buf();
+        write_problem(instance, &init, &state, &problem_file);
+        let plan = downward.solve(domain_path, &problem_file);
+        let _ = fs::remove_file(&problem_file);
+        if let Ok(plan) = plan {
+            replacements.push(plan);
+        } else {
+            panic!(
+                "Had error trying to replace meta action at index {}. Error: {}",
+                i,
+                plan.unwrap_err()
+            )
+        }
+    }
+    progress_bar.finish_and_clear();
+    stich(&plan, meta_actions.into_iter().zip(replacements).collect())
 }
