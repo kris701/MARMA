@@ -56,13 +56,16 @@ impl Cache for LiftedCache {
         init: &State,
         goal: &State,
     ) -> Option<SASPlan> {
-        let desired_pos = goal.get().bitand(!init.get());
-        let desired_neg = init.get().bitand(!goal.get());
         let replacements = &self.replacements.get(&meta_term.name)?;
         for (i, action) in replacements.macros.iter().enumerate() {
             for operator in generate_operators(instance, &action).map(|(o, ..)| o) {
-                if operator.eff_pos != desired_pos || operator.eff_neg != desired_neg {
-                    continue;
+                for i in init.get().difference(goal.get()) {
+                    if init.get().contains(i) && !operator.eff_neg.contains(i) {
+                        continue;
+                    }
+                    if operator.eff_pos.contains(i) {
+                        continue;
+                    }
                 }
                 if init.is_legal(&operator) {
                     return Some(replacements.plans[i].to_owned());

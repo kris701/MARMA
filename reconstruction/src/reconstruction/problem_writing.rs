@@ -31,7 +31,6 @@ fn generate_state(instance: &Instance, state: &State) -> String {
         .get()
         .iter()
         .enumerate()
-        .filter(|(_, v)| **v)
         .for_each(|(i, _)| s.push_str(&format!("\t\t({})\n", generate_fact(instance, i, false))));
     s
 }

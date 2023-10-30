@@ -47,7 +47,7 @@ pub struct Args {
     #[arg(short = 'c')]
     cache: Option<PathBuf>,
     /// Type of caching
-    #[arg(long = "cache_method", default_value = "hash")]
+    #[arg(long = "cache_method", default_value = "grounded")]
     cache_method: CacheMethod,
     /// Stop after translation, mainly used for debugging
     #[arg(long = "translate_only", num_args = 0)]

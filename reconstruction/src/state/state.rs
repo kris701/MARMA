@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::ops::{BitAnd, BitAndAssign, BitOrAssign};
 
 use bitvec::prelude::*;
@@ -9,17 +10,15 @@ use spingus::problem::Problem;
 use super::instance::facts::Facts;
 use super::instance::operator::Operator;
 
-#[derive(Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Debug)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
-    /// Each index in this bitvector corresponds to a fact
-    /// Some index being true then means that fact is true
-    internal: BitVec,
+    internal: HashSet<usize>,
 }
 
 impl State {
     // TODO: Clean this
     pub fn new(domain: &Domain, problem: &Problem, facts: &Facts) -> Self {
-        let mut internal = bitvec!(usize, Lsb0; 0; facts.count());
+        let mut internal: HashSet<usize> = HashSet::new();
         for init in &problem.inits {
             let predicate = domain
                 .predicates
@@ -33,24 +32,28 @@ impl State {
                     .map(|p| problem.objects.iter().position(|o| o.name == *p).unwrap())
                     .collect();
                 let fact = facts.index(predicate, &parameters);
-                internal.set(fact, true);
+                internal.insert(fact);
             }
         }
         Self { internal }
     }
 
     pub fn apply(&mut self, operator: &Operator) {
-        self.internal.bitand_assign(!operator.eff_neg.to_owned());
-        self.internal.bitor_assign(&operator.eff_pos);
+        for i in operator.eff_neg.iter() {
+            self.internal.remove(&i);
+        }
+        for i in operator.eff_pos.iter() {
+            self.internal.insert(*i);
+        }
     }
 
-    pub fn get(&self) -> BitVec {
-        self.internal.clone()
+    pub fn get(&self) -> &HashSet<usize> {
+        &self.internal
     }
 
     pub fn is_legal(&self, operator: &Operator) -> bool {
-        let has_pos = self.get().bitand(&operator.pre_pos) == operator.pre_pos;
-        let has_neg = self.get().bitand(&operator.pre_neg).not_any();
+        let has_pos = self.internal.is_superset(&operator.pre_pos);
+        let has_neg = self.internal.is_disjoint(&operator.pre_neg);
         has_pos && has_neg
     }
 }

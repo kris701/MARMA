@@ -1,4 +1,7 @@
-use std::{collections::HashMap, ops::BitAnd};
+use std::{
+    collections::{HashMap, HashSet},
+    ops::BitAnd,
+};
 
 use itertools::Itertools;
 use spingus::{sas_plan::SASPlan, term::Term};
@@ -76,13 +79,16 @@ impl Cache for GroundedCache {
         init: &State,
         goal: &State,
     ) -> Option<SASPlan> {
-        let desired_pos = goal.get().bitand(!init.get());
-        let desired_neg = init.get().bitand(!goal.get());
         for macro_entry in self.meta_map[&meta_term.name].macro_replacements.iter() {
             for entry in macro_entry.entries.iter() {
                 let operator = &entry.operator;
-                if operator.eff_pos != desired_pos || operator.eff_neg != desired_neg {
-                    continue;
+                for i in init.get().difference(goal.get()) {
+                    if init.get().contains(i) && !operator.eff_neg.contains(i) {
+                        continue;
+                    }
+                    if operator.eff_pos.contains(i) {
+                        continue;
+                    }
                 }
                 if init.is_legal(operator) {
                     return Some(macro_entry.plan.to_owned());

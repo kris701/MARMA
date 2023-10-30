@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use bitvec::prelude::*;
 use bitvec::vec::BitVec;
 use itertools::Itertools;
@@ -8,12 +10,12 @@ use super::{
     actions::Action, expression::Expression, facts::Facts, permute::permute_mutable, Instance,
 };
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Operator {
-    pub pre_pos: BitVec,
-    pub pre_neg: BitVec,
-    pub eff_pos: BitVec,
-    pub eff_neg: BitVec,
+    pub pre_pos: HashSet<usize>,
+    pub pre_neg: HashSet<usize>,
+    pub eff_pos: HashSet<usize>,
+    pub eff_neg: HashSet<usize>,
 }
 
 fn extract_from_action(
@@ -21,10 +23,10 @@ fn extract_from_action(
     parameters: &Vec<usize>,
     action: &Action,
 ) -> Option<Operator> {
-    let mut pre_pos = bitvec!(usize, Lsb0; 0; instance.facts.count());
-    let mut pre_neg = bitvec!(usize, Lsb0; 0; instance.facts.count());
-    let mut eff_pos = bitvec!(usize, Lsb0; 0; instance.facts.count());
-    let mut eff_neg = bitvec!(usize, Lsb0; 0; instance.facts.count());
+    let mut pre_pos: HashSet<usize> = HashSet::new();
+    let mut pre_neg: HashSet<usize> = HashSet::new();
+    let mut eff_pos: HashSet<usize> = HashSet::new();
+    let mut eff_neg: HashSet<usize> = HashSet::new();
     if let Some(exp) = &action.precondition {
         if !walk(instance, parameters, &mut pre_pos, &mut pre_neg, exp, true) {
             return None;
@@ -76,8 +78,8 @@ pub fn generate_operators<'a>(
 fn walk(
     instance: &Instance,
     permutation: &Vec<usize>,
-    pos: &mut BitVec,
-    neg: &mut BitVec,
+    pos: &mut HashSet<usize>,
+    neg: &mut HashSet<usize>,
     exp: &Expression,
     value: bool,
 ) -> bool {
@@ -91,10 +93,11 @@ fn walk(
                 true => {
                     return instance.facts.is_statically_true(*index, &parameters);
                 }
-                false => exp.set(instance.facts.index(*index, &parameters), true),
+                false => {
+                    exp.insert(instance.facts.index(*index, &parameters));
+                    return true;
+                }
             }
-
-            true
         }
         Expression::Equal(exps) => exps.iter().all_equal(),
         Expression::And(exps) => exps
