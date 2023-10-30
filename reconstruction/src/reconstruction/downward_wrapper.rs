@@ -5,18 +5,19 @@ use std::{
     process::Command,
 };
 
-use crate::tools::{random_name, time::run_time};
+use crate::tools::{random_file_name, time::run_time};
 
 pub struct Downward {
     pub path: PathBuf,
+    pub temp_dir: PathBuf,
 }
 
 impl Downward {
-    pub fn new(path: PathBuf) -> Self {
+    pub fn new(path: PathBuf, temp_dir: PathBuf) -> Self {
         if !Path::new(&path).exists() {
             panic!("Could not find fast downward at given location");
         }
-        Self { path }
+        Self { path, temp_dir }
     }
 
     fn run(&self, cmd: &mut Command, plan_path: &String) -> Result<SASPlan, String> {
@@ -41,8 +42,8 @@ impl Downward {
 
     pub fn solve(&self, domain_path: &PathBuf, problem_path: &PathBuf) -> Result<SASPlan, String> {
         let mut cmd: Command = Command::new(Path::new(&self.path).to_str().unwrap());
-        let plan_path = random_name();
-        let sas_path = random_name();
+        let plan_path = random_file_name(&self.temp_dir);
+        let sas_path = random_file_name(&self.temp_dir);
 
         cmd.args(&[
             "--alias",

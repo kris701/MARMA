@@ -1,8 +1,5 @@
 use spingus::{domain::Domain, sas_plan::SASPlan};
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::{fs, path::PathBuf};
 
 use crate::{
     cache::Cache,
@@ -14,7 +11,7 @@ use crate::{
         },
         state::State,
     },
-    tools::{generate_progressbar, random_name},
+    tools::{generate_progressbar, random_file_name},
 };
 
 use super::downward_wrapper::Downward;
@@ -77,7 +74,7 @@ pub fn reconstruct(
             }
         }
         progress_bar.set_message("Using fast downward");
-        let problem_file = Path::new(&random_name()).to_path_buf();
+        let problem_file = PathBuf::from(random_file_name(&downward.temp_dir));
         write_problem(instance, &init, &state, &problem_file);
         let plan = downward.solve(domain_path, &problem_file);
         let _ = fs::remove_file(&problem_file);

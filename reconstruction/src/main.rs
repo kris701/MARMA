@@ -41,6 +41,8 @@ pub struct Args {
     /// If not given, simply prints to stdout
     #[arg(short = 'o')]
     out: Option<PathBuf>,
+    #[arg(long, default_value = "/tmp")]
+    temp_dir: PathBuf,
     /// Path to a set of lifted macros used to cache meta action reconstruction
     #[arg(short = 'c')]
     cache: Option<PathBuf>,
@@ -48,7 +50,7 @@ pub struct Args {
     #[arg(long = "cache_method", default_value = "hash")]
     cache_method: CacheMethod,
     /// Stop after translation, mainly used for debugging
-    #[arg(long = "translate_only", default_value = "false", action = clap::ArgAction::Set)]
+    #[arg(long = "translate_only", num_args = 0)]
     translate_only: bool,
 }
 
@@ -76,7 +78,7 @@ fn main() {
     if !args.translate_only {
         println!("{} Beginning reconstruction...", run_time());
         println!("{} Finding fast downward...", run_time());
-        let downward = Downward::new(args.downward);
+        let downward = Downward::new(args.downward, args.temp_dir);
         println!("{} Finding meta solution...", run_time());
         let meta_plan = downward.find_or_solve(&args.meta_domain, &args.problem, &args.solution);
         let plan = reconstruct(
