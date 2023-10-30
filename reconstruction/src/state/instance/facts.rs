@@ -1,10 +1,13 @@
 use std::collections::{HashMap, HashSet};
 
+use itertools::Itertools;
+use spingus::problem::init::Inits;
+
 use crate::tools::time::run_time;
 
 use super::{
     actions::Actions, expression::Expression, objects::Objects, parameters::Parameters,
-    permute::permute_all, predicates::Predicates, types::Types,
+    permute::permute_mutable, predicates::Predicates, types::Types,
 };
 
 #[derive(Debug, PartialEq)]
@@ -15,10 +18,22 @@ impl PredicateFacts {
     fn new(
         types: &Option<Types>,
         objects: &Objects,
+        predicate: usize,
+        statics: &Vec<(usize, Vec<usize>)>,
+        is_static: bool,
         parameters: &Parameters,
         offset: usize,
     ) -> Self {
-        let permutations = permute_all(types, objects, parameters);
+        let permutations = match is_static {
+            true => statics
+                .iter()
+                .filter_map(|(i, permutation)| match *i == predicate {
+                    true => Some(permutation.to_owned()),
+                    false => None,
+                })
+                .collect(),
+            false => permute_mutable(types, objects, &parameters.parameter_types),
+        };
         let mut index_map: HashMap<Vec<usize>, usize> = HashMap::new();
         for permutation in permutations.into_iter() {
             index_map.insert(permutation, offset + index_map.len());
@@ -41,12 +56,20 @@ impl PredicateFacts {
             .map(|(permutation, _)| permutation)
             .unwrap()
     }
+
+    fn contains(&self, permutation: &Vec<usize>) -> bool {
+        self.index_map.contains_key(permutation)
+    }
+
+    fn indexes(&self) -> Vec<usize> {
+        self.index_map.iter().map(|(_, i)| *i).collect()
+    }
 }
 
 #[derive(Debug, PartialEq)]
 pub struct Facts {
     facts: Vec<PredicateFacts>,
-    statics: HashSet<usize>,
+    static_predicates: HashSet<usize>,
 }
 
 impl Facts {
@@ -55,9 +78,17 @@ impl Facts {
         predicates: &Predicates,
         actions: &Actions,
         objects: &Objects,
+        inits: &Inits,
     ) -> Self {
         let mut facts: Vec<PredicateFacts> = Vec::new();
-        let mut statics: HashSet<usize> = HashSet::new();
+        let mut static_predicates: HashSet<usize> = HashSet::new();
+
+        let mut statics: Vec<(usize, Vec<usize>)> = Vec::new();
+        for init in inits.iter() {
+            let predicate = predicates.get_index(&init.name);
+            let parameters = objects.get_indexes(&init.parameters);
+            statics.push((predicate, parameters));
+        }
 
         let mut offset: usize = 0;
         for (i, predicate) in predicates.predicate_parameters().iter().enumerate() {
@@ -69,14 +100,18 @@ impl Facts {
             let is_static = check_static_all(actions, i);
             println!("is static: {}", is_static);
             if is_static {
-                statics.insert(i);
+                static_predicates.insert(i);
             }
-            let predicate_facts = PredicateFacts::new(types, objects, predicate, offset);
+            let predicate_facts =
+                PredicateFacts::new(types, objects, i, &statics, is_static, predicate, offset);
+            println!("facts: {}", predicate_facts.count());
             offset += predicate_facts.count();
             facts.push(predicate_facts);
         }
-
-        Self { facts, statics }
+        Self {
+            facts,
+            static_predicates,
+        }
     }
 
     pub fn count(&self) -> usize {
@@ -87,7 +122,7 @@ impl Facts {
         self.facts[predicate].index(parameters)
     }
 
-    pub fn fact_predicate(&self, fact_index: usize, is_static: bool) -> usize {
+    pub fn fact_predicate(&self, fact_index: usize) -> usize {
         let mut acc = 0;
         for i in 0..self.facts.len() {
             acc += self.facts[i].count();
@@ -98,8 +133,8 @@ impl Facts {
         self.facts.len() - 1
     }
 
-    pub fn fact_parameters(&self, fact_index: usize, is_static: bool) -> &Vec<usize> {
-        let predicate = self.fact_predicate(fact_index, is_static);
+    pub fn fact_parameters(&self, fact_index: usize) -> &Vec<usize> {
+        let predicate = self.fact_predicate(fact_index);
         let facts = &self.facts[predicate];
         facts.get_permutation(fact_index)
     }
@@ -109,15 +144,19 @@ impl Facts {
     }
 
     pub fn is_static(&self, predicate: usize) -> bool {
-        false
+        self.static_predicates.contains(&predicate)
     }
 
-    pub fn is_statically_true(&self, index: usize) -> bool {
-        todo!()
+    pub fn is_statically_true(&self, predicate: usize, parameters: &Vec<usize>) -> bool {
+        let predicate = self.fact_predicate(predicate);
+        self.facts[predicate].contains(parameters)
     }
 
     pub fn get_static_true(&self) -> Vec<usize> {
-        vec![]
+        self.static_predicates
+            .iter()
+            .flat_map(|i| self.facts[*i].indexes())
+            .collect()
     }
 }
 

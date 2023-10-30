@@ -17,6 +17,7 @@ use crate::{
 
 pub mod generation;
 mod grounded_cache;
+mod hash_cache;
 mod lifted_cache;
 
 pub trait Cache {

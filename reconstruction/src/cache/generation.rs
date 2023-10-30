@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use clap::ValueEnum;
 
 use crate::{
-    cache::{lifted_cache::LiftedCache, read_cache_input},
+    cache::{hash_cache::HashCache, lifted_cache::LiftedCache, read_cache_input},
     state::instance::Instance,
     tools::time::run_time,
 };
@@ -15,6 +15,7 @@ pub enum CacheMethod {
     #[default]
     Grounded,
     Lifted,
+    Hash,
 }
 
 pub fn generate_cache(
@@ -29,6 +30,7 @@ pub fn generate_cache(
         match cache_type {
             CacheMethod::Grounded => Some(Box::new(GroundedCache::new(instance, data))),
             CacheMethod::Lifted => Some(Box::new(LiftedCache::new(instance, data))),
+            CacheMethod::Hash => Some(Box::new(HashCache::new(instance, data))),
         }
     } else {
         println!("No cache given");

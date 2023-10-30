@@ -16,8 +16,8 @@ fn generate_objects(problem: &Problem) -> String {
 
 fn generate_fact(instance: &Instance, i: usize, is_static: bool) -> String {
     let mut s = "".to_string();
-    let predicate_index = instance.facts.fact_predicate(i, is_static);
-    let parameters = instance.facts.fact_parameters(i, is_static);
+    let predicate_index = instance.facts.fact_predicate(i);
+    let parameters = instance.facts.fact_parameters(i);
     s.push_str(&instance.domain.predicates[predicate_index].name);
     parameters
         .iter()

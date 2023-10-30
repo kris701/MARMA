@@ -1,4 +1,7 @@
-use spingus::{domain::Domain, problem::Problem};
+use spingus::{
+    domain::Domain,
+    problem::{init::Inits, Problem},
+};
 
 use self::{
     actions::{Action, Actions},
@@ -44,7 +47,7 @@ impl Instance {
         let actions = Actions::new(&types, &predicates, domain.actions.to_owned());
         let meta_actions = Actions::new(&types, &predicates, meta_domain.actions.to_owned());
         let objects = Objects::new(&types, problem.objects.to_owned());
-        let facts = Facts::new(&types, &predicates, &actions, &objects);
+        let facts = Facts::new(&types, &predicates, &actions, &objects, &problem.inits);
 
         Self {
             types,
@@ -73,6 +76,7 @@ impl Instance {
         Action::new(
             &self.types,
             &self.predicates,
+            action.name,
             action.parameters,
             action.precondition,
             action.effect,

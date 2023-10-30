@@ -45,6 +45,7 @@ impl GroundedCache {
         for (meta_name, macros) in cache_data {
             let mut macro_replacements: Vec<MacroEntry> = Vec::new();
             for (action, plan) in macros {
+                println!("{} Generating operators for {}...", run_time(), action.name);
                 let action = instance.convert_action(action);
                 let entries = generate_operators(instance, &action)
                     .map(|(operator, parameters)| Entry {

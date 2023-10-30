@@ -67,8 +67,8 @@ pub fn reconstruct(
         let problem_file = PathBuf::from(random_file_name(&downward.temp_dir));
         write_problem(instance, &init, &state, &problem_file);
         let plan = downward.solve(domain_path, &problem_file);
-        let _ = fs::remove_file(&problem_file);
         if let Ok(plan) = plan {
+            let _ = fs::remove_file(&problem_file);
             replacements.push(plan);
         } else {
             panic!(

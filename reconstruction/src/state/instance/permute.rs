@@ -1,23 +1,8 @@
 use itertools::Itertools;
 
-use crate::state::instance::{
-    expression::Expression, objects::Objects, parameters::Parameters, types::Types,
-};
+use crate::state::instance::{objects::Objects, types::Types};
 
-fn permute_static(init: &Expression) -> Vec<Vec<usize>> {
-    match init {
-        Expression::And(e) => e
-            .iter()
-            .map(|t| match t {
-                Expression::Predicate { parameters, .. } => parameters.clone(),
-                _ => panic!("Unexpected expression type."),
-            })
-            .collect(),
-        _ => panic!("Unexpected expression type. This is a logic error, should not happen."),
-    }
-}
-
-fn permute_untyped(objects: &Objects, parameter_count: usize) -> Vec<Vec<usize>> {
+fn permute_untyped(_objects: &Objects, _parameter_count: usize) -> Vec<Vec<usize>> {
     todo!()
 }
 
@@ -49,7 +34,7 @@ fn permute_typed(
         .collect()
 }
 
-fn permute_mutable(
+pub fn permute_mutable(
     types: &Option<Types>,
     objects: &Objects,
     parameter_types: &Vec<Option<usize>>,
@@ -58,12 +43,4 @@ fn permute_mutable(
         Some(types) => permute_typed(types, objects, parameter_types),
         None => permute_untyped(objects, parameter_types.len()),
     }
-}
-
-pub fn permute_all(
-    types: &Option<Types>,
-    objects: &Objects,
-    parameters: &Parameters,
-) -> Vec<Vec<usize>> {
-    return permute_mutable(types, objects, &parameters.parameter_types);
 }

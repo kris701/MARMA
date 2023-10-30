@@ -2,8 +2,10 @@ use bitvec::prelude::*;
 use bitvec::vec::BitVec;
 use itertools::Itertools;
 
+use crate::tools::time::run_time;
+
 use super::{
-    actions::Action, expression::Expression, facts::Facts, permute::permute_all, Instance,
+    actions::Action, expression::Expression, facts::Facts, permute::permute_mutable, Instance,
 };
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
@@ -60,7 +62,11 @@ pub fn generate_operators<'a>(
     instance: &'a Instance,
     action: &'a Action,
 ) -> impl Iterator<Item = (Operator, Vec<usize>)> + 'a {
-    let permutations = permute_all(&instance.types, &instance.objects, &action.parameters);
+    let permutations = permute_mutable(
+        &instance.types,
+        &instance.objects,
+        &action.parameters.parameter_types,
+    );
     permutations.into_iter().filter_map(|p| {
         let operator = extract_from_action(instance, &p, action)?;
         Some((operator, p))
@@ -78,16 +84,14 @@ fn walk(
     match exp {
         Expression::Predicate { index, parameters } => {
             let exp = if value { pos } else { neg };
-            let fact_index = instance.facts.index(
-                *index,
-                &parameters.iter().map(|p| permutation[*p]).collect(),
-            );
 
-            match instance.facts.is_static(fact_index) {
+            let parameters = parameters.iter().map(|p| permutation[*p]).collect_vec();
+
+            match instance.facts.is_static(*index) {
                 true => {
-                    return instance.facts.is_statically_true(fact_index);
+                    return instance.facts.is_statically_true(*index, &parameters);
                 }
-                false => exp.set(fact_index, true),
+                false => exp.set(instance.facts.index(*index, &parameters), true),
             }
 
             true

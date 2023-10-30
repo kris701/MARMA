@@ -4,6 +4,7 @@ use super::{expression::Expression, parameters::Parameters, predicates::Predicat
 
 #[derive(Debug)]
 pub struct Action {
+    pub name: String,
     pub parameters: Parameters,
     pub precondition: Option<Expression>,
     pub effect: Expression,
@@ -13,6 +14,7 @@ impl Action {
     pub fn new(
         types: &Option<Types>,
         predicates: &Predicates,
+        name: String,
         parameters: spingus::domain::parameter::Parameters,
         precondition: Option<spingus::domain::action::string_expression::StringExpression>,
         effect: spingus::domain::action::string_expression::StringExpression,
@@ -24,6 +26,7 @@ impl Action {
         };
         let effect = Expression::new(predicates, &parameters, effect);
         Self {
+            name,
             parameters,
             precondition,
             effect,
@@ -47,10 +50,11 @@ impl Actions {
         let mut actions: Vec<Action> = Vec::new();
 
         for action in o_actions {
-            index_map.insert(action.name, index_map.len());
+            index_map.insert(action.name.to_owned(), index_map.len());
             actions.push(Action::new(
                 types,
                 predicates,
+                action.name,
                 action.parameters,
                 action.precondition,
                 action.effect,
