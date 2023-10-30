@@ -106,6 +106,7 @@ impl Facts {
                 PredicateFacts::new(types, objects, i, &statics, is_static, predicate, offset);
             println!("facts: {}", predicate_facts.count());
             offset += predicate_facts.count();
+            println!("{:?}", predicate_facts);
             facts.push(predicate_facts);
         }
         Self {
@@ -139,16 +140,11 @@ impl Facts {
         facts.get_permutation(fact_index)
     }
 
-    pub fn predicate_index(&self, predicate: &String) -> usize {
-        todo!()
-    }
-
     pub fn is_static(&self, predicate: usize) -> bool {
         self.static_predicates.contains(&predicate)
     }
 
     pub fn is_statically_true(&self, predicate: usize, parameters: &Vec<usize>) -> bool {
-        let predicate = self.fact_predicate(predicate);
         self.facts[predicate].contains(parameters)
     }
 

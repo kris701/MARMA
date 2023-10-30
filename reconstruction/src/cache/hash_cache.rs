@@ -48,6 +48,7 @@ impl HashCache {
             println!("{} Generating cache for {}", run_time(), action.name);
             let action_index = lifted_macros.len();
             let operators = generate_operators(&instance, &action);
+            let mut count = 0;
             for (operator, permutation) in operators {
                 let entry_index = entries.len();
                 entry_macro.push(action_index);
@@ -62,7 +63,9 @@ impl HashCache {
                     }
                 };
                 entries.push((operator, permutation));
+                count += 1;
             }
+            println!("entries: {}", count);
             lifted_macros.push((action, plan));
         }
         let c = HashCache {
