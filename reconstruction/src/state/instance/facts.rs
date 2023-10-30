@@ -97,7 +97,8 @@ impl Facts {
                 run_time(),
                 predicates.get_name(i)
             );
-            let is_static = check_static_all(actions, i);
+            // TODO: Make sure this works!
+            let is_static = check_static_all(actions, i) || check_degrading_all(actions, i);
             println!("is static: {}", is_static);
             if is_static {
                 static_predicates.insert(i);
@@ -169,4 +170,20 @@ fn check_static_all(actions: &Actions, predicate: usize) -> bool {
         .actions
         .iter()
         .all(|a| check_static(predicate, &a.effect))
+}
+
+fn check_degrading(predicate: usize, exp: &Expression, val: bool) -> bool {
+    match exp {
+        Expression::Predicate { index, .. } => *index != predicate || !val,
+        Expression::And(exp) => exp.iter().all(|exp| check_degrading(predicate, exp, val)),
+        Expression::Not(exp) => check_degrading(predicate, exp, !val),
+        _ => todo!(),
+    }
+}
+
+fn check_degrading_all(actions: &Actions, predicate: usize) -> bool {
+    actions
+        .actions
+        .iter()
+        .all(|a| check_degrading(predicate, &a.effect, true))
 }
