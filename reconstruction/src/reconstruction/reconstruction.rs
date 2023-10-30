@@ -18,7 +18,6 @@ use super::downward_wrapper::Downward;
 
 fn generate_operators(
     instance: &Instance,
-    meta_domain: &Domain,
     _downward: &Downward,
     plan: &SASPlan,
 ) -> (Vec<usize>, Vec<Operator>) {
@@ -27,27 +26,18 @@ fn generate_operators(
     for (i, step) in plan.iter().enumerate() {
         if step.name.contains('$') {
             meta_actions.push(i);
-            operators.push(generate_operator_string(
-                meta_domain,
-                &instance.facts,
-                &step.name,
-                &step.parameters,
-            ));
-        } else {
-            operators.push(generate_operator_string(
-                &instance.domain,
-                &instance.facts,
-                &step.name,
-                &step.parameters,
-            ));
         }
+        operators.push(generate_operator_string(
+            instance,
+            &step.name,
+            &step.parameters,
+        ));
     }
     (meta_actions, operators)
 }
 
 pub fn reconstruct(
     instance: &Instance,
-    meta_domain: &Domain,
     domain_path: &PathBuf,
     downward: &Downward,
     cache: &Option<Box<dyn Cache>>,
@@ -55,7 +45,7 @@ pub fn reconstruct(
 ) -> SASPlan {
     let mut replacements: Vec<SASPlan> = Vec::new();
     let mut state = State::new(&instance.domain, &instance.problem, &instance.facts);
-    let (meta_actions, operators) = generate_operators(&instance, meta_domain, downward, &plan);
+    let (meta_actions, operators) = generate_operators(&instance, downward, &plan);
 
     let progress_bar = generate_progressbar(meta_actions.len());
     for (i, operator) in operators.iter().enumerate() {

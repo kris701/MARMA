@@ -1,10 +1,11 @@
 use std::{collections::HashMap, ops::BitAnd};
 
-use spingus::{domain::action::Action, sas_plan::SASPlan, term::Term};
+use spingus::{sas_plan::SASPlan, term::Term};
 
 use crate::{
     state::{
         instance::{
+            actions::Action,
             operator::{generate_operators, Operator},
             Instance,
         },
@@ -35,14 +36,17 @@ pub struct GroundedCache {
 }
 
 impl GroundedCache {
-    pub fn new(instance: &Instance, cache_data: HashMap<String, Vec<(Action, SASPlan)>>) -> Self {
+    pub fn new(
+        instance: &Instance,
+        cache_data: HashMap<String, Vec<(spingus::domain::action::Action, SASPlan)>>,
+    ) -> Self {
         println!("{} Init grounded-cache...", run_time());
         let mut meta_map: HashMap<String, MetaEntry> = HashMap::new();
         for (meta_name, macros) in cache_data {
             let mut macro_replacements: Vec<MacroEntry> = Vec::new();
             for (action, plan) in macros {
+                let action = instance.convert_action(action);
                 let entries = generate_operators(instance, &action)
-                    .into_iter()
                     .map(|(operator, parameters)| Entry {
                         operator,
                         _parameters: parameters,

@@ -1,202 +1,138 @@
-use std::collections::HashMap;
-
-use spingus::{
-    domain::{
-        action::{string_expression::StringExpression, Actions},
-        predicate::{Predicate, Predicates},
-        Domain,
-    },
-    problem::{object::Objects, Problem},
-};
+use std::collections::{HashMap, HashSet};
 
 use crate::tools::time::run_time;
 
-use super::permutation::permute;
+use super::{
+    actions::Actions, expression::Expression, objects::Objects, parameters::Parameters,
+    permute::permute_all, predicates::Predicates, types::Types,
+};
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
-pub struct Fact {
-    pub predicate: usize,
-    pub parameters: Vec<usize>,
+#[derive(Debug, PartialEq)]
+struct PredicateFacts {
+    index_map: HashMap<Vec<usize>, usize>,
+}
+impl PredicateFacts {
+    fn new(
+        types: &Option<Types>,
+        objects: &Objects,
+        parameters: &Parameters,
+        offset: usize,
+    ) -> Self {
+        let permutations = permute_all(types, objects, parameters);
+        let mut index_map: HashMap<Vec<usize>, usize> = HashMap::new();
+        for permutation in permutations.into_iter() {
+            index_map.insert(permutation, offset + index_map.len());
+        }
+        Self { index_map }
+    }
+
+    fn count(&self) -> usize {
+        self.index_map.len()
+    }
+
+    fn index(&self, permutation: &Vec<usize>) -> usize {
+        self.index_map[permutation]
+    }
+
+    fn get_permutation(&self, index: usize) -> &Vec<usize> {
+        self.index_map
+            .iter()
+            .find(|(_, i)| **i == index)
+            .map(|(permutation, _)| permutation)
+            .unwrap()
+    }
 }
 
 #[derive(Debug, PartialEq)]
 pub struct Facts {
-    /// Predicate name to index
-    /// Simply corresponds to position the predicate is found at
-    predicate_map: HashMap<String, usize>,
-    /// Object name to index
-    /// Simply corresponds to position the object is found at
-    object_map: HashMap<String, usize>,
-    /// Facts that appear in no effects
-    static_predicates: Vec<bool>,
-    /// Facts that can change value
-    facts: Vec<Fact>,
-    /// Facts that can not change value
-    facts_static: Vec<(Fact, bool)>,
+    facts: Vec<PredicateFacts>,
+    statics: HashSet<usize>,
 }
 
 impl Facts {
-    pub fn new(domain: &Domain, problem: &Problem) -> Self {
-        println!("{} Generating object map...", run_time());
-        let object_map = generate_object_map(&problem.objects);
-        println!("{} Generating predicate map...", run_time());
-        let predicate_map = generate_predicate_map(&domain.predicates);
-        println!("{} Finding static predicates...", run_time());
-        let static_predicates: Vec<bool> = find_static_predicates(domain);
-        for (i, s) in static_predicates.iter().enumerate() {
-            println!("{}: {}", domain.predicates[i].name, s)
-        }
-        println!("{} Generating facts...", run_time());
-        let mut facts: Vec<Fact> = Vec::new();
-        let mut facts_static: Vec<(Fact, bool)> = Vec::new();
-        for (i, predicate) in domain.predicates.iter().enumerate() {
-            let temp_facts = generate_facts(domain, problem, predicate, i);
-            println!("{}: {}", predicate.name, temp_facts.len());
-            for fact in temp_facts {
-                match static_predicates[i] {
-                    true => facts_static.push((fact, false)),
-                    false => facts.push(fact),
-                }
+    pub fn new(
+        types: &Option<Types>,
+        predicates: &Predicates,
+        actions: &Actions,
+        objects: &Objects,
+    ) -> Self {
+        let mut facts: Vec<PredicateFacts> = Vec::new();
+        let mut statics: HashSet<usize> = HashSet::new();
+
+        let mut offset: usize = 0;
+        for (i, predicate) in predicates.predicate_parameters().iter().enumerate() {
+            println!(
+                "{} Grounding predicate '{}'...",
+                run_time(),
+                predicates.get_name(i)
+            );
+            let is_static = check_static_all(actions, i);
+            println!("is static: {}", is_static);
+            if is_static {
+                statics.insert(i);
             }
-        }
-        println!("non-static: {}", facts.len());
-        println!("static: {}", facts_static.len());
-        println!("total: {}", facts.len() + facts_static.len());
-
-        println!("{} Finding statically true...", run_time());
-        for fact in problem
-            .inits
-            .iter()
-            .filter(|f| static_predicates[predicate_map[&f.name]])
-        {
-            let pred_index: usize = predicate_map[&fact.name];
-            let parameters: Vec<usize> = fact.parameters.iter().map(|o| object_map[o]).collect();
-            let pos = facts_static
-                .iter()
-                .position(|(fact, _)| fact.predicate == pred_index && fact.parameters == parameters)
-                .unwrap();
-            facts_static[pos].1 = true;
+            let predicate_facts = PredicateFacts::new(types, objects, predicate, offset);
+            offset += predicate_facts.count();
+            facts.push(predicate_facts);
         }
 
-        Self {
-            predicate_map,
-            object_map,
-            static_predicates,
-            facts,
-            facts_static,
-        }
+        Self { facts, statics }
     }
 
     pub fn count(&self) -> usize {
-        self.facts.len()
+        self.facts.iter().map(|f| f.count()).sum()
     }
 
     pub fn index(&self, predicate: usize, parameters: &Vec<usize>) -> usize {
-        match self.static_predicates[predicate] {
-            true => self
-                .facts_static
-                .iter()
-                .position(|fact| fact.0.predicate == predicate && fact.0.parameters == *parameters)
-                .unwrap(),
-            false => self
-                .facts
-                .iter()
-                .position(|fact| fact.predicate == predicate && fact.parameters == *parameters)
-                .unwrap(),
-        }
+        self.facts[predicate].index(parameters)
     }
 
     pub fn fact_predicate(&self, fact_index: usize, is_static: bool) -> usize {
-        match is_static {
-            true => self.facts_static[fact_index].0.predicate,
-            false => self.facts[fact_index].predicate,
+        let mut acc = 0;
+        for i in 0..self.facts.len() {
+            acc += self.facts[i].count();
+            if fact_index < acc {
+                return i;
+            }
         }
+        self.facts.len() - 1
     }
 
     pub fn fact_parameters(&self, fact_index: usize, is_static: bool) -> &Vec<usize> {
-        match is_static {
-            true => &self.facts_static[fact_index].0.parameters,
-            false => &self.facts[fact_index].parameters,
-        }
+        let predicate = self.fact_predicate(fact_index, is_static);
+        let facts = &self.facts[predicate];
+        facts.get_permutation(fact_index)
     }
 
     pub fn predicate_index(&self, predicate: &String) -> usize {
-        self.predicate_map[predicate]
-    }
-
-    pub fn object_index(&self, object: &String) -> usize {
-        self.object_map[object]
+        todo!()
     }
 
     pub fn is_static(&self, predicate: usize) -> bool {
-        self.static_predicates[predicate]
+        false
     }
 
     pub fn is_statically_true(&self, index: usize) -> bool {
-        self.facts_static[index].1
+        todo!()
     }
 
     pub fn get_static_true(&self) -> Vec<usize> {
-        self.facts_static
-            .iter()
-            .enumerate()
-            .filter(|(_, (_, v))| *v)
-            .map(|(i, _)| i)
-            .collect()
+        vec![]
     }
 }
 
-fn generate_object_map(objects: &Objects) -> HashMap<String, usize> {
-    objects
-        .iter()
-        .enumerate()
-        .map(|(i, object)| (object.name.to_owned(), i))
-        .collect()
-}
-
-fn generate_predicate_map(predicates: &Predicates) -> HashMap<String, usize> {
-    predicates
-        .iter()
-        .enumerate()
-        .map(|(i, pred)| (pred.name.to_owned(), i))
-        .collect()
-}
-
-fn contains_predicate(exp: &StringExpression, predicate: &Predicate) -> bool {
+fn check_static(predicate: usize, exp: &Expression) -> bool {
     match exp {
-        StringExpression::Predicate(p) => *p.name == *predicate.name,
-        StringExpression::And(e) => e.iter().any(|e| contains_predicate(e, predicate)),
-        StringExpression::Not(e) => contains_predicate(e, predicate),
-        _ => false,
+        Expression::Predicate { index, .. } => *index != predicate,
+        Expression::And(exp) => exp.iter().all(|exp| check_static(predicate, exp)),
+        Expression::Not(exp) => check_static(predicate, exp),
+        _ => todo!(),
     }
 }
 
-fn is_static(actions: &Actions, predicate: &Predicate) -> bool {
+fn check_static_all(actions: &Actions, predicate: usize) -> bool {
     actions
+        .actions
         .iter()
-        .all(|a| !contains_predicate(&a.effect, predicate))
-}
-
-fn find_static_predicates(domain: &Domain) -> Vec<bool> {
-    domain
-        .predicates
-        .iter()
-        .map(|p| is_static(&domain.actions, &p))
-        .collect()
-}
-
-fn generate_facts(
-    domain: &Domain,
-    problem: &Problem,
-    predicate: &Predicate,
-    predicate_index: usize,
-) -> Vec<Fact> {
-    let permutations = permute(&domain.types, problem, &predicate.parameters);
-    permutations
-        .iter()
-        .map(|p| Fact {
-            predicate: predicate_index,
-            parameters: p.to_vec(),
-        })
-        .collect()
+        .all(|a| check_static(predicate, &a.effect))
 }

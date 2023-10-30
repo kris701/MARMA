@@ -47,7 +47,7 @@ pub struct Args {
     #[arg(short = 'c')]
     cache: Option<PathBuf>,
     /// Type of caching
-    #[arg(long = "cache_method", default_value = "hash")]
+    #[arg(long = "cache_method", default_value = "grounded")]
     cache_method: CacheMethod,
     /// Stop after translation, mainly used for debugging
     #[arg(long = "translate_only", num_args = 0)]
@@ -72,7 +72,7 @@ fn main() {
     println!("{} Parsing problem....", run_time());
     let problem = parse_problem(&problem).unwrap();
     println!("{} Converting instance....", run_time());
-    let instance = Instance::new(domain, problem);
+    let instance = Instance::new(domain, problem, meta_domain.to_owned());
     println!("{} Checking cache...", run_time());
     let cache = generate_cache(&instance, &args.cache, args.cache_method);
     if !args.translate_only {
@@ -81,14 +81,7 @@ fn main() {
         let downward = Downward::new(args.downward, args.temp_dir);
         println!("{} Finding meta solution...", run_time());
         let meta_plan = downward.find_or_solve(&args.meta_domain, &args.problem, &args.solution);
-        let plan = reconstruct(
-            &instance,
-            &meta_domain,
-            &args.domain,
-            &downward,
-            &cache,
-            meta_plan,
-        );
+        let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
         let plan_export = export_sas(&plan);
         match args.out {
             Some(path) => fs::write(path, plan_export).unwrap(),

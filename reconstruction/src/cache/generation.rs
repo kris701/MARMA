@@ -3,22 +3,18 @@ use std::path::PathBuf;
 use clap::ValueEnum;
 
 use crate::{
-    cache::{
-        grounded_cache::GroundedCache, hash_cache::HashCache, lifted_cache::LiftedCache,
-        read_cache_input,
-    },
+    cache::{lifted_cache::LiftedCache, read_cache_input},
     state::instance::Instance,
     tools::time::run_time,
 };
 
-use super::Cache;
+use super::{grounded_cache::GroundedCache, Cache};
 
 #[derive(Debug, Copy, Clone, PartialEq, Default, ValueEnum)]
 pub enum CacheMethod {
     #[default]
-    Hash,
-    Lifted,
     Grounded,
+    Lifted,
 }
 
 pub fn generate_cache(
@@ -31,9 +27,8 @@ pub fn generate_cache(
         let data = read_cache_input(path).unwrap();
         println!("{} Generating cache...", run_time());
         match cache_type {
-            CacheMethod::Hash => Some(Box::new(HashCache::new(instance, data))),
-            CacheMethod::Lifted => Some(Box::new(LiftedCache::new(instance, data))),
             CacheMethod::Grounded => Some(Box::new(GroundedCache::new(instance, data))),
+            CacheMethod::Lifted => Some(Box::new(LiftedCache::new(instance, data))),
         }
     } else {
         println!("No cache given");

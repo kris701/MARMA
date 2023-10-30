@@ -1,10 +1,10 @@
 use std::{collections::HashMap, ops::BitAnd};
 
-use spingus::{domain::action::Action, sas_plan::SASPlan, term::Term};
+use spingus::{sas_plan::SASPlan, term::Term};
 
 use crate::{
     state::{
-        instance::{operator::generate_operators_iterative, permutation::permute, Instance},
+        instance::{actions::Action, operator::generate_operators, Instance},
         state::State,
     },
     tools::time::run_time,
@@ -22,14 +22,17 @@ pub struct LiftedCache {
 }
 
 impl LiftedCache {
-    pub fn new(_instance: &Instance, cache_data: HashMap<String, Vec<(Action, SASPlan)>>) -> Self {
+    pub fn new(
+        _instance: &Instance,
+        cache_data: HashMap<String, Vec<(spingus::domain::action::Action, SASPlan)>>,
+    ) -> Self {
         println!("{} Init lifted-cache...", run_time());
         let mut replacements: HashMap<String, MetaReplacements> = HashMap::new();
         for (meta_action, macros) in cache_data {
             let mut actions: Vec<Action> = vec![];
             let mut plans: Vec<SASPlan> = vec![];
             for (macro_action, plan) in macros {
-                actions.push(macro_action);
+                actions.push(_instance.convert_action(macro_action));
                 plans.push(plan);
             }
             replacements.insert(
@@ -57,12 +60,7 @@ impl Cache for LiftedCache {
         let desired_neg = init.get().bitand(!goal.get());
         let replacements = &self.replacements.get(&meta_term.name)?;
         for (i, action) in replacements.macros.iter().enumerate() {
-            let permutations = permute(
-                &instance.domain.types,
-                &instance.problem,
-                &action.parameters,
-            );
-            for operator in generate_operators_iterative(instance, &action, &permutations) {
+            for operator in generate_operators(instance, &action).map(|(o, ..)| o) {
                 if operator.eff_pos != desired_pos || operator.eff_neg != desired_neg {
                     continue;
                 }
