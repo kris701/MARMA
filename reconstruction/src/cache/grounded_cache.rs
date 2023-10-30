@@ -1,5 +1,6 @@
 use std::{collections::HashMap, ops::BitAnd};
 
+use itertools::Itertools;
 use spingus::{sas_plan::SASPlan, term::Term};
 
 use crate::{
@@ -52,7 +53,8 @@ impl GroundedCache {
                         operator,
                         _parameters: parameters,
                     })
-                    .collect();
+                    .collect_vec();
+                println!("found {} entries", entries.len());
                 macro_replacements.push(MacroEntry {
                     _action: action,
                     plan,

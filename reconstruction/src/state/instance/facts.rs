@@ -106,7 +106,6 @@ impl Facts {
                 PredicateFacts::new(types, objects, i, &statics, is_static, predicate, offset);
             println!("facts: {}", predicate_facts.count());
             offset += predicate_facts.count();
-            println!("{:?}", predicate_facts);
             facts.push(predicate_facts);
         }
         Self {

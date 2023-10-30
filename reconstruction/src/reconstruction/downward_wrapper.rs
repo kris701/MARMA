@@ -46,14 +46,16 @@ impl Downward {
         let sas_path = random_file_name(&self.temp_dir);
 
         cmd.args(&[
-            "--alias",
-            "lama-first",
             "--sas-file",
             &sas_path,
             "--plan-file",
             &plan_path,
             domain_path.to_str().unwrap(),
             problem_path.to_str().unwrap(),
+            "--evaluator",
+            "hff=ff()",
+            "--search",
+            "lazy_greedy([hff], preferred=[hff])",
         ]);
 
         let result = self.run(&mut cmd, &plan_path);
