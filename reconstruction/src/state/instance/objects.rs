@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{types::Types, Instance};
+use super::types::Types;
 
 pub struct Objects {
     index_map: HashMap<String, usize>,
@@ -44,18 +44,5 @@ impl Objects {
 
     pub fn get_type(&self, object_index: usize) -> &Option<usize> {
         &self.object_types[object_index]
-    }
-
-    pub fn get_name(&self, object_index: usize) -> &String {
-        &self
-            .index_map
-            .iter()
-            .find(|(_, i)| **i == object_index)
-            .map(|(name, ..)| name)
-            .unwrap()
-    }
-
-    pub fn get_names(&self, object_indexes: &Vec<usize>) -> Vec<&String> {
-        object_indexes.iter().map(|i| self.get_name(*i)).collect()
     }
 }

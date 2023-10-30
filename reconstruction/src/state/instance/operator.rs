@@ -1,14 +1,8 @@
 use std::collections::HashSet;
 
-use bitvec::prelude::*;
-use bitvec::vec::BitVec;
 use itertools::Itertools;
 
-use crate::tools::time::run_time;
-
-use super::{
-    actions::Action, expression::Expression, facts::Facts, permute::permute_mutable, Instance,
-};
+use super::{actions::Action, expression::Expression, permute::permute_mutable, Instance};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Operator {
@@ -16,6 +10,22 @@ pub struct Operator {
     pub pre_neg: HashSet<usize>,
     pub eff_pos: HashSet<usize>,
     pub eff_neg: HashSet<usize>,
+}
+
+impl Operator {
+    pub fn get_effect(&self) -> Vec<(usize, bool)> {
+        let mut effect = vec![];
+
+        for i in self.eff_pos.iter() {
+            effect.push((*i, true));
+        }
+        for i in self.eff_neg.iter() {
+            effect.push((*i, false));
+        }
+
+        effect.sort_by(|a, b| a.0.cmp(&b.0));
+        effect
+    }
 }
 
 fn extract_from_action(

@@ -64,10 +64,6 @@ impl Actions {
         Self { index_map, actions }
     }
 
-    pub fn index(&self, action_name: &str) -> Option<usize> {
-        self.index_map.get(action_name).copied()
-    }
-
     pub fn get_by_name(&self, action_name: &str) -> Option<&Action> {
         let index = self.index_map.get(action_name)?;
         Some(&self.actions[*index])

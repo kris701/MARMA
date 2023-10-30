@@ -1,4 +1,4 @@
-use spingus::{domain::action::string_expression::StringExpression, term::Term};
+use spingus::domain::action::string_expression::StringExpression;
 
 use super::{parameters::Parameters, predicates::Predicates};
 

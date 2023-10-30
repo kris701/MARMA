@@ -1,8 +1,4 @@
 use std::collections::HashSet;
-use std::ops::{BitAnd, BitAndAssign, BitOrAssign};
-
-use bitvec::prelude::*;
-use bitvec::vec::BitVec;
 
 use spingus::domain::Domain;
 use spingus::problem::Problem;
@@ -55,5 +51,17 @@ impl State {
         let has_pos = self.internal.is_superset(&operator.pre_pos);
         let has_neg = self.internal.is_disjoint(&operator.pre_neg);
         has_pos && has_neg
+    }
+
+    pub fn diff(&self, state: &State) -> Vec<(usize, bool)> {
+        let mut diff = vec![];
+        for i in self.get().difference(state.get()) {
+            diff.push((*i, false))
+        }
+        for i in state.get().difference(self.get()) {
+            diff.push((*i, true))
+        }
+        diff.sort_by(|a, b| a.0.cmp(&b.0));
+        diff
     }
 }

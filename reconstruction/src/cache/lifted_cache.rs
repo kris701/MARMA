@@ -1,4 +1,4 @@
-use std::{collections::HashMap, ops::BitAnd};
+use std::collections::HashMap;
 
 use spingus::{sas_plan::SASPlan, term::Term};
 

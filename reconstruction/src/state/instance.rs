@@ -1,7 +1,4 @@
-use spingus::{
-    domain::Domain,
-    problem::{init::Inits, Problem},
-};
+use spingus::{domain::Domain, problem::Problem};
 
 use self::{
     actions::{Action, Actions},

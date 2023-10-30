@@ -1,4 +1,4 @@
-use spingus::{domain::Domain, sas_plan::SASPlan};
+use spingus::sas_plan::SASPlan;
 use std::{fs, path::PathBuf};
 
 use crate::{

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 pub struct Types {
     index_map: HashMap<String, usize>,
     parent: Vec<Option<usize>>,
-    children: Vec<Vec<usize>>,
+    _children: Vec<Vec<usize>>,
 }
 
 impl Types {
@@ -46,7 +46,7 @@ impl Types {
         Self {
             index_map,
             parent,
-            children,
+            _children: children,
         }
     }
 
@@ -54,21 +54,8 @@ impl Types {
         &self.index_map.get(name).unwrap()
     }
 
-    pub fn get_name(&self, type_index: usize) -> &String {
-        &self
-            .index_map
-            .iter()
-            .find(|(_, index)| **index == type_index)
-            .unwrap()
-            .0
-    }
-
     pub fn get_parent(&self, type_index: usize) -> &Option<usize> {
         &self.parent[type_index]
-    }
-
-    pub fn get_children(&self, type_index: usize) -> &Vec<usize> {
-        &self.children[type_index]
     }
 
     pub fn is_of_type(&self, type_index: usize, wished: usize) -> bool {

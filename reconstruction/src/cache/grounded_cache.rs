@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    ops::BitAnd,
-};
+use std::collections::HashMap;
 
 use itertools::Itertools;
 use spingus::{sas_plan::SASPlan, term::Term};

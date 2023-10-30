@@ -1,6 +1,5 @@
 use std::collections::{HashMap, HashSet};
 
-use itertools::Itertools;
 use spingus::problem::init::Inits;
 
 use crate::tools::time::run_time;
@@ -113,10 +112,6 @@ impl Facts {
             facts,
             static_predicates,
         }
-    }
-
-    pub fn count(&self) -> usize {
-        self.facts.iter().map(|f| f.count()).sum()
     }
 
     pub fn index(&self, predicate: usize, parameters: &Vec<usize>) -> usize {
