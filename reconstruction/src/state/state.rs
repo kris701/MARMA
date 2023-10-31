@@ -1,10 +1,7 @@
 use std::collections::HashSet;
 
-use spingus::domain::Domain;
-use spingus::problem::Problem;
-
-use super::instance::facts::Facts;
 use super::instance::operator::Operator;
+use super::instance::Instance;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
@@ -12,25 +9,8 @@ pub struct State {
 }
 
 impl State {
-    // TODO: Clean this
-    pub fn new(domain: &Domain, problem: &Problem, facts: &Facts) -> Self {
-        let mut internal: HashSet<usize> = HashSet::new();
-        for init in &problem.inits {
-            let predicate = domain
-                .predicates
-                .iter()
-                .position(|predicate| predicate.name == init.name)
-                .unwrap();
-            if !facts.is_static(predicate) {
-                let parameters: Vec<usize> = init
-                    .parameters
-                    .iter()
-                    .map(|p| problem.objects.iter().position(|o| o.name == *p).unwrap())
-                    .collect();
-                let fact = facts.index(predicate, &parameters);
-                internal.insert(fact);
-            }
-        }
+    pub fn new(instance: &Instance) -> Self {
+        let internal: HashSet<usize> = instance.facts.get_init();
         Self { internal }
     }
 

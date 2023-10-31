@@ -79,4 +79,16 @@ impl Instance {
             action.effect,
         )
     }
+
+    pub fn get_fact_string(&self, index: usize) -> String {
+        let predicate = self.facts.fact_predicate(index);
+        let predicate = self.predicates.get_name(predicate);
+        let parameters = self.facts.fact_parameters(index);
+        let parameters = self.objects.get_names(parameters);
+        let mut s = format!("{}", predicate);
+        for param in parameters {
+            s.push_str(&format!(" {}", param));
+        }
+        s
+    }
 }

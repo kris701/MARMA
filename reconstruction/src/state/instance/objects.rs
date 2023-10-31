@@ -42,6 +42,16 @@ impl Objects {
         object_names.iter().map(|n| self.get_index(n)).collect()
     }
 
+    #[allow(dead_code)]
+    pub fn get_name(&self, index: usize) -> &String {
+        &self.index_map.iter().find(|(_, i)| **i == index).unwrap().0
+    }
+
+    #[allow(dead_code)]
+    pub fn get_names(&self, indexes: &Vec<usize>) -> Vec<&String> {
+        indexes.iter().map(|i| self.get_name(*i)).collect()
+    }
+
     pub fn get_type(&self, object_index: usize) -> &Option<usize> {
         &self.object_types[object_index]
     }

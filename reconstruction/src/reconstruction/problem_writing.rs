@@ -14,24 +14,12 @@ fn generate_objects(problem: &Problem) -> String {
     s
 }
 
-fn generate_fact(instance: &Instance, i: usize) -> String {
-    let mut s = "".to_string();
-    let predicate_index = instance.facts.fact_predicate(i);
-    let parameters = instance.facts.fact_parameters(i);
-    s.push_str(&instance.domain.predicates[predicate_index].name);
-    parameters
-        .iter()
-        .for_each(|i| s.push_str(&format!(" {}", instance.problem.objects[*i].name)));
-    s
-}
-
-fn generate_state(instance: &Instance, state: &State) -> String {
+pub fn generate_state(instance: &Instance, state: &State) -> String {
     let mut s = "".to_string();
     state
         .get()
         .iter()
-        .enumerate()
-        .for_each(|(i, _)| s.push_str(&format!("\t\t({})\n", generate_fact(instance, i))));
+        .for_each(|i| s.push_str(&format!("\t\t({})\n", instance.get_fact_string(*i))));
     s
 }
 
@@ -41,7 +29,7 @@ fn generate_static(instance: &Instance) -> String {
         .facts
         .get_static_true()
         .iter()
-        .for_each(|i| s.push_str(&format!("\t\t({})\n", generate_fact(instance, *i))));
+        .for_each(|i| s.push_str(&format!("\t\t({})\n", instance.get_fact_string(*i))));
     s
 }
 

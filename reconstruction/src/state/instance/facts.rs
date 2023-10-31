@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
+use itertools::Itertools;
 use spingus::problem::init::Inits;
 
 use crate::tools::time::run_time;
@@ -59,16 +60,13 @@ impl PredicateFacts {
     fn contains(&self, permutation: &Vec<usize>) -> bool {
         self.index_map.contains_key(permutation)
     }
-
-    fn indexes(&self) -> Vec<usize> {
-        self.index_map.iter().map(|(_, i)| *i).collect()
-    }
 }
 
 #[derive(Debug, PartialEq)]
 pub struct Facts {
     facts: Vec<PredicateFacts>,
     static_predicates: HashSet<usize>,
+    init: HashSet<usize>,
 }
 
 impl Facts {
@@ -97,7 +95,7 @@ impl Facts {
                 predicates.get_name(i)
             );
             // TODO: Make sure this works!
-            let is_static = check_static_all(actions, i) || check_degrading_all(actions, i);
+            let is_static = check_static_all(actions, i);
             println!("is static: {}", is_static);
             if is_static {
                 static_predicates.insert(i);
@@ -108,9 +106,15 @@ impl Facts {
             offset += predicate_facts.count();
             facts.push(predicate_facts);
         }
+
+        let init: HashSet<usize> = statics
+            .iter()
+            .map(|(p, par)| facts[*p].index(par))
+            .collect();
         Self {
             facts,
             static_predicates,
+            init,
         }
     }
 
@@ -144,9 +148,22 @@ impl Facts {
     }
 
     pub fn get_static_true(&self) -> Vec<usize> {
-        self.static_predicates
+        self.init
             .iter()
-            .flat_map(|i| self.facts[*i].indexes())
+            .filter_map(|i| match !self.is_static(self.fact_predicate(*i)) {
+                true => None,
+                false => Some(*i),
+            })
+            .collect()
+    }
+
+    pub fn get_init(&self) -> HashSet<usize> {
+        self.init
+            .iter()
+            .filter_map(|i| match self.is_static(self.fact_predicate(*i)) {
+                true => None,
+                false => Some(*i),
+            })
             .collect()
     }
 }

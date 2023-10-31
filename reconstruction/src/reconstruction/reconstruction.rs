@@ -3,7 +3,10 @@ use std::{fs, path::PathBuf};
 
 use crate::{
     cache::Cache,
-    reconstruction::{problem_writing::write_problem, stiching::stich},
+    reconstruction::{
+        problem_writing::{generate_state, write_problem},
+        stiching::stich,
+    },
     state::{
         instance::{
             operator::{generate_operator_string, Operator},
@@ -44,7 +47,7 @@ pub fn reconstruct(
     plan: SASPlan,
 ) -> SASPlan {
     let mut replacements: Vec<SASPlan> = Vec::new();
-    let mut state = State::new(&instance.domain, &instance.problem, &instance.facts);
+    let mut state = State::new(&instance);
     let (meta_actions, operators) = generate_operators(&instance, downward, &plan);
 
     let mut found_in_cache: usize = 0;
@@ -67,9 +70,11 @@ pub fn reconstruct(
         }
         progress_bar.set_message("Using fast downward");
         let problem_file = PathBuf::from(random_file_name(&downward.temp_dir));
+        assert_ne!(init, state);
         write_problem(instance, &init, &state, &problem_file);
         let plan = downward.solve(domain_path, &problem_file);
         if let Ok(plan) = plan {
+            assert!(!plan.is_empty());
             let _ = fs::remove_file(&problem_file);
             replacements.push(plan);
         } else {
