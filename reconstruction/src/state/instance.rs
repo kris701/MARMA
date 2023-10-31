@@ -23,7 +23,7 @@ pub struct Instance {
     predicates: Predicates,
     actions: Actions,
     meta_actions: Actions,
-    objects: Objects,
+    pub objects: Objects,
     pub domain: Domain,
     pub problem: Problem,
     pub meta_domain: Domain,

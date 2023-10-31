@@ -4,7 +4,7 @@ use std::{fs, path::PathBuf};
 use crate::{
     cache::Cache,
     reconstruction::{
-        problem_writing::{generate_state, write_problem},
+        problem_writing::{generate_state, generate_static, write_problem},
         stiching::stich,
     },
     state::{

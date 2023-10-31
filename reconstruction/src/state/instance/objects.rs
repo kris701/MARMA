@@ -52,6 +52,14 @@ impl Objects {
         indexes.iter().map(|i| self.get_name(*i)).collect()
     }
 
+    #[allow(dead_code)]
+    pub fn get_names_cloned(&self, indexes: &Vec<usize>) -> Vec<String> {
+        indexes
+            .iter()
+            .map(|i| self.get_name(*i).to_owned())
+            .collect()
+    }
+
     pub fn get_type(&self, object_index: usize) -> &Option<usize> {
         &self.object_types[object_index]
     }

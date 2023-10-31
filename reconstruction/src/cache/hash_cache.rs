@@ -103,10 +103,7 @@ impl Cache for HashCache {
                 .iter()
                 .map(|i| parameters[i.parse::<usize>().unwrap()])
                 .collect();
-            let parameters: Vec<String> = objects
-                .iter()
-                .map(|i| instance.problem.objects[*i].name.to_owned())
-                .collect();
+            let parameters: Vec<String> = instance.objects.get_names_cloned(&objects);
             replacement.push(Term { name, parameters })
         }
         Some(replacement)

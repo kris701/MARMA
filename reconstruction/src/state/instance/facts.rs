@@ -95,7 +95,7 @@ impl Facts {
                 predicates.get_name(i)
             );
             // TODO: Make sure this works!
-            let is_static = check_static_all(actions, i);
+            let is_static = check_static_all(actions, i) || check_degrading_all(actions, i);
             println!("is static: {}", is_static);
             if is_static {
                 static_predicates.insert(i);

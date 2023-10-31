@@ -23,7 +23,7 @@ pub fn generate_state(instance: &Instance, state: &State) -> String {
     s
 }
 
-fn generate_static(instance: &Instance) -> String {
+pub fn generate_static(instance: &Instance) -> String {
     let mut s = "".to_string();
     instance
         .facts

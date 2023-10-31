@@ -4,10 +4,10 @@
   (and 
     (lift-at ?f1) 
     (above ?f1 ?f2)
-    (origin ?p ?f1)
+    (origin ?p ?f2)
   )
   :effect 
   (and 
     (boarded ?p)
-    (not (origin ?p ?f1))
+    (not (origin ?p ?f2))
   )
