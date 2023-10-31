@@ -59,13 +59,12 @@ impl Cache for LiftedCache {
         let replacements = &self.replacements.get(&meta_term.name)?;
         for (i, action) in replacements.macros.iter().enumerate() {
             for operator in generate_operators(instance, &action).map(|(o, ..)| o) {
-                for i in init.get().difference(goal.get()) {
-                    if init.get().contains(i) && !operator.eff_neg.contains(i) {
-                        continue;
-                    }
-                    if operator.eff_pos.contains(i) {
-                        continue;
-                    }
+                let diff = init.diff(goal);
+                if diff.into_iter().any(|(i, v)| match v {
+                    true => !operator.eff_pos.contains(&i),
+                    false => !operator.eff_neg.contains(&i),
+                }) {
+                    continue;
                 }
                 if init.is_legal(&operator) {
                     return Some(replacements.plans[i].to_owned());

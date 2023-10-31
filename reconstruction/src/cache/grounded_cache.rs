@@ -79,13 +79,12 @@ impl Cache for GroundedCache {
         for macro_entry in self.meta_map[&meta_term.name].macro_replacements.iter() {
             for entry in macro_entry.entries.iter() {
                 let operator = &entry.operator;
-                for i in init.get().difference(goal.get()) {
-                    if init.get().contains(i) && !operator.eff_neg.contains(i) {
-                        continue;
-                    }
-                    if operator.eff_pos.contains(i) {
-                        continue;
-                    }
+                let diff = init.diff(goal);
+                if diff.into_iter().any(|(i, v)| match v {
+                    true => !operator.eff_pos.contains(&i),
+                    false => !operator.eff_neg.contains(&i),
+                }) {
+                    continue;
                 }
                 if init.is_legal(operator) {
                     return Some(macro_entry.plan.to_owned());

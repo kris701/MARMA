@@ -47,6 +47,7 @@ pub fn reconstruct(
     let mut state = State::new(&instance.domain, &instance.problem, &instance.facts);
     let (meta_actions, operators) = generate_operators(&instance, downward, &plan);
 
+    let mut found_in_cache: usize = 0;
     let progress_bar = generate_progressbar(meta_actions.len());
     for (i, operator) in operators.iter().enumerate() {
         if !meta_actions.contains(&i) {
@@ -60,6 +61,7 @@ pub fn reconstruct(
             progress_bar.set_message("Checking cache");
             if let Some(replacement) = cache.get_replacement(instance, &plan[i], &init, &state) {
                 replacements.push(replacement);
+                found_in_cache += 1;
                 continue;
             }
         }
@@ -79,5 +81,11 @@ pub fn reconstruct(
         }
     }
     progress_bar.finish_and_clear();
+    println!(
+        "found {} out of {} in cache ({})",
+        found_in_cache,
+        meta_actions.len(),
+        found_in_cache as f64 / meta_actions.len() as f64
+    );
     stich(&plan, meta_actions.into_iter().zip(replacements).collect())
 }
