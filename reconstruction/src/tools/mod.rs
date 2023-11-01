@@ -5,6 +5,7 @@ use rand::{distributions::Alphanumeric, Rng};
 
 pub mod io;
 pub mod time;
+pub mod val;
 
 pub fn random_name() -> String {
     rand::thread_rng()

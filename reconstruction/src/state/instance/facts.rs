@@ -1,7 +1,5 @@
-use std::collections::{HashMap, HashSet};
-
-use itertools::Itertools;
 use spingus::problem::init::Inits;
+use std::collections::{HashMap, HashSet};
 
 use crate::tools::time::run_time;
 

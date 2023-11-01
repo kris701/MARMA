@@ -13,11 +13,14 @@ pub struct Downward {
 }
 
 impl Downward {
-    pub fn new(path: PathBuf, temp_dir: PathBuf) -> Self {
+    pub fn new(path: &PathBuf, temp_dir: &PathBuf) -> Self {
         if !Path::new(&path).exists() {
             panic!("Could not find fast downward at given location");
         }
-        Self { path, temp_dir }
+        Self {
+            path: path.to_owned(),
+            temp_dir: temp_dir.to_owned(),
+        }
     }
 
     fn run(&self, cmd: &mut Command, plan_path: &String) -> Result<SASPlan, String> {

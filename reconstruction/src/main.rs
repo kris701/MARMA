@@ -17,6 +17,7 @@ use std::path::PathBuf;
 use clap::Parser;
 
 use crate::reconstruction::downward_wrapper::Downward;
+use crate::tools::val::check_val;
 
 #[derive(Parser, Default, Debug)]
 #[command(term_width = 0)]
@@ -47,11 +48,15 @@ pub struct Args {
     #[arg(short = 'c')]
     cache: Option<PathBuf>,
     /// Type of caching
-    #[arg(long = "cache_method", default_value = "hash")]
+    #[arg(long, default_value = "hash")]
     cache_method: CacheMethod,
     /// Stop after translation, mainly used for debugging
-    #[arg(long = "translate_only", num_args = 0)]
+    #[arg(long, num_args = 0)]
     translate_only: bool,
+    /// Path to val
+    /// If given checks reconstructed plan with VAL
+    #[arg(short, long)]
+    val: Option<PathBuf>,
 }
 
 fn main() {
@@ -78,15 +83,31 @@ fn main() {
     if !args.translate_only {
         println!("{} Beginning reconstruction...", run_time());
         println!("{} Finding fast downward...", run_time());
-        let downward = Downward::new(args.downward, args.temp_dir);
+        let downward = Downward::new(&args.downward, &args.temp_dir);
         println!("{} Finding meta solution...", run_time());
         let meta_plan = downward.find_or_solve(&args.meta_domain, &args.problem, &args.solution);
         let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
-        let plan_export = export_sas(&plan);
+        if let Some(val_path) = args.val {
+            println!("{} Checking plan with val...", run_time());
+            if check_val(
+                &args.domain,
+                &args.problem,
+                &val_path,
+                &args.temp_dir,
+                &plan,
+            ) {
+                println!("Plan is valid");
+            } else {
+                println!("Plan is not valid");
+            }
+        }
         match args.out {
-            Some(path) => fs::write(path, plan_export).unwrap(),
+            Some(path) => {
+                let plan_export = export_sas(&plan);
+                fs::write(path, plan_export).unwrap();
+            }
             None => {
-                println!("Final plan\n{}", plan_export);
+                println!("Final plan had {} steps", plan.len());
             }
         }
     }
