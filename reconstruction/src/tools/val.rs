@@ -32,7 +32,5 @@ pub fn check_val(
 }
 
 fn is_error(stdout: String) -> bool {
-    stdout.contains("Bad plan description!")
-        || stdout.contains("Error in type-checking!")
-        || stdout.contains("Plan failed because of unsatisfied precondition in")
+    stdout.contains("Failed plans")
 }
