@@ -17,6 +17,8 @@ namespace MetaActions.Learn
                 throw new Exception("'StackelbergCompiler' Build failed!");
             if (ArgsCallerBuilder.GetDotnetBuilder("StackelbergVerifier").Run() != 0)
                 throw new Exception("'StackelbergVerifier' Build failed!");
+            if (ArgsCallerBuilder.GetDotnetBuilder("MacroExtractor").Run() != 0)
+                throw new Exception("'MacroExtractor' Build failed!");
             if (ArgsCallerBuilder.GetRustBuilder("macros").Run() != 0)
                 throw new Exception("'macros' Build failed!");
 

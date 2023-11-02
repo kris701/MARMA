@@ -29,7 +29,7 @@ namespace MetaActions.Learn
 
         private string _domainName = "";
 
-        public string LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems)
+        public string LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems, List<FileInfo> macroPlans)
         {
             if (domain.Directory == null)
                 throw new FileNotFoundException("Domain does not have a parent directory!");
@@ -123,6 +123,15 @@ namespace MetaActions.Learn
 
             Print($"Done!", ConsoleColor.Green);
 
+            if (macroPlans.Count > 0)
+            {
+                Print($"Extracting macros from plans...", ConsoleColor.Blue);
+
+                ExtractMacrosFromPlans(domain, macroPlans, _outCache);
+
+                Print($"Done!", ConsoleColor.Green);
+            }
+
             Print($"Copying testing problems...", ConsoleColor.Blue);
 
             CopyTestingProblems(testProblems, _outData);
@@ -184,6 +193,19 @@ namespace MetaActions.Learn
                 domain.Actions.Add(metaAction);
             }
             generator.Generate(domain, Path.Combine(outFolder, "metaDomain.pddl"));
+        }
+
+        private void ExtractMacrosFromPlans(FileInfo domain, List<FileInfo> macroPlans, string outFolder)
+        {
+            ArgsCaller macroExtractor = ArgsCallerBuilder.GetDotnetRunner("MacroExtractor");
+            macroExtractor.Arguments.Add("--domain", domain.FullName);
+            string macroPlansStr = "";
+            foreach (var plan in macroPlans)
+                macroPlansStr += $" {plan.FullName}";
+            macroExtractor.Arguments.Add("--follower-plans", macroPlansStr);
+            macroExtractor.Arguments.Add("--output", outFolder);
+            if (macroExtractor.Run() != 0)
+                throw new Exception("Macro Extractor failed!");
         }
 
         private List<FileInfo> CopyProblemsToTemp(List<FileInfo> allProblems)

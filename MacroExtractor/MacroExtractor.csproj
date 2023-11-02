@@ -12,22 +12,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="PDDLSharp" Version="1.1.13" />
+    <PackageReference Include="PDDLSharp" Version="1.3.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\$meta-pick-pick-move-drop-drop\plan1.plan">
+    <None Update="TestData\gripper\$meta-pick-pick-move-drop-drop\plan1.plan">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\$meta-pick-pick-move-drop-drop\plan3.plan">
+    <None Update="TestData\gripper\$meta-pick-pick-move-drop-drop\plan3.plan">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\$meta-pick-pick-move-drop-drop\plan2.plan">
+    <None Update="TestData\gripper\$meta-pick-pick-move-drop-drop\plan2.plan">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\gripper.pddl">
+    <None Update="TestData\gripper\gripper.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TestData\miconic\" />
   </ItemGroup>
 
 </Project>
