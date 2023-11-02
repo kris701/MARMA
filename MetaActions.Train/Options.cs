@@ -16,5 +16,8 @@ namespace MetaActions.Learn
         public string OutputPath { get; set; } = "output/train";
         [Option("rebuild", Required = false, HelpText = "Rebuild toolchain?", Default = false)]
         public bool Rebuild { get; set; } = false;
+
+        [Option("macro-plans", Required = false, HelpText = "The plans to extract macro sequences from. You can use wildcards (*) for full directory names, and partial file names.\")]")]
+        public IEnumerable<string> MacroPlans { get; set; } = new List<string>();
     }
 }
