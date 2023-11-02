@@ -2,8 +2,12 @@ use itertools::Itertools;
 
 use crate::state::instance::{objects::Objects, types::Types};
 
-fn permute_untyped(_objects: &Objects, _parameter_count: usize) -> Vec<Vec<usize>> {
-    todo!()
+fn permute_untyped(objects: &Objects, _parameter_count: usize) -> Vec<Vec<usize>> {
+    (0.._parameter_count)
+        .into_iter()
+        .map(|_| (0..objects.count()).into_iter())
+        .multi_cartesian_product()
+        .collect()
 }
 
 fn permute_typed(
