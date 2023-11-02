@@ -24,6 +24,7 @@ namespace MetaActions.Test
         }
 
         private static string _tempDataPath = "data";
+        private static string _tempTempPath = "temp";
 
         private static void Run(Options opts)
         {
@@ -45,6 +46,7 @@ namespace MetaActions.Test
 
             ConsoleHelper.WriteLineColor($"Extracting testing data", ConsoleColor.Blue);
             _tempDataPath = Path.Combine(opts.TempPath, _tempDataPath);
+            _tempTempPath = Path.Combine(opts.TempPath, _tempTempPath);
             ZipFile.ExtractToDirectory(opts.DataFile, _tempDataPath);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
@@ -70,13 +72,13 @@ namespace MetaActions.Test
             {
                 var domainName = domain.Name;
 
-                PathHelper.RecratePath(Path.Combine(opts.TempPath, domainName));
+                PathHelper.RecratePath(Path.Combine(_tempTempPath, domainName));
                 PathHelper.RecratePath(Path.Combine(opts.OutputPath, domainName));
 
-                var normalDomain = new FileInfo(Path.Combine(domain.FullName, "domain.pddl"));
-                var metaDomain = new FileInfo(Path.Combine(domain.FullName, "metaDomain.pddl"));
+                var normalDomain = new FileInfo(Path.Combine(domain.FullName, "data", "domain.pddl"));
+                var metaDomain = new FileInfo(Path.Combine(domain.FullName, "data", "metaDomain.pddl"));
 
-                var allProblems = new DirectoryInfo(domain.FullName).GetFiles().ToList();
+                var allProblems = new DirectoryInfo(Path.Combine(domain.FullName, "data")).GetFiles().ToList();
                 allProblems.RemoveAll(x => x.Name == normalDomain.Name);
                 allProblems.RemoveAll(x => x.Name == metaDomain.Name);
 
@@ -91,8 +93,9 @@ namespace MetaActions.Test
                         problem,
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}.plan"),
                         "",
-                        Path.Combine(opts.TempPath, domainName, $"{problemName}.sas"),
-                        opts.ReconstructionMethod));
+                        Path.Combine(_tempTempPath, domainName, $"{problemName}.sas"),
+                        opts.ReconstructionMethod,
+                        Path.Combine(domain.FullName, "cache")));
                     runTasks.Add(new TestingTask(
                         opts.TimeLimit,
                         opts.Alias,
@@ -101,8 +104,9 @@ namespace MetaActions.Test
                         problem,
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}_reconstructed.plan"),
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}_meta.plan"),
-                        Path.Combine(opts.TempPath, domainName, $"{problemName}_meta.sas"),
-                        opts.ReconstructionMethod));
+                        Path.Combine(_tempTempPath, domainName, $"{problemName}_meta.sas"),
+                        opts.ReconstructionMethod,
+                        Path.Combine(domain.FullName, "cache")));
                 }
             }
 

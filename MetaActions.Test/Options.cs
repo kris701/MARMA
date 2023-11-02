@@ -8,7 +8,8 @@ namespace MetaActions.Test
         public enum ReconstructionMethods
         {
             None = 0,
-            FastDownward = 1
+            FastDownward = 1,
+            MacroCache = 2
         }
 
         [Option("data", Required = true, HelpText = "Zip file containing all the training data.")]
