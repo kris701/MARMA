@@ -6,7 +6,7 @@
     "WSL": {
       "commandName": "WSL",
       "distributionName": "",
-      "commandLineArgs": "MetaActions.Test/bin/Debug/net7.0/MetaActions.Test.dll --data output/train/testing-set.zip --multitask",
+      "commandLineArgs": "MetaActions.Test/bin/Debug/net7.0/MetaActions.Test.dll --data output/train/testing-set.zip --multitask --reconstructor MacroCache",
       "workingDirectory": "MetaActions.Test/../"
     }
   }

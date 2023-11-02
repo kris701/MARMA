@@ -21,6 +21,7 @@ namespace MetaActions.Test
         public string SASName { get; set; }
         public int TimeLimit { get; set; }
         public string Alias { get; set; }
+        public string CachePath { get; set; }
         public Options.ReconstructionMethods ReconstructionMethod { get; set; }
 
         private Task? _runningTask;
@@ -30,7 +31,7 @@ namespace MetaActions.Test
         private string _fastDownward = PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py");
         private CancellationTokenSource? _tokenSource;
 
-        public TestingTask(int timeLimit, string alias, FileInfo domain, FileInfo? metaDomain, FileInfo problem, string planName, string metaPlan, string sasName, Options.ReconstructionMethods reconstructionMethod)
+        public TestingTask(int timeLimit, string alias, FileInfo domain, FileInfo? metaDomain, FileInfo problem, string planName, string metaPlan, string sasName, Options.ReconstructionMethods reconstructionMethod, string cachePath)
         {
             TimeLimit = timeLimit;
             Alias = alias;
@@ -41,6 +42,7 @@ namespace MetaActions.Test
             PlanName = planName;
             MetaPlanName = metaPlan;
             SASName = sasName;
+            CachePath = cachePath;
         }
 
         public void Kill()
@@ -136,6 +138,8 @@ namespace MetaActions.Test
                 reconstructionFixer.Arguments.Add("-p", problem.FullName);
                 reconstructionFixer.Arguments.Add("-m", metaDomain.FullName);
                 reconstructionFixer.Arguments.Add("-s", metaPlan);
+                if (ReconstructionMethod == Options.ReconstructionMethods.MacroCache)
+                    reconstructionFixer.Arguments.Add("-c", CachePath);
                 reconstructionFixer.Arguments.Add("-f", _fastDownward);
                 reconstructionFixer.Arguments.Add("-o", planName);
                 if (reconstructionFixer.Run() != 0 && _tokenSource != null && !_tokenSource.IsCancellationRequested)
