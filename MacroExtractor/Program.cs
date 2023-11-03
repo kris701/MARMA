@@ -20,6 +20,10 @@ namespace MacroExtractor
 {
     internal class Program : BaseCLI
     {
+        public static string _metaActionName = "$meta";
+        public static string _macroActionName = "$macro";
+        public static string[] _RemoveNamesFromActions = { "attack_", "fix_" };
+
         static int Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
@@ -102,16 +106,16 @@ namespace MacroExtractor
         {
             foreach (var arg in action.Arguments)
                 arg.Name = replacements[arg.Name];
-            if (action.ActionName.StartsWith("attack_") || action.ActionName.StartsWith("fix_"))
-                action.ActionName = action.ActionName.Replace("attack_", "").Replace("fix_", "");
+            foreach (var name in _RemoveNamesFromActions)
+                action.ActionName = action.ActionName.Replace(name, "");
         }
 
         private static int IndexOfMetaAction(ActionPlan leaderPlan)
         {
             for (int i = 0; i < leaderPlan.Plan.Count; i++)
-                if (leaderPlan.Plan[i].ActionName.StartsWith("fix_$meta"))
+                if (leaderPlan.Plan[i].ActionName.Contains(_metaActionName))
                     return i;
-            throw new Exception("No meta action found in leader plan!");
+            throw new Exception("No meta action found in plan!");
         }
 
         private static Dictionary<GroundedAction, HashSet<RepairSequence>> GenerateMacros(Dictionary<GroundedAction, HashSet<ActionPlan>> from, DomainDecl domain)
@@ -141,7 +145,7 @@ namespace MacroExtractor
             foreach(var actionPlan in plan.Plan) 
                 planActionInstances.Add(GenerateActionInstance(actionPlan, domain));
             var combined = combiner.Combine(planActionInstances);
-            combined.Name = newName.Replace("$meta", "$macro");
+            combined.Name = newName.Replace(_metaActionName, _macroActionName);
             return combined;
         }
 
