@@ -80,10 +80,11 @@ fn parse_replacements(
     let replaced = replacements
         .iter()
         .map(|(macro_path, plan_path)| {
+            let mut action_content = fs::read_to_string(&macro_path).unwrap();
+            action_content.pop();
+            action_content.remove(0);
             return (
-                parse_action(&fs::read_to_string(&macro_path).unwrap())
-                    .unwrap()
-                    .1,
+                parse_action(&action_content).unwrap().1,
                 parse_sas(&fs::read_to_string(&plan_path).unwrap()).unwrap(),
             );
         })
