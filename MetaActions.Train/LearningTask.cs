@@ -23,13 +23,14 @@ namespace MetaActions.Learn
         private string _tempMetaActionPath = "metaActions";
         private string _tempCompiledPath = "compiled";
         private string _tempVerificationPath = "verification";
+        private string _tempReplacementsPath = "replacements";
 
         private string _outData = "data";
         private string _outCache = "cache";
 
         private string _domainName = "";
 
-        public string LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems, string macroPlans)
+        public string LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems)
         {
             if (domain.Directory == null)
                 throw new FileNotFoundException("Domain does not have a parent directory!");
@@ -47,6 +48,7 @@ namespace MetaActions.Learn
             _tempMetaActionPath = Path.Combine(tempPath, _tempMetaActionPath);
             _tempCompiledPath = Path.Combine(tempPath, _tempCompiledPath);
             _tempVerificationPath = Path.Combine(tempPath, _tempVerificationPath);
+            _tempReplacementsPath = Path.Combine(_tempVerificationPath, _tempReplacementsPath);
 
             _outData = Path.Combine(outPath, _outData);
             _outCache = Path.Combine(outPath, _outCache);
@@ -58,6 +60,7 @@ namespace MetaActions.Learn
             PathHelper.RecratePath(_tempMetaActionPath);
             PathHelper.RecratePath(_tempCompiledPath);
             PathHelper.RecratePath(_tempVerificationPath);
+            PathHelper.RecratePath(_tempReplacementsPath);
 
             PathHelper.RecratePath(_outData);
             PathHelper.RecratePath(_outCache);
@@ -86,8 +89,7 @@ namespace MetaActions.Learn
             int metaActionCounter = 1;
             foreach (var metaAction in allMetaActions)
             {
-                if (macroPlans != "")
-                    PathHelper.RecratePath(macroPlans);
+                PathHelper.RecratePath(_tempReplacementsPath);
                 Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(((double)metaActionCounter / (double)allMetaActions.Count) * 100, 0)}%]", ConsoleColor.Magenta);
                 int problemCounter = 1;
                 bool allValid = true;
@@ -115,14 +117,11 @@ namespace MetaActions.Learn
                 {
                     Print($"\tMeta action was valid in all {problems.Count} problems.", ConsoleColor.Green);
                     validMetaActions.Add(metaAction);
-                    if (macroPlans != "")
-                    {
-                        Print($"Extracting macros from plans...", ConsoleColor.Blue);
+                    Print($"Extracting macros from plans...", ConsoleColor.Blue);
 
-                        ExtractMacrosFromPlans(domain, macroPlans, _outCache);
+                    ExtractMacrosFromPlans(domain, _tempReplacementsPath, _outCache);
 
-                        Print($"Done!", ConsoleColor.Green);
-                    }
+                    Print($"Done!", ConsoleColor.Green);
                 }
                 metaActionCounter++;
             }

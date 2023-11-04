@@ -15,6 +15,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Tools;
+using static System.Collections.Specialized.BitVector32;
 
 namespace MacroExtractor
 {
@@ -36,7 +37,7 @@ namespace MacroExtractor
         {
             opts.DomainPath = PathHelper.RootPath(opts.DomainPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
-            PathHelper.RecratePath(opts.OutputPath);
+            //PathHelper.RecratePath(opts.OutputPath);
 
             ConsoleHelper.WriteLineColor("Parsing domain...");
             var domain = ParseDomain(opts.DomainPath);
@@ -67,7 +68,7 @@ namespace MacroExtractor
 
         private static Dictionary<GroundedAction, HashSet<ActionPlan>> ExtractUniquePlanSequences(List<string> followerPlanFiles)
         {
-            var followerPlans = PathHelper.ResolveWildcards(followerPlanFiles);
+            var followerPlans = PathHelper.ResolveFileWildcards(followerPlanFiles);
 
             var planSequences = new Dictionary<GroundedAction, HashSet<ActionPlan>>();
             IErrorListener listener = new ErrorListener();
@@ -105,7 +106,8 @@ namespace MacroExtractor
         private static void RenameActionArguments(GroundedAction action, Dictionary<string, string> replacements)
         {
             foreach (var arg in action.Arguments)
-                arg.Name = replacements[arg.Name];
+                if (replacements.ContainsKey(arg.Name))
+                    arg.Name = replacements[arg.Name];
             foreach (var name in _RemoveNamesFromActions)
                 action.ActionName = action.ActionName.Replace(name, "");
         }
@@ -129,8 +131,7 @@ namespace MacroExtractor
                 foreach (var actionPlan in from[key])
                 {
                     var macro = GenerateMacroInstance(key.ActionName, actionPlan, domain);
-                    if (macro.Parameters.Values.Count != key.Arguments.Count)
-                        throw new ArgumentException("Macro is invalid! It does not have the same amount of parameters as the meta action it replaces.");
+                    macro.Parameters.Values.RemoveAll(x => !x.Name.Contains("?"));
                     returnDict[key].Add(new RepairSequence(macro, actionPlan));
                 }
             }
@@ -151,6 +152,7 @@ namespace MacroExtractor
 
         private static ActionDecl GenerateActionInstance(GroundedAction action, DomainDecl domain)
         {
+            action.ActionName = RemoveNumberSufix(action);
             ActionDecl target = domain.Actions.First(x => x.Name == action.ActionName).Copy();
             var allNames = target.FindTypes<NameExp>();
             for (int i = 0; i < action.Arguments.Count; i++)
@@ -160,6 +162,16 @@ namespace MacroExtractor
                     referene.Name = action.Arguments[i].Name;
             }
             return target;
+        }
+
+        // This is a very lazy solution...
+        // I will deal with it later
+        private static string RemoveNumberSufix(GroundedAction action)
+        {
+            for (int i = 0; i < 1000; i++)
+                if (action.ActionName.EndsWith($"_{i}"))
+                    return action.ActionName.Replace($"_{i}", "");
+            return action.ActionName;
         }
 
         private static void OutputReconstructionData(Dictionary<GroundedAction, HashSet<RepairSequence>> repairSequences, string outPath)

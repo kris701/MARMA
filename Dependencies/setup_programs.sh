@@ -10,7 +10,7 @@ echo
 
 echo == Installing Stackelberg Planner ==
 echo 
-git clone -n --depth=1 --filter=tree:0 https://gitlab.com/atorralba_planners/stackelberg-planner-sls stackelberg-planner
+git clone -n --depth=1 --filter=tree:0 https://github.com/jamadaha/stackelberg-planner-sls.git stackelberg-planner
 cd stackelberg-planner
 git sparse-checkout set --no-cone src
 git checkout
@@ -45,4 +45,4 @@ cd ..
 cd ..
 echo 
 echo == Done! ==
-echo 
+echo

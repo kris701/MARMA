@@ -8,7 +8,7 @@
       "distributionName": "",
       //"commandLineArgs": "MetaActions.Learn/bin/Debug/net7.0/MetaActions.Learn.dll --domains Dependencies/learning-benchmarks/*/domain.pddl --train-problems Dependencies/learning-benchmarks/*/training/easy/p0*.pddl --test-problems Dependencies/learning-benchmarks/*/training/easy/p1*.pddl --rebuild false",
       //"commandLineArgs": "MetaActions.Learn/bin/Debug/net7.0/MetaActions.Learn.dll --domains Dependencies/learning-benchmarks/*/domain.pddl --train-problems Dependencies/learning-benchmarks/*/training/easy/p01.pddl --test-problems Dependencies/learning-benchmarks/satellite/training/easy/p1*.pddl --rebuild false",
-      "commandLineArgs": "MetaActions.Train/bin/Debug/net7.0/MetaActions.Train.dll --domains Dependencies/learning-benchmarks/miconic/domain.pddl --train-problems Dependencies/learning-benchmarks/*/training/easy/p01.pddl --test-problems Dependencies/learning-benchmarks/*/training/easy/p1*.pddl --macro-plans Dependencies/stackelberg-planner/src/plans",
+      "commandLineArgs": "MetaActions.Train/bin/Debug/net7.0/MetaActions.Train.dll --domains Dependencies/learning-benchmarks/miconic/domain.pddl --train-problems Dependencies/learning-benchmarks/*/training/easy/p01.pddl --test-problems Dependencies/learning-benchmarks/*/training/easy/p1*.pddl",
       "workingDirectory": "MetaActions.Train/../"
     }
   }

@@ -26,19 +26,17 @@ namespace MetaActions.Learn
 
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
-            if (opts.MacroPlans != "")
-                opts.MacroPlans = PathHelper.RootPath(opts.MacroPlans);
 
             PathHelper.RecratePath(opts.TempPath);
             PathHelper.RecratePath(opts.OutputPath);
 
-            var domains = PathHelper.ResolveWildcards(opts.Domains.ToList());
+            var domains = PathHelper.ResolveFileWildcards(opts.Domains.ToList());
             if (domains.Any(x => !File.Exists(x.FullName)))
                 throw new FileNotFoundException("Domain file not found!");
-            var trainProblems = PathHelper.ResolveWildcards(opts.TrainProblems.ToList());
+            var trainProblems = PathHelper.ResolveFileWildcards(opts.TrainProblems.ToList());
             if (trainProblems.Any(x => !File.Exists(x.FullName)))
                 throw new FileNotFoundException("Train problem file not found!");
-            var testProblems = PathHelper.ResolveWildcards(opts.TestProblems.ToList());
+            var testProblems = PathHelper.ResolveFileWildcards(opts.TestProblems.ToList());
             if (testProblems.Any(x => !File.Exists(x.FullName)))
                 throw new FileNotFoundException("Test problem file not found!");
 
@@ -54,12 +52,11 @@ namespace MetaActions.Learn
                 var domainName = domain.Directory.Name;
                 var domainTrainProblems = trainProblems.Where(x => x.FullName.Contains(domainName)).ToList();
                 var domainTestProblems = testProblems.Where(x => x.FullName.Contains(domainName)).ToList();
-                var domainMacroPlans = Path.Combine(opts.MacroPlans, domainName);
 
                 var tempPath = Path.Combine(opts.TempPath, domainName);
                 var outPath = Path.Combine(opts.OutputPath, domainName);
 
-                runTasks.Add(new Task<string>(() => new LearningTask().LearnDomain(tempPath, outPath, domain, domainTrainProblems, domainTestProblems, domainMacroPlans), token));
+                runTasks.Add(new Task<string>(() => new LearningTask().LearnDomain(tempPath, outPath, domain, domainTrainProblems, domainTestProblems), token));
             }
 
             try
