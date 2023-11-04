@@ -1,0 +1,5 @@
+(fix_$meta_5 f1 p1)
+(attack_down_2 f2 f1)
+(attack_board_3 f1 p1)
+(attack_up_1 f1 f2)
+(attack_depart_2 f2 p1)
