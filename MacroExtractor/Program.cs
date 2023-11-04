@@ -131,6 +131,7 @@ namespace MacroExtractor
                 foreach (var actionPlan in from[key])
                 {
                     var macro = GenerateMacroInstance(key.ActionName, actionPlan, domain);
+                    macro.Parameters.Values.RemoveAll(x => !x.Name.Contains("?"));
                     returnDict[key].Add(new RepairSequence(macro, actionPlan));
                 }
             }
