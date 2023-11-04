@@ -5,7 +5,6 @@
         // Prefixes
         public static readonly string LeaderActionPrefix = "fix_";
         public static readonly string FollowerActionPrefix = "attack_";
-        public static readonly string MetaActionPrefix = "meta_";
         public static readonly string LeaderStatePrefix = "leader-state-";
         public static readonly string IsGoalPrefix = "is-goal-";
 

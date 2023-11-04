@@ -185,7 +185,7 @@ namespace StackelbergCompiler
             metaAction.Effects = new AndExp(newChildren);
 
             // Update name
-            metaAction.Name = $"{ReservedNames.LeaderActionPrefix}{ReservedNames.MetaActionPrefix}{metaAction.Name}";
+            metaAction.Name = $"{ReservedNames.LeaderActionPrefix}{metaAction.Name}";
             domain.Actions.Add(metaAction);
         }
 
