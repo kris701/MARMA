@@ -23,7 +23,6 @@ namespace StacklebergVerifier
             opts.DomainFilePath = PathHelper.RootPath(opts.DomainFilePath);
             opts.ProblemFilePath = PathHelper.RootPath(opts.ProblemFilePath);
             opts.StackelbergPath = PathHelper.RootPath(opts.StackelbergPath);
-            opts.ReplacementsPath = PathHelper.RootPath(opts.ReplacementsPath);
 
             ConsoleHelper.WriteLineColor("Verifying paths...");
             if (!Directory.Exists(opts.OutputPath))
@@ -81,9 +80,9 @@ namespace StacklebergVerifier
             sb.Append($"\"{opts.DomainFilePath}\" ");
             sb.Append($"\"{opts.ProblemFilePath}\" ");
             if (opts.IsEasyProblem)
-                sb.Append($"--search \"sym_stackelberg(optimal_engine=symbolic(plan_reuse_minimal_task_upper_bound=false, plan_reuse_upper_bound=true), upper_bound_pruning=false, replacement_dir={opts.ReplacementsPath}, replacement_title={opts.DomainName})\" ");
+                sb.Append($"--search \"sym_stackelberg(optimal_engine=symbolic(plan_reuse_minimal_task_upper_bound=false, plan_reuse_upper_bound=true), upper_bound_pruning=false)\" ");
             else
-                sb.Append($"--search \"sym_stackelberg(optimal_engine=symbolic(plan_reuse_minimal_task_upper_bound=true, plan_reuse_upper_bound=true, force_bw_search_minimum_task_seconds=30, time_limit_seconds_minimum_task=300), upper_bound_pruning=true, replacement_dir={opts.ReplacementsPath}, replacement_title={opts.DomainName})\" ");
+                sb.Append($"--search \"sym_stackelberg(optimal_engine=symbolic(plan_reuse_minimal_task_upper_bound=true, plan_reuse_upper_bound=true, force_bw_search_minimum_task_seconds=30, time_limit_seconds_minimum_task=300), upper_bound_pruning=true)\" ");
 
             var process = new Process
             {

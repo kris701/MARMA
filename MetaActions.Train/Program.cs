@@ -26,8 +26,6 @@ namespace MetaActions.Learn
 
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
-            if (opts.MacroPlans != "")
-                opts.MacroPlans = PathHelper.RootPath(opts.MacroPlans);
 
             PathHelper.RecratePath(opts.TempPath);
             PathHelper.RecratePath(opts.OutputPath);
@@ -41,7 +39,6 @@ namespace MetaActions.Learn
             var testProblems = PathHelper.ResolveFileWildcards(opts.TestProblems.ToList());
             if (testProblems.Any(x => !File.Exists(x.FullName)))
                 throw new FileNotFoundException("Test problem file not found!");
-            var macroPlans = new List<DirectoryInfo>();
 
             ConsoleHelper.WriteLineColor($"Starting to learn meta actions of {domains.Count} domains...", ConsoleColor.Blue);
 
@@ -59,7 +56,7 @@ namespace MetaActions.Learn
                 var tempPath = Path.Combine(opts.TempPath, domainName);
                 var outPath = Path.Combine(opts.OutputPath, domainName);
 
-                runTasks.Add(new Task<string>(() => new LearningTask().LearnDomain(tempPath, outPath, domain, domainTrainProblems, domainTestProblems, opts.MacroPlans), token));
+                runTasks.Add(new Task<string>(() => new LearningTask().LearnDomain(tempPath, outPath, domain, domainTrainProblems, domainTestProblems), token));
             }
 
             try

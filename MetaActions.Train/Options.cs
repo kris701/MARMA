@@ -16,8 +16,5 @@ namespace MetaActions.Learn
         public string OutputPath { get; set; } = "output/train";
         [Option("rebuild", Required = false, HelpText = "Rebuild toolchain?", Default = false)]
         public bool Rebuild { get; set; } = false;
-
-        [Option("macro-plans", Required = false, HelpText = "The path where the macro plans will be generated.")]
-        public string MacroPlans { get; set; } = "";
     }
 }
