@@ -62,7 +62,7 @@ namespace MetaActionGenerator
             metaActions = RemoveActionsBy(metaActions, "Removing duplicate meta actions...",
                 (acts) =>
                 {
-                    return acts.DistinctBy(x => x.GetHashCode()).ToList();
+                    return acts.DistinctBy(x => x.Parameters.GetHashCode() ^ x.Preconditions.GetHashCode() ^ x.Effects.GetHashCode()).ToList();
                 });
             metaActions = RemoveActionsBy(metaActions, "Removing meta actions with bad mutex groups...",
                 (acts) =>
