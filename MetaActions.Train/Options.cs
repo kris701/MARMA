@@ -8,7 +8,7 @@ namespace MetaActions.Learn
         public IEnumerable<string> Domains { get; set; } = new List<string>();
         [Option("train-problems", Required = true, HelpText = "Problems to train from. You can use wildcards (*) for full directory names, and partial file names.")]
         public IEnumerable<string> TrainProblems { get; set; } = new List<string>();
-        [Option("test-problems", Required = true, HelpText = "Problems to test on later. You can use wildcards (*) for full directory names, and partial file names.\")]")]
+        [Option("test-problems", Required = true, HelpText = "Problems to test on later. You can use wildcards (*) for full directory names, and partial file names.")]
         public IEnumerable<string> TestProblems { get; set; } = new List<string>();
         [Option("tempDir", Required = false, HelpText = "Path where all the intermediate files can be saved.", Default = "temp/train")]
         public string TempPath { get; set; } = "temp/train";
@@ -17,7 +17,7 @@ namespace MetaActions.Learn
         [Option("rebuild", Required = false, HelpText = "Rebuild toolchain?", Default = false)]
         public bool Rebuild { get; set; } = false;
 
-        [Option("macro-plans", Required = false, HelpText = "The plans to extract macro sequences from. You can use wildcards (*) for full directory names, and partial file names.\")]")]
-        public IEnumerable<string> MacroPlans { get; set; } = new List<string>();
+        [Option("macro-plans", Required = false, HelpText = "The path where the macro plans will be generated.")]
+        public string MacroPlans { get; set; } = "";
     }
 }
