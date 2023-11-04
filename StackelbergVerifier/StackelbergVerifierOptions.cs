@@ -16,5 +16,10 @@ namespace StackelbergVerifier
         public string StackelbergPath { get; set; } = "fast-downward.py";
         [Option("iseasy", Required = false, HelpText = "Is the problem an easy one", Default = true)]
         public bool IsEasyProblem { get; set; } = true;
+
+        [Option("replacements", Required = false, HelpText = "Path in the stackelberg planner to put replacement plans.")]
+        public string ReplacementsPath { get; set; } = "replacements";
+        [Option("domainName", Required = false, HelpText = "Name of the domain. This is the folder where the replacement plans will be put into.")]
+        public string DomainName { get; set; } = "test";
     }
 }

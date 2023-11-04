@@ -87,7 +87,7 @@ namespace MetaActions.Learn
             foreach (var metaAction in allMetaActions)
             {
                 if (macroPlans != "")
-                    PathHelper.RecratePath(macroPlans);
+                    PathHelper.RecratePath(Path.Combine(macroPlans, _domainName));
                 Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(((double)metaActionCounter / (double)allMetaActions.Count) * 100, 0)}%]", ConsoleColor.Magenta);
                 int problemCounter = 1;
                 bool allValid = true;
@@ -100,7 +100,7 @@ namespace MetaActions.Learn
 
                     // Verify Meta Actions
                     Print($"\t\tVerifying meta action.", ConsoleColor.DarkMagenta);
-                    var isMetaActionValid = VerifyMetaAction();
+                    var isMetaActionValid = VerifyMetaAction(macroPlans);
 
                     // Stop if invalid
                     if (!isMetaActionValid)
@@ -201,7 +201,7 @@ namespace MetaActions.Learn
             ArgsCaller macroExtractor = ArgsCallerBuilder.GetDotnetRunner("MacroExtractor");
             macroExtractor.Arguments.Add("--domain", domain.FullName);
             string macroPlansStr = "";
-            var planFiles = new DirectoryInfo(macroPlans).GetFiles();
+            var planFiles = new DirectoryInfo(Path.Combine(macroPlans, _domainName)).GetFiles();
             if (planFiles.Count() == 0)
                 throw new Exception("Error, there where no plans made from the stackelberg planner");
             foreach (var plan in planFiles)
@@ -259,13 +259,18 @@ namespace MetaActions.Learn
                 throw new Exception("Stackelberg Compiler failed!");
         }
 
-        private bool VerifyMetaAction()
+        private bool VerifyMetaAction(string macroPlans)
         {
             ArgsCaller stackelVerifier = ArgsCallerBuilder.GetDotnetRunner("StackelbergVerifier");
             stackelVerifier.Arguments.Add("--domain", Path.Combine(_tempCompiledPath, "simplified_domain.pddl"));
             stackelVerifier.Arguments.Add("--problem", Path.Combine(_tempCompiledPath, "simplified_problem.pddl"));
             stackelVerifier.Arguments.Add("--output", _tempVerificationPath);
             stackelVerifier.Arguments.Add("--stackelberg", PathHelper.RootPath("Dependencies/stackelberg-planner/src/fast-downward.py"));
+            if (macroPlans != "")
+            {
+                stackelVerifier.Arguments.Add("--domainName", _domainName);
+                stackelVerifier.Arguments.Add("--replacements", macroPlans);
+            }
             var code = stackelVerifier.Run();
             if (code != 0 && code != 1)
                 throw new Exception("Stackelberg verifier failed!");
