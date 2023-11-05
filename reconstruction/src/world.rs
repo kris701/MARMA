@@ -77,6 +77,11 @@ impl World {
     }
 
     #[allow(dead_code)]
+    pub fn is_meta_action(&self, name: &str) -> bool {
+        self.meta_actions.contains_key(name) && !self.actions.contains_key(name)
+    }
+
+    #[allow(dead_code)]
     pub fn get_meta_index(&self, name: &str) -> usize {
         assert!(
             self.meta_actions.contains_key(name),
@@ -97,8 +102,23 @@ impl World {
     }
 
     #[allow(dead_code)]
-    pub fn is_meta_action(&self, name: &str) -> bool {
-        self.meta_actions.contains_key(name) && !self.actions.contains_key(name)
+    pub fn get_predicate_index(&self, name: &str) -> usize {
+        assert!(
+            self.predicates.contains_key(name),
+            "Found undeclared predicate: {}",
+            name
+        );
+        self.predicates[name]
+    }
+
+    #[allow(dead_code)]
+    pub fn get_predicate_name(&self, index: usize) -> &String {
+        &self
+            .predicates
+            .iter()
+            .find(|(_, i)| **i == index)
+            .unwrap()
+            .0
     }
 }
 

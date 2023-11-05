@@ -1,7 +1,7 @@
 use spingus::problem::init::Inits;
 use std::collections::{HashMap, HashSet};
 
-use crate::tools::time::run_time;
+use crate::{tools::time::run_time, world::World};
 
 use super::{
     actions::Actions, expression::Expression, objects::Objects, parameters::Parameters,
@@ -80,7 +80,7 @@ impl Facts {
 
         let mut statics: Vec<(usize, Vec<usize>)> = Vec::new();
         for init in inits.iter() {
-            let predicate = predicates.get_index(&init.name);
+            let predicate = World::global().get_predicate_index(&init.name);
             let parameters = objects.get_indexes(&init.parameters);
             statics.push((predicate, parameters));
         }
@@ -90,7 +90,7 @@ impl Facts {
             println!(
                 "{} Grounding predicate '{}'...",
                 run_time(),
-                predicates.get_name(i)
+                World::global().get_predicate_name(i)
             );
             // TODO: Make sure this works!
             let is_static = check_static_all(actions, i) || check_degrading_all(actions, i);
