@@ -81,7 +81,7 @@ impl Facts {
         let mut statics: Vec<(usize, Vec<usize>)> = Vec::new();
         for init in inits.iter() {
             let predicate = World::global().get_predicate_index(&init.name);
-            let parameters = objects.get_indexes(&init.parameters);
+            let parameters = World::global().get_object_indexes(&init.parameters);
             statics.push((predicate, parameters));
         }
 

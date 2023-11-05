@@ -120,6 +120,43 @@ impl World {
             .unwrap()
             .0
     }
+
+    pub fn get_object_count(&self) -> usize {
+        self.objects.len()
+    }
+
+    #[allow(dead_code)]
+    pub fn get_object_index(&self, name: &str) -> usize {
+        assert!(
+            self.objects.contains_key(name),
+            "Found undeclared object: {}",
+            name
+        );
+        self.objects[name]
+    }
+
+    #[allow(dead_code)]
+    pub fn get_object_indexes(&self, indexes: &Vec<String>) -> Vec<usize> {
+        indexes.iter().map(|i| self.get_object_index(i)).collect()
+    }
+
+    #[allow(dead_code)]
+    pub fn get_object_name(&self, index: usize) -> &String {
+        &self.objects.iter().find(|(_, i)| **i == index).unwrap().0
+    }
+
+    #[allow(dead_code)]
+    pub fn get_object_names(&self, indexes: &Vec<usize>) -> Vec<&String> {
+        indexes.iter().map(|i| self.get_object_name(*i)).collect()
+    }
+
+    #[allow(dead_code)]
+    pub fn get_object_names_cloned(&self, indexes: &Vec<usize>) -> Vec<String> {
+        indexes
+            .iter()
+            .map(|i| self.get_object_name(*i).to_owned())
+            .collect()
+    }
 }
 
 fn extract_tyes(types: &Option<Types>) -> HashMap<String, usize> {

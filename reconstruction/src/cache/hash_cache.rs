@@ -11,6 +11,7 @@ use crate::{
     },
     state::State,
     tools::time::run_time,
+    world::World,
 };
 
 use super::Cache;
@@ -101,7 +102,7 @@ impl Cache for HashCache {
                 .iter()
                 .map(|i| parameters[i.parse::<usize>().unwrap()])
                 .collect();
-            let parameters: Vec<String> = instance.objects.get_names_cloned(&objects);
+            let parameters: Vec<String> = World::global().get_object_names_cloned(&objects);
             replacement.push(Term { name, parameters })
         }
         Some(replacement)

@@ -82,7 +82,7 @@ impl Instance {
         let predicate = self.facts.fact_predicate(index);
         let predicate = World::global().get_predicate_name(predicate);
         let parameters = self.facts.fact_parameters(index);
-        let parameters = self.objects.get_names(parameters);
+        let parameters = World::global().get_object_names(parameters);
         let mut s = format!("{}", predicate);
         for param in parameters {
             s.push_str(&format!(" {}", param));
