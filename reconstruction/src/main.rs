@@ -3,6 +3,7 @@ mod instance;
 mod reconstruction;
 mod state;
 mod tools;
+mod world;
 
 use cache::generation::{generate_cache, CacheMethod};
 use reconstruction::reconstruction::reconstruct;
@@ -19,6 +20,7 @@ use clap::Parser;
 use crate::instance::Instance;
 use crate::reconstruction::downward_wrapper::Downward;
 use crate::tools::val::check_val;
+use crate::world::{World, WORLD};
 
 #[derive(Parser, Default, Debug)]
 #[command(term_width = 0)]
@@ -77,6 +79,9 @@ fn main() {
     let domain = parse_domain(&domain).unwrap();
     println!("{} Parsing problem....", run_time());
     let problem = parse_problem(&problem).unwrap();
+    println!("{} Generating world....", run_time());
+    let world = World::generate(&domain, &meta_domain, &problem);
+    let _ = WORLD.set(world);
     println!("{} Converting instance....", run_time());
     let instance = Instance::new(domain, problem, meta_domain.to_owned());
     println!("{} Checking cache...", run_time());
