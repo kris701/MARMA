@@ -1,6 +1,6 @@
 use itertools::Itertools;
 
-use crate::state::instance::{objects::Objects, types::Types};
+use super::{objects::Objects, types::Types};
 
 fn permute_untyped(objects: &Objects, _parameter_count: usize) -> Vec<Vec<usize>> {
     (0.._parameter_count)

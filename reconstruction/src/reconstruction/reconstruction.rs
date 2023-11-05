@@ -3,14 +3,12 @@ use std::{fs, path::PathBuf};
 
 use crate::{
     cache::Cache,
-    reconstruction::{problem_writing::write_problem, stiching::stich},
-    state::{
-        instance::{
-            operator::{generate_operator_string, Operator},
-            Instance,
-        },
-        state::State,
+    instance::{
+        operator::{generate_operator_string, Operator},
+        Instance,
     },
+    reconstruction::{problem_writing::write_problem, stiching::stich},
+    state::State,
     tools::{generate_progressbar, random_file_name},
 };
 

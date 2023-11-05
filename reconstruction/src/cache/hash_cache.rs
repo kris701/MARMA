@@ -4,14 +4,12 @@ use itertools::Itertools;
 use spingus::{sas_plan::SASPlan, term::Term};
 
 use crate::{
-    state::{
-        instance::{
-            actions::Action,
-            operator::{generate_operators, Operator},
-            Instance,
-        },
-        state::State,
+    instance::{
+        actions::Action,
+        operator::{generate_operators, Operator},
+        Instance,
     },
+    state::State,
     tools::time::run_time,
 };
 

@@ -11,7 +11,8 @@ use spingus::{
 };
 
 use crate::{
-    state::{instance::Instance, state::State},
+    instance::Instance,
+    state::State,
     tools::{io::file::file_name, time::run_time},
 };
 

@@ -1,4 +1,5 @@
 mod cache;
+mod instance;
 mod reconstruction;
 mod state;
 mod tools;
@@ -8,7 +9,6 @@ use reconstruction::reconstruction::reconstruct;
 use spingus::domain::parse_domain;
 use spingus::problem::parse_problem;
 use spingus::sas_plan::export_sas;
-use state::instance::Instance;
 use tools::time::{init_time, run_time};
 
 use std::fs;
@@ -16,6 +16,7 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
+use crate::instance::Instance;
 use crate::reconstruction::downward_wrapper::Downward;
 use crate::tools::val::check_val;
 
