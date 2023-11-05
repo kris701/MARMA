@@ -48,9 +48,10 @@ impl World {
     #[allow(dead_code)]
     pub fn get_type_index(&self, name: &str) -> usize {
         assert!(
-            !self.types.contains_key(name),
-            "Found undeclared type: {}",
-            name
+            self.types.contains_key(name),
+            "Found undeclared type: {}. Actual types: {:?}",
+            name,
+            self.types
         );
         self.types[name]
     }
@@ -58,6 +59,46 @@ impl World {
     #[allow(dead_code)]
     pub fn get_type_name(&self, index: usize) -> &String {
         &self.types.iter().find(|(_, i)| **i == index).unwrap().0
+    }
+
+    #[allow(dead_code)]
+    pub fn get_action_index(&self, name: &str) -> usize {
+        assert!(
+            self.actions.contains_key(name),
+            "Found undeclared action: {}",
+            name
+        );
+        self.actions[name]
+    }
+
+    #[allow(dead_code)]
+    pub fn get_action_name(&self, index: usize) -> &String {
+        &self.actions.iter().find(|(_, i)| **i == index).unwrap().0
+    }
+
+    #[allow(dead_code)]
+    pub fn get_meta_index(&self, name: &str) -> usize {
+        assert!(
+            self.meta_actions.contains_key(name),
+            "Found undeclared action: {}",
+            name
+        );
+        self.meta_actions[name]
+    }
+
+    #[allow(dead_code)]
+    pub fn get_meta_name(&self, index: usize) -> &String {
+        &self
+            .meta_actions
+            .iter()
+            .find(|(_, i)| **i == index)
+            .unwrap()
+            .0
+    }
+
+    #[allow(dead_code)]
+    pub fn is_meta_action(&self, name: &str) -> bool {
+        self.meta_actions.contains_key(name) && !self.actions.contains_key(name)
     }
 }
 

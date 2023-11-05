@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use super::{expression::Expression, parameters::Parameters, predicates::Predicates};
 
 #[derive(Debug)]
@@ -35,17 +33,14 @@ impl Action {
 
 #[derive(Debug)]
 pub struct Actions {
-    index_map: HashMap<String, usize>,
     pub actions: Vec<Action>,
 }
 
 impl Actions {
     pub fn new(predicates: &Predicates, o_actions: spingus::domain::action::Actions) -> Self {
-        let mut index_map: HashMap<String, usize> = HashMap::new();
         let mut actions: Vec<Action> = Vec::new();
 
         for action in o_actions {
-            index_map.insert(action.name.to_owned(), index_map.len());
             actions.push(Action::new(
                 predicates,
                 action.name,
@@ -55,11 +50,6 @@ impl Actions {
             ));
         }
 
-        Self { index_map, actions }
-    }
-
-    pub fn get_by_name(&self, action_name: &str) -> Option<&Action> {
-        let index = self.index_map.get(action_name)?;
-        Some(&self.actions[*index])
+        Self { actions }
     }
 }

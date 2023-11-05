@@ -1,5 +1,7 @@
 use spingus::{domain::Domain, problem::Problem};
 
+use crate::world::World;
+
 use self::{
     actions::{Action, Actions},
     facts::Facts,
@@ -60,12 +62,9 @@ impl Instance {
     }
 
     pub fn get_action(&self, name: &str) -> &Action {
-        if let Some(action) = self.meta_actions.get_by_name(name) {
-            action
-        } else if let Some(action) = self.actions.get_by_name(name) {
-            action
-        } else {
-            panic!()
+        match World::global().is_meta_action(name) {
+            true => &self.meta_actions.actions[World::global().get_meta_index(name)],
+            false => &self.actions.actions[World::global().get_action_index(name)],
         }
     }
 
