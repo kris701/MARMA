@@ -1,4 +1,4 @@
-use super::{parameters::Parameters, types::Types};
+use super::parameters::Parameters;
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -8,10 +8,7 @@ pub struct Predicates {
 }
 
 impl Predicates {
-    pub fn new(
-        types: &Option<Types>,
-        o_predicates: spingus::domain::predicate::Predicates,
-    ) -> Self {
+    pub fn new(o_predicates: spingus::domain::predicate::Predicates) -> Self {
         let mut index_map: HashMap<String, usize> = HashMap::new();
         let mut predicate_parameters: Vec<Parameters> = Vec::new();
 
@@ -19,7 +16,7 @@ impl Predicates {
             let index = index_map.len();
 
             index_map.insert(predicate.name, index);
-            predicate_parameters.push(Parameters::new(types, predicate.parameters));
+            predicate_parameters.push(Parameters::new(predicate.parameters));
         }
 
         Self {

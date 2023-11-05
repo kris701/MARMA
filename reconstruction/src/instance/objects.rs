@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::types::Types;
+use crate::world::World;
 
 pub struct Objects {
     index_map: HashMap<String, usize>,
@@ -8,17 +8,17 @@ pub struct Objects {
 }
 
 impl Objects {
-    pub fn new(types: &Option<Types>, o_objects: spingus::problem::object::Objects) -> Self {
+    pub fn new(o_objects: spingus::problem::object::Objects) -> Self {
         let mut index_map: HashMap<String, usize> = HashMap::new();
         let mut object_types: Vec<Option<usize>> = Vec::new();
 
         for object in o_objects {
             index_map.insert(object.name, index_map.len());
-            let type_index = match types {
-                Some(types) => match object.type_name {
-                    Some(type_name) => Some(types.get_index(&type_name).to_owned()),
-                    None => None,
-                },
+            let type_index = match object.type_name {
+                Some(type_name) => {
+                    let type_index = World::global().get_type_index(&type_name);
+                    Some(type_index)
+                }
                 None => None,
             };
             object_types.push(type_index);

@@ -40,10 +40,10 @@ impl Instance {
             Some(types) => Some(Types::new(types)),
             None => None,
         };
-        let predicates = Predicates::new(&types, domain.predicates.to_owned());
-        let actions = Actions::new(&types, &predicates, domain.actions.to_owned());
-        let meta_actions = Actions::new(&types, &predicates, meta_domain.actions.to_owned());
-        let objects = Objects::new(&types, problem.objects.to_owned());
+        let predicates = Predicates::new(domain.predicates.to_owned());
+        let actions = Actions::new(&predicates, domain.actions.to_owned());
+        let meta_actions = Actions::new(&predicates, meta_domain.actions.to_owned());
+        let objects = Objects::new(problem.objects.to_owned());
         let facts = Facts::new(&types, &predicates, &actions, &objects, &problem.inits);
 
         Self {
@@ -71,7 +71,6 @@ impl Instance {
 
     pub fn convert_action(&self, action: spingus::domain::action::Action) -> Action {
         Action::new(
-            &self.types,
             &self.predicates,
             action.name,
             action.parameters,
