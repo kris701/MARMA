@@ -29,14 +29,6 @@ namespace MetaActions.Test
 
         private static void Run(Options opts)
         {
-            if (opts.Rebuild)
-            {
-                ConsoleHelper.WriteLineColor($"Rebuilding toolchain...", ConsoleColor.Blue);
-                if (ArgsCallerBuilder.GetRustBuilder("reconstruction").Run() != 0)
-                    throw new Exception("Reconstruction build failed!");
-                ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
-            }
-
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
             opts.OutputPath = Path.Combine(opts.OutputPath, DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss"));
@@ -44,31 +36,51 @@ namespace MetaActions.Test
             _tempDataPath = Path.Combine(opts.TempPath, _tempDataPath);
             _tempTempPath = Path.Combine(opts.TempPath, _tempTempPath);
 
-            //PathHelper.RecratePath(opts.TempPath);
+            WriteToConsoleAndLog($"Recreating paths...", ConsoleColor.Blue);
             PathHelper.RecratePath(opts.OutputPath);
             PathHelper.RecratePath(_tempTempPath);
+            WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor($"Extracting testing data...", ConsoleColor.Blue);
+            WriteToConsoleAndLog($"Setting up run log...", ConsoleColor.Blue);
+            SetupRunLog(opts.OutputPath);
+            WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
+
+            if (opts.Rebuild)
+            {
+                WriteToConsoleAndLog($"Rebuilding toolchain...", ConsoleColor.Blue);
+                if (ArgsCallerBuilder.GetRustBuilder("reconstruction").Run() != 0)
+                    throw new Exception("Reconstruction build failed!");
+                WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
+            }
+
+            WriteToConsoleAndLog($"Extracting testing data...", ConsoleColor.Blue);
             ExtractTestData(opts.DataFile);
-            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+            WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor($"Copying configurations...", ConsoleColor.Blue);
+            WriteToConsoleAndLog($"Copying configurations...", ConsoleColor.Blue);
             CopyConfigurations(opts);
-            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+            WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor($"Initializing tests...", ConsoleColor.Blue);
+            WriteToConsoleAndLog($"Initializing tests...", ConsoleColor.Blue);
             var runTasks = GenerateTasks(opts);
-            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+            WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor($"Setting up run report...", ConsoleColor.Blue);
+            WriteToConsoleAndLog($"Setting up run report...", ConsoleColor.Blue);
             SetupRunReport(opts.OutputPath);
-            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+            WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor($"Executing a total of {runTasks.Count} tasks...", ConsoleColor.Blue);
+            WriteToConsoleAndLog($"Executing a total of {runTasks.Count} tasks...", ConsoleColor.Blue);
             ExecuteTasks(runTasks, opts.MultiTask, opts.OutputPath);
-            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+            WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor($"Testing suite finished!", ConsoleColor.Green);
+            WriteToConsoleAndLog($"Testing suite finished!", ConsoleColor.Green);
+        }
+
+        private static string _logPath = "";
+        private static void SetupRunLog(string outPath)
+        {
+            _logPath = Path.Combine(outPath, "log.txt");
+            File.WriteAllText(_logPath, $"Setting up log...{Environment.NewLine}");
         }
 
         private static void ExtractTestData(string dataFile)
@@ -181,17 +193,17 @@ namespace MetaActions.Test
                             var result = task.RunTest(tokenSource);
                             AppendToReport(result, outPath);
                             if (tokenSource.IsCancellationRequested)
-                                ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Red);
+                                WriteToConsoleAndLog($"Test for [{result.Domain}, {result.Problem}] canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Red);
                             else
-                                ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                                WriteToConsoleAndLog($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                         }
                         catch (Exception ex)
                         {
                             tokenSource.Cancel();
-                            ConsoleHelper.WriteLineColor($"Something failed in the testing;", ConsoleColor.Red);
-                            ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
-                            ConsoleHelper.WriteLineColor($"", ConsoleColor.Red);
-                            ConsoleHelper.WriteLineColor($"Killing tasks...!", ConsoleColor.Red);
+                            WriteToConsoleAndLog($"Something failed in the testing;", ConsoleColor.Red);
+                            WriteToConsoleAndLog(ex.Message, ConsoleColor.Red);
+                            WriteToConsoleAndLog($"", ConsoleColor.Red);
+                            WriteToConsoleAndLog($"Killing tasks...!", ConsoleColor.Red);
                         }
                         return;
                     }));
@@ -209,13 +221,13 @@ namespace MetaActions.Test
                             break;
                         var result = task.RunTest(tokenSource);
                         AppendToReport(result, outPath);
-                        ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                        WriteToConsoleAndLog($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                     }
                     catch (Exception ex)
                     {
                         tokenSource.Cancel();
-                        ConsoleHelper.WriteLineColor($"Something failed in the testing!", ConsoleColor.Red);
-                        ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
+                        WriteToConsoleAndLog($"Something failed in the testing!", ConsoleColor.Red);
+                        WriteToConsoleAndLog(ex.Message, ConsoleColor.Red);
                     }
                 }
             }
@@ -236,6 +248,13 @@ namespace MetaActions.Test
             else
                 line = $"false,{result.Domain},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}{Environment.NewLine}";
             File.AppendAllText(Path.Combine(outPath, "results.csv"), line);
+        }
+
+        public static void WriteToConsoleAndLog(string text, ConsoleColor color)
+        {
+            ConsoleHelper.WriteLineColor(text, color);
+            if (_logPath != "")
+                File.AppendAllText(_logPath, $"{text}{Environment.NewLine}");
         }
     }
 }
