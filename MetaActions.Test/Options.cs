@@ -12,7 +12,7 @@ namespace MetaActions.Test
             MacroCache = 2
         }
 
-        [Option("data", Required = true, HelpText = "Zip file containing all the training data.")]
+        [Option("data", Required = true, HelpText = "Zip file containing all the training data. You can use wildcards (*) for full directory names, and partial file name.")]
         public string DataFile { get; set; } = "";
         [Option("tempDir", Required = false, HelpText = "Path where all the intermediate files can be saved.", Default = "temp/test")]
         public string TempPath { get; set; } = "temp/test";

@@ -55,13 +55,13 @@ namespace MetaActions.Test
         {
             _tokenSource = tokenSource;
             tokenSource.Token.Register(Kill);
-            if (Domain.Directory == null)
+            if (Domain.Directory == null || Domain.Directory.Parent == null)
                 throw new Exception();
-            var domainName = Domain.Directory.Name;
+            var domainName = Domain.Directory.Parent.Name;
             if (MetaDomain != null)
                 domainName = $"(meta) {domainName}";
             var problemName = Problem.Name.Replace(".pddl", "");
-            ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Starting...", ConsoleColor.Magenta);
+            Program.WriteToConsoleAndLog($"\t[{domainName}, {problemName}] Starting...", ConsoleColor.Magenta);
 
             RunReport? runReport = null;
             _runningTask = Task.Run(() => {
@@ -69,29 +69,29 @@ namespace MetaActions.Test
                 timer.Start();
                 if (MetaDomain != null)
                 {
-                    ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Finding meta plan...", ConsoleColor.Magenta);
+                    Program.WriteToConsoleAndLog($"\t[{domainName}, {problemName}] Finding meta plan...", ConsoleColor.Magenta);
                     ExecuteAsNormal(MetaDomain, Problem, MetaPlanName, SASName);
                     if (tokenSource.IsCancellationRequested)
                         return;
-                    ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Repairing Plan...", ConsoleColor.Magenta);
+                    Program.WriteToConsoleAndLog($"\t[{domainName}, {problemName}] Repairing Plan...", ConsoleColor.Magenta);
                     RepairPlan(Domain, MetaDomain, Problem, PlanName, MetaPlanName);
                     if (tokenSource.IsCancellationRequested)
                         return;
                 }
                 else
                 {
-                    ConsoleHelper.WriteLineColor($"\t[{domainName}, {problemName}] Finding plan...", ConsoleColor.Magenta);
+                    Program.WriteToConsoleAndLog($"\t[{domainName}, {problemName}] Finding plan...", ConsoleColor.Magenta);
                     ExecuteAsNormal(Domain, Problem, PlanName, SASName);
                     if (tokenSource.IsCancellationRequested)
                         return;
                 }
                 timer.Stop();
 
-                runReport = new RunReport(domainName, problemName, GetSearchTimeFromLog(), timer.ElapsedMilliseconds, GetWasSolutionFound());
+                runReport = new RunReport(domainName, problemName, GetSearchTimeFromLog(), timer.ElapsedMilliseconds, GetWasSolutionFound(), ReconstructionMethod);
             });
             _runningTask.Wait();
             if (runReport == null)
-                return new RunReport(domainName, problemName, 0, 0, false);
+                return new RunReport(domainName, problemName, 0, 0, false, Options.ReconstructionMethods.None);
             return runReport;
         }
 
@@ -121,8 +121,8 @@ namespace MetaActions.Test
                 fdCaller.Arguments.Add(problem.FullName, "");
                 if (fdCaller.Run() != 0 && _tokenSource != null && !_tokenSource.IsCancellationRequested)
                 {
-                    ConsoleHelper.WriteLineColor($"Fast Downward Failed!", ConsoleColor.Red);
-                    ConsoleHelper.WriteLineColor(_errLog, ConsoleColor.Red);
+                    Program.WriteToConsoleAndLog($"Fast Downward Failed!", ConsoleColor.Red);
+                    Program.WriteToConsoleAndLog(_errLog, ConsoleColor.Red);
                     _tokenSource.Cancel();
                 }
             }
@@ -144,8 +144,8 @@ namespace MetaActions.Test
                 reconstructionFixer.Arguments.Add("-o", planName);
                 if (reconstructionFixer.Run() != 0 && _tokenSource != null && !_tokenSource.IsCancellationRequested)
                 {
-                    ConsoleHelper.WriteLineColor($"Reconstruction Failed!", ConsoleColor.Red);
-                    ConsoleHelper.WriteLineColor(_errLog, ConsoleColor.Red);
+                    Program.WriteToConsoleAndLog($"Reconstruction Failed!", ConsoleColor.Red);
+                    Program.WriteToConsoleAndLog(_errLog, ConsoleColor.Red);
                     _tokenSource.Cancel();
                 }
             }

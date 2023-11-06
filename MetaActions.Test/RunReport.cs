@@ -15,13 +15,16 @@ namespace MetaActions.Test
         public double TotalTime { get; set; }
         public bool WasSolutionFound { get; set; }
 
-        public RunReport(string domain, string problem, double searchTime, double totalTime, bool wasSolutionFound)
+        public Options.ReconstructionMethods ReconstructionMethod { get; set; }
+
+        public RunReport(string domain, string problem, double searchTime, double totalTime, bool wasSolutionFound, Options.ReconstructionMethods reconstructionMethod)
         {
             Domain = domain;
             Problem = problem;
             SearchTime = searchTime;
             TotalTime = totalTime;
             WasSolutionFound = wasSolutionFound;
+            ReconstructionMethod = reconstructionMethod;
         }
     }
 }

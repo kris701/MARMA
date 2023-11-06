@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using System.IO.Compression;
+using System.Text.Json;
 using System.Threading;
 using Tools;
 
@@ -17,6 +18,7 @@ namespace MetaActions.Learn
 
         private static void Run(Options opts)
         {
+            var timestamp = DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss");
             if (opts.Rebuild)
             {
                 ConsoleHelper.WriteLineColor($"Building Toolchain", ConsoleColor.Blue);
@@ -78,11 +80,13 @@ namespace MetaActions.Learn
             }
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
+            ConsoleHelper.WriteLineColor($"Generating identity file...", ConsoleColor.Blue);
+            File.WriteAllText(Path.Combine(opts.OutputPath, $"{timestamp}.json"), JsonSerializer.Serialize(opts));
+            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+
             ConsoleHelper.WriteLineColor($"Compressing testing dataset...", ConsoleColor.Blue);
-
-            ZipFile.CreateFromDirectory(opts.OutputPath, Path.Combine(opts.TempPath, "testing-set.zip"));
-            File.Move(Path.Combine(opts.TempPath, "testing-set.zip"), Path.Combine(opts.OutputPath, "testing-set.zip"));
-
+            ZipFile.CreateFromDirectory(opts.OutputPath, Path.Combine(opts.TempPath, $"testing-set-{timestamp}.zip"));
+            File.Move(Path.Combine(opts.TempPath, $"testing-set-{timestamp}.zip"), Path.Combine(opts.OutputPath, $"testing-set-{timestamp}.zip"));
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
         }
     }
