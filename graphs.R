@@ -50,8 +50,8 @@ ggplot(combined, aes(x=totalTime.meta, y=totalTime.norm)) +
 dev.off()
 
 # Generate Coverage plot
-metaSearchTime <- lapply(list(combined$searchTime.meta), sort)[[1]]
-normSearchTime <- lapply(list(combined$searchTime.norm), sort)[[1]]
+metaSearchTime <- lapply(list(combined$totalTime.meta), sort)[[1]]
+normSearchTime <- lapply(list(combined$totalTime.norm), sort)[[1]]
 highestValue <- max(metaSearchTime, normSearchTime)
 
 metaUnique <- unique(metaSearchTime)
