@@ -131,6 +131,9 @@ namespace MacroExtractor
                 foreach (var actionPlan in from[key])
                 {
                     var macro = GenerateMacroInstance(key.ActionName, actionPlan, domain);
+                    if (macro.Effects is AndExp and && and.Children.Count == 0)
+                        continue;
+
                     // For fully lifted:
                     foreach(var arg in macro.Parameters.Values.Where(x => !x.Name.StartsWith("?")))
                     {
@@ -138,8 +141,10 @@ namespace MacroExtractor
                         foreach (var aRef in allRefs)
                             aRef.Name = $"?{aRef.Name}";
                     }
+
                     // For partially lifted:
                     //macro.Parameters.Values.RemoveAll(x => !x.Name.Contains("?"));
+
                     returnDict[key].Add(new RepairSequence(macro, actionPlan));
                 }
             }
