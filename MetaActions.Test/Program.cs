@@ -73,6 +73,10 @@ namespace MetaActions.Test
             ExecuteTasks(runTasks, opts.MultiTask, opts.OutputPath);
             WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
 
+            WriteToConsoleAndLog($"Generating graphs...", ConsoleColor.Blue);
+            GenerateGraphs(opts.OutputPath);
+            WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
+
             WriteToConsoleAndLog($"Testing suite finished!", ConsoleColor.Green);
         }
 
@@ -248,6 +252,15 @@ namespace MetaActions.Test
             else
                 line = $"false,{result.Domain},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}{Environment.NewLine}";
             File.AppendAllText(Path.Combine(outPath, "results.csv"), line);
+        }
+
+        private static void GenerateGraphs(string outPath)
+        {
+            var caller = new ArgsCaller("Rscript");
+            caller.Process.StartInfo.WorkingDirectory = outPath;
+            caller.Arguments.Add("../../../graphs.r","");
+            if (caller.Run() != 0)
+                throw new Exception("Graph generation failed!");
         }
 
         public static void WriteToConsoleAndLog(string text, ConsoleColor color)
