@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
+using System.Text.Json;
 using Tools;
 
 namespace MetaActions.Test
@@ -47,8 +48,12 @@ namespace MetaActions.Test
             PathHelper.RecratePath(opts.OutputPath);
             PathHelper.RecratePath(_tempTempPath);
 
-            ConsoleHelper.WriteLineColor($"Extracting testing data", ConsoleColor.Blue);
+            ConsoleHelper.WriteLineColor($"Extracting testing data...", ConsoleColor.Blue);
             ExtractTestData(opts.DataFile);
+            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor($"Copying configurations...", ConsoleColor.Blue);
+            CopyConfigurations(opts);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Initializing tests...", ConsoleColor.Blue);
@@ -85,6 +90,14 @@ namespace MetaActions.Test
                 if (file.Extension == ".json")
                     return file;
             return null;
+        }
+
+        private static void CopyConfigurations(Options opts)
+        {
+            var trainConfig = GetConfig(_tempDataPath);
+            if (trainConfig != null)
+                File.Copy(trainConfig.FullName, Path.Combine(opts.OutputPath, "train-config.json"));
+            File.WriteAllText(Path.Combine(opts.OutputPath, "test-config.json"), JsonSerializer.Serialize(opts));
         }
 
         private static List<TestingTask> GenerateTasks(Options opts)

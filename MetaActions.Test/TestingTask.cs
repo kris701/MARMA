@@ -55,9 +55,9 @@ namespace MetaActions.Test
         {
             _tokenSource = tokenSource;
             tokenSource.Token.Register(Kill);
-            if (Domain.Directory == null)
+            if (Domain.Directory == null || Domain.Directory.Parent == null)
                 throw new Exception();
-            var domainName = Domain.Directory.Name;
+            var domainName = Domain.Directory.Parent.Name;
             if (MetaDomain != null)
                 domainName = $"(meta) {domainName}";
             var problemName = Problem.Name.Replace(".pddl", "");
