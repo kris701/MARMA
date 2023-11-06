@@ -1,4 +1,4 @@
-:action up#board#down
+(:action up#board#down
   :parameters (?f1 - floor ?f2 - floor ?p - passenger)
   :precondition 
   (and 
@@ -11,3 +11,4 @@
     (boarded ?p)
     (not (origin ?p ?f2))
   )
+)
