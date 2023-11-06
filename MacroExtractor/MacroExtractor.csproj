@@ -16,6 +16,33 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\floortile\domain.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\floortile\meta-1\0231ec52-2fba-da9c-f39a-945a45967a1c.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\floortile\meta-1\12d107b8-7fa0-a707-cf19-dd8668003f28.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\floortile\meta-1\4c11fddb-4c15-e7c3-2756-ef2a8ca43fed.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\floortile\meta-1\71beb9ce-d615-40a2-711f-fe2e4b8f7752.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\floortile\meta-1\91b9aefc-7c99-ad08-92ac-c7e05876ef53.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\floortile\meta-1\ad601871-b935-cc28-594e-b55f8270af8f.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\floortile\meta-1\ad83216f-5414-62eb-3c47-38150ef930f9.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\floortile\meta-1\ebac746d-f8d5-4151-5156-b0ddd9feda85.plan">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\gripper\$meta-pick-pick-move-drop-drop\plan1.plan">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
