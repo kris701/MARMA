@@ -11,8 +11,12 @@ impl Objects {
         for object in o_objects {
             let type_index = match object.type_name {
                 Some(type_name) => {
-                    let type_index = World::global().get_type_index(&type_name);
-                    Some(type_index)
+                    if type_name == "object" {
+                        None
+                    } else {
+                        let type_index = World::global().get_type_index(&type_name);
+                        Some(type_index)
+                    }
                 }
                 None => None,
             };
