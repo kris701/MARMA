@@ -258,7 +258,7 @@ namespace MetaActions.Test
         {
             var caller = new ArgsCaller("Rscript");
             caller.Process.StartInfo.WorkingDirectory = outPath;
-            caller.Arguments.Add("../../../graphs.r","");
+            caller.Arguments.Add("../../../graphs.R","");
             if (caller.Run() != 0)
                 throw new Exception("Graph generation failed!");
         }
