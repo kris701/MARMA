@@ -99,7 +99,8 @@ namespace MacroExtractor
             var returnDict = new Dictionary<string, string>();
             int argIndex = 0;
             foreach (var arg in metaAction.Arguments)
-                returnDict.Add(arg.Name, $"?{argIndex++}");
+                if (!returnDict.ContainsKey(arg.Name))
+                    returnDict.Add(arg.Name, $"?{argIndex++}");
             return returnDict;
         }
 
