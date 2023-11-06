@@ -89,20 +89,25 @@ impl Cache for HashCache {
         let index: &usize = candidates
             .iter()
             .find(|i| init.is_legal(&self.entries[**i].0))?;
+
         let (_, parameters) = &self.entries[*index];
         let macro_index = self.entry_macro[*index];
         let (lifted_macro, plan) = self.lifted_macros.get(macro_index)?;
-        let actions: Vec<&str> = lifted_macro.name.split('#').collect();
+        let lifted_parameters = &lifted_macro.parameters.parameter_names;
+        let actions: Vec<String> = plan.iter().map(|t| t.name.to_owned()).collect();
         let replacements: Vec<&Action> = actions.iter().map(|n| instance.get_action(n)).collect();
         let mut replacement: Vec<Term> = Vec::new();
         for (action, step) in replacements.iter().zip(plan.iter()) {
             let name = action.name.to_owned();
-            let objects: Vec<usize> = step
+            let parameters: Vec<usize> = step
                 .parameters
                 .iter()
-                .map(|i| parameters[i.parse::<usize>().unwrap()])
+                .map(|n| {
+                    let index = lifted_parameters.iter().position(|p| p == n).unwrap();
+                    parameters[index]
+                })
                 .collect();
-            let parameters: Vec<String> = World::global().get_object_names_cloned(&objects);
+            let parameters = World::global().get_object_names_cloned(&parameters);
             replacement.push(Term { name, parameters })
         }
         Some(replacement)

@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-spingus = { git = "https://github.com/jamadaha/spingus.git", rev = "9cc2d0f" }
+spingus = { git = "https://github.com/jamadaha/spingus.git", rev = "4d9f704" }
 clap = { version = "4.4.4", features = ["derive"] }
 bitvec = "1.0.1"
 itertools = "0.11.0"
