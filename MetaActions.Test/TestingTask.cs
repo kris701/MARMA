@@ -87,11 +87,11 @@ namespace MetaActions.Test
                 }
                 timer.Stop();
 
-                runReport = new RunReport(domainName, problemName, GetSearchTimeFromLog(), timer.ElapsedMilliseconds, GetWasSolutionFound());
+                runReport = new RunReport(domainName, problemName, GetSearchTimeFromLog(), timer.ElapsedMilliseconds, GetWasSolutionFound(), ReconstructionMethod);
             });
             _runningTask.Wait();
             if (runReport == null)
-                return new RunReport(domainName, problemName, 0, 0, false);
+                return new RunReport(domainName, problemName, 0, 0, false, Options.ReconstructionMethods.None);
             return runReport;
         }
 

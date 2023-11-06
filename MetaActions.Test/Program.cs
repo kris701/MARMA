@@ -39,32 +39,52 @@ namespace MetaActions.Test
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
             opts.OutputPath = Path.Combine(opts.OutputPath, DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss"));
-            opts.DataFile = PathHelper.RootPath(opts.DataFile);
+            opts.DataFile = PathHelper.ResolveFileWildcards(new List<string>() { opts.DataFile })[0].FullName;
             _tempDataPath = Path.Combine(opts.TempPath, _tempDataPath);
             _tempTempPath = Path.Combine(opts.TempPath, _tempTempPath);
 
-            PathHelper.RecratePath(opts.TempPath);
+            //PathHelper.RecratePath(opts.TempPath);
             PathHelper.RecratePath(opts.OutputPath);
-            PathHelper.RecratePath(_tempDataPath);
             PathHelper.RecratePath(_tempTempPath);
 
             ConsoleHelper.WriteLineColor($"Extracting testing data", ConsoleColor.Blue);
-            ZipFile.ExtractToDirectory(opts.DataFile, _tempDataPath);
+            ExtractTestData(opts.DataFile);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Initializing tests...", ConsoleColor.Blue);
             var runTasks = GenerateTasks(opts);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor($"Executing a total of {runTasks.Count} tasks...", ConsoleColor.Blue);
-            var results = ExecuteTasks(runTasks, opts.MultiTask);
+            ConsoleHelper.WriteLineColor($"Setting up run report...", ConsoleColor.Blue);
+            SetupRunReport(opts.OutputPath);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor($"Generating final run report", ConsoleColor.Blue);
-            GenerateReport(results, opts.OutputPath);
+            ConsoleHelper.WriteLineColor($"Executing a total of {runTasks.Count} tasks...", ConsoleColor.Blue);
+            ExecuteTasks(runTasks, opts.MultiTask, opts.OutputPath);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Testing suite finished!", ConsoleColor.Green);
+        }
+
+        private static void ExtractTestData(string dataFile)
+        {
+            var config = GetConfig(_tempDataPath);
+            if (config != null)
+                if (dataFile.Contains(config.Name.Replace(".json","")))
+                    return;
+
+            PathHelper.RecratePath(_tempDataPath);
+            ZipFile.ExtractToDirectory(dataFile, _tempDataPath);
+        }
+
+        private static FileInfo? GetConfig(string dir)
+        {
+            if (!Directory.Exists(dir))
+                return null;
+            foreach (var file in new DirectoryInfo(dir).GetFiles())
+                if (file.Extension == ".json")
+                    return file;
+            return null;
         }
 
         private static List<TestingTask> GenerateTasks(Options opts)
@@ -96,7 +116,7 @@ namespace MetaActions.Test
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}.plan"),
                         "",
                         Path.Combine(_tempTempPath, domainName, $"{problemName}.sas"),
-                        opts.ReconstructionMethod,
+                        Options.ReconstructionMethods.None,
                         Path.Combine(domain.FullName, "cache")));
                     runTasks.Add(new TestingTask(
                         opts.TimeLimit,
@@ -131,14 +151,13 @@ namespace MetaActions.Test
             }
         }
 
-        private static List<RunReport> ExecuteTasks(List<TestingTask> runTasks, bool multitask)
+        private static void ExecuteTasks(List<TestingTask> runTasks, bool multitask, string outPath)
         {
-            List<RunReport> results = new List<RunReport>();
-            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            var tokenSource = new CancellationTokenSource();
             if (multitask)
             {
                 int counter = 1;
-                List<Task> tasks = new List<Task>();
+                var tasks = new List<Task>();
                 foreach (var task in runTasks)
                 {
                     tasks.Add(Task.Run(() => {
@@ -147,7 +166,7 @@ namespace MetaActions.Test
                             if (tokenSource.IsCancellationRequested)
                                 return;
                             var result = task.RunTest(tokenSource);
-                            results.Add(result);
+                            AppendToReport(result, outPath);
                             if (tokenSource.IsCancellationRequested)
                                 ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Red);
                             else
@@ -176,7 +195,7 @@ namespace MetaActions.Test
                         if (tokenSource.IsCancellationRequested)
                             break;
                         var result = task.RunTest(tokenSource);
-                        results.Add(result);
+                        AppendToReport(result, outPath);
                         ConsoleHelper.WriteLineColor($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                     }
                     catch (Exception ex)
@@ -187,22 +206,23 @@ namespace MetaActions.Test
                     }
                 }
             }
-            return results;
         }
 
-        private static void GenerateReport(List<RunReport> results, string outPath)
+        private static void SetupRunReport(string outPath)
         {
             var csv = new StringBuilder();
             csv.AppendLine("isMeta,domain,problem,searchTime,totalTime,wasSolutionFound");
-            foreach (var result in results)
-            {
-                if (result.Domain.StartsWith("(meta)"))
-                    csv.AppendLine($"true,{result.Domain.Replace("(meta) ","")},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}");
-                else
-                    csv.AppendLine($"false,{result.Domain},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}");
-            }
-
             File.WriteAllText(Path.Combine(outPath, "results.csv"), csv.ToString());
+        }
+
+        private static void AppendToReport(RunReport result, string outPath)
+        {
+            var line = "";
+            if (result.Domain.StartsWith("(meta)"))
+                line = $"true,{result.Domain.Replace("(meta) ", "")},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}{Environment.NewLine}";
+            else
+                line = $"false,{result.Domain},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}{Environment.NewLine}";
+            File.AppendAllText(Path.Combine(outPath, "results.csv"), line);
         }
     }
 }
