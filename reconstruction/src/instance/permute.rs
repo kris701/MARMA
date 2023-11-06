@@ -47,6 +47,9 @@ pub fn permute_mutable(
     objects: &Objects,
     parameter_types: &Vec<Option<usize>>,
 ) -> Vec<Vec<usize>> {
+    if parameter_types.is_empty() {
+        return vec![vec![]];
+    }
     match types {
         Some(types) => permute_typed(types, objects, parameter_types),
         None => permute_untyped(parameter_types.len()),
