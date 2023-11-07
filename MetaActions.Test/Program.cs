@@ -255,7 +255,10 @@ namespace MetaActions.Test
                     {
                         if (_tokenSource.IsCancellationRequested)
                             break;
-                        var result = task.RunTask().Result;
+                        var resultTask = task.RunTask();
+                        resultTask.Start();
+                        resultTask.Wait();
+                        var result = resultTask.Result;
                         if (result != null)
                         {
                             AppendToReport(result, outPath);
