@@ -107,12 +107,8 @@ namespace MacroExtractor
         private static void RenameActionArguments(GroundedAction action, Dictionary<string, string> replacements)
         {
             foreach (var arg in action.Arguments)
-            {
                 if (replacements.ContainsKey(arg.Name))
                     arg.Name = replacements[arg.Name];
-                else
-                    arg.Name = $"?{arg.Name}";
-            }
             foreach (var name in _RemoveNamesFromActions)
                 action.ActionName = action.ActionName.Replace(name, "");
         }
@@ -139,16 +135,21 @@ namespace MacroExtractor
                     if (macro.Effects is AndExp and && and.Children.Count == 0)
                         continue;
 
-                    // For fully lifted:
-                    foreach(var arg in macro.Parameters.Values.Where(x => !x.Name.StartsWith("?")))
+                    int id = 0;
+                    var changeParams = macro.Parameters.Values.Where(x => !x.Name.StartsWith("?"));
+                    var replacementDict = new Dictionary<string, string>();
+                    foreach (var arg in changeParams)
+                        replacementDict.Add(arg.Name, $"?O{id}");
+                    foreach (var arg in replacementDict.Keys)
                     {
-                        var allRefs = macro.FindNames(arg.Name);
+                        var allRefs = macro.FindNames(arg);
                         foreach (var aRef in allRefs)
-                            aRef.Name = $"?{aRef.Name}";
+                            aRef.Name = $"?O{id}";
+                        id++;
                     }
 
-                    // For partially lifted:
-                    //macro.Parameters.Values.RemoveAll(x => !x.Name.Contains("?"));
+                    foreach (var step in actionPlan.Plan)
+                        RenameActionArguments(step, replacementDict);
 
                     returnDict[key].Add(new RepairSequence(macro, actionPlan));
                 }
