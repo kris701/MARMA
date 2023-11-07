@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using CommandLine.Text;
 using MetaActions.Test.Reconstructors;
 using PDDLSharp.CodeGenerators;
 using PDDLSharp.CodeGenerators.PDDL;
@@ -20,9 +21,10 @@ namespace MetaActions.Test
     {
         static void Main(string[] args)
         {
-            Parser.Default.ParseArguments<Options>(args)
-              .WithParsed(Run)
-              .WithNotParsed(HandleParseError);
+            var parser = new CommandLine.Parser(with => with.HelpWriter = null);
+            var parserResult = parser.ParseArguments<Options>(args);
+            parserResult.WithNotParsed(errs => DisplayHelp(parserResult, errs));
+            parserResult.WithParsed(Run);
         }
 
         private static string _tempDataPath = "data";
