@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using MetaActions.Test.Reconstructors;
 using PDDLSharp.CodeGenerators;
 using PDDLSharp.CodeGenerators.PDDL;
 using PDDLSharp.ErrorListeners;
@@ -26,13 +27,19 @@ namespace MetaActions.Test
 
         private static string _tempDataPath = "data";
         private static string _tempTempPath = "temp";
+        private static CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
         private static void Run(Options opts)
         {
             opts.TempPath = PathHelper.RootPath(opts.TempPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
             opts.OutputPath = Path.Combine(opts.OutputPath, DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss"));
-            opts.DataFile = PathHelper.ResolveFileWildcards(new List<string>() { opts.DataFile })[0].FullName;
+            var zipFiles = PathHelper.ResolveFileWildcards(new List<string>() { opts.DataFile });
+            if (zipFiles.Count == 0)
+                throw new Exception("Error! No zip file found for testing");
+            if (zipFiles.Count > 1)
+                WriteToConsoleAndLog($"Multiple zip files found! Using the first one...", ConsoleColor.Yellow);
+            opts.DataFile = zipFiles[0].FullName;
             _tempDataPath = Path.Combine(opts.TempPath, _tempDataPath);
             _tempTempPath = Path.Combine(opts.TempPath, _tempTempPath);
 
@@ -72,10 +79,15 @@ namespace MetaActions.Test
             WriteToConsoleAndLog($"Executing a total of {runTasks.Count} tasks...", ConsoleColor.Blue);
             ExecuteTasks(runTasks, opts.MultiTask, opts.OutputPath);
             WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
+            if (_tokenSource.IsCancellationRequested)
+                return;
 
-            WriteToConsoleAndLog($"Generating graphs...", ConsoleColor.Blue);
-            GenerateGraphs(opts.OutputPath);
-            WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
+            if (opts.ReconstructionMethod != Options.ReconstructionMethods.None)
+            {
+                WriteToConsoleAndLog($"Generating graphs...", ConsoleColor.Blue);
+                GenerateGraphs(opts.OutputPath);
+                WriteToConsoleAndLog($"Done!", ConsoleColor.Green);
+            }
 
             WriteToConsoleAndLog($"Testing suite finished!", ConsoleColor.Green);
         }
@@ -116,9 +128,9 @@ namespace MetaActions.Test
             File.WriteAllText(Path.Combine(opts.OutputPath, "test-config.json"), JsonSerializer.Serialize(opts));
         }
 
-        private static List<TestingTask> GenerateTasks(Options opts)
+        private static List<IReconstructor> GenerateTasks(Options opts)
         {
-            List<TestingTask> runTasks = new List<TestingTask>();
+            List<IReconstructor> runTasks = new List<IReconstructor>();
             foreach (var domain in new DirectoryInfo(_tempDataPath).GetDirectories())
             {
                 var domainName = domain.Name;
@@ -136,28 +148,45 @@ namespace MetaActions.Test
                 foreach (var problem in allProblems)
                 {
                     var problemName = problem.Name.Replace(".pddl", "");
-                    runTasks.Add(new TestingTask(
-                        opts.TimeLimit, 
-                        opts.Alias,
+                    runTasks.Add(new NoReconstructor(
                         normalDomain,
-                        null,
                         problem,
+                        opts.Alias,
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}.plan"),
-                        "",
                         Path.Combine(_tempTempPath, domainName, $"{problemName}.sas"),
-                        Options.ReconstructionMethods.None,
-                        Path.Combine(domain.FullName, "cache")));
-                    runTasks.Add(new TestingTask(
-                        opts.TimeLimit,
-                        opts.Alias,
-                        normalDomain,
-                        metaDomain,
-                        problem,
-                        Path.Combine(opts.OutputPath, domainName, $"{problemName}_reconstructed.plan"),
-                        Path.Combine(opts.OutputPath, domainName, $"{problemName}_meta.plan"),
-                        Path.Combine(_tempTempPath, domainName, $"{problemName}_meta.sas"),
-                        opts.ReconstructionMethod,
-                        Path.Combine(domain.FullName, "cache")));
+                        TimeSpan.FromMinutes(opts.TimeLimit),
+                        _tokenSource
+                        ));
+                    switch (opts.ReconstructionMethod)
+                    {
+                        case Options.ReconstructionMethods.FastDownward:
+                            runTasks.Add(new FastDownwardReconstructor(
+                                metaDomain,
+                                Path.Combine(opts.OutputPath, domainName, $"{problemName}_meta.plan"),
+                                normalDomain,
+                                problem,
+                                opts.Alias,
+                                Path.Combine(opts.OutputPath, domainName, $"{problemName}.plan"),
+                                Path.Combine(_tempTempPath, domainName, $"{problemName}.sas"),
+                                TimeSpan.FromMinutes(opts.TimeLimit),
+                                _tokenSource
+                                ));
+                            break;
+                        case Options.ReconstructionMethods.MacroCache:
+                            runTasks.Add(new CacheReconstructor(
+                                Path.Combine(domain.FullName, "cache"),
+                                metaDomain,
+                                Path.Combine(opts.OutputPath, domainName, $"{problemName}_meta.plan"),
+                                normalDomain,
+                                problem,
+                                opts.Alias,
+                                Path.Combine(opts.OutputPath, domainName, $"{problemName}.plan"),
+                                Path.Combine(_tempTempPath, domainName, $"{problemName}.sas"),
+                                TimeSpan.FromMinutes(opts.TimeLimit),
+                                _tokenSource
+                                ));
+                            break;
+                    }
                 }
             }
 
@@ -180,39 +209,42 @@ namespace MetaActions.Test
             }
         }
 
-        private static void ExecuteTasks(List<TestingTask> runTasks, bool multitask, string outPath)
+        private static void ExecuteTasks(List<IReconstructor> runTasks, bool multitask, string outPath)
         {
-            var tokenSource = new CancellationTokenSource();
             if (multitask)
             {
                 int counter = 1;
-                var tasks = new List<Task>();
+                var tasks = new List<Task<RunReport?>>();
                 foreach (var task in runTasks)
+                    tasks.Add(task.RunTask());
+                foreach (var task in tasks)
+                    task.Start();
+
+                while(tasks.Count > 0)
                 {
-                    tasks.Add(Task.Run(() => {
-                        try
+                    try
+                    {
+                        var resultTask = Task.WhenAny(tasks).Result;
+                        tasks.Remove(resultTask);
+                        var result = resultTask.Result;
+
+                        if (result != null)
                         {
-                            if (tokenSource.IsCancellationRequested)
-                                return;
-                            var result = task.RunTest(tokenSource);
                             AppendToReport(result, outPath);
-                            if (tokenSource.IsCancellationRequested)
-                                WriteToConsoleAndLog($"Test for [{result.Domain}, {result.Problem}] canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Red);
-                            else
-                                WriteToConsoleAndLog($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                            WriteToConsoleAndLog($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                         }
-                        catch (Exception ex)
-                        {
-                            tokenSource.Cancel();
-                            WriteToConsoleAndLog($"Something failed in the testing;", ConsoleColor.Red);
-                            WriteToConsoleAndLog(ex.Message, ConsoleColor.Red);
-                            WriteToConsoleAndLog($"", ConsoleColor.Red);
-                            WriteToConsoleAndLog($"Killing tasks...!", ConsoleColor.Red);
-                        }
-                        return;
-                    }));
+                        else
+                            WriteToConsoleAndLog($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                    }
+                    catch (Exception ex)
+                    {
+                        _tokenSource.Cancel();
+                        WriteToConsoleAndLog($"Something failed in the testing;", ConsoleColor.Red);
+                        WriteToConsoleAndLog(ex.Message, ConsoleColor.Red);
+                        WriteToConsoleAndLog($"", ConsoleColor.Red);
+                        WriteToConsoleAndLog($"Killing tasks...!", ConsoleColor.Red);
+                    }
                 }
-                Task.WaitAll(tasks.ToArray());
             }
             else
             {
@@ -221,15 +253,18 @@ namespace MetaActions.Test
                 {
                     try
                     {
-                        if (tokenSource.IsCancellationRequested)
+                        if (_tokenSource.IsCancellationRequested)
                             break;
-                        var result = task.RunTest(tokenSource);
-                        AppendToReport(result, outPath);
-                        WriteToConsoleAndLog($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                        var result = task.RunTask().Result;
+                        if (result != null)
+                        {
+                            AppendToReport(result, outPath);
+                            WriteToConsoleAndLog($"Test for [{result.Domain}, {result.Problem}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                        }
                     }
                     catch (Exception ex)
                     {
-                        tokenSource.Cancel();
+                        _tokenSource.Cancel();
                         WriteToConsoleAndLog($"Something failed in the testing!", ConsoleColor.Red);
                         WriteToConsoleAndLog(ex.Message, ConsoleColor.Red);
                     }
@@ -247,8 +282,8 @@ namespace MetaActions.Test
         private static void AppendToReport(RunReport result, string outPath)
         {
             var line = "";
-            if (result.Domain.StartsWith("(meta)"))
-                line = $"true,{result.Domain.Replace("(meta) ", "")},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}{Environment.NewLine}";
+            if (result.ReconstructionMethod != Options.ReconstructionMethods.None)
+                line = $"true,{result.Domain},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}{Environment.NewLine}";
             else
                 line = $"false,{result.Domain},{result.Problem},{result.SearchTime},{result.TotalTime},{result.WasSolutionFound}{Environment.NewLine}";
             File.AppendAllText(Path.Combine(outPath, "results.csv"), line);
