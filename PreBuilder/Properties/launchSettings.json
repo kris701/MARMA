@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "MetaActions.Learn": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL",
+      "distributionName": "",
+      "commandLineArgs": "PreBuilder/bin/Debug/net7.0/PreBuilder.dll",
+      "workingDirectory": "PreBuilder/../"
+    }
+  }
+}

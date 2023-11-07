@@ -14,14 +14,9 @@ namespace Tools
 
         public static ArgsCaller GetDotnetRunner(string project)
         {
-            ArgsCaller runner = new ArgsCaller("dotnet");
+            ArgsCaller runner = new ArgsCaller($"{project}/bin/Release/net7.0/{project}");
             runner.StdOut += PrintStdOut;
             runner.StdErr += PrintStdErr;
-            runner.Arguments.Add("run", "");
-            runner.Arguments.Add("--no-restore", "");
-            runner.Arguments.Add("--no-build", "");
-            runner.Arguments.Add("--configuration", "Release");
-            runner.Arguments.Add("--project", $"{project} --");
             return runner;
         }
 
