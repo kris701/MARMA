@@ -80,16 +80,12 @@ impl Downward {
         plan: &Option<PathBuf>,
     ) -> SASPlan {
         if let Some(path) = plan {
-            println!("Solution given");
             let content = fs::read_to_string(path).unwrap();
-            println!("{} Parsing solution...", run_time());
             match parse_sas(&content) {
                 Ok(plan) => return plan,
                 Err(err) => panic!("Could not parse given solution with error:\n{}.", err),
             }
         }
-        println!("{} Solution not given", run_time());
-        println!("{} Using downward to find...", run_time());
         match self.solve(domain_path, problem_path) {
             Ok(plan) => plan,
             Err(err) => panic!(

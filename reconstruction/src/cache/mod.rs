@@ -13,7 +13,7 @@ use spingus::{
 use crate::{
     instance::Instance,
     state::State,
-    tools::{io::file::file_name, time::run_time},
+    tools::{io::file::file_name, status_print, time::run_time, Status},
 };
 
 pub mod generation;
@@ -102,10 +102,10 @@ pub(crate) fn read_cache_input(
     };
     let mut replacements: HashMap<String, Vec<(Action, SASPlan)>> = HashMap::new();
     for path in meta_paths {
-        println!(
-            "{} Reading replacements for {:?}...",
-            run_time(),
-            path.file_name().unwrap()
+        let file_name = file_name(&path);
+        status_print(
+            Status::Cache,
+            &format!("Reading replacements for {}", file_name),
         );
         let substitutes = match read_meta_dir(&path) {
             Ok(v) => v,
@@ -117,7 +117,6 @@ pub(crate) fn read_cache_input(
             }
         };
         println!("Found {} replacements", substitutes.len());
-
         replacements.insert(
             path.file_name().unwrap().to_str().unwrap().to_string(),
             parse_replacements(substitutes)?,

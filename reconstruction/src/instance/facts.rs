@@ -1,7 +1,10 @@
 use spingus::problem::init::Inits;
 use std::collections::{HashMap, HashSet};
 
-use crate::{tools::time::run_time, world::World};
+use crate::{
+    tools::{status_print, Status},
+    world::World,
+};
 
 use super::{
     actions::Actions, expression::Expression, objects::Objects, parameters::Parameters,
@@ -87,11 +90,8 @@ impl Facts {
 
         let mut offset: usize = 0;
         for (i, predicate) in predicates.predicate_parameters().iter().enumerate() {
-            println!(
-                "{} Grounding predicate '{}'...",
-                run_time(),
-                World::global().get_predicate_name(i)
-            );
+            let predicate_name = World::global().get_predicate_name(i);
+            status_print(Status::Init, &format!("Grounding: {}", predicate_name));
             // TODO: Make sure this works!
             let is_static = check_static_all(actions, i) || check_degrading_all(actions, i);
             println!("is static: {}", is_static);
