@@ -12,5 +12,16 @@ namespace Tools
                 if (error is not HelpRequestedError)
                     ConsoleHelper.WriteLineColor(sentenceBuilder.FormatError(error), ConsoleColor.Red);
         }
+
+        public static void DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs)
+        {
+            var helpText = HelpText.AutoBuild(result, h =>
+            {
+                h.AddEnumValuesToHelpText = true;
+                return h;
+            }, e => e, verbsIndex: true);
+            Console.WriteLine(helpText);
+            HandleParseError(errs);
+        }
     }
 }
