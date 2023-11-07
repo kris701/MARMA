@@ -17,6 +17,8 @@ namespace StackelbergCompiler
             var statics = detector.FindStaticPredicates(new PDDLDecl(domain, new ProblemDecl()));
             foreach (var staticPred in statics)
                 _staticPredicates.Add(staticPred.Name);
+            if (!_staticPredicates.Contains("="))
+                _staticPredicates.Add("=");
             return _staticPredicates;
         }
     }

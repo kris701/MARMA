@@ -167,14 +167,27 @@ namespace MetaActions.Learn
             //Copy all the files & Replaces any files with the same name
             foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
             {
-                File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
+                var target = newPath.Replace(sourcePath, targetPath);
+                int id = 0;
+                while (File.Exists(target))
+                    target = target.Replace(".pddl", $"{id++}.pddl");
+                File.Copy(newPath, target, true);
             }
         }
 
         private void CopyTestingProblems(List<FileInfo> testingProblems, string outFolder)
         {
-            foreach(var problem in testingProblems)
-                File.Copy(problem.FullName, Path.Combine(outFolder, problem.Name));
+            foreach (var problem in testingProblems)
+            {
+                var target = new FileInfo(Path.Combine(outFolder, problem.Name));
+                while (File.Exists(target.FullName))
+                {
+                    if (problem.Directory == null)
+                        throw new FileNotFoundException("File was not in a directory?");
+                    target = new FileInfo(target.FullName.Replace(target.Name.Replace(target.Extension, ""), $"{target.Name.Replace(target.Extension, "")}_{problem.Directory.Name}"));
+                }
+                File.Copy(problem.FullName, target.FullName);
+            }
         }
 
         private void GenerateMetaDomain(FileInfo domainFile, List<FileInfo> metaActionFiles, string outFolder)
