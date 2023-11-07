@@ -17,7 +17,7 @@ namespace MetaActions.Test.Reconstructors
         public TimeSpan TimeLimit { get; }
 
         public CancellationTokenSource CancellationToken { get; }
-        public Task<RunReport?> Run(CancellationTokenSource tokenSource);
+        public Task<RunReport?> RunTask();
         public RunReport? Run();
     }
 }

@@ -46,7 +46,7 @@ namespace MetaActions.Test.Reconstructors
             CancellationToken.Token.Register(Kill);
         }
 
-        public Task<RunReport?> Run(CancellationTokenSource tokenSource)
+        public Task<RunReport?> RunTask()
         {
             return new Task<RunReport?>(Run);
         }
@@ -111,7 +111,13 @@ namespace MetaActions.Test.Reconstructors
         public void Kill()
         {
             if (_activeProcess != null)
-                _activeProcess.Kill(true);
+            {
+                try
+                {
+                    _activeProcess.Kill(true);
+                }
+                catch { }
+            }
         }
 
         public void Dispose()

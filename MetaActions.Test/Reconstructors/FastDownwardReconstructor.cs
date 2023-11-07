@@ -24,12 +24,14 @@ namespace MetaActions.Test.Reconstructors
 
         public override RunReport? Run()
         {
-            Program.WriteToConsoleAndLog($"\t[{DomainName}, {ProblemName}] Starting...", ConsoleColor.Magenta);
-            Program.WriteToConsoleAndLog($"\t[{DomainName}, {ProblemName}] Finding meta plan...", ConsoleColor.Magenta);
+            Program.WriteToConsoleAndLog($"\t[(meta) {DomainName}, {ProblemName}] Starting...", ConsoleColor.Magenta);
+            Program.WriteToConsoleAndLog($"\t[(meta) {DomainName}, {ProblemName}] Finding meta plan...", ConsoleColor.Magenta);
             Stopwatch timer = new Stopwatch();
             timer.Start();
             ExecuteAsNormal(Domain, Problem, MetaPlanName, SasName);
-            Program.WriteToConsoleAndLog($"\t[{DomainName}, {ProblemName}] Repairing Plan...", ConsoleColor.Magenta);
+            if (CancellationToken.IsCancellationRequested)
+                return null;
+            Program.WriteToConsoleAndLog($"\t[(meta) {DomainName}, {ProblemName}] Repairing Plan...", ConsoleColor.Magenta);
             RepairPlan(Domain, MetaDomain, Problem, PlanName, MetaPlanName);
             timer.Stop();
             if (CancellationToken.IsCancellationRequested)
