@@ -26,8 +26,9 @@
                     {
                         var route = item.Substring(0, currentWildcard);
                         var remaining = item.Substring(currentWildcard + 2);
-                        foreach (var option in new DirectoryInfo(route).GetDirectories())
-                            subItems.Add(Path.Combine(route, option.Name, remaining));
+                        if (Directory.Exists(route))
+                            foreach (var option in new DirectoryInfo(route).GetDirectories())
+                                subItems.Add(Path.Combine(route, option.Name, remaining));
 
                         returnFiles.AddRange(ResolveFileWildcards(subItems));
                     }
@@ -71,8 +72,9 @@
                     {
                         var route = item.Substring(0, currentWildcard);
                         var remaining = item.Substring(currentWildcard + 2);
-                        foreach (var option in new DirectoryInfo(route).GetDirectories())
-                            subItems.Add(Path.Combine(route, option.Name, remaining));
+                        if (Directory.Exists(route))
+                            foreach (var option in new DirectoryInfo(route).GetDirectories())
+                                subItems.Add(Path.Combine(route, option.Name, remaining));
 
                         returnFiles.AddRange(ResolveDirectoryWildcards(subItems));
                     }
