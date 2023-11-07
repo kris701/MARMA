@@ -27,7 +27,7 @@ namespace MacroExtractor
         public override bool Equals(object? obj)
         {
             if (obj is RepairSequence seq)
-                return seq.GetHashCode() == Macro.GetHashCode();
+                return seq.GetHashCode() == GetHashCode();
             return false;
         }
     }
