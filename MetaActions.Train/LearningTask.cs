@@ -65,72 +65,72 @@ namespace MetaActions.Learn
             PathHelper.RecratePath(_outData);
             PathHelper.RecratePath(_outCache);
 
-            //var problems = CopyProblemsToTemp(trainProblems);
+            var problems = CopyProblemsToTemp(trainProblems);
 
-            //Print($"There is a total of {problems.Count} problems to train with.", ConsoleColor.Blue);
+            Print($"There is a total of {problems.Count} problems to train with.", ConsoleColor.Blue);
 
-            //Print($"Generating macros", ConsoleColor.Blue, false);
-            //// Make a temp copy of CSMs, since it cant handle multiple runs at the same time.
-            //CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/src"), Path.Combine(_tempCSMPath, "src"));
-            //CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/scripts"), Path.Combine(_tempCSMPath, "scripts"));
-            //List<FileInfo> allMacros = GenerateMacros(domain.FullName);
-            //Print($"A total of {allMacros.Count} macros was found.", ConsoleColor.Blue, false);
-            //if (allMacros.Count == 0)
-            //    return _domainName;
+            Print($"Generating macros", ConsoleColor.Blue, false);
+            // Make a temp copy of CSMs, since it cant handle multiple runs at the same time.
+            CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/src"), Path.Combine(_tempCSMPath, "src"));
+            CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/scripts"), Path.Combine(_tempCSMPath, "scripts"));
+            List<FileInfo> allMacros = GenerateMacros(domain.FullName);
+            Print($"A total of {allMacros.Count} macros was found.", ConsoleColor.Blue, false);
+            if (allMacros.Count == 0)
+                return _domainName;
 
-            //Print($"Generating meta actions", ConsoleColor.Blue, false);
-            //List<FileInfo> allMetaActions = GenerateMetaActions(domain.FullName);
-            //Print($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Blue, false);
-            //if (allMetaActions.Count == 0)
-            //    return _domainName;
+            Print($"Generating meta actions", ConsoleColor.Blue, false);
+            List<FileInfo> allMetaActions = GenerateMetaActions(domain.FullName);
+            Print($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Blue, false);
+            if (allMetaActions.Count == 0)
+                return _domainName;
 
-            //Print($"Validating meta actions", ConsoleColor.Blue, false);
-            //List<FileInfo> validMetaActions = new List<FileInfo>();
-            //int metaActionCounter = 1;
-            //foreach (var metaAction in allMetaActions)
-            //{
-            //    PathHelper.RecratePath(_tempReplacementsPath);
-            //    Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(((double)metaActionCounter / (double)allMetaActions.Count) * 100, 0)}%]", ConsoleColor.Magenta);
-            //    int problemCounter = 1;
-            //    bool allValid = true;
-            //    foreach (var problem in problems)
-            //    {
-            //        Print($"\t\tProblem {problemCounter} out of {problems.Count} [{Math.Round(((double)problemCounter / (double)problems.Count) * 100, 0)}%].", ConsoleColor.DarkMagenta);
-            //        // Compile Meta Actions
-            //        Print($"\t\tCompiling meta action.", ConsoleColor.DarkMagenta);
-            //        CompileMetaAction(domain.FullName, problem.FullName, metaAction.FullName);
+            Print($"Validating meta actions", ConsoleColor.Blue, false);
+            List<FileInfo> validMetaActions = new List<FileInfo>();
+            int metaActionCounter = 1;
+            foreach (var metaAction in allMetaActions)
+            {
+                PathHelper.RecratePath(_tempReplacementsPath);
+                Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(((double)metaActionCounter / (double)allMetaActions.Count) * 100, 0)}%]", ConsoleColor.Magenta);
+                int problemCounter = 1;
+                bool allValid = true;
+                foreach (var problem in problems)
+                {
+                    Print($"\t\tProblem {problemCounter} out of {problems.Count} [{Math.Round(((double)problemCounter / (double)problems.Count) * 100, 0)}%].", ConsoleColor.DarkMagenta);
+                    // Compile Meta Actions
+                    Print($"\t\tCompiling meta action.", ConsoleColor.DarkMagenta);
+                    CompileMetaAction(domain.FullName, problem.FullName, metaAction.FullName);
 
-            //        // Verify Meta Actions
-            //        Print($"\t\tVerifying meta action.", ConsoleColor.DarkMagenta);
-            //        var isMetaActionValid = VerifyMetaAction();
+                    // Verify Meta Actions
+                    Print($"\t\tVerifying meta action.", ConsoleColor.DarkMagenta);
+                    var isMetaActionValid = VerifyMetaAction();
 
-            //        // Stop if invalid
-            //        if (!isMetaActionValid)
-            //        {
-            //            Print($"\tMeta action was invalid in problem '{problem.Name}'.", ConsoleColor.Red);
-            //            allValid = false;
-            //            break;
-            //        }
-            //        problemCounter++;
-            //    }
-            //    if (allValid)
-            //    {
-            //        Print($"\tMeta action was valid in all {problems.Count} problems.", ConsoleColor.Green);
-            //        validMetaActions.Add(metaAction);
-            //        Print($"Extracting macros from plans...", ConsoleColor.Blue);
+                    // Stop if invalid
+                    if (!isMetaActionValid)
+                    {
+                        Print($"\tMeta action was invalid in problem '{problem.Name}'.", ConsoleColor.Red);
+                        allValid = false;
+                        break;
+                    }
+                    problemCounter++;
+                }
+                if (allValid)
+                {
+                    Print($"\tMeta action was valid in all {problems.Count} problems.", ConsoleColor.Green);
+                    validMetaActions.Add(metaAction);
+                    Print($"Extracting macros from plans...", ConsoleColor.Blue);
 
-            //        ExtractMacrosFromPlans(domain, _tempReplacementsPath, _outCache);
+                    ExtractMacrosFromPlans(domain, _tempReplacementsPath, _outCache);
 
-            //        Print($"Done!", ConsoleColor.Green);
-            //    }
-            //    metaActionCounter++;
-            //}
-            //Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green, false);
-            //Print($"Generating meta domain...", ConsoleColor.Blue);
+                    Print($"Done!", ConsoleColor.Green);
+                }
+                metaActionCounter++;
+            }
+            Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green, false);
+            Print($"Generating meta domain...", ConsoleColor.Blue);
 
-            //GenerateMetaDomain(domain, validMetaActions, _outData);
+            GenerateMetaDomain(domain, validMetaActions, _outData);
 
-            //Print($"Done!", ConsoleColor.Green);
+            Print($"Done!", ConsoleColor.Green);
 
             Print($"Copying testing problems...", ConsoleColor.Blue);
 
