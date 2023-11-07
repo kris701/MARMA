@@ -33,24 +33,6 @@ pub fn dir_files(path: &PathBuf) -> io::Result<Vec<PathBuf>> {
     Ok(result)
 }
 
-pub fn dir_file_names(path: &PathBuf) -> io::Result<Vec<String>> {
-    let files = dir_files(path)?;
-    let mut names: Vec<String> = Vec::new();
-    for file in files.into_iter() {
-        if let Some(name) = file.file_name() {
-            if let Some(name) = name.to_str() {
-                names.push(name.to_string());
-            } else {
-                eprintln!(
-                    "Unexpected token in file name: {:?}. File is ignored.",
-                    name
-                );
-            }
-        }
-    }
-    Ok(names)
-}
-
 pub fn dir_files_by_extension(path: &PathBuf, ext: &str) -> io::Result<Vec<PathBuf>> {
     let files = dir_files(path)?;
     Ok(files
@@ -105,7 +87,7 @@ pub fn match_files(files: Vec<PathBuf>, sub_files: Vec<PathBuf>) -> Vec<(PathBuf
     }
 
     for file in unmatched_files.into_iter().chain(sub_files.into_iter()) {
-        eprintln!("Could not find match for file {:?}", file);
+        eprintln!("WARNING: Could not find match for file {:?}", file);
     }
 
     pairs

@@ -23,7 +23,6 @@ pub fn generate_cache(
     if let Some(path) = cache_path {
         status_print(Status::Cache, "Reading cache");
         let data = read_cache(path);
-        status_print(Status::Cache, "Generating cache");
         match cache_type {
             CacheMethod::Hash => Some(Box::new(HashCache::new(instance, data))),
         }
