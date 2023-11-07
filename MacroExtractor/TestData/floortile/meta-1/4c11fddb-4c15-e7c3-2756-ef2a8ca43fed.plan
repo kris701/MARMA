@@ -1,0 +1,3 @@
+(fix_$meta_1 robot1 black black tile_0_1)
+(attack_change_color_0 robot1 black black)
+(attack_paint_down_2 robot1 tile_0_1 tile_1_1 black)

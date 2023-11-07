@@ -99,15 +99,20 @@ namespace MacroExtractor
             var returnDict = new Dictionary<string, string>();
             int argIndex = 0;
             foreach (var arg in metaAction.Arguments)
-                returnDict.Add(arg.Name, $"?{argIndex++}");
+                if (!returnDict.ContainsKey(arg.Name))
+                    returnDict.Add(arg.Name, $"?{argIndex++}");
             return returnDict;
         }
 
         private static void RenameActionArguments(GroundedAction action, Dictionary<string, string> replacements)
         {
             foreach (var arg in action.Arguments)
+            {
                 if (replacements.ContainsKey(arg.Name))
                     arg.Name = replacements[arg.Name];
+                else
+                    arg.Name = $"?{arg.Name}";
+            }
             foreach (var name in _RemoveNamesFromActions)
                 action.ActionName = action.ActionName.Replace(name, "");
         }
@@ -192,10 +197,11 @@ namespace MacroExtractor
             IErrorListener listener = new ErrorListener();
             ICodeGenerator<INode> codeGenerator = new PDDLCodeGenerator(listener);
             ICodeGenerator<ActionPlan> planGenerator = new FastDownwardPlanGenerator(listener);
+            foreach(var key in  repairSequences.Keys)
+                PathHelper.RecratePath(Path.Combine(outPath, key.ActionName));
+            int id = 1;
             foreach (var key in repairSequences.Keys)
             {
-                PathHelper.RecratePath(Path.Combine(outPath, key.ActionName));
-                int id = 1;
                 foreach (var replacement in repairSequences[key])
                 {
                     codeGenerator.Generate(replacement.Macro, Path.Combine(outPath, key.ActionName, $"macro{id}.pddl"));
