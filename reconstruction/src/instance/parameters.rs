@@ -1,4 +1,4 @@
-use super::types::Types;
+use crate::world::World;
 
 #[derive(Debug)]
 pub struct Parameters {
@@ -7,7 +7,7 @@ pub struct Parameters {
 }
 
 impl Parameters {
-    pub fn new(types: &Option<Types>, parameters: spingus::domain::parameter::Parameters) -> Self {
+    pub fn new(parameters: spingus::domain::parameter::Parameters) -> Self {
         let mut parameter_names: Vec<String> = Vec::new();
         let mut parameter_types: Vec<Option<usize>> = Vec::new();
 
@@ -18,17 +18,7 @@ impl Parameters {
                     parameter_names.push(name);
                 }
                 spingus::domain::parameter::Parameter::Typed { name, type_name } => {
-                    parameter_types.push(Some(
-                        match types {
-                            Some(val) => val,
-                            None => panic!(
-                                "Predicate {} has typed parameters in a non-typed domain",
-                                name
-                            ),
-                        }
-                        .get_index(&type_name)
-                        .to_owned(),
-                    ));
+                    parameter_types.push(Some(World::global().get_type_index(&type_name)));
                     parameter_names.push(name);
                 }
                 spingus::domain::parameter::Parameter::Either { .. } => {

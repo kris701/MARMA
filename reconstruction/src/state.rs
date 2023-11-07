@@ -1,7 +1,6 @@
 use std::collections::HashSet;
 
-use super::instance::operator::Operator;
-use super::instance::Instance;
+use crate::instance::{operator::Operator, Instance};
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {

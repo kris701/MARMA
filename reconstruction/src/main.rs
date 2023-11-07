@@ -1,14 +1,15 @@
 mod cache;
+mod instance;
 mod reconstruction;
 mod state;
 mod tools;
+mod world;
 
 use cache::generation::{generate_cache, CacheMethod};
 use reconstruction::reconstruction::reconstruct;
 use spingus::domain::parse_domain;
 use spingus::problem::parse_problem;
 use spingus::sas_plan::export_sas;
-use state::instance::Instance;
 use tools::time::{init_time, run_time};
 
 use std::fs;
@@ -16,8 +17,10 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
+use crate::instance::Instance;
 use crate::reconstruction::downward_wrapper::Downward;
 use crate::tools::val::check_val;
+use crate::world::{World, WORLD};
 
 #[derive(Parser, Default, Debug)]
 #[command(term_width = 0)]
@@ -76,6 +79,9 @@ fn main() {
     let domain = parse_domain(&domain).unwrap();
     println!("{} Parsing problem....", run_time());
     let problem = parse_problem(&problem).unwrap();
+    println!("{} Generating world....", run_time());
+    let world = World::generate(&domain, &meta_domain, &problem);
+    let _ = WORLD.set(world);
     println!("{} Converting instance....", run_time());
     let instance = Instance::new(domain, problem, meta_domain.to_owned());
     println!("{} Checking cache...", run_time());

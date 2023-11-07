@@ -2,6 +2,8 @@ use std::collections::HashSet;
 
 use itertools::Itertools;
 
+use crate::world::World;
+
 use super::{actions::Action, expression::Expression, permute::permute_mutable, Instance};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -66,7 +68,7 @@ pub fn generate_operator_string(
     parameters: &Vec<String>,
 ) -> Operator {
     let action: &Action = instance.get_action(action);
-    let parameters: Vec<usize> = instance.objects.get_indexes(parameters);
+    let parameters: Vec<usize> = World::global().get_object_indexes(parameters);
     extract_from_action(instance, &parameters, action).unwrap()
 }
 

@@ -1,5 +1,7 @@
 use spingus::{domain::Domain, problem::Problem};
 
+use crate::world::World;
+
 use self::{
     actions::{Action, Actions},
     facts::Facts,
@@ -40,10 +42,10 @@ impl Instance {
             Some(types) => Some(Types::new(types)),
             None => None,
         };
-        let predicates = Predicates::new(&types, domain.predicates.to_owned());
-        let actions = Actions::new(&types, &predicates, domain.actions.to_owned());
-        let meta_actions = Actions::new(&types, &predicates, meta_domain.actions.to_owned());
-        let objects = Objects::new(&types, problem.objects.to_owned());
+        let predicates = Predicates::new(domain.predicates.to_owned());
+        let actions = Actions::new(&predicates, domain.actions.to_owned());
+        let meta_actions = Actions::new(&predicates, meta_domain.actions.to_owned());
+        let objects = Objects::new(problem.objects.to_owned());
         let facts = Facts::new(&types, &predicates, &actions, &objects, &problem.inits);
 
         Self {
@@ -60,18 +62,14 @@ impl Instance {
     }
 
     pub fn get_action(&self, name: &str) -> &Action {
-        if let Some(action) = self.meta_actions.get_by_name(name) {
-            action
-        } else if let Some(action) = self.actions.get_by_name(name) {
-            action
-        } else {
-            panic!()
+        match World::global().is_meta_action(name) {
+            true => &self.meta_actions.actions[World::global().get_meta_index(name)],
+            false => &self.actions.actions[World::global().get_action_index(name)],
         }
     }
 
     pub fn convert_action(&self, action: spingus::domain::action::Action) -> Action {
         Action::new(
-            &self.types,
             &self.predicates,
             action.name,
             action.parameters,
@@ -82,9 +80,9 @@ impl Instance {
 
     pub fn get_fact_string(&self, index: usize) -> String {
         let predicate = self.facts.fact_predicate(index);
-        let predicate = self.predicates.get_name(predicate);
+        let predicate = World::global().get_predicate_name(predicate);
         let parameters = self.facts.fact_parameters(index);
-        let parameters = self.objects.get_names(parameters);
+        let parameters = World::global().get_object_names(parameters);
         let mut s = format!("{}", predicate);
         for param in parameters {
             s.push_str(&format!(" {}", param));

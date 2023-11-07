@@ -1,6 +1,4 @@
-use std::collections::HashMap;
-
-use super::{expression::Expression, parameters::Parameters, predicates::Predicates, types::Types};
+use super::{expression::Expression, parameters::Parameters, predicates::Predicates};
 
 #[derive(Debug)]
 pub struct Action {
@@ -12,14 +10,13 @@ pub struct Action {
 
 impl Action {
     pub fn new(
-        types: &Option<Types>,
         predicates: &Predicates,
         name: String,
         parameters: spingus::domain::parameter::Parameters,
         precondition: Option<spingus::domain::action::string_expression::StringExpression>,
         effect: spingus::domain::action::string_expression::StringExpression,
     ) -> Self {
-        let parameters = Parameters::new(types, parameters);
+        let parameters = Parameters::new(parameters);
         let precondition = match precondition {
             Some(e) => Some(Expression::new(predicates, &parameters, e)),
             None => None,
@@ -36,23 +33,15 @@ impl Action {
 
 #[derive(Debug)]
 pub struct Actions {
-    index_map: HashMap<String, usize>,
     pub actions: Vec<Action>,
 }
 
 impl Actions {
-    pub fn new(
-        types: &Option<Types>,
-        predicates: &Predicates,
-        o_actions: spingus::domain::action::Actions,
-    ) -> Self {
-        let mut index_map: HashMap<String, usize> = HashMap::new();
+    pub fn new(predicates: &Predicates, o_actions: spingus::domain::action::Actions) -> Self {
         let mut actions: Vec<Action> = Vec::new();
 
         for action in o_actions {
-            index_map.insert(action.name.to_owned(), index_map.len());
             actions.push(Action::new(
-                types,
                 predicates,
                 action.name,
                 action.parameters,
@@ -61,11 +50,6 @@ impl Actions {
             ));
         }
 
-        Self { index_map, actions }
-    }
-
-    pub fn get_by_name(&self, action_name: &str) -> Option<&Action> {
-        let index = self.index_map.get(action_name)?;
-        Some(&self.actions[*index])
+        Self { actions }
     }
 }

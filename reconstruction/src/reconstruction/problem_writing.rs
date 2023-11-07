@@ -1,7 +1,8 @@
 use spingus::problem::Problem;
 
-use crate::{state::state::State, Instance};
 use std::{fs, path::PathBuf};
+
+use crate::{instance::Instance, state::State};
 
 fn generate_objects(problem: &Problem) -> String {
     let mut s = "".to_string();

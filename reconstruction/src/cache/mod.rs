@@ -11,7 +11,8 @@ use spingus::{
 };
 
 use crate::{
-    state::{instance::Instance, state::State},
+    instance::Instance,
+    state::State,
     tools::{io::file::file_name, time::run_time},
 };
 
@@ -60,7 +61,7 @@ fn read_meta_dir(path: &PathBuf) -> io::Result<Vec<(PathBuf, PathBuf)>> {
         let mut found = false;
         for macro_path in &macros {
             let macro_name = file_name(macro_path);
-            if plan_name.contains(&macro_name) {
+            if plan_name.contains(&format!("{}_", macro_name)) {
                 combined.push((macro_path.to_owned(), plan_path.to_owned()));
                 found = true;
                 break;

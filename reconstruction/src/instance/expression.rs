@@ -1,5 +1,7 @@
 use spingus::domain::action::string_expression::StringExpression;
 
+use crate::world::World;
+
 use super::{parameters::Parameters, predicates::Predicates};
 
 #[derive(Debug)]
@@ -23,7 +25,7 @@ impl Expression {
     ) -> Self {
         match expression {
             StringExpression::Predicate(t) => Expression::Predicate {
-                index: predicates.get_index(&t.name),
+                index: World::global().get_predicate_index(&t.name),
                 parameters: parameters.get_indexes(&t.parameters),
             },
             StringExpression::Equal(p) => Expression::Equal(parameters.get_indexes(&p)),

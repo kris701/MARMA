@@ -3,10 +3,8 @@ use std::collections::HashMap;
 use spingus::{sas_plan::SASPlan, term::Term};
 
 use crate::{
-    state::{
-        instance::{actions::Action, operator::generate_operators, Instance},
-        state::State,
-    },
+    instance::{actions::Action, operator::generate_operators, Instance},
+    state::State,
     tools::time::run_time,
 };
 

@@ -4,7 +4,7 @@ use clap::ValueEnum;
 
 use crate::{
     cache::{hash_cache::HashCache, lifted_cache::LiftedCache, read_cache_input},
-    state::instance::Instance,
+    instance::Instance,
     tools::time::run_time,
 };
 
