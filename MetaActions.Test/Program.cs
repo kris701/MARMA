@@ -155,7 +155,7 @@ namespace MetaActions.Test
                         problem,
                         opts.Alias,
                         Path.Combine(opts.OutputPath, domainName, $"{problemName}.plan"),
-                        Path.Combine(_tempTempPath, domainName, $"{problemName}.sas"),
+                        Path.Combine(_tempTempPath, domainName, $"{problemName}_norm.sas"),
                         TimeSpan.FromMinutes(opts.TimeLimit),
                         _tokenSource
                         ));
@@ -169,7 +169,7 @@ namespace MetaActions.Test
                                 problem,
                                 opts.Alias,
                                 Path.Combine(opts.OutputPath, domainName, $"{problemName}.plan"),
-                                Path.Combine(_tempTempPath, domainName, $"{problemName}.sas"),
+                                Path.Combine(_tempTempPath, domainName, $"{problemName}_recon.sas"),
                                 TimeSpan.FromMinutes(opts.TimeLimit),
                                 _tokenSource
                                 ));
@@ -183,7 +183,7 @@ namespace MetaActions.Test
                                 problem,
                                 opts.Alias,
                                 Path.Combine(opts.OutputPath, domainName, $"{problemName}.plan"),
-                                Path.Combine(_tempTempPath, domainName, $"{problemName}.sas"),
+                                Path.Combine(_tempTempPath, domainName, $"{problemName}_recon.sas"),
                                 TimeSpan.FromMinutes(opts.TimeLimit),
                                 _tokenSource
                                 ));
