@@ -13,13 +13,12 @@ use spingus::{
 use crate::{
     instance::Instance,
     state::State,
-    tools::{io::file::file_name, status_print, time::run_time, Status},
+    tools::{io::file::file_name, status_print, Status},
 };
 
+mod cache_data;
 pub mod generation;
-mod grounded_cache;
 mod hash_cache;
-mod lifted_cache;
 
 pub trait Cache {
     /// Retrives replacement from cache from given init to goal

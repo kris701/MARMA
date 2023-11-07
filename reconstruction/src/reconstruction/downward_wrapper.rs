@@ -5,7 +5,7 @@ use std::{
     process::Command,
 };
 
-use crate::tools::{random_file_name, time::run_time};
+use crate::tools::random_file_name;
 
 pub struct Downward {
     pub path: PathBuf,

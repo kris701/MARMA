@@ -10,7 +10,7 @@ use reconstruction::reconstruction::reconstruct;
 use spingus::domain::parse_domain;
 use spingus::problem::parse_problem;
 use spingus::sas_plan::export_sas;
-use tools::time::{init_time, run_time};
+use tools::time::init_time;
 use tools::Status;
 
 use std::fs;
@@ -20,8 +20,8 @@ use clap::Parser;
 
 use crate::instance::Instance;
 use crate::reconstruction::downward_wrapper::Downward;
+use crate::tools::status_print;
 use crate::tools::val::check_val;
-use crate::tools::{statbar, status_print};
 use crate::world::{World, WORLD};
 
 #[derive(Parser, Default, Debug)]

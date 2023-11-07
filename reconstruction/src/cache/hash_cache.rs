@@ -10,11 +10,11 @@ use crate::{
         Instance,
     },
     state::State,
-    tools::{status_print, time::run_time, Status},
+    tools::{status_print, Status},
     world::World,
 };
 
-use super::Cache;
+use super::{cache_data::CacheData, Cache};
 
 #[derive(Debug)]
 pub struct HashCache {
@@ -25,10 +25,7 @@ pub struct HashCache {
 }
 
 impl HashCache {
-    pub fn new(
-        instance: &Instance,
-        cache_data: HashMap<String, Vec<(spingus::domain::action::Action, SASPlan)>>,
-    ) -> Self {
+    pub fn new(instance: &Instance, cache_data: CacheData) -> Self {
         status_print(Status::Cache, "Init Hash Cache");
         let mut lifted_macros: Vec<(Action, SASPlan)> = Vec::new();
         let mut entries: Vec<(Operator, Vec<usize>)> = Vec::new();
