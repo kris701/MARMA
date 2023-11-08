@@ -3,7 +3,10 @@ use std::path::{Path, PathBuf};
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::{distributions::Alphanumeric, Rng};
 
+use crate::tools::{memory::memory_usage, time::run_time};
+
 pub mod io;
+pub mod memory;
 pub mod time;
 pub mod val;
 
@@ -27,4 +30,29 @@ pub fn generate_progressbar(limit: usize) -> ProgressBar {
     let bar = ProgressBar::new(limit as u64);
     bar.set_style(bar_style);
     bar
+}
+
+pub fn statbar() -> String {
+    if let Some(mem) = memory_usage() {
+        format!("[{}, {}]", run_time(), mem)
+    } else {
+        format!("[{}, N/A]", run_time())
+    }
+}
+
+pub enum Status {
+    Init,
+    Cache,
+    Reconstruction,
+    Validation,
+}
+
+pub fn status_print(status: Status, input: &str) {
+    let status = match status {
+        Status::Init => "INIT",
+        Status::Cache => "CACHE",
+        Status::Reconstruction => "RECONSTRUCTION",
+        Status::Validation => "VALIDATION",
+    };
+    println!("{} [{}] {}", statbar(), status, input);
 }

@@ -10,11 +10,11 @@ use crate::{
         Instance,
     },
     state::State,
-    tools::time::run_time,
+    tools::{status_print, Status},
     world::World,
 };
 
-use super::Cache;
+use super::{cache_data::CacheData, Cache};
 
 #[derive(Debug)]
 pub struct HashCache {
@@ -25,11 +25,8 @@ pub struct HashCache {
 }
 
 impl HashCache {
-    pub fn new(
-        instance: &Instance,
-        cache_data: HashMap<String, Vec<(spingus::domain::action::Action, SASPlan)>>,
-    ) -> Self {
-        println!("{} Init hash-cache...", run_time());
+    pub fn new(instance: &Instance, cache_data: CacheData) -> Self {
+        status_print(Status::Cache, "Init Hash Cache");
         let mut lifted_macros: Vec<(Action, SASPlan)> = Vec::new();
         let mut entries: Vec<(Operator, Vec<usize>)> = Vec::new();
         let mut effect_map: HashMap<Vec<(usize, bool)>, Vec<usize>> = HashMap::new();
@@ -43,7 +40,7 @@ impl HashCache {
             })
             .collect::<Vec<(Action, SASPlan)>>()
         {
-            println!("{} Generating cache for {}", run_time(), action.name);
+            status_print(Status::Cache, &format!("Grounding {}", action.name));
             let action_index = lifted_macros.len();
             let operators = generate_operators(&instance, &action);
             let mut count = 0;
@@ -62,7 +59,7 @@ impl HashCache {
                 entries.push((operator, permutation));
                 count += 1;
             }
-            println!("entries: {}", count);
+            println!("Entries: {}", count);
             lifted_macros.push((action, plan));
         }
         let c = HashCache {

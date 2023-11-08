@@ -26,8 +26,8 @@ pub fn run_time() -> String {
     let elapsed = elapsed as f64 / (1000.0 * 1000.0);
 
     if elapsed < 1000.0 {
-        format!("[{: >6.2}ms]", elapsed)
+        format!("{: >6.2}ms", elapsed)
     } else {
-        format!("[{: >7.2}s]", elapsed / 1000.0)
+        format!("{: >7.2}s", elapsed / 1000.0)
     }
 }

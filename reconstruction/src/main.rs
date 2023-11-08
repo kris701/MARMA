@@ -10,7 +10,8 @@ use reconstruction::reconstruction::reconstruct;
 use spingus::domain::parse_domain;
 use spingus::problem::parse_problem;
 use spingus::sas_plan::export_sas;
-use tools::time::{init_time, run_time};
+use tools::time::init_time;
+use tools::Status;
 
 use std::fs;
 use std::path::PathBuf;
@@ -19,6 +20,7 @@ use clap::Parser;
 
 use crate::instance::Instance;
 use crate::reconstruction::downward_wrapper::Downward;
+use crate::tools::status_print;
 use crate::tools::val::check_val;
 use crate::world::{World, WORLD};
 
@@ -67,34 +69,32 @@ fn main() {
 
     let args = Args::parse();
 
-    println!("{} Reading meta domain....", run_time());
+    status_print(Status::Init, "Reading meta domain");
     let meta_domain = fs::read_to_string(&args.meta_domain).unwrap();
-    println!("{} Reading domain....", run_time());
+    status_print(Status::Init, "Reading domain");
     let domain = fs::read_to_string(&args.domain).unwrap();
-    println!("{} Reading problem....", run_time());
+    status_print(Status::Init, "Reading problem");
     let problem = fs::read_to_string(&args.problem).unwrap();
-    println!("{} Parsing meta domain....", run_time());
+    status_print(Status::Init, "Parsing meta domain");
     let meta_domain = parse_domain(&meta_domain).unwrap();
-    println!("{} Parsing domain....", run_time());
+    status_print(Status::Init, "Parsing domain");
     let domain = parse_domain(&domain).unwrap();
-    println!("{} Parsing problem....", run_time());
+    status_print(Status::Init, "Parsing problem");
     let problem = parse_problem(&problem).unwrap();
-    println!("{} Generating world....", run_time());
+    status_print(Status::Init, "Generating world");
     let world = World::generate(&domain, &meta_domain, &problem);
     let _ = WORLD.set(world);
-    println!("{} Converting instance....", run_time());
+    status_print(Status::Init, "Generating instance");
     let instance = Instance::new(domain, problem, meta_domain.to_owned());
-    println!("{} Checking cache...", run_time());
     let cache = generate_cache(&instance, &args.cache, args.cache_method);
     if !args.translate_only {
-        println!("{} Beginning reconstruction...", run_time());
-        println!("{} Finding fast downward...", run_time());
+        status_print(Status::Reconstruction, "Finding fast downward");
         let downward = Downward::new(&args.downward, &args.temp_dir);
-        println!("{} Finding meta solution...", run_time());
+        status_print(Status::Reconstruction, "Finding meta solution downward");
         let meta_plan = downward.find_or_solve(&args.meta_domain, &args.problem, &args.solution);
         let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
         if let Some(val_path) = args.val {
-            println!("{} Checking plan with val...", run_time());
+            status_print(Status::Validation, "Checking VAL");
             if check_val(
                 &args.domain,
                 &args.problem,
@@ -102,9 +102,9 @@ fn main() {
                 &args.temp_dir,
                 &plan,
             ) {
-                println!("Plan is valid");
+                println!("---VALID---");
             } else {
-                println!("Plan is not valid");
+                println!("---NOT VALID---");
             }
         }
         match args.out {
@@ -117,6 +117,4 @@ fn main() {
             }
         }
     }
-
-    println!("{} Done", run_time());
 }
