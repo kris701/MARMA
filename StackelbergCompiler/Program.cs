@@ -16,13 +16,13 @@ namespace StackelbergCompiler
     {
         static int Main(string[] args)
         {
-            Parser.Default.ParseArguments<StackelbergCompilerOptions>(args)
+            Parser.Default.ParseArguments<Options>(args)
               .WithParsed(RunStackelbergCompiler)
               .WithNotParsed(HandleParseError);
             return 0;
         }
 
-        public static void RunStackelbergCompiler(StackelbergCompilerOptions opts)
+        public static void RunStackelbergCompiler(Options opts)
         {
             Stopwatch watch = new Stopwatch();
 
