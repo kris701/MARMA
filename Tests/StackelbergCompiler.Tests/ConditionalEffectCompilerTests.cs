@@ -440,6 +440,65 @@ namespace StackelbergCompiler.Tests
             Assert.IsTrue(any);
         }
 
+        [TestMethod]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p01.pddl")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p10.pddl")]
+        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p01.pddl")]
+        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p06.pddl")]
+        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p01.pddl")]
+        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p10.pddl")]
+        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p01.pddl")]
+        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p10.pddl")]
+        public void Can_InsertTurnPredicateIntoActionsPreconditions(string domainFile, string problemFile)
+        {
+            // ARRANGE
+            var listener = new ErrorListener();
+            var parser = new PDDLParser(listener);
+            var decl = parser.ParseDecl(new FileInfo(domainFile), new FileInfo(problemFile));
+            var compiler = new ConditionalEffectCompiler();
+            var metaAction = decl.Domain.Actions[0].Copy();
+            metaAction.Name = "meta-name";
+
+            // ACT
+            var result = compiler.GenerateConditionalEffects(decl.Domain, decl.Problem, metaAction.Copy());
+
+            // ASSERT
+            foreach (var act in result.Domain.Actions)
+            {
+                if (act.Name.StartsWith(ReservedNames.LeaderActionPrefix) && act.Preconditions is AndExp leaderPreAnd)
+                    Assert.IsTrue(leaderPreAnd.Any(x => x is PredicateExp pred && pred.Name == ReservedNames.LeaderTurnPredicate));
+                else if (act.Name.StartsWith(ReservedNames.FollowerActionPrefix) && act.Preconditions is AndExp followerPreAnd)
+                    Assert.IsTrue(followerPreAnd.Any(x => x is NotExp not && not.Child is PredicateExp pred && pred.Name == ReservedNames.LeaderTurnPredicate));
+            }
+        }
+
+        [TestMethod]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p01.pddl")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p10.pddl")]
+        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p01.pddl")]
+        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p06.pddl")]
+        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p01.pddl")]
+        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p10.pddl")]
+        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p01.pddl")]
+        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p10.pddl")]
+        public void Can_InsertTurnPredicateIntoPredicates(string domainFile, string problemFile)
+        {
+            // ARRANGE
+            var listener = new ErrorListener();
+            var parser = new PDDLParser(listener);
+            var decl = parser.ParseDecl(new FileInfo(domainFile), new FileInfo(problemFile));
+            var compiler = new ConditionalEffectCompiler();
+            var metaAction = decl.Domain.Actions[0].Copy();
+            metaAction.Name = "meta-name";
+
+            // ACT
+            var result = compiler.GenerateConditionalEffects(decl.Domain, decl.Problem, metaAction.Copy());
+
+            // ASSERT
+            Assert.IsNotNull(result.Domain.Predicates);
+            Assert.IsTrue(result.Domain.Predicates.Predicates.Any(x => x.Name == ReservedNames.LeaderTurnPredicate));
+        }
+
         #endregion
     }
 }
