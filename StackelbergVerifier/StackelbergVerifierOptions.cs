@@ -14,7 +14,7 @@ namespace StackelbergVerifier
         public string PythonPrefix { get; set; } = "python2";
         [Option("stackelberg", Required = false, HelpText = "Path to stackelberg planner", Default = "fast-downward.py")]
         public string StackelbergPath { get; set; } = "fast-downward.py";
-        [Option("iseasy", Required = false, HelpText = "Is the problem an easy one", Default = true)]
-        public bool IsEasyProblem { get; set; } = true;
+        [Option("iseasy", Required = false, HelpText = "Is the problem an easy one", Default = false)]
+        public bool IsEasyProblem { get; set; } = false;
     }
 }
