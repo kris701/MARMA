@@ -25,7 +25,7 @@ namespace MetaActions.Learn
         private string _tempVerificationPath = "verification";
         private string _tempReplacementsPath = "replacements";
 
-        private string _outData = "data";
+        private string _outProblems = "problems";
         private string _outCache = "cache";
 
         private string _domainName = "";
@@ -50,7 +50,7 @@ namespace MetaActions.Learn
             _tempVerificationPath = Path.Combine(tempPath, _tempVerificationPath);
             _tempReplacementsPath = Path.Combine(_tempVerificationPath, _tempReplacementsPath);
 
-            _outData = Path.Combine(outPath, _outData);
+            _outProblems = Path.Combine(outPath, _outProblems);
             _outCache = Path.Combine(outPath, _outCache);
 
             PathHelper.RecratePath(_tempProblemPath);
@@ -62,7 +62,7 @@ namespace MetaActions.Learn
             PathHelper.RecratePath(_tempVerificationPath);
             PathHelper.RecratePath(_tempReplacementsPath);
 
-            PathHelper.RecratePath(_outData);
+            PathHelper.RecratePath(_outProblems);
             PathHelper.RecratePath(_outCache);
 
             var problems = CopyProblemsToTemp(trainProblems);
@@ -128,13 +128,13 @@ namespace MetaActions.Learn
             Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green, false);
             Print($"Generating meta domain...", ConsoleColor.Blue);
 
-            GenerateMetaDomain(domain, validMetaActions, _outData);
+            GenerateMetaDomain(domain, validMetaActions, outPath);
 
             Print($"Done!", ConsoleColor.Green);
 
             Print($"Copying testing problems...", ConsoleColor.Blue);
 
-            CopyTestingProblems(testProblems, _outData);
+            CopyTestingProblems(testProblems, _outProblems);
 
             Print($"Done!", ConsoleColor.Green);
 

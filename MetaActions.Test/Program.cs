@@ -140,10 +140,10 @@ namespace MetaActions.Test
                 PathHelper.RecratePath(Path.Combine(_tempTempPath, domainName));
                 PathHelper.RecratePath(Path.Combine(opts.OutputPath, domainName));
 
-                var normalDomain = new FileInfo(Path.Combine(domain.FullName, "data", "domain.pddl"));
-                var metaDomain = new FileInfo(Path.Combine(domain.FullName, "data", "metaDomain.pddl"));
+                var normalDomain = new FileInfo(Path.Combine(domain.FullName, "domain.pddl"));
+                var metaDomain = new FileInfo(Path.Combine(domain.FullName, "metaDomain.pddl"));
 
-                var allProblems = new DirectoryInfo(Path.Combine(domain.FullName, "data")).GetFiles().ToList();
+                var allProblems = new DirectoryInfo(Path.Combine(domain.FullName, "problems")).GetFiles().ToList();
                 allProblems.RemoveAll(x => x.Name == normalDomain.Name);
                 allProblems.RemoveAll(x => x.Name == metaDomain.Name);
 
