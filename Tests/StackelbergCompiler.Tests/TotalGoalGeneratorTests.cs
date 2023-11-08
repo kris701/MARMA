@@ -46,6 +46,30 @@ namespace StackelbergCompiler.Tests
         }
 
         [TestMethod]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p01.pddl")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p10.pddl")]
+        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p01.pddl")]
+        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p06.pddl")]
+        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p01.pddl")]
+        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p10.pddl")]
+        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p01.pddl")]
+        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p10.pddl")]
+        public void Can_GenerateTotalGoal_Uniques(string domainFile, string problemFile)
+        {
+            // ARRANGE
+            var listener = new ErrorListener();
+            var parser = new PDDLParser(listener);
+            var domain = parser.ParseAs<DomainDecl>(new FileInfo(domainFile));
+            var problem = parser.ParseAs<ProblemDecl>(new FileInfo(problemFile));
+
+            // ACT
+            TotalGoalGenerator.GenerateTotalGoal(problem, domain);
+
+            // ASSERT
+            Assert.AreEqual(TotalGoalGenerator.TotalGoal.Count, TotalGoalGenerator.CopyTotalGoal().Distinct().Count());
+        }
+
+        [TestMethod]
         [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p01.pddl", 15)]
         [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p10.pddl", 37)]
         [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p01.pddl", 144)]
