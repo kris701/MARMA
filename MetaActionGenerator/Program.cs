@@ -64,32 +64,31 @@ namespace MetaActionGenerator
                 {
                     return acts.DistinctBy(x => x.Parameters.GetHashCode() ^ x.Preconditions.GetHashCode() ^ x.Effects.GetHashCode()).ToList();
                 });
-            metaActions = RemoveActionsBy(metaActions, "Removing meta actions with bad mutex groups...",
-                (acts) =>
-                {
-                    var newActs = new List<ActionDecl>();
-                    IMutexDetectors mutexDetector = new EffectBalanceMutexes();
-                    var mutexPredicates = mutexDetector.FindMutexes(new PDDLDecl(domain, new ProblemDecl()));
-                    foreach (var action in acts)
-                    {
-                        bool isGood = true;
-                        var predicates = action.Effects.FindTypes<PredicateExp>();
-                        foreach (var mutex in mutexPredicates)
-                        {
-                            var possitives = predicates.Count(x => x.Name == mutex.Name && x.Parent is not NotExp);
-                            var negatives = predicates.Count(x => x.Name == mutex.Name && x.Parent is NotExp);
-                            if (possitives != negatives)
-                            {
-                                isGood = false;
-                                break;
-                            }
-                        }
-                        if (isGood)
-                            newActs.Add(action);
-                    }
-                    return newActs;
-                });
-
+            //metaActions = RemoveActionsBy(metaActions, "Removing meta actions with bad mutex groups...",
+            //    (acts) =>
+            //    {
+            //        var newActs = new List<ActionDecl>();
+            //        IMutexDetectors mutexDetector = new EffectBalanceMutexes();
+            //        var mutexPredicates = mutexDetector.FindMutexes(new PDDLDecl(domain, new ProblemDecl()));
+            //        foreach (var action in acts)
+            //        {
+            //            bool isGood = true;
+            //            var predicates = action.Effects.FindTypes<PredicateExp>();
+            //            foreach (var mutex in mutexPredicates)
+            //            {
+            //                var possitives = predicates.Count(x => x.Name == mutex.Name && x.Parent is not NotExp);
+            //                var negatives = predicates.Count(x => x.Name == mutex.Name && x.Parent is NotExp);
+            //                if (possitives != negatives)
+            //                {
+            //                    isGood = false;
+            //                    break;
+            //                }
+            //            }
+            //            if (isGood)
+            //                newActs.Add(action);
+            //        }
+            //        return newActs;
+            //    });
 
             ConsoleHelper.WriteLineColor("Renaming meta actions...");
             int counter = 1;
