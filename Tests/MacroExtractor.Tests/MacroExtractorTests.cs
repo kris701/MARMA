@@ -165,6 +165,66 @@ namespace MacroExtractor.Tests
                 Assert.AreEqual(args[i], result[metaIndex].Macro.Parameters.Values[i].Name);
         }
 
+        [TestMethod]
+        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4")]
+        public void Can_ExtractMacros_RemovedPrefixes(string domain, string plansPath)
+        {
+            // ARRANGE
+            var listener = new ErrorListener();
+            var parser = new PDDLParser(listener);
+            var decl = parser.ParseAs<DomainDecl>(new FileInfo(domain));
+            var extractor = new MacroExtractor();
+            var plans = new List<string>();
+            foreach (var file in new DirectoryInfo(plansPath).GetFiles())
+                plans.Add(file.FullName);
+
+            // ACT
+            var result = extractor.ExtractMacros(decl, plans);
+
+            // ASSERT
+            foreach (var item in result)
+            {
+                foreach (var seq in item.Replacement.Plan)
+                {
+                    Assert.IsFalse(seq.ActionName.StartsWith("attack_"));
+                    Assert.IsFalse(seq.ActionName.StartsWith("fix_"));
+                }
+            }
+        }
+
+        [TestMethod]
+        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4")]
+        public void Can_ExtractMacros_RemovedSufixes(string domain, string plansPath)
+        {
+            // ARRANGE
+            var listener = new ErrorListener();
+            var parser = new PDDLParser(listener);
+            var decl = parser.ParseAs<DomainDecl>(new FileInfo(domain));
+            var extractor = new MacroExtractor();
+            var plans = new List<string>();
+            foreach (var file in new DirectoryInfo(plansPath).GetFiles())
+                plans.Add(file.FullName);
+
+            // ACT
+            var result = extractor.ExtractMacros(decl, plans);
+
+            // ASSERT
+            foreach (var item in result)
+            {
+                foreach (var seq in item.Replacement.Plan)
+                {
+                    Assert.IsFalse(seq.ActionName.EndsWith("_0"));
+                    Assert.IsFalse(seq.ActionName.EndsWith("_1"));
+                    Assert.IsFalse(seq.ActionName.EndsWith("_2"));
+                    Assert.IsFalse(seq.ActionName.EndsWith("_3"));
+                    Assert.IsFalse(seq.ActionName.EndsWith("_4"));
+                    Assert.IsFalse(seq.ActionName.EndsWith("_5"));
+                }
+            }
+        }
+
         #endregion
     }
 }
