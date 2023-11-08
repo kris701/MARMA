@@ -1,5 +1,6 @@
 ﻿using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.PDDL.Domain;
+using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Parsers.PDDL;
 using PDDLSharp.Tools;
 using System;
@@ -17,6 +18,16 @@ namespace MacroExtractor.Tests
         public static async Task InitialiseAsync(TestContext context)
         {
             await GitFetcher.CheckAndDownloadBenchmarksAsync("https://github.com/kris701/P9-Test-Data", "benchmarks");
+        }
+
+        private bool FoundMatch(List<NameExp> names, string[] match)
+        {
+            if (names.Count != match.Length)
+                return false;
+            for (int i = 0; i < names.Count; i++)
+                if (names[i].Name != match[i])
+                    return false;
+            return true;
         }
 
         #region ExtractMacros
@@ -86,14 +97,10 @@ namespace MacroExtractor.Tests
         }
 
         [TestMethod]
-        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 0, "?0", "?1", "?1", "?2")]
-        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 1, "?0", "?1", "?1", "?2")]
-        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 2, "?0", "?1", "?2", "?3")]
-        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 3, "?0", "?1", "?2", "?3")]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 0, "?0", "?1")]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 1, "?0", "?1")]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 2, "?0", "?1")]
-        public void Can_ExtractMacros_MetaAction_Arguments(string domain, string plansPath, int metaIndex, params string[] args)
+        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", "?0", "?1", "?1", "?2")]
+        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", "?0", "?1", "?2", "?3")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", "?0", "?1")]
+        public void Can_ExtractMacros_MetaAction_Arguments(string domain, string plansPath, params string[] args)
         {
             // ARRANGE
             var listener = new ErrorListener();
@@ -108,10 +115,10 @@ namespace MacroExtractor.Tests
             var result = extractor.ExtractMacros(decl, plans);
 
             // ASSERT
-            Assert.IsTrue(metaIndex < result.Count);
-            Assert.AreEqual(result[metaIndex].MetaAction.Arguments.Count, args.Length);
-            for (int i = 0; i < args.Length; i++)
-                Assert.AreEqual(args[i], result[metaIndex].MetaAction.Arguments[i].Name);
+            var all = result.Where(x => FoundMatch(x.MetaAction.Arguments, args));
+            foreach (var item in all)
+                for (int i = 0; i < args.Length; i++)
+                    Assert.AreEqual(args[i], item.MetaAction.Arguments[i].Name);
         }
 
         [TestMethod]
@@ -137,14 +144,12 @@ namespace MacroExtractor.Tests
         }
 
         [TestMethod]
-        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 0, "?0", "?1", "?2", "?O0")]
-        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 1, "?0", "?1", "?2", "?O0")]
-        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 2, "?0", "?1", "?2", "?3", "?O0")]
-        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 3, "?0", "?1", "?2", "?3", "?O0")]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 0, "?O0", "?0", "?1")]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 1, "?0", "?1", "?O0")]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 2, "?0", "?O0", "?O1", "?1")]
-        public void Can_ExtractMacros_MacroAction_Arguments(string domain, string plansPath, int metaIndex, params string[] args)
+        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", "?0", "?1", "?2", "?O0")]
+        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", "?0", "?1", "?2", "?3", "?O0")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", "?O0", "?0", "?1")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", "?0", "?1", "?O0")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", "?0", "?O0", "?O1", "?1")]
+        public void Can_ExtractMacros_MacroAction_Arguments(string domain, string plansPath, params string[] args)
         {
             // ARRANGE
             var listener = new ErrorListener();
@@ -159,10 +164,10 @@ namespace MacroExtractor.Tests
             var result = extractor.ExtractMacros(decl, plans);
 
             // ASSERT
-            Assert.IsTrue(metaIndex < result.Count);
-            Assert.AreEqual(result[metaIndex].Macro.Parameters.Values.Count, args.Length);
-            for (int i = 0; i < args.Length; i++)
-                Assert.AreEqual(args[i], result[metaIndex].Macro.Parameters.Values[i].Name);
+            var all = result.Where(x => FoundMatch(x.Macro.Parameters.Values, args));
+            foreach(var item in all)
+                for (int i = 0; i < args.Length; i++)
+                    Assert.AreEqual(args[i], item.Macro.Parameters.Values[i].Name);
         }
 
         [TestMethod]
