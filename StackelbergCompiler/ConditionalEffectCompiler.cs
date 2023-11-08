@@ -89,11 +89,7 @@ namespace StackelbergCompiler
             if (problem.Goal != null)
             {
                 var goals = TotalGoalGenerator.CopyTotalGoal();
-                List<IExp> newGoals = new List<IExp>();
-                foreach (var goal in goals)
-                    newGoals.Add(goal);
-
-                problem.Goal.GoalExp = new AndExp(newGoals);
+                problem.Goal.GoalExp = new AndExp(goals.Cast<IExp>().ToList());
             }
         }
 

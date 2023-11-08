@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\StackelbergCompiler\StackelbergCompiler.csproj" />
+    <ProjectReference Include="..\..\Tools\Tools.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ namespace StackelbergCompiler
         public static List<PredicateExp> TotalGoal = new List<PredicateExp>();
         public static List<PredicateExp> CopyTotalGoal()
         {
-            List<PredicateExp> retList = new List<PredicateExp>();
+            var retList = new List<PredicateExp>();
             foreach (var pred in TotalGoal)
                 retList.Add(pred.Copy());
             return retList;
@@ -22,7 +22,7 @@ namespace StackelbergCompiler
             var grounder = new PredicateGrounder(new PDDLDecl(domain, problem));
             if (domain.Predicates != null) 
             {
-                List<PredicateExp> newGoals = new List<PredicateExp>();
+                var newGoals = new List<PredicateExp>();
                 foreach (var predicate in domain.Predicates.Predicates)
                     if (!StaticPredicateDetector.StaticPredicates.Contains(predicate.Name))
                         newGoals.AddRange(grounder.Ground(predicate));
