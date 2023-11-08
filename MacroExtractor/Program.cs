@@ -37,7 +37,6 @@ namespace MacroExtractor
         {
             opts.DomainPath = PathHelper.RootPath(opts.DomainPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
-            //PathHelper.RecratePath(opts.OutputPath);
 
             ConsoleHelper.WriteLineColor("Parsing domain...");
             var domain = ParseDomain(opts.DomainPath);
@@ -46,7 +45,8 @@ namespace MacroExtractor
             ConsoleHelper.WriteLineColor("Generating macro sequences...");
             var extractor = new MacroExtractor();
             var macros = extractor.ExtractMacros(domain, opts.FollowerPlans.ToList());
-            ConsoleHelper.WriteLineColor($"A total of {macros.Count} macros found.");
+            ConsoleHelper.WriteLineColor($"A total of {macros.DistinctBy(x => x.MetaAction).Count()} unique meta actions found.");
+            ConsoleHelper.WriteLineColor($"A total of {macros.Count} macros and replacements found.");
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Outputting reconstruction data...");
@@ -56,16 +56,16 @@ namespace MacroExtractor
 
         private static DomainDecl ParseDomain(string domainFile)
         {
-            IErrorListener listener = new ErrorListener();
-            IParser<INode> parser = new PDDLParser(listener);
+            var listener = new ErrorListener();
+            var parser = new PDDLParser(listener);
             return parser.ParseAs<DomainDecl>(new FileInfo(domainFile));
         }
 
         private static void OutputReconstructionData(List<RepairSequence> repairSequences, string outPath)
         {
-            IErrorListener listener = new ErrorListener();
-            ICodeGenerator<INode> codeGenerator = new PDDLCodeGenerator(listener);
-            ICodeGenerator<ActionPlan> planGenerator = new FastDownwardPlanGenerator(listener);
+            var listener = new ErrorListener();
+            var codeGenerator = new PDDLCodeGenerator(listener);
+            var planGenerator = new FastDownwardPlanGenerator(listener);
             foreach(var item in repairSequences)
                 PathHelper.RecratePath(Path.Combine(outPath, item.MetaAction.ActionName));
             int id = 1;

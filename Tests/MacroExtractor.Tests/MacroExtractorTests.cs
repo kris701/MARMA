@@ -19,6 +19,8 @@ namespace MacroExtractor.Tests
             await GitFetcher.CheckAndDownloadBenchmarksAsync("https://github.com/kris701/P9-Test-Data", "benchmarks");
         }
 
+        #region ExtractMacros
+
         [TestMethod]
         [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 4)]
         public void Can_ExtractMacros_Count(string domain, string plansPath, int expectedMacroCount)
@@ -37,6 +39,26 @@ namespace MacroExtractor.Tests
 
             // ASSERT
             Assert.AreEqual(expectedMacroCount, result.Count);
+        }
+
+        [TestMethod]
+        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1")]
+        public void Can_ExtractMacros_UniqueMacrosOnly(string domain, string plansPath)
+        {
+            // ARRANGE
+            var listener = new ErrorListener();
+            var parser = new PDDLParser(listener);
+            var decl = parser.ParseAs<DomainDecl>(new FileInfo(domain));
+            var extractor = new MacroExtractor();
+            var plans = new List<string>();
+            foreach (var file in new DirectoryInfo(plansPath).GetFiles())
+                plans.Add(file.FullName);
+
+            // ACT
+            var result = extractor.ExtractMacros(decl, plans);
+
+            // ASSERT
+            Assert.AreEqual(result.DistinctBy(x => x.Macro).Count(), result.Count);
         }
 
         [TestMethod]
@@ -132,5 +154,7 @@ namespace MacroExtractor.Tests
             for (int i = 0; i < args.Length; i++)
                 Assert.AreEqual(args[i], result[metaIndex].Macro.Parameters.Values[i].Name);
         }
+
+        #endregion
     }
 }
