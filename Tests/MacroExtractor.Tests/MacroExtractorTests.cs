@@ -142,8 +142,8 @@ namespace MacroExtractor.Tests
         [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 2, "?0", "?1", "?2", "?3", "?O0")]
         [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 3, "?0", "?1", "?2", "?3", "?O0")]
         [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 0, "?O0", "?0", "?1")]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 1, "?0", "?O0", "?O1", "?1")]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 2, "?0", "?1", "?O0")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 1, "?0", "?1", "?O0")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 2, "?0", "?O0", "?O1", "?1")]
         public void Can_ExtractMacros_MacroAction_Arguments(string domain, string plansPath, int metaIndex, params string[] args)
         {
             // ARRANGE
