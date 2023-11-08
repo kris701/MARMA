@@ -33,7 +33,7 @@ namespace MacroExtractor
 
             var planSequences = new Dictionary<GroundedAction, HashSet<ActionPlan>>();
             IErrorListener listener = new ErrorListener();
-            IParser<ActionPlan> parser = new FastDownwardPlanParser(listener);
+            IParser<ActionPlan> parser = new FDPlanParser(listener);
 
             foreach (var planFile in followerPlans)
             {
