@@ -27,6 +27,12 @@ namespace MetaActionGenerator.Tests
         [DataRow("../../../../../Dependencies/learning-benchmarks/transport/domain.pddl")]
         public void Can_GenerateSomeMetaActions(string domain)
         {
+            if (!File.Exists(domain))
+            {
+                Assert.Inconclusive("Could not find dependencies!");
+                return;
+            }
+
             // ARRANGE
             var listener = new ErrorListener();
             var parser = new PDDLParser(listener);
