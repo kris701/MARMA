@@ -19,13 +19,13 @@ namespace MetaActionGenerator
     {
         static int Main(string[] args)
         {
-            Parser.Default.ParseArguments<MetaActionGeneratorOptions>(args)
+            Parser.Default.ParseArguments<Options>(args)
               .WithParsed(GenerateMetaActions)
               .WithNotParsed(HandleParseError);
             return 0;
         }
 
-        public static void GenerateMetaActions(MetaActionGeneratorOptions opts)
+        public static void GenerateMetaActions(Options opts)
         {
             opts.MacroActionPath = PathHelper.RootPath(opts.MacroActionPath);
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
