@@ -15,11 +15,13 @@ namespace MetaActionGenerator.CandidateGenerators
 
             foreach (var act in actions)
             {
-                foreach (var arg in act.Parameters.Values)
+                var andAct = EnsureAnd(act);
+
+                foreach (var arg in andAct.Parameters.Values)
                 {
-                    if (act.Effects.FindNames(arg.Name).Count > 0)
+                    if (andAct.Effects.FindNames(arg.Name).Count > 0)
                     {
-                        var newMetaAction = act.Copy();
+                        var newMetaAction = andAct.Copy();
 
                         newMetaAction.Parameters.Values.RemoveAll(x => x.Name == arg.Name);
                         RemoveName(newMetaAction.Preconditions, arg.Name);

@@ -16,9 +16,11 @@ namespace MetaActionGenerator.CandidateGenerators
 
             foreach (var act in actions)
             {
+                var andAct = EnsureAnd(act);
+
                 List<int> removeable = new List<int>();
-                for(int i = 0; i < act.Parameters.Values.Count; i++)
-                    if (act.Effects.FindNames(act.Parameters.Values[i].Name).Count == 0)
+                for(int i = 0; i < andAct.Parameters.Values.Count; i++)
+                    if (andAct.Effects.FindNames(andAct.Parameters.Values[i].Name).Count == 0)
                         removeable.Add(i);
 
                 if (removeable.Count == 0)
@@ -30,11 +32,11 @@ namespace MetaActionGenerator.CandidateGenerators
                     var toRemove = new List<string>();
                     for(int i = 0; i < premutation.Length; i++)
                         if (!premutation[i])
-                            toRemove.Add(act.Parameters.Values[removeable[i]].Name);
+                            toRemove.Add(andAct.Parameters.Values[removeable[i]].Name);
                     if (toRemove.Count == 0)
                         continue;
 
-                    var newMetaAction = act.Copy();
+                    var newMetaAction = andAct.Copy();
                     foreach (var remove in toRemove)
                     {
                         newMetaAction.Parameters.Values.RemoveAll(x => x.Name == remove);
