@@ -21,5 +21,6 @@ namespace StackelbergCompiler
                 _staticPredicates.Add("=");
             return _staticPredicates;
         }
+        public static void Clear() => _staticPredicates.Clear();
     }
 }

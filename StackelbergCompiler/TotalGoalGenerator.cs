@@ -17,7 +17,7 @@ namespace StackelbergCompiler
                 retList.Add(pred.Copy());
             return retList;
         }
-        public static void GenerateTotalGoal(ProblemDecl problem, DomainDecl domain)
+        public static List<PredicateExp> GenerateTotalGoal(ProblemDecl problem, DomainDecl domain)
         {
             var grounder = new PredicateGrounder(new PDDLDecl(domain, problem));
             if (domain.Predicates != null) 
@@ -30,6 +30,8 @@ namespace StackelbergCompiler
                     predicate.Name = $"{ReservedNames.IsGoalPrefix}{predicate.Name}";
                 TotalGoal = newGoals;
             }
+            return TotalGoal;
         }
+        public static void Clear() => TotalGoal.Clear();
     }
 }

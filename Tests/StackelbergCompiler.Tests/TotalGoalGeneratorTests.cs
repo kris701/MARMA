@@ -22,14 +22,14 @@ namespace StackelbergCompiler.Tests
         }
 
         [TestMethod]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p01.pddl", 15)]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p10.pddl", 37)]
-        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p01.pddl", 144)]
-        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p06.pddl", 429)]
-        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p01.pddl", 64)]
-        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p10.pddl", 205)]
-        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p01.pddl", 12667)]
-        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p10.pddl", 12667)]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p01.pddl", 6)]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p10.pddl", 12)]
+        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p01.pddl", 23)]
+        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p06.pddl", 67)]
+        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p01.pddl", 9)]
+        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p10.pddl", 22)]
+        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p01.pddl", 147)]
+        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p10.pddl", 147)]
         public void Can_GenerateTotalGoal(string domainFile, string problemFile, int expectedGoals)
         {
             // ARRANGE
@@ -37,12 +37,13 @@ namespace StackelbergCompiler.Tests
             var parser = new PDDLParser(listener);
             var domain = parser.ParseAs<DomainDecl>(new FileInfo(domainFile));
             var problem = parser.ParseAs<ProblemDecl>(new FileInfo(problemFile));
+            StaticPredicateDetector.GenerateStaticPredicates(domain);
 
             // ACT
-            TotalGoalGenerator.GenerateTotalGoal(problem, domain);
+            var news = TotalGoalGenerator.GenerateTotalGoal(problem, domain);
 
             // ASSERT
-            Assert.AreEqual(expectedGoals, TotalGoalGenerator.TotalGoal.Count);
+            Assert.AreEqual(expectedGoals, news.Count);
         }
 
         [TestMethod]
@@ -61,38 +62,40 @@ namespace StackelbergCompiler.Tests
             var parser = new PDDLParser(listener);
             var domain = parser.ParseAs<DomainDecl>(new FileInfo(domainFile));
             var problem = parser.ParseAs<ProblemDecl>(new FileInfo(problemFile));
+            StaticPredicateDetector.GenerateStaticPredicates(domain);
 
             // ACT
-            TotalGoalGenerator.GenerateTotalGoal(problem, domain);
+            var news = TotalGoalGenerator.GenerateTotalGoal(problem, domain);
 
             // ASSERT
-            Assert.AreEqual(TotalGoalGenerator.TotalGoal.Count, TotalGoalGenerator.CopyTotalGoal().Distinct().Count());
+            Assert.AreEqual(news.Count, news.Distinct().Count());
         }
 
         [TestMethod]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p01.pddl", 15)]
-        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p10.pddl", 37)]
-        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p01.pddl", 144)]
-        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p06.pddl", 429)]
-        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p01.pddl", 64)]
-        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p10.pddl", 205)]
-        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p01.pddl", 12667)]
-        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p10.pddl", 12667)]
-        public void Can_GenerateTotalGoal_CopyGoals(string domainFile, string problemFile, int expectedGoals)
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p01.pddl")]
+        [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/base_cases/p10.pddl")]
+        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p01.pddl")]
+        [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/base_cases/p06.pddl")]
+        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p01.pddl")]
+        [DataRow("benchmarks/childsnack/domain.pddl", "benchmarks/childsnack/base_cases/p10.pddl")]
+        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p01.pddl")]
+        [DataRow("benchmarks/sokoban/domain.pddl", "benchmarks/sokoban/base_cases/p10.pddl")]
+        public void Can_GenerateTotalGoal_CopyGoals(string domainFile, string problemFile)
         {
             // ARRANGE
             var listener = new ErrorListener();
             var parser = new PDDLParser(listener);
             var domain = parser.ParseAs<DomainDecl>(new FileInfo(domainFile));
             var problem = parser.ParseAs<ProblemDecl>(new FileInfo(problemFile));
+            StaticPredicateDetector.GenerateStaticPredicates(domain);
 
             // ACT
-            TotalGoalGenerator.GenerateTotalGoal(problem, domain);
+            var news = TotalGoalGenerator.GenerateTotalGoal(problem, domain);
             var copy = TotalGoalGenerator.CopyTotalGoal();
             copy.Add(new PredicateExp(""));
 
             // ASSERT
-            Assert.AreNotEqual(TotalGoalGenerator.TotalGoal.Count, copy.Count);
+            Assert.AreNotEqual(news.Count, copy.Count);
         }
     }
 }

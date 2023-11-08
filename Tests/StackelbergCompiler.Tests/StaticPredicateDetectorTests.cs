@@ -15,6 +15,7 @@ namespace StackelbergCompiler.Tests
         public void Can_AddEqualityToStaticPredicates()
         {
             // ARRANGE
+            StaticPredicateDetector.Clear();
             Assert.IsFalse(StaticPredicateDetector.StaticPredicates.Contains("="));
             var domain = new DomainDecl();
 
