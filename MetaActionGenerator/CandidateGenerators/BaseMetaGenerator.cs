@@ -2,7 +2,7 @@
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 
-namespace MetaActionGenerator
+namespace MetaActionGenerator.CandidateGenerators
 {
     public abstract class BaseMetaGenerator : ICandidateGenerator
     {

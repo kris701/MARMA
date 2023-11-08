@@ -1,6 +1,6 @@
 ﻿using PDDLSharp.Models.PDDL.Domain;
 
-namespace MetaActionGenerator
+namespace MetaActionGenerator.CandidateGenerators
 {
     public class RemoveEffectParameters : BaseMetaGenerator
     {
