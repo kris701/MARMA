@@ -252,7 +252,6 @@ namespace MetaActions.Learn
         private List<FileInfo> GenerateMetaActions(string domain)
         {
             ArgsCaller metaCaller = ArgsCallerBuilder.GetDotnetRunner("MetaActionGenerator");
-            metaCaller.Arguments.Add("--domain", domain);
             metaCaller.Arguments.Add("--macros", _tempMacroPath);
             metaCaller.Arguments.Add("--output", _tempMetaActionPath);
             if (metaCaller.Run() != 0)
@@ -277,6 +276,7 @@ namespace MetaActions.Learn
             stackelVerifier.Arguments.Add("--domain", Path.Combine(_tempCompiledPath, "simplified_domain.pddl"));
             stackelVerifier.Arguments.Add("--problem", Path.Combine(_tempCompiledPath, "simplified_problem.pddl"));
             stackelVerifier.Arguments.Add("--output", _tempVerificationPath);
+            stackelVerifier.Arguments.Add("--iseasy", "");
             stackelVerifier.Arguments.Add("--stackelberg", PathHelper.RootPath("Dependencies/stackelberg-planner/src/fast-downward.py"));
             var code = stackelVerifier.Run();
             if (code != 0 && code != 1)

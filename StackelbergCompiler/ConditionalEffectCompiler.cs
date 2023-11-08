@@ -21,11 +21,13 @@ namespace StackelbergCompiler
             TotalGoalGenerator.GenerateTotalGoal(newProblem, newDomain);
 
             // Problem
+            InsertConstantsIntoObjects(newDomain, newProblem);
             GenerateNewInits(newProblem);
             GenerateNewGoal(newProblem);
             InsertTurnPredicateIntoInit(newProblem);
 
             // Domain
+            RemoveConstants(newDomain);
             SplitActionsIntoLeaderFollowerVariants(newDomain);
             InsertAndIntoAllActions(newDomain);
             GenerateDomainPredicates(newDomain);
@@ -39,6 +41,18 @@ namespace StackelbergCompiler
         }
 
         #region Problem
+
+        /// <summary>
+        /// Simply treat constants from the domain as objects in the problem
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="problem"></param>
+        private void InsertConstantsIntoObjects(DomainDecl domain, ProblemDecl problem)
+        {
+            if (domain.Constants != null && problem.Objects != null)
+                foreach (var cons in domain.Constants.Constants)
+                    problem.Objects.Objs.Add(cons);
+        }
 
         /// <summary>
         /// Insert the `leader-turn` predicate to the goal init
@@ -86,6 +100,16 @@ namespace StackelbergCompiler
         #endregion
 
         #region Domain
+
+        /// <summary>
+        /// Remove constants from the domain, since they have been added to the problem instead
+        /// </summary>
+        /// <param name="domain"></param>
+        private void RemoveConstants(DomainDecl domain)
+        {
+            if (domain.Constants != null)
+                domain.Constants = null;
+        }
 
         /// <summary>
         /// Insert the `leader-turn` predicate to the domain predicates
