@@ -16,17 +16,30 @@ namespace MetaActionGenerator.CandidateGenerators
 
             foreach (var act in actions)
             {
-                List<NameExp> removeable = new List<NameExp>();
-                foreach (var arg in act.Parameters.Values)
-                    if (act.Effects.FindNames(arg.Name).Count == 0)
-                        removeable.Add(arg);
+                List<int> removeable = new List<int>();
+                for(int i = 0; i < act.Parameters.Values.Count; i++)
+                    if (act.Effects.FindNames(act.Parameters.Values[i].Name).Count == 0)
+                        removeable.Add(i);
 
-                foreach (var remove in removeable)
+                if (removeable.Count == 0)
+                    continue;
+
+                var permutations = GeneratePermutations(removeable.Count);
+                foreach(var premutation in permutations)
                 {
-                    var newMetaAction = act.Copy();
+                    var toRemove = new List<string>();
+                    for(int i = 0; i < premutation.Length; i++)
+                        if (!premutation[i])
+                            toRemove.Add(act.Parameters.Values[removeable[i]].Name);
+                    if (toRemove.Count == 0)
+                        continue;
 
-                    newMetaAction.Parameters.Values.RemoveAll(x => x.Name == remove.Name);
-                    RemoveName(newMetaAction.Preconditions, remove.Name);
+                    var newMetaAction = act.Copy();
+                    foreach (var remove in toRemove)
+                    {
+                        newMetaAction.Parameters.Values.RemoveAll(x => x.Name == remove);
+                        RemoveName(newMetaAction.Preconditions, remove);
+                    }
 
                     metaActions.Add(newMetaAction);
                 }
@@ -35,5 +48,30 @@ namespace MetaActionGenerator.CandidateGenerators
             return metaActions;
         }
 
+        private Queue<bool[]> GeneratePermutations(int count)
+        {
+            var returnQueue = new Queue<bool[]>();
+            GeneratePermutations(count, new bool[count], 0, returnQueue);
+            return returnQueue;
+        }
+
+        private void GeneratePermutations(int count, bool[] source, int index, Queue<bool[]> returnQueue)
+        {
+            var trueSource = new bool[count];
+            Array.Copy(source, trueSource, count);
+            trueSource[index] = true;
+            if (index < count - 1)
+                GeneratePermutations(count, trueSource, index + 1, returnQueue);
+            else
+                returnQueue.Enqueue(trueSource);
+
+            var falseSource = new bool[count];
+            Array.Copy(source, falseSource, count);
+            falseSource[index] = false;
+            if (index < count - 1)
+                GeneratePermutations(count, falseSource, index + 1, returnQueue);
+            else
+                returnQueue.Enqueue(falseSource);
+        }
     }
 }

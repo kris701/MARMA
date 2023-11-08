@@ -21,20 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\gripper\domain.pddl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\gripper\macro1.pddl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\satellite\macro1.pddl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="TestData\satellite\domain.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\sokoban\macro1.pddl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\sokoban\domain.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
