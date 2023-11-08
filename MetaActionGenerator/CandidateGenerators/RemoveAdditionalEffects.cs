@@ -1,7 +1,7 @@
 ﻿using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 
-namespace MetaActionGenerator
+namespace MetaActionGenerator.CandidateGenerators
 {
     public class RemoveAdditionalEffects : BaseMetaGenerator
     {
@@ -18,9 +18,13 @@ namespace MetaActionGenerator
 
             foreach (var act in removed)
             {
-                var removedPredicates = GetRemovedPredicates(actions.First(x => x.Name == act.Name), act);
+                var andAct = EnsureAnd(act);
 
-                var newMetaAction = act.Copy();
+                var removedPredicates = GetRemovedPredicates(actions.First(x => x.Name == andAct.Name), andAct);
+                if (removedPredicates.Count == 0)
+                    continue;
+
+                var newMetaAction = andAct.Copy();
                 foreach (var pred in removedPredicates)
                 {
                     RemoveName(newMetaAction.Preconditions, pred.Name);

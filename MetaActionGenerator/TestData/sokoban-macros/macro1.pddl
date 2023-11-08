@@ -1,0 +1,5 @@
+(:action push_mcr_move_mcr_move_mcr_push
+    :parameters ( ?rloc - location ?bloc - location ?floc - location ?dir - direction ?b - box ?tox5 - location ?dirx6 - direction ?tox7 - location ?flocx8 - location ?dirx9 - direction )
+    :precondition (and (at-robot ?rloc) (at ?b ?bloc) (clear ?floc) (adjacent ?rloc ?bloc ?dir) (adjacent ?bloc ?floc ?dir) (clear ?tox5) (adjacent ?bloc ?tox5 ?dirx6) (clear ?tox7) (adjacent ?tox5 ?tox7 ?dir) (clear ?flocx8) (adjacent ?tox7 ?floc ?dirx9) (adjacent ?floc ?flocx8 ?dirx9) (not (=  ?floc ?tox5)) (not (=  ?floc ?tox7)) (not (=  ?floc ?flocx8)) (not (=  ?tox5 ?tox7)) (not (=  ?tox5 ?flocx8)) (not (=  ?tox7 ?flocx8)))
+    :effect (and (clear ?bloc) (at-robot ?floc) (at ?b ?flocx8) (clear ?floc) (not (at-robot ?rloc)) (not (at ?b ?bloc)) (not (at-robot ?bloc)) (not (at-robot ?tox5)) (not (at-robot ?tox7)) (not (at ?b ?floc)) (not (clear ?flocx8)))
+)

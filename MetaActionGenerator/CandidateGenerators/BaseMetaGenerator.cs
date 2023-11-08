@@ -2,11 +2,20 @@
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 
-namespace MetaActionGenerator
+namespace MetaActionGenerator.CandidateGenerators
 {
     public abstract class BaseMetaGenerator : ICandidateGenerator
     {
         public abstract List<ActionDecl> Generate(List<ActionDecl> actions);
+
+        internal ActionDecl EnsureAnd(ActionDecl act)
+        {
+            if (act.Preconditions is not AndExp)
+                act.Preconditions = new AndExp(new List<IExp>() { act.Preconditions });
+            if (act.Effects is not AndExp)
+                act.Effects = new AndExp(new List<IExp>() { act.Effects });
+            return act;
+        }
 
         internal void RemoveName(INode node, string name)
         {
