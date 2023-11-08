@@ -2,7 +2,7 @@
 
 namespace StackelbergCompiler
 {
-    public class StackelbergCompilerOptions
+    public class Options
     {
         [Option("domain", Required = true, HelpText = "Path to the domain file to use")]
         public string DomainFilePath { get; set; } = "";

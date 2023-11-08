@@ -1,8 +1,9 @@
 ﻿using PDDLSharp.Models;
+using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
-using PDDLSharp.Toolkit.Grounders;
+using PDDLSharp.Translators.Grounders;
 
 namespace StackelbergCompiler
 {
@@ -18,7 +19,7 @@ namespace StackelbergCompiler
         }
         public static void GenerateTotalGoal(ProblemDecl problem, DomainDecl domain)
         {
-            IGrounder<PredicateExp, PredicateExp> grounder = new PredicateGrounder(new PDDLDecl(domain, problem));
+            var grounder = new PredicateGrounder(new PDDLDecl(domain, problem));
             if (domain.Predicates != null) 
             {
                 List<PredicateExp> newGoals = new List<PredicateExp>();
