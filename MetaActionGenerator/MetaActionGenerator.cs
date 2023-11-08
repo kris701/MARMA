@@ -21,22 +21,23 @@ namespace MetaActionGenerator
             metaActions.AddRange(new RemoveEffectParameters().Generate(from));
             metaActions.AddRange(new RemoveAdditionalEffects().Generate(from));
 
-            SanetizeMetaActions(metaActions);
-            RemoveDuplicateMetaActions(metaActions);
+            metaActions = SanetizeMetaActions(metaActions);
+            metaActions = RemoveDuplicateMetaActions(metaActions);
 
             return metaActions;
         }
 
-        public void SanetizeMetaActions(List<ActionDecl> metaActions)
+        public List<ActionDecl> SanetizeMetaActions(List<ActionDecl> metaActions)
         {
             metaActions.RemoveAll(x => (x.Effects is IWalkable effWalk && effWalk.Count() == 0));
             metaActions.RemoveAll(x => (x.Effects is IListable effList && effList.Count() == 0));
             metaActions.RemoveAll(x => (x.Effects.Equals(x.Preconditions)));
+            return metaActions;
         }
 
-        public void RemoveDuplicateMetaActions(List<ActionDecl> metaActions)
+        public List<ActionDecl> RemoveDuplicateMetaActions(List<ActionDecl> metaActions)
         {
-            metaActions = metaActions.DistinctBy(x => 
+            return metaActions.DistinctBy(x => 
                 x.Parameters.GetHashCode() ^ 
                 x.Preconditions.GetHashCode() ^ 
                 x.Effects.GetHashCode()).ToList();
