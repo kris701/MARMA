@@ -20,13 +20,4 @@
     <ProjectReference Include="..\..\MetaActionGenerator\MetaActionGenerator.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="TestData\satellite\domain.pddl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\sokoban\domain.pddl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

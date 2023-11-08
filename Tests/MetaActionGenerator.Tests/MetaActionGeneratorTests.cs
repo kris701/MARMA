@@ -3,6 +3,7 @@ using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Parsers.PDDL;
+using PDDLSharp.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,17 +15,23 @@ namespace MetaActionGenerator.Tests
     [TestClass]
     public class MetaActionGeneratorTests
     {
+        [ClassInitialize]
+        public static async Task InitialiseAsync(TestContext context)
+        {
+            await GitFetcher.CheckAndDownloadBenchmarksAsync("https://github.com/kris701/P9-Test-Data", "benchmarks");
+        }
+
         [TestMethod]
-        [DataRow("../../../../../Dependencies/learning-benchmarks/blocksworld/domain.pddl")]
-        [DataRow("../../../../../Dependencies/learning-benchmarks/childsnack/domain.pddl")]
-        [DataRow("../../../../../Dependencies/learning-benchmarks/ferry/domain.pddl")]
-        [DataRow("../../../../../Dependencies/learning-benchmarks/floortile/domain.pddl")]
-        [DataRow("../../../../../Dependencies/learning-benchmarks/miconic/domain.pddl")]
-        [DataRow("../../../../../Dependencies/learning-benchmarks/rovers/domain.pddl")]
-        [DataRow("../../../../../Dependencies/learning-benchmarks/satellite/domain.pddl")]
-        [DataRow("../../../../../Dependencies/learning-benchmarks/sokoban/domain.pddl")]
-        [DataRow("../../../../../Dependencies/learning-benchmarks/spanner/domain.pddl")]
-        [DataRow("../../../../../Dependencies/learning-benchmarks/transport/domain.pddl")]
+        [DataRow("benchmarks/blocksworld/domain.pddl")]
+        [DataRow("benchmarks/childsnack/domain.pddl")]
+        [DataRow("benchmarks/ferry/domain.pddl")]
+        [DataRow("benchmarks/floortile/domain.pddl")]
+        [DataRow("benchmarks/miconic/domain.pddl")]
+        [DataRow("benchmarks/rovers/domain.pddl")]
+        [DataRow("benchmarks/satellite/domain.pddl")]
+        [DataRow("benchmarks/sokoban/domain.pddl")]
+        [DataRow("benchmarks/spanner/domain.pddl")]
+        [DataRow("benchmarks/transport/domain.pddl")]
         public void Can_GenerateSomeMetaActions(string domain)
         {
             if (!File.Exists(domain))
