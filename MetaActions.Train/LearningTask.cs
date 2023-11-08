@@ -252,7 +252,6 @@ namespace MetaActions.Learn
         private List<FileInfo> GenerateMetaActions(string domain)
         {
             ArgsCaller metaCaller = ArgsCallerBuilder.GetDotnetRunner("MetaActionGenerator");
-            metaCaller.Arguments.Add("--domain", domain);
             metaCaller.Arguments.Add("--macros", _tempMacroPath);
             metaCaller.Arguments.Add("--output", _tempMetaActionPath);
             if (metaCaller.Run() != 0)
