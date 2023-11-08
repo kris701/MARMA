@@ -2,7 +2,7 @@
 
 namespace MetaActionGenerator
 {
-    public class MetaActionGeneratorOptions
+    public class Options
     {
         [Option("macros", Required = true, HelpText = "Path to the folder containing macro actions.")]
         public string MacroActionPath { get; set; } = "";
