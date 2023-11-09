@@ -410,3 +410,4 @@ FodyWeavers.xsd
 !/Dependencies/setup_packages.sh
 !/Dependencies/setup_programs.sh
 /build/
+/cache/
