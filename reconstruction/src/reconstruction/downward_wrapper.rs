@@ -5,7 +5,7 @@ use std::{
     process::Command,
 };
 
-use crate::tools::random_file_name;
+use crate::tools::{random_file_name, status_print, Status};
 
 pub struct Downward {
     pub path: PathBuf,
@@ -86,6 +86,7 @@ impl Downward {
                 Err(err) => panic!("Could not parse given solution with error:\n{}.", err),
             }
         }
+        status_print(Status::Init, "No plan given, finding plan");
         match self.solve(domain_path, problem_path) {
             Ok(plan) => plan,
             Err(err) => panic!(
