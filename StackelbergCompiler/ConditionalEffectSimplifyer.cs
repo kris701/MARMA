@@ -12,12 +12,12 @@ namespace StackelbergCompiler
         {
             var newDomain = domain.Copy();
 
-            newDomain.Actions = GenerateAbstractedActions(newDomain.Actions);
+            newDomain.Actions = GenerateSimplifiedActions(newDomain.Actions);
 
             return new PDDLDecl(newDomain, problem);
         }
 
-        private List<ActionDecl> GenerateAbstractedActions(List<ActionDecl> actions)
+        private List<ActionDecl> GenerateSimplifiedActions(List<ActionDecl> actions)
         {
             List<ActionDecl> newActions = new List<ActionDecl>();
 

@@ -1,8 +1,9 @@
 ﻿using PDDLSharp.Models;
+using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
-using PDDLSharp.Toolkit.StaticPredicateDetectors;
+using PDDLSharp.Translators.StaticPredicateDetectors;
 
 namespace StackelbergCompiler
 {
@@ -13,13 +14,13 @@ namespace StackelbergCompiler
         public static List<string> GenerateStaticPredicates(DomainDecl domain)
         {
             _staticPredicates = new List<string>();
-            IStaticPredicateDetectors detector = new SimpleStaticPredicateDetector();
-            var statics = detector.FindStaticPredicates(new PDDLDecl(domain, new ProblemDecl()));
+            var statics = SimpleStaticPredicateDetector.FindStaticPredicates(new PDDLDecl(domain, new ProblemDecl()));
             foreach (var staticPred in statics)
                 _staticPredicates.Add(staticPred.Name);
             if (!_staticPredicates.Contains("="))
                 _staticPredicates.Add("=");
             return _staticPredicates;
         }
+        public static void Clear() => _staticPredicates.Clear();
     }
 }

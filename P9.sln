@@ -51,6 +51,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8B977624
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator.Tests", "Tests\MetaActionGenerator.Tests\MetaActionGenerator.Tests.csproj", "{5C5289EA-288A-4728-91E6-DC001AD21A7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackelbergCompiler.Tests", "Tests\StackelbergCompiler.Tests\StackelbergCompiler.Tests.csproj", "{28854688-7782-48DF-8D9C-48FB1F4F6A81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,12 +95,17 @@ Global
 		{5C5289EA-288A-4728-91E6-DC001AD21A7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C5289EA-288A-4728-91E6-DC001AD21A7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C5289EA-288A-4728-91E6-DC001AD21A7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28854688-7782-48DF-8D9C-48FB1F4F6A81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28854688-7782-48DF-8D9C-48FB1F4F6A81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28854688-7782-48DF-8D9C-48FB1F4F6A81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28854688-7782-48DF-8D9C-48FB1F4F6A81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5C5289EA-288A-4728-91E6-DC001AD21A7C} = {8B977624-590C-429F-AF65-6C2B00C75AF1}
+		{28854688-7782-48DF-8D9C-48FB1F4F6A81} = {8B977624-590C-429F-AF65-6C2B00C75AF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3B73CE61-35D1-4280-9F91-DD54F6DAFCD2}
