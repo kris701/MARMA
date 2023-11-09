@@ -1,8 +1,8 @@
 library(dplyr) 
 library(ggplot2)
 
-imgWidth <- 9
-imgHeight <- 8
+imgWidth <- 8
+imgHeight <- 9
 	
 # Split the data into "meta" and "normal" data
 # Also only consider data where there is both a meta and normal version of a domain+problem
@@ -20,16 +20,17 @@ finished <- split(finished, finished$wasSolutionFound.norm)$` true`
 # Solved vs Not solved donut
 plot <- ggplot() + 
 	geom_col(aes(x = 2, y = nrow(combined)), fill = "gray", color = "black") + 
-	geom_col(aes(x = 2, y = nrow(split(combined, combined$wasSolutionFound.meta)$` true`), fill = "MacroCache"), color = "black") + 
+	geom_col(aes(x = 2, y = nrow(split(combined, combined$wasSolutionFound.meta)$` true`), fill = "Macro Cache"), color = "black") + 
 	geom_col(aes(x = 3, y = nrow(combined)), fill = "gray", color = "black") + 
-	geom_col(aes(x = 3, y = nrow(split(combined, combined$wasSolutionFound.norm)$` true`), fill = "FD"), color = "black") +
+	geom_col(aes(x = 3, y = nrow(split(combined, combined$wasSolutionFound.norm)$` true`), fill = "Fast Downward"), color = "black") +
 	xlim(0, 3.5) + labs(x = NULL, y = NULL) + 
 	ggtitle("Solved vs. Unsolved") + 
-	labs(fill = "Problems", color = "Problems") +
+	labs(fill = "", color = "") +
 	theme(text = element_text(size=15, family="serif"),
 		axis.ticks=element_blank(),
 		axis.text.y=element_blank(),
-		axis.title=element_blank()) +
+		axis.title=element_blank(),
+		legend.position="bottom") +
 	coord_polar(theta = "y") 
 # plot
 ggsave(plot=plot, filename="solvedvsunsolved.pdf", width=imgWidth, height=imgHeight)
@@ -45,11 +46,12 @@ plot <- ggplot(finished, aes(x=searchTime.meta, y=searchTime.norm, shape=domain,
 		limits=c(min(finished$searchTime.meta,finished$searchTime.norm),max(finished$searchTime.meta,finished$searchTime.norm)),
 		labels = scales::trans_format("log10", scales::math_format(10^.x))) +
 	ggtitle("Search Time") + 
-	labs(shape = "Domains", color = "Domains") +
-	xlab("With Reconstruction") +
-	ylab("Without Reconstruction") + 
+	labs(shape = "", color = "") +
+	xlab("Macro Cache") +
+	ylab("Fast Downward") + 
 	theme(text = element_text(size=15, family="serif"),
-		axis.text.x = element_text(angle=90, hjust=1)
+		axis.text.x = element_text(angle=90, hjust=1),
+		legend.position="bottom"
 	)
 # plot
 ggsave(plot=plot, filename="searchTime.pdf", width=imgWidth, height=imgHeight)
@@ -65,11 +67,12 @@ plot <- ggplot(finished, aes(x=totalTime.meta, y=totalTime.norm, shape=domain, c
 		limits=c(min(finished$totalTime.meta,finished$totalTime.norm),max(finished$totalTime.meta,finished$totalTime.norm)),
 		labels = scales::trans_format("log10", scales::math_format(10^.x))) +
 	ggtitle("Total Time") + 
-	labs(shape = "Domains", color = "Domains") +
-	xlab("With Reconstruction") +
-	ylab("Without Reconstruction") + 
+	labs(shape = "", color = "") +
+	xlab("Macro Cache") +
+	ylab("Fast Downward") + 
 	theme(text = element_text(size=15, family="serif"),
-		axis.text.x = element_text(angle=90, hjust=1)
+		axis.text.x = element_text(angle=90, hjust=1),
+		legend.position="bottom"
 	)
 # plot
 ggsave(plot=plot, filename="totalTime.pdf", width=imgWidth, height=imgHeight)
@@ -125,17 +128,18 @@ for (i in 1:length(normSearchTime)){
 normCoverageData <- data.frame(time=normUnique, coverage=normCounter)
 
 plot <- ggplot() +
-	geom_line(data=metaCoverageData, aes(y=coverage,x= time,colour="With Reconstruction")) +
-	geom_line(data=normCoverageData, aes(y=coverage,x= time,colour="Without Reconstruction")) +
+	geom_line(data=metaCoverageData, aes(y=coverage,x= time,colour="Macro Cache")) +
+	geom_line(data=normCoverageData, aes(y=coverage,x= time,colour="Fast Downward")) +
       scale_x_log10(
 		limits=c(min(finished$searchTime.meta,finished$searchTime.norm),max(finished$searchTime.meta,finished$searchTime.norm)),
 		labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-	scale_color_manual(name = "Legend", values = c("With Reconstruction" = "red", "Without Reconstruction" = "blue")) +
+	scale_color_manual(name = "", values = c("Macro Cache" = "red", "Fast Downward" = "blue")) +
 	ggtitle("Coverage") + 
 	xlab("Time") +
 	ylab("Problems Solved") + 
 	theme(text = element_text(size=15, family="serif"),
-		axis.text.x = element_text(angle=90, hjust=1)
+		axis.text.x = element_text(angle=90, hjust=1),
+		legend.position = "bottom"
 	)
 # plot
 ggsave(plot=plot, filename="coverage.pdf", width=imgWidth, height=imgHeight)
