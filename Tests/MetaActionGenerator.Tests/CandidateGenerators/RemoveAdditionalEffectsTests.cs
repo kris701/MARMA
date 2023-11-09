@@ -2,6 +2,7 @@
 using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Parsers.PDDL;
+using PDDLSharp.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,20 @@ namespace MetaActionGenerator.Tests.CandidateGenerators
     [TestClass]
     public class RemoveAdditionalEffectsTests
     {
+        [ClassInitialize]
+        public static async Task InitialiseAsync(TestContext context)
+        {
+            await GitFetcher.CheckAndDownloadBenchmarksAsync("https://github.com/kris701/P9-Test-Data", "benchmarks");
+        }
+
         [TestMethod]
-        [DataRow("TestData/sokoban/domain.pddl", 0, 2)]
-        [DataRow("TestData/sokoban/domain.pddl", 1, 4)]
-        [DataRow("TestData/satellite/domain.pddl", 0, 3)]
-        [DataRow("TestData/satellite/domain.pddl", 1, 2)]
-        [DataRow("TestData/satellite/domain.pddl", 2, 2)]
-        [DataRow("TestData/satellite/domain.pddl", 3, 1)]
-        [DataRow("TestData/satellite/domain.pddl", 4, 2)]
+        [DataRow("benchmarks/sokoban/domain.pddl", 0, 2)]
+        [DataRow("benchmarks/sokoban/domain.pddl", 1, 4)]
+        [DataRow("benchmarks/satellite/domain.pddl", 0, 3)]
+        [DataRow("benchmarks/satellite/domain.pddl", 1, 2)]
+        [DataRow("benchmarks/satellite/domain.pddl", 2, 2)]
+        [DataRow("benchmarks/satellite/domain.pddl", 3, 1)]
+        [DataRow("benchmarks/satellite/domain.pddl", 4, 2)]
         public void Can_RemoveAdditionalEffects_CorrectAmountOfMetaActions(string domain, int actionID, int expectedAmount)
         {
             // ARRANGE
@@ -37,22 +44,22 @@ namespace MetaActionGenerator.Tests.CandidateGenerators
         }
 
         [TestMethod]
-        [DataRow("TestData/sokoban/domain.pddl", 0, 0, "?to")]
-        [DataRow("TestData/sokoban/domain.pddl", 0, 1)]
-        [DataRow("TestData/sokoban/domain.pddl", 1, 0, "?bloc", "?floc", "?b")]
-        [DataRow("TestData/sokoban/domain.pddl", 1, 1)]
-        [DataRow("TestData/sokoban/domain.pddl", 1, 2, "?rloc", "?bloc")]
-        [DataRow("TestData/sokoban/domain.pddl", 1, 3, "?rloc", "?bloc", "?floc", "?dir")]
-        [DataRow("TestData/satellite/domain.pddl", 0, 0, "?d_new", "?d_prev")]
-        [DataRow("TestData/satellite/domain.pddl", 0, 1, "?s")]
-        [DataRow("TestData/satellite/domain.pddl", 0, 2, "?s")]
-        [DataRow("TestData/satellite/domain.pddl", 1, 0, "?s")]
-        [DataRow("TestData/satellite/domain.pddl", 1, 1, "?i")]
-        [DataRow("TestData/satellite/domain.pddl", 2, 0, "?s")]
-        [DataRow("TestData/satellite/domain.pddl", 2, 1, "?i")]
-        [DataRow("TestData/satellite/domain.pddl", 3, 0, "?s", "?d")]
-        [DataRow("TestData/satellite/domain.pddl", 4, 0, "?s", "?i", "?m")]
-        [DataRow("TestData/satellite/domain.pddl", 4, 1, "?s", "?d", "?i")]
+        [DataRow("benchmarks/sokoban/domain.pddl", 0, 0, "?to")]
+        [DataRow("benchmarks/sokoban/domain.pddl", 0, 1)]
+        [DataRow("benchmarks/sokoban/domain.pddl", 1, 0, "?bloc", "?floc", "?b")]
+        [DataRow("benchmarks/sokoban/domain.pddl", 1, 1)]
+        [DataRow("benchmarks/sokoban/domain.pddl", 1, 2, "?rloc", "?bloc")]
+        [DataRow("benchmarks/sokoban/domain.pddl", 1, 3, "?rloc", "?bloc", "?floc", "?dir")]
+        [DataRow("benchmarks/satellite/domain.pddl", 0, 0)]
+        [DataRow("benchmarks/satellite/domain.pddl", 0, 1)]
+        [DataRow("benchmarks/satellite/domain.pddl", 0, 2)]
+        [DataRow("benchmarks/satellite/domain.pddl", 1, 0, "?s")]
+        [DataRow("benchmarks/satellite/domain.pddl", 1, 1, "?i")]
+        [DataRow("benchmarks/satellite/domain.pddl", 2, 0, "?s")]
+        [DataRow("benchmarks/satellite/domain.pddl", 2, 1, "?i")]
+        [DataRow("benchmarks/satellite/domain.pddl", 3, 0, "?s", "?d")]
+        [DataRow("benchmarks/satellite/domain.pddl", 4, 0, "?s", "?i", "?m")]
+        [DataRow("benchmarks/satellite/domain.pddl", 4, 1, "?s", "?d", "?i")]
         public void Can_RemoveAdditionalEffects_CorrectParameters(string domain, int actionID, int metaID, params string[] expectedParams)
         {
             // ARRANGE

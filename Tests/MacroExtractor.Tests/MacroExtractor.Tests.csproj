@@ -17,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MetaActionGenerator\MetaActionGenerator.csproj" />
+    <ProjectReference Include="..\..\MacroExtractor\MacroExtractor.csproj" />
+    <ProjectReference Include="..\..\Tools\Tools.csproj" />
   </ItemGroup>
 
 </Project>
