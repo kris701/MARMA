@@ -19,18 +19,18 @@ use super::{cache_data::CacheData, Cache};
 #[derive(Debug)]
 pub struct HashCache {
     lifted_macros: Vec<(Action, SASPlan)>,
-    entries: Vec<(Operator, Vec<usize>)>,
-    effect_map: HashMap<Vec<(usize, bool)>, Vec<usize>>,
-    entry_macro: Vec<usize>,
+    entries: Vec<(Operator, Vec<u32>)>,
+    effect_map: HashMap<Vec<(u32, bool)>, Vec<usize>>,
+    entry_macro: Vec<u32>,
 }
 
 impl HashCache {
     pub fn new(instance: &Instance, cache_data: CacheData) -> Self {
         status_print(Status::Cache, "Init Hash Cache");
         let mut lifted_macros: Vec<(Action, SASPlan)> = Vec::new();
-        let mut entries: Vec<(Operator, Vec<usize>)> = Vec::new();
-        let mut effect_map: HashMap<Vec<(usize, bool)>, Vec<usize>> = HashMap::new();
-        let mut entry_macro: Vec<usize> = Vec::new();
+        let mut entries: Vec<(Operator, Vec<u32>)> = Vec::new();
+        let mut effect_map: HashMap<Vec<(u32, bool)>, Vec<usize>> = HashMap::new();
+        let mut entry_macro: Vec<u32> = Vec::new();
         for (action, plan) in cache_data
             .into_iter()
             .flat_map(|(_, d)| {
@@ -41,7 +41,7 @@ impl HashCache {
             .collect::<Vec<(Action, SASPlan)>>()
         {
             status_print(Status::Cache, &format!("Grounding {}", action.name));
-            let action_index = lifted_macros.len();
+            let action_index = lifted_macros.len() as u32;
             let operators = generate_operators(&instance, &action);
             let mut count = 0;
             for (operator, permutation) in operators {
@@ -86,17 +86,16 @@ impl Cache for HashCache {
         let index: &usize = candidates
             .iter()
             .find(|i| init.is_legal(&self.entries[**i].0))?;
-
-        let (_, parameters) = &self.entries[*index];
-        let macro_index = self.entry_macro[*index];
-        let (lifted_macro, plan) = self.lifted_macros.get(macro_index)?;
+        let (_, parameters) = &self.entries[*index as usize];
+        let macro_index = self.entry_macro[*index as usize];
+        let (lifted_macro, plan) = self.lifted_macros.get(macro_index as usize)?;
         let lifted_parameters = &lifted_macro.parameters.parameter_names;
         let actions: Vec<String> = plan.iter().map(|t| t.name.to_owned()).collect();
         let replacements: Vec<&Action> = actions.iter().map(|n| instance.get_action(n)).collect();
         let mut replacement: Vec<Term> = Vec::new();
         for (action, step) in replacements.iter().zip(plan.iter()) {
             let name = action.name.to_owned();
-            let parameters: Vec<usize> = step
+            let parameters: Vec<u32> = step
                 .parameters
                 .iter()
                 .map(|n| {

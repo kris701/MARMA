@@ -6,11 +6,8 @@ use super::{parameters::Parameters, predicates::Predicates};
 
 #[derive(Debug)]
 pub enum Expression {
-    Predicate {
-        index: usize,
-        parameters: Vec<usize>,
-    },
-    Equal(Vec<usize>),
+    Predicate { index: u32, parameters: Vec<u32> },
+    Equal(Vec<u32>),
     And(Vec<Expression>),
     Or(Vec<Expression>),
     Not(Box<Expression>),

@@ -63,8 +63,8 @@ impl Instance {
 
     pub fn get_action(&self, name: &str) -> &Action {
         match World::global().is_meta_action(name) {
-            true => &self.meta_actions.actions[World::global().get_meta_index(name)],
-            false => &self.actions.actions[World::global().get_action_index(name)],
+            true => &self.meta_actions.actions[World::global().get_meta_index(name) as usize],
+            false => &self.actions.actions[World::global().get_action_index(name) as usize],
         }
     }
 
@@ -78,7 +78,7 @@ impl Instance {
         )
     }
 
-    pub fn get_fact_string(&self, index: usize) -> String {
+    pub fn get_fact_string(&self, index: u32) -> String {
         let predicate = self.facts.fact_predicate(index);
         let predicate = World::global().get_predicate_name(predicate);
         let parameters = self.facts.fact_parameters(index);

@@ -3,13 +3,13 @@ use crate::world::World;
 #[derive(Debug)]
 pub struct Parameters {
     pub parameter_names: Vec<String>,
-    pub parameter_types: Vec<Option<usize>>,
+    pub parameter_types: Vec<Option<u32>>,
 }
 
 impl Parameters {
     pub fn new(parameters: spingus::domain::parameter::Parameters) -> Self {
         let mut parameter_names: Vec<String> = Vec::new();
-        let mut parameter_types: Vec<Option<usize>> = Vec::new();
+        let mut parameter_types: Vec<Option<u32>> = Vec::new();
 
         for parameter in parameters {
             match parameter {
@@ -32,13 +32,13 @@ impl Parameters {
         }
     }
 
-    pub fn get_index(&self, parameter_name: &str) -> usize {
+    pub fn get_index(&self, parameter_name: &str) -> u32 {
         match self
             .parameter_names
             .iter()
             .position(|p| p == parameter_name)
         {
-            Some(i) => i,
+            Some(i) => i as u32,
             None => {
                 panic!(
                     "Could not find parameter with name '{}'. Actual parameters: {:?}",
@@ -48,7 +48,7 @@ impl Parameters {
         }
     }
 
-    pub fn get_indexes(&self, parameter_names: &Vec<String>) -> Vec<usize> {
+    pub fn get_indexes(&self, parameter_names: &Vec<String>) -> Vec<u32> {
         parameter_names.iter().map(|p| self.get_index(p)).collect()
     }
 }

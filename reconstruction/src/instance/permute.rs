@@ -4,7 +4,7 @@ use crate::world::World;
 
 use super::{objects::Objects, types::Types};
 
-fn permute_untyped(parameter_count: usize) -> Vec<Vec<usize>> {
+fn permute_untyped(parameter_count: u32) -> Vec<Vec<u32>> {
     (0..parameter_count)
         .into_iter()
         .map(|_| (0..World::global().get_object_count()).into_iter())
@@ -15,8 +15,8 @@ fn permute_untyped(parameter_count: usize) -> Vec<Vec<usize>> {
 fn permute_typed(
     types: &Types,
     objects: &Objects,
-    parameter_types: &Vec<Option<usize>>,
-) -> Vec<Vec<usize>> {
+    parameter_types: &Vec<Option<u32>>,
+) -> Vec<Vec<u32>> {
     parameter_types
         .iter()
         .map(|parameter_type| {
@@ -45,13 +45,13 @@ fn permute_typed(
 pub fn permute_mutable(
     types: &Option<Types>,
     objects: &Objects,
-    parameter_types: &Vec<Option<usize>>,
-) -> Vec<Vec<usize>> {
+    parameter_types: &Vec<Option<u32>>,
+) -> Vec<Vec<u32>> {
     if parameter_types.is_empty() {
         return vec![vec![]];
     }
     match types {
         Some(types) => permute_typed(types, objects, parameter_types),
-        None => permute_untyped(parameter_types.len()),
+        None => permute_untyped(parameter_types.len() as u32),
     }
 }
