@@ -208,15 +208,10 @@ namespace MetaActions.Learn
 
         private void CopyTestingProblems(List<FileInfo> testingProblems, string outFolder)
         {
+            int id = 0;
             foreach (var problem in testingProblems)
             {
-                var target = new FileInfo(Path.Combine(outFolder, problem.Name));
-                while (File.Exists(target.FullName))
-                {
-                    if (problem.Directory == null)
-                        throw new FileNotFoundException("File was not in a directory?");
-                    target = new FileInfo(target.FullName.Replace(target.Name.Replace(target.Extension, ""), $"{target.Name.Replace(target.Extension, "")}_{problem.Directory.Name}"));
-                }
+                var target = new FileInfo(Path.Combine(outFolder, $"p{id++}.pddl"));
                 File.Copy(problem.FullName, target.FullName);
             }
         }

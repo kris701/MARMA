@@ -13,6 +13,7 @@ metaData <- metaData %>% select(-contains('.y'))
 normData <- merge(splitData$false, splitData$true, by = c("domain", "problem"), suffixes=c("", ".y"))
 normData <- normData %>% select(-contains('.y'))
 combined <- merge(metaData, normData, by = c("domain", "problem"), suffixes=c(".meta", ".norm"))
+combined <- combined[,!grepl("isMeta",names(combined))]
 
 # Generate Search Time Scatterplot
 plot <- ggplot(combined, aes(x=searchTime.meta, y=searchTime.norm, shape=domain, color=domain)) + 
@@ -31,7 +32,7 @@ plot <- ggplot(combined, aes(x=searchTime.meta, y=searchTime.norm, shape=domain,
 	theme(text = element_text(size=15, family="serif"),
 		axis.text.x = element_text(angle=90, hjust=1)
 	)
-plot
+# plot
 ggsave(plot=plot, filename="searchTime.pdf", width=imgWidth, height=imgHeight)
 
 # Generate Total Time Scatterplot
@@ -51,12 +52,14 @@ plot <- ggplot(combined, aes(x=totalTime.meta, y=totalTime.norm, shape=domain, c
 	theme(text = element_text(size=15, family="serif"),
 		axis.text.x = element_text(angle=90, hjust=1)
 	)
-plot
+# plot
 ggsave(plot=plot, filename="totalTime.pdf", width=imgWidth, height=imgHeight)
 
 # Generate Coverage plot
-metaSearchTime <- lapply(list(combined$totalTime.meta), sort)[[1]]
-normSearchTime <- lapply(list(combined$totalTime.norm), sort)[[1]]
+finished <- split(combined, combined$wasSolutionFound.meta)$` true`
+finished <- split(finished, finished$wasSolutionFound.norm)$` true`
+metaSearchTime <- lapply(list(finished$totalTime.meta), sort)[[1]]
+normSearchTime <- lapply(list(finished$totalTime.norm), sort)[[1]]
 highestValue <- max(metaSearchTime, normSearchTime)
 
 metaUnique <- unique(metaSearchTime)
@@ -104,8 +107,7 @@ for (i in 1:length(normSearchTime)){
 }
 normCoverageData <- data.frame(time=normUnique, coverage=normCounter)
 
-jpeg(file="coverage.jpeg")
-ggplot() +
+plot <- ggplot() +
 	geom_line(data=metaCoverageData, aes(y=coverage,x= time,colour="With Reconstruction")) +
 	geom_line(data=normCoverageData, aes(y=coverage,x= time,colour="Without Reconstruction")) +
 	scale_color_manual(name = "Legend", values = c("With Reconstruction" = "red", "Without Reconstruction" = "blue")) +
@@ -115,6 +117,7 @@ ggplot() +
 	theme(text = element_text(size=15),
 		axis.text.x = element_text(angle=90, hjust=1)
 	)
-dev.off()
+plot
+ggsave(plot=plot, filename="coverage.pdf", width=imgWidth, height=imgHeight)
 
 
