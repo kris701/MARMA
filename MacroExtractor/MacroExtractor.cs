@@ -82,9 +82,9 @@ namespace MacroExtractor
             throw new Exception("No meta action found in plan!");
         }
 
-        private static HashSet<RepairSequence> GenerateMacros(Dictionary<GroundedAction, HashSet<ActionPlan>> from, DomainDecl domain)
+        private static List<RepairSequence> GenerateMacros(Dictionary<GroundedAction, HashSet<ActionPlan>> from, DomainDecl domain)
         {
-            var returnList = new HashSet<RepairSequence>();
+            var returnList = new List<RepairSequence>();
 
             foreach (var key in from.Keys)
             {
@@ -109,7 +109,9 @@ namespace MacroExtractor
                     foreach (var step in actionPlan.Plan)
                         RenameActionArguments(step, replacementDict);
 
-                    returnList.Add(new RepairSequence(key, macro, actionPlan));
+                    var newSeq = new RepairSequence(key, macro, actionPlan);
+                    if (!returnList.Contains(newSeq))
+                        returnList.Add(newSeq);
                 }
             }
 
