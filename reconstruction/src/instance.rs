@@ -1,6 +1,9 @@
 use spingus::{domain::Domain, problem::Problem};
 
-use crate::{world::World, tools::{Status, status_print}};
+use crate::{
+    tools::{status_print, Status},
+    world::World,
+};
 
 use self::{
     actions::{Action, Actions},
@@ -16,12 +19,12 @@ pub mod facts;
 mod objects;
 pub mod operator;
 mod parameters;
-mod permute;
+pub mod permute;
 mod predicates;
 mod types;
 
 pub struct Instance {
-    types: Option<Types>,
+    pub types: Option<Types>,
     predicates: Predicates,
     actions: Actions,
     meta_actions: Actions,

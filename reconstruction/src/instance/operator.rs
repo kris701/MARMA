@@ -30,7 +30,7 @@ impl Operator {
     }
 }
 
-fn extract_from_action(
+pub fn extract_from_action(
     instance: &Instance,
     parameters: &Vec<u32>,
     action: &Action,

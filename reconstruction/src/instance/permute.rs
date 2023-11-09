@@ -6,21 +6,13 @@ pub fn permute_unary(candidates: Vec<Vec<u32>>) -> impl Iterator<Item = Vec<u32>
     candidates.into_iter().multi_cartesian_product()
 }
 
-fn permute_untyped(parameter_count: u32) -> Vec<Vec<u32>> {
-    (0..parameter_count)
-        .into_iter()
-        .map(|_| (0..World::global().get_object_count()).into_iter())
-        .multi_cartesian_product()
-        .collect()
-}
-
-fn permute_typed(
+pub fn get_candidates_typed(
     types: &Types,
     objects: &Objects,
     parameter_types: &Vec<Option<u32>>,
 ) -> Vec<Vec<u32>> {
     let object_range: Vec<u32> = (0..World::global().get_object_count()).collect();
-    let candidates = parameter_types
+    parameter_types
         .iter()
         .map(move |t| match t {
             Some(t) => object_range
@@ -35,7 +27,40 @@ fn permute_typed(
                 .collect(),
             None => object_range.iter().map(|o| *o).collect(),
         })
-        .collect();
+        .collect()
+}
+
+pub fn get_candidates(
+    types: &Option<Types>,
+    objects: &Objects,
+    parameter_types: &Vec<Option<u32>>,
+) -> Vec<Vec<u32>> {
+    if let Some(types) = types {
+        return get_candidates_typed(types, objects, parameter_types);
+    } else {
+        let object_range: Vec<u32> = (0..World::global().get_object_count()).collect();
+
+        parameter_types
+            .iter()
+            .map(|_| object_range.iter().map(|o| *o).collect())
+            .collect()
+    }
+}
+
+fn permute_untyped(parameter_count: u32) -> Vec<Vec<u32>> {
+    (0..parameter_count)
+        .into_iter()
+        .map(|_| (0..World::global().get_object_count()).into_iter())
+        .multi_cartesian_product()
+        .collect()
+}
+
+fn permute_typed(
+    types: &Types,
+    objects: &Objects,
+    parameter_types: &Vec<Option<u32>>,
+) -> Vec<Vec<u32>> {
+    let candidates = get_candidates_typed(types, objects, parameter_types);
     permute_unary(candidates).collect()
 }
 

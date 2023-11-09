@@ -14,7 +14,7 @@ use crate::{
     world::World,
 };
 
-use super::{cache_data::CacheData, Cache};
+use super::{cache_data::CacheData, generate_plan, Cache};
 
 #[derive(Debug)]
 pub struct HashCache {
@@ -89,23 +89,6 @@ impl Cache for HashCache {
         let (_, parameters) = &self.entries[*index as usize];
         let macro_index = self.entry_macro[*index as usize];
         let (lifted_macro, plan) = self.lifted_macros.get(macro_index as usize)?;
-        let lifted_parameters = &lifted_macro.parameters.parameter_names;
-        let actions: Vec<String> = plan.iter().map(|t| t.name.to_owned()).collect();
-        let replacements: Vec<&Action> = actions.iter().map(|n| instance.get_action(n)).collect();
-        let mut replacement: Vec<Term> = Vec::new();
-        for (action, step) in replacements.iter().zip(plan.iter()) {
-            let name = action.name.to_owned();
-            let parameters: Vec<u32> = step
-                .parameters
-                .iter()
-                .map(|n| {
-                    let index = lifted_parameters.iter().position(|p| p == n).unwrap();
-                    parameters[index]
-                })
-                .collect();
-            let parameters = World::global().get_object_names_cloned(&parameters);
-            replacement.push(Term { name, parameters })
-        }
-        Some(replacement)
+        Some(generate_plan(instance, lifted_macro, plan, parameters))
     }
 }
