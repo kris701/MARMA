@@ -1,5 +1,8 @@
 library(dplyr) 
 library(ggplot2)
+
+imgWidth <- 9
+imgHeight <- 8
 	
 # Split the data into "meta" and "normal" data
 # Also only consider data where there is both a meta and normal version of a domain+problem
@@ -12,42 +15,44 @@ normData <- normData %>% select(-contains('.y'))
 combined <- merge(metaData, normData, by = c("domain", "problem"), suffixes=c(".meta", ".norm"))
 
 # Generate Search Time Scatterplot
-jpeg(file="searchtime.jpeg")
-ggplot(combined, aes(x=searchTime.meta, y=searchTime.norm)) + 
-	geom_point(shape=1, color = "red") +
-	geom_abline(intercept = 0, slope = 1, color = "blue") +
-	scale_x_continuous(trans=scales::pseudo_log_trans(base = 10)) +
-	scale_y_continuous(trans=scales::pseudo_log_trans(base = 10)) +
+plot <- ggplot(combined, aes(x=searchTime.meta, y=searchTime.norm, shape=domain, color=domain)) + 
+	geom_point(size=2) +
+	geom_abline(intercept = 0, slope = 1, color = "black") +
+      scale_x_log10(
+		limits=c(min(combined$searchTime.meta,combined$searchTime.norm),max(combined$searchTime.meta,combined$searchTime.norm)),
+		labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+      scale_y_log10(
+		limits=c(min(combined$searchTime.meta,combined$searchTime.norm),max(combined$searchTime.meta,combined$searchTime.norm)),
+		labels = scales::trans_format("log10", scales::math_format(10^.x))) +
 	ggtitle("Search Time") + 
+	labs(shape = "Domains", color = "Domains") +
 	xlab("With Reconstruction") +
 	ylab("Without Reconstruction") + 
-	theme(text = element_text(size=15),
+	theme(text = element_text(size=15, family="serif"),
 		axis.text.x = element_text(angle=90, hjust=1)
-	) +
-	coord_equal(
-		xlim=c(0, max(combined$searchTime.meta, combined$searchTime.norm)),
-		ylim=c(0, max(combined$searchTime.meta, combined$searchTime.norm)),
 	)
-dev.off()
+plot
+ggsave(plot=plot, filename="searchTime.pdf", width=imgWidth, height=imgHeight)
 
 # Generate Total Time Scatterplot
-jpeg(file="totaltime.jpeg")
-ggplot(combined, aes(x=totalTime.meta, y=totalTime.norm)) + 
-	geom_point(shape=1, color = "red") +
-	geom_abline(intercept = 0, slope = 1, color = "blue") +
-	scale_x_continuous(trans=scales::pseudo_log_trans(base = 10)) +
-	scale_y_continuous(trans=scales::pseudo_log_trans(base = 10)) +
+plot <- ggplot(combined, aes(x=totalTime.meta, y=totalTime.norm, shape=domain, color=domain)) + 
+	geom_point(size=2) +
+	geom_abline(intercept = 0, slope = 1, color = "black") +
+      scale_x_log10(
+		limits=c(min(combined$totalTime.meta,combined$totalTime.norm),max(combined$totalTime.meta,combined$totalTime.norm)),
+		labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+      scale_y_log10(
+		limits=c(min(combined$totalTime.meta,combined$totalTime.norm),max(combined$totalTime.meta,combined$totalTime.norm)),
+		labels = scales::trans_format("log10", scales::math_format(10^.x))) +
 	ggtitle("Total Time") + 
+	labs(shape = "Domains", color = "Domains") +
 	xlab("With Reconstruction") +
 	ylab("Without Reconstruction") + 
-	theme(text = element_text(size=15),
+	theme(text = element_text(size=15, family="serif"),
 		axis.text.x = element_text(angle=90, hjust=1)
-	) +
-	coord_equal(
-		xlim=c(0, max(combined$totalTime.meta, combined$totalTime.norm)),
-		ylim=c(0, max(combined$totalTime.meta, combined$totalTime.norm)),
 	)
-dev.off()
+plot
+ggsave(plot=plot, filename="totalTime.pdf", width=imgWidth, height=imgHeight)
 
 # Generate Coverage plot
 metaSearchTime <- lapply(list(combined$totalTime.meta), sort)[[1]]
