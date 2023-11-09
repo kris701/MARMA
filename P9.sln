@@ -38,14 +38,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PreBuilder", "PreBuilder\PreBuilder.csproj", "{A7EAD3AB-2CA4-4485-8DC5-BDC5A2FE9884}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestingSets", "TestingSets", "{8DA6DBD4-939F-4D75-9A59-98010AA30B59}"
-	ProjectSection(SolutionItems) = preProject
-		TestingSets\blocksworld_p01-p19.zip = TestingSets\blocksworld_p01-p19.zip
-		TestingSets\ferry_p01-p19.zip = TestingSets\ferry_p01-p19.zip
-		TestingSets\floortile_p01-p19.zip = TestingSets\floortile_p01-p19.zip
-		TestingSets\miconic_p01-p19.zip = TestingSets\miconic_p01-p19.zip
-		TestingSets\rovers_p01-p19.zip = TestingSets\rovers_p01-p19.zip
-		TestingSets\satellite_p01-p19.zip = TestingSets\satellite_p01-p19.zip
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8B977624-590C-429F-AF65-6C2B00C75AF1}"
 EndProject
@@ -53,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacroExtractor.Tests", "Tests\MacroExtractor.Tests\MacroExtractor.Tests.csproj", "{3CD2C382-CD00-46E5-807F-BEE118867793}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackelbergCompiler.Tests", "Tests\StackelbergCompiler.Tests\StackelbergCompiler.Tests.csproj", "{28854688-7782-48DF-8D9C-48FB1F4F6A81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergCompiler.Tests", "Tests\StackelbergCompiler.Tests\StackelbergCompiler.Tests.csproj", "{FC109629-25D4-4791-8146-E0606B5775AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,10 +93,10 @@ Global
 		{3CD2C382-CD00-46E5-807F-BEE118867793}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CD2C382-CD00-46E5-807F-BEE118867793}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CD2C382-CD00-46E5-807F-BEE118867793}.Release|Any CPU.Build.0 = Release|Any CPU
-		{28854688-7782-48DF-8D9C-48FB1F4F6A81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{28854688-7782-48DF-8D9C-48FB1F4F6A81}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28854688-7782-48DF-8D9C-48FB1F4F6A81}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{28854688-7782-48DF-8D9C-48FB1F4F6A81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC109629-25D4-4791-8146-E0606B5775AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC109629-25D4-4791-8146-E0606B5775AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC109629-25D4-4791-8146-E0606B5775AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC109629-25D4-4791-8146-E0606B5775AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,7 +104,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5C5289EA-288A-4728-91E6-DC001AD21A7C} = {8B977624-590C-429F-AF65-6C2B00C75AF1}
 		{3CD2C382-CD00-46E5-807F-BEE118867793} = {8B977624-590C-429F-AF65-6C2B00C75AF1}
-		{28854688-7782-48DF-8D9C-48FB1F4F6A81} = {8B977624-590C-429F-AF65-6C2B00C75AF1}
+		{FC109629-25D4-4791-8146-E0606B5775AA} = {8B977624-590C-429F-AF65-6C2B00C75AF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3B73CE61-35D1-4280-9F91-DD54F6DAFCD2}
