@@ -98,13 +98,12 @@ namespace MacroExtractor
                     var changeParams = macro.Parameters.Values.Where(x => !x.Name.StartsWith("?"));
                     var replacementDict = new Dictionary<string, string>();
                     foreach (var arg in changeParams)
-                        replacementDict.Add(arg.Name, $"?O{id}");
+                        replacementDict.Add(arg.Name, $"?O{id++}");
                     foreach (var arg in replacementDict.Keys)
                     {
                         var allRefs = macro.FindNames(arg);
                         foreach (var aRef in allRefs)
-                            aRef.Name = $"?O{id}";
-                        id++;
+                            aRef.Name = replacementDict[arg];
                     }
 
                     foreach (var step in actionPlan.Plan)
