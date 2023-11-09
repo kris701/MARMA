@@ -40,7 +40,7 @@ fn extract_from_action(
     let mut eff_pos: HashSet<u32> = HashSet::new();
     let mut eff_neg: HashSet<u32> = HashSet::new();
     if let Some(exp) = &action.precondition {
-        if !walk(instance, parameters, &mut pre_pos, &mut pre_neg, exp, true) {
+        if !walk(instance, parameters, &mut pre_pos, &mut pre_neg, exp) {
             return None;
         }
     }
@@ -50,7 +50,6 @@ fn extract_from_action(
         &mut eff_pos,
         &mut eff_neg,
         &action.effect,
-        true,
     ) {
         return None;
     }
@@ -93,32 +92,35 @@ fn walk(
     pos: &mut HashSet<u32>,
     neg: &mut HashSet<u32>,
     exp: &Expression,
-    value: bool,
 ) -> bool {
-    match exp {
-        Expression::Predicate { index, parameters } => {
-            let exp = if value { pos } else { neg };
-
-            let parameters = parameters
-                .iter()
-                .map(|p| permutation[*p as usize])
-                .collect_vec();
-
-            match instance.facts.is_static(*index) {
-                true => {
-                    return instance.facts.is_statically_true(*index, &parameters);
-                }
-                false => {
-                    exp.insert(instance.facts.index(*index, &parameters));
-                    return true;
-                }
-            }
-        }
-        Expression::Equal(exps) => exps.iter().all_equal(),
-        Expression::And(exps) => exps
+    let facts = &instance.facts;
+    for equal in exp.equals.iter() {
+        let parameters = equal
+            .parameters
             .iter()
-            .all(|exp| walk(instance, permutation, pos, neg, exp, value)),
-        Expression::Not(exp) => walk(instance, permutation, pos, neg, exp, !value),
-        _ => todo!(),
+            .map(|p| permutation[*p as usize])
+            .collect_vec();
+        if !parameters.iter().all_equal() {
+            return false;
+        }
     }
+    for literal in exp.literals.iter() {
+        let predicate = literal.predicate;
+        let parameters = literal
+            .parameters
+            .iter()
+            .map(|p| permutation[*p as usize])
+            .collect_vec();
+
+        if facts.is_static(predicate) && !facts.is_statically_true(predicate, &parameters) {
+            return false;
+        } else {
+            let fact = facts.index(predicate, &parameters);
+            match literal.value {
+                true => pos.insert(fact),
+                false => neg.insert(fact),
+            };
+        }
+    }
+    true
 }

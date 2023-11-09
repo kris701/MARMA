@@ -169,12 +169,12 @@ impl Facts {
 }
 
 fn check_static(predicate: u32, exp: &Expression) -> bool {
-    match exp {
-        Expression::Predicate { index, .. } => *index != predicate,
-        Expression::And(exp) => exp.iter().all(|exp| check_static(predicate, exp)),
-        Expression::Not(exp) => check_static(predicate, exp),
-        _ => todo!(),
+    for literal in exp.literals.iter() {
+        if literal.predicate == predicate {
+            return false;
+        }
     }
+    return true;
 }
 
 fn check_static_all(actions: &Actions, predicate: u32) -> bool {
@@ -184,18 +184,18 @@ fn check_static_all(actions: &Actions, predicate: u32) -> bool {
         .all(|a| check_static(predicate, &a.effect))
 }
 
-fn check_degrading(predicate: u32, exp: &Expression, val: bool) -> bool {
-    match exp {
-        Expression::Predicate { index, .. } => *index != predicate || !val,
-        Expression::And(exp) => exp.iter().all(|exp| check_degrading(predicate, exp, val)),
-        Expression::Not(exp) => check_degrading(predicate, exp, !val),
-        _ => todo!(),
+fn check_degrading(predicate: u32, exp: &Expression) -> bool {
+    for literal in exp.literals.iter() {
+        if literal.predicate == predicate && literal.value {
+            return false;
+        }
     }
+    return true;
 }
 
 fn check_degrading_all(actions: &Actions, predicate: u32) -> bool {
     actions
         .actions
         .iter()
-        .all(|a| check_degrading(predicate, &a.effect, true))
+        .all(|a| check_degrading(predicate, &a.effect))
 }

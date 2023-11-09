@@ -1,6 +1,6 @@
 use spingus::{domain::Domain, problem::Problem};
 
-use crate::world::World;
+use crate::{world::World, tools::{Status, status_print}};
 
 use self::{
     actions::{Action, Actions},
@@ -38,14 +38,20 @@ impl Instance {
         problem: spingus::problem::Problem,
         meta_domain: spingus::domain::Domain,
     ) -> Self {
+        status_print(Status::Init, "Generating types");
         let types = match domain.types.to_owned() {
             Some(types) => Some(Types::new(types)),
             None => None,
         };
+        status_print(Status::Init, "Generating predicates");
         let predicates = Predicates::new(domain.predicates.to_owned());
+        status_print(Status::Init, "Generating actions");
         let actions = Actions::new(&predicates, domain.actions.to_owned());
+        status_print(Status::Init, "Generating meta actions");
         let meta_actions = Actions::new(&predicates, meta_domain.actions.to_owned());
+        status_print(Status::Init, "Generating objects");
         let objects = Objects::new(problem.objects.to_owned());
+        status_print(Status::Init, "Generating facts");
         let facts = Facts::new(&types, &predicates, &actions, &objects, &problem.inits);
 
         Self {
