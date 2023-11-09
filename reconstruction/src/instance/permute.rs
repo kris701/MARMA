@@ -1,8 +1,10 @@
+use super::{objects::Objects, types::Types};
+use crate::world::World;
 use itertools::Itertools;
 
-use crate::world::World;
-
-use super::{objects::Objects, types::Types};
+pub fn permute_unary(candidates: Vec<Vec<u32>>) -> impl Iterator<Item = Vec<u32>> {
+    candidates.into_iter().multi_cartesian_product()
+}
 
 fn permute_untyped(parameter_count: u32) -> Vec<Vec<u32>> {
     (0..parameter_count)
@@ -17,29 +19,24 @@ fn permute_typed(
     objects: &Objects,
     parameter_types: &Vec<Option<u32>>,
 ) -> Vec<Vec<u32>> {
-    parameter_types
+    let object_range: Vec<u32> = (0..World::global().get_object_count()).collect();
+    let candidates = parameter_types
         .iter()
-        .map(|parameter_type| {
-            if let Some(parameter_type) = parameter_type {
-                (0..World::global().get_object_count())
-                    .into_iter()
-                    .filter_map(|i| {
-                        let object_type = objects.get_type(i);
-                        if let Some(object_type) = object_type {
-                            match types.is_of_type(*object_type, *parameter_type) {
-                                true => Some(i),
-                                false => None,
-                            }
-                        } else {
-                            None
-                        }
-                    })
-            } else {
-                panic!()
-            }
+        .map(move |t| match t {
+            Some(t) => object_range
+                .iter()
+                .filter_map(|o| match objects.get_type(*o) {
+                    Some(o_t) => match types.is_of_type(*o_t, *t) {
+                        true => Some(*o),
+                        false => None,
+                    },
+                    None => None,
+                })
+                .collect(),
+            None => object_range.iter().map(|o| *o).collect(),
         })
-        .multi_cartesian_product()
-        .collect()
+        .collect();
+    permute_unary(candidates).collect()
 }
 
 pub fn permute_mutable(
