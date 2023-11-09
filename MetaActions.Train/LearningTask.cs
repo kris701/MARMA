@@ -30,16 +30,47 @@ namespace MetaActions.Learn
 
         private string _domainName = "";
 
+        private string _cachePath = "cache";
+        private string _macroCachePath = "macros";
+
+        private int _runHash = -1;
+
+        private static int GetDeterministicHashCode(string str)
+        {
+            unchecked
+            {
+                int hash1 = (5381 << 16) + 5381;
+                int hash2 = hash1;
+
+                for (int i = 0; i < str.Length; i += 2)
+                {
+                    hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                    if (i == str.Length - 1)
+                        break;
+                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+                }
+
+                return hash1 + (hash2 * 1566083941);
+            }
+        }
+
         public string LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems)
         {
             if (domain.Directory == null)
                 throw new FileNotFoundException("Domain does not have a parent directory!");
             _domainName = domain.Directory.Name;
 
+            _runHash = GetDeterministicHashCode(domain.FullName).GetHashCode();
+            foreach(var trainProblem in trainProblems)
+                _runHash ^= GetDeterministicHashCode(trainProblem.FullName).GetHashCode();
+
             Print($"Training started", ConsoleColor.Blue);
 
             PathHelper.RecratePath(tempPath);
             PathHelper.RecratePath(outPath);
+
+            _cachePath = PathHelper.RootPath(_cachePath);
+            _macroCachePath = Path.Combine(_cachePath, _macroCachePath);
 
             _tempProblemPath = Path.Combine(tempPath, _tempProblemPath);
             _tempMacroPath = Path.Combine(tempPath, _tempMacroPath);
@@ -79,7 +110,7 @@ namespace MetaActions.Learn
                 return _domainName;
 
             Print($"Generating meta actions", ConsoleColor.Blue, false);
-            List<FileInfo> allMetaActions = GenerateMetaActions(domain.FullName);
+            List<FileInfo> allMetaActions = GenerateMetaActions();
             Print($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Blue, false);
             if (allMetaActions.Count == 0)
                 return _domainName;
@@ -237,19 +268,30 @@ namespace MetaActions.Learn
 
         private List<FileInfo> GenerateMacros(string domain)
         {
-            var macroGenerator = ArgsCallerBuilder.GetRustRunner("macros");
-            macroGenerator.Arguments.Add("-d", domain);
-            macroGenerator.Arguments.Add("-p", _tempProblemPath);
-            macroGenerator.Arguments.Add("-o", _tempMacroPath);
-            macroGenerator.Arguments.Add("-t", _tempMacroTempPath);
-            macroGenerator.Arguments.Add("-c", _tempCSMPath);
-            macroGenerator.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
-            if (macroGenerator.Run() != 0)
-                throw new Exception("Macro generation failed!");
+            var checkPath = Path.Combine(_macroCachePath, _runHash.ToString());
+            if (Directory.Exists(checkPath) && _runHash != -1)
+            {
+                CopyFilesRecursively(checkPath, _tempMacroPath);
+            }
+            else
+            {
+                var macroGenerator = ArgsCallerBuilder.GetRustRunner("macros");
+                macroGenerator.Arguments.Add("-d", domain);
+                macroGenerator.Arguments.Add("-p", _tempProblemPath);
+                macroGenerator.Arguments.Add("-o", _tempMacroPath);
+                macroGenerator.Arguments.Add("-t", _tempMacroTempPath);
+                macroGenerator.Arguments.Add("-c", _tempCSMPath);
+                macroGenerator.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
+                if (macroGenerator.Run() != 0)
+                    throw new Exception("Macro generation failed!");
+
+                PathHelper.RecratePath(checkPath);
+                CopyFilesRecursively(_tempMacroPath, checkPath);
+            }
             return new DirectoryInfo(_tempMacroPath).GetFiles().ToList();
         }
 
-        private List<FileInfo> GenerateMetaActions(string domain)
+        private List<FileInfo> GenerateMetaActions()
         {
             ArgsCaller metaCaller = ArgsCallerBuilder.GetDotnetRunner("MetaActionGenerator");
             metaCaller.Arguments.Add("--macros", _tempMacroPath);
