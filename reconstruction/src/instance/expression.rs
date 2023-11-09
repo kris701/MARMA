@@ -39,6 +39,7 @@ impl Expression {
             &mut equals,
             true,
         );
+        literals.sort_by(|a, b| a.parameters.len().cmp(&b.parameters.len()));
         Self { literals, equals }
     }
 }
