@@ -7,15 +7,15 @@ use std::collections::HashMap;
 
 pub struct World {
     #[allow(dead_code)]
-    types: HashMap<String, usize>,
+    types: HashMap<String, u32>,
     #[allow(dead_code)]
-    predicates: HashMap<String, usize>,
+    predicates: HashMap<String, u32>,
     #[allow(dead_code)]
-    actions: HashMap<String, usize>,
+    actions: HashMap<String, u32>,
     #[allow(dead_code)]
-    meta_actions: HashMap<String, usize>,
+    meta_actions: HashMap<String, u32>,
     #[allow(dead_code)]
-    objects: HashMap<String, usize>,
+    objects: HashMap<String, u32>,
 }
 
 pub static WORLD: OnceCell<World> = OnceCell::new();
@@ -46,7 +46,7 @@ impl World {
     }
 
     #[allow(dead_code)]
-    pub fn get_type_index(&self, name: &str) -> usize {
+    pub fn get_type_index(&self, name: &str) -> u32 {
         assert!(
             self.types.contains_key(name),
             "Found undeclared type: {}. Actual types: {:?}",
@@ -57,12 +57,12 @@ impl World {
     }
 
     #[allow(dead_code)]
-    pub fn get_type_name(&self, index: usize) -> &String {
+    pub fn get_type_name(&self, index: u32) -> &String {
         &self.types.iter().find(|(_, i)| **i == index).unwrap().0
     }
 
     #[allow(dead_code)]
-    pub fn get_action_index(&self, name: &str) -> usize {
+    pub fn get_action_index(&self, name: &str) -> u32 {
         assert!(
             self.actions.contains_key(name),
             "Found undeclared action: {}",
@@ -72,7 +72,7 @@ impl World {
     }
 
     #[allow(dead_code)]
-    pub fn get_action_name(&self, index: usize) -> &String {
+    pub fn get_action_name(&self, index: u32) -> &String {
         &self.actions.iter().find(|(_, i)| **i == index).unwrap().0
     }
 
@@ -82,7 +82,7 @@ impl World {
     }
 
     #[allow(dead_code)]
-    pub fn get_meta_index(&self, name: &str) -> usize {
+    pub fn get_meta_index(&self, name: &str) -> u32 {
         assert!(
             self.meta_actions.contains_key(name),
             "Found undeclared action: {}",
@@ -92,7 +92,7 @@ impl World {
     }
 
     #[allow(dead_code)]
-    pub fn get_meta_name(&self, index: usize) -> &String {
+    pub fn get_meta_name(&self, index: u32) -> &String {
         &self
             .meta_actions
             .iter()
@@ -102,7 +102,7 @@ impl World {
     }
 
     #[allow(dead_code)]
-    pub fn get_predicate_index(&self, name: &str) -> usize {
+    pub fn get_predicate_index(&self, name: &str) -> u32 {
         assert!(
             self.predicates.contains_key(name),
             "Found undeclared predicate: {}",
@@ -112,7 +112,7 @@ impl World {
     }
 
     #[allow(dead_code)]
-    pub fn get_predicate_name(&self, index: usize) -> &String {
+    pub fn get_predicate_name(&self, index: u32) -> &String {
         &self
             .predicates
             .iter()
@@ -121,12 +121,12 @@ impl World {
             .0
     }
 
-    pub fn get_object_count(&self) -> usize {
-        self.objects.len()
+    pub fn get_object_count(&self) -> u32 {
+        self.objects.len() as u32
     }
 
     #[allow(dead_code)]
-    pub fn get_object_index(&self, name: &str) -> usize {
+    pub fn get_object_index(&self, name: &str) -> u32 {
         assert!(
             self.objects.contains_key(name),
             "Found undeclared object: {}",
@@ -136,22 +136,22 @@ impl World {
     }
 
     #[allow(dead_code)]
-    pub fn get_object_indexes(&self, indexes: &Vec<String>) -> Vec<usize> {
+    pub fn get_object_indexes(&self, indexes: &Vec<String>) -> Vec<u32> {
         indexes.iter().map(|i| self.get_object_index(i)).collect()
     }
 
     #[allow(dead_code)]
-    pub fn get_object_name(&self, index: usize) -> &String {
+    pub fn get_object_name(&self, index: u32) -> &String {
         &self.objects.iter().find(|(_, i)| **i == index).unwrap().0
     }
 
     #[allow(dead_code)]
-    pub fn get_object_names(&self, indexes: &Vec<usize>) -> Vec<&String> {
+    pub fn get_object_names(&self, indexes: &Vec<u32>) -> Vec<&String> {
         indexes.iter().map(|i| self.get_object_name(*i)).collect()
     }
 
     #[allow(dead_code)]
-    pub fn get_object_names_cloned(&self, indexes: &Vec<usize>) -> Vec<String> {
+    pub fn get_object_names_cloned(&self, indexes: &Vec<u32>) -> Vec<String> {
         indexes
             .iter()
             .map(|i| self.get_object_name(*i).to_owned())
@@ -159,17 +159,17 @@ impl World {
     }
 }
 
-fn extract_tyes(types: &Option<Types>) -> HashMap<String, usize> {
-    let mut index_map: HashMap<String, usize> = HashMap::new();
+fn extract_tyes(types: &Option<Types>) -> HashMap<String, u32> {
+    let mut index_map: HashMap<String, u32> = HashMap::new();
 
     if let Some(types) = types {
         for t in types.iter() {
             if !index_map.contains_key(&t.name) {
-                index_map.insert(t.name.to_owned(), index_map.len());
+                index_map.insert(t.name.to_owned(), index_map.len() as u32);
             }
             for t in t.sub_types.iter() {
                 if !index_map.contains_key(t) {
-                    index_map.insert(t.to_owned(), index_map.len());
+                    index_map.insert(t.to_owned(), index_map.len() as u32);
                 }
             }
         }
@@ -178,39 +178,39 @@ fn extract_tyes(types: &Option<Types>) -> HashMap<String, usize> {
     index_map
 }
 
-fn extract_predicates(predicates: &Predicates) -> HashMap<String, usize> {
+fn extract_predicates(predicates: &Predicates) -> HashMap<String, u32> {
     predicates
         .iter()
         .enumerate()
-        .map(|(i, p)| (p.name.to_owned(), i))
+        .map(|(i, p)| (p.name.to_owned(), i as u32))
         .collect()
 }
 
-fn extract_actions(actions: &Actions) -> HashMap<String, usize> {
+fn extract_actions(actions: &Actions) -> HashMap<String, u32> {
     actions
         .iter()
         .enumerate()
-        .map(|(i, a)| (a.name.to_owned(), i))
+        .map(|(i, a)| (a.name.to_owned(), i as u32))
         .collect()
 }
 
 fn extract_meta_actions(
-    actions: &HashMap<String, usize>,
+    actions: &HashMap<String, u32>,
     meta_actions: &Actions,
-) -> HashMap<String, usize> {
-    let mut index_map: HashMap<String, usize> = HashMap::new();
+) -> HashMap<String, u32> {
+    let mut index_map: HashMap<String, u32> = HashMap::new();
     for (i, a) in meta_actions.iter().enumerate() {
         if !actions.contains_key(&a.name) {
-            index_map.insert(a.name.to_owned(), i);
+            index_map.insert(a.name.to_owned(), i as u32);
         }
     }
     index_map
 }
 
-fn extract_objects(objects: &Objects) -> HashMap<String, usize> {
+fn extract_objects(objects: &Objects) -> HashMap<String, u32> {
     objects
         .iter()
         .enumerate()
-        .map(|(i, o)| (o.name.to_owned(), i))
+        .map(|(i, o)| (o.name.to_owned(), i as u32))
         .collect()
 }

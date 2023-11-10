@@ -1,6 +1,9 @@
 use spingus::{domain::Domain, problem::Problem};
 
-use crate::world::World;
+use crate::{
+    tools::{status_print, Status},
+    world::World,
+};
 
 use self::{
     actions::{Action, Actions},
@@ -16,12 +19,12 @@ pub mod facts;
 mod objects;
 pub mod operator;
 mod parameters;
-mod permute;
+pub mod permute;
 mod predicates;
 mod types;
 
 pub struct Instance {
-    types: Option<Types>,
+    pub types: Option<Types>,
     predicates: Predicates,
     actions: Actions,
     meta_actions: Actions,
@@ -38,14 +41,20 @@ impl Instance {
         problem: spingus::problem::Problem,
         meta_domain: spingus::domain::Domain,
     ) -> Self {
+        status_print(Status::Init, "Generating types");
         let types = match domain.types.to_owned() {
             Some(types) => Some(Types::new(types)),
             None => None,
         };
+        status_print(Status::Init, "Generating predicates");
         let predicates = Predicates::new(domain.predicates.to_owned());
+        status_print(Status::Init, "Generating actions");
         let actions = Actions::new(&predicates, domain.actions.to_owned());
+        status_print(Status::Init, "Generating meta actions");
         let meta_actions = Actions::new(&predicates, meta_domain.actions.to_owned());
+        status_print(Status::Init, "Generating objects");
         let objects = Objects::new(problem.objects.to_owned());
+        status_print(Status::Init, "Generating facts");
         let facts = Facts::new(&types, &predicates, &actions, &objects, &problem.inits);
 
         Self {
@@ -63,8 +72,8 @@ impl Instance {
 
     pub fn get_action(&self, name: &str) -> &Action {
         match World::global().is_meta_action(name) {
-            true => &self.meta_actions.actions[World::global().get_meta_index(name)],
-            false => &self.actions.actions[World::global().get_action_index(name)],
+            true => &self.meta_actions.actions[World::global().get_meta_index(name) as usize],
+            false => &self.actions.actions[World::global().get_action_index(name) as usize],
         }
     }
 
@@ -78,7 +87,7 @@ impl Instance {
         )
     }
 
-    pub fn get_fact_string(&self, index: usize) -> String {
+    pub fn get_fact_string(&self, index: u32) -> String {
         let predicate = self.facts.fact_predicate(index);
         let predicate = World::global().get_predicate_name(predicate);
         let parameters = self.facts.fact_parameters(index);

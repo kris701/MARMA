@@ -9,7 +9,7 @@ use cache::generation::{generate_cache, CacheMethod};
 use reconstruction::reconstruction::reconstruct;
 use spingus::domain::parse_domain;
 use spingus::problem::parse_problem;
-use spingus::sas_plan::export_sas;
+use spingus::sas_plan::{export_sas, SASPlan};
 use tools::time::init_time;
 use tools::Status;
 
@@ -55,13 +55,15 @@ pub struct Args {
     /// Type of caching
     #[arg(long, default_value = "hash")]
     cache_method: CacheMethod,
-    /// Stop after translation, mainly used for debugging
-    #[arg(long, num_args = 0)]
-    translate_only: bool,
     /// Path to val
     /// If given checks reconstructed plan with VAL
     #[arg(short, long)]
     val: Option<PathBuf>,
+}
+
+// TODO: Make plan object with this
+fn contains_meta(plan: &SASPlan) -> bool {
+    plan.iter().any(|s| World::global().is_meta_action(&s.name))
 }
 
 fn main() {
@@ -84,37 +86,41 @@ fn main() {
     status_print(Status::Init, "Generating world");
     let world = World::generate(&domain, &meta_domain, &problem);
     let _ = WORLD.set(world);
+    status_print(Status::Init, "Finding fast downward");
+    let downward = Downward::new(&args.downward, &args.temp_dir);
+    status_print(Status::Init, "Checking plan for meta actions");
+    let meta_plan = downward.find_or_solve(&args.meta_domain, &args.problem, &args.solution);
+    if !contains_meta(&meta_plan) {
+        status_print(Status::Init, "None found. Exiting.");
+        return;
+    }
+    status_print(Status::Init, "Plan contains meta actions. Continuing");
     status_print(Status::Init, "Generating instance");
     let instance = Instance::new(domain, problem, meta_domain.to_owned());
     let cache = generate_cache(&instance, &args.cache, args.cache_method);
-    if !args.translate_only {
-        status_print(Status::Reconstruction, "Finding fast downward");
-        let downward = Downward::new(&args.downward, &args.temp_dir);
-        status_print(Status::Reconstruction, "Finding meta solution downward");
-        let meta_plan = downward.find_or_solve(&args.meta_domain, &args.problem, &args.solution);
-        let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
-        if let Some(val_path) = args.val {
-            status_print(Status::Validation, "Checking VAL");
-            if check_val(
-                &args.domain,
-                &args.problem,
-                &val_path,
-                &args.temp_dir,
-                &plan,
-            ) {
-                println!("---VALID---");
-            } else {
-                println!("---NOT VALID---");
-            }
+    status_print(Status::Reconstruction, "Finding meta solution downward");
+    let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
+    if let Some(val_path) = args.val {
+        status_print(Status::Validation, "Checking VAL");
+        if check_val(
+            &args.domain,
+            &args.problem,
+            &val_path,
+            &args.temp_dir,
+            &plan,
+        ) {
+            println!("---VALID---");
+        } else {
+            println!("---NOT VALID---");
         }
-        match args.out {
-            Some(path) => {
-                let plan_export = export_sas(&plan);
-                fs::write(path, plan_export).unwrap();
-            }
-            None => {
-                println!("Final plan had {} steps", plan.len());
-            }
+    }
+    match args.out {
+        Some(path) => {
+            let plan_export = export_sas(&plan);
+            fs::write(path, plan_export).unwrap();
+        }
+        None => {
+            println!("Final plan had {} steps", plan.len());
         }
     }
 }

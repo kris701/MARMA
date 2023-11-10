@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use clap::ValueEnum;
 
-use super::{cache_data::read_cache, Cache};
+use super::{cache_data::read_cache, lifted::LiftedCache, Cache};
 use crate::{
     cache::hash_cache::HashCache,
     instance::Instance,
@@ -13,6 +13,7 @@ use crate::{
 pub enum CacheMethod {
     #[default]
     Hash,
+    Lifted,
 }
 
 pub fn generate_cache(
@@ -25,6 +26,7 @@ pub fn generate_cache(
         let data = read_cache(path);
         match cache_type {
             CacheMethod::Hash => Some(Box::new(HashCache::new(instance, data))),
+            CacheMethod::Lifted => Some(Box::new(LiftedCache::new(instance, data))),
         }
     } else {
         return None;

@@ -1,12 +1,12 @@
 use crate::world::World;
 
 pub struct Objects {
-    object_types: Vec<Option<usize>>,
+    object_types: Vec<Option<u32>>,
 }
 
 impl Objects {
     pub fn new(o_objects: spingus::problem::object::Objects) -> Self {
-        let mut object_types: Vec<Option<usize>> = Vec::new();
+        let mut object_types: Vec<Option<u32>> = Vec::new();
 
         for object in o_objects {
             let type_index = match object.type_name {
@@ -26,7 +26,7 @@ impl Objects {
         Self { object_types }
     }
 
-    pub fn get_type(&self, object_index: usize) -> &Option<usize> {
-        &self.object_types[object_index]
+    pub fn get_type(&self, object_index: u32) -> &Option<u32> {
+        &self.object_types[object_index as usize]
     }
 }
