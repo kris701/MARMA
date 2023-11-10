@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using System.Runtime.InteropServices;
 
 namespace MetaActions.Learn
 {
@@ -16,5 +17,7 @@ namespace MetaActions.Learn
         public string OutputPath { get; set; } = "output/train";
         [Option("rebuild", Required = false, HelpText = "Rebuild toolchain?", Default = false)]
         public bool Rebuild { get; set; } = false;
+        [Option("useful-check", Required = false, HelpText = "Check for useful meta actions?", Default = false)]
+        public bool Useful { get; set; } = false;
     }
 }
