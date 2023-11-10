@@ -210,7 +210,7 @@ namespace MetaActions.Learn
                 {
                     fdCaller.Arguments.Add(PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"), "");
                     fdCaller.Arguments.Add("--alias", "lama-first");
-                    fdCaller.Arguments.Add("--overall-time-limit", $"1m");
+                    fdCaller.Arguments.Add("--overall-time-limit", "5m");
                     fdCaller.Arguments.Add("--plan-file", "plan.plan");
                     fdCaller.Arguments.Add("metaDomain.pddl", "");
                     fdCaller.Arguments.Add(problem.FullName, "");
