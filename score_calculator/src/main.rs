@@ -12,13 +12,7 @@ struct Record {
     problem: String,
     #[allow(dead_code)]
     #[serde(deserialize_with = "csv::invalid_option")]
-    memory_used: Option<u64>,
-    #[allow(dead_code)]
-    #[serde(deserialize_with = "csv::invalid_option")]
     total_time: Option<f64>,
-    #[allow(dead_code)]
-    #[serde(deserialize_with = "csv::invalid_option")]
-    search_time: Option<f64>,
 }
 
 fn read() -> Result<Vec<Record>, Box<dyn Error>> {
