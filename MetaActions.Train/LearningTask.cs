@@ -4,10 +4,12 @@ using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Parsers;
+using PDDLSharp.Parsers.FastDownward.Plans;
 using PDDLSharp.Parsers.PDDL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Tools;
@@ -157,16 +159,22 @@ namespace MetaActions.Learn
                 metaActionCounter++;
             }
             Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green, false);
-            Print($"Generating meta domain...", ConsoleColor.Blue);
 
-            GenerateMetaDomain(domain, validMetaActions, outPath);
+            Print($"Generating initial meta domain...", ConsoleColor.Blue);
+            GenerateMetaDomain(domain, validMetaActions, outPath, tempPath);
+            Print($"Done!", ConsoleColor.Green);
 
+            Print("Checking for meta action usefulness...", ConsoleColor.Blue);
+            validMetaActions = GetUsefulMetaActions(validMetaActions, problems, tempPath);
+            Print($"A total of {validMetaActions.Count} useful meta actions was found.", ConsoleColor.Blue, false);
+            Print($"Done!", ConsoleColor.Green);
+
+            Print($"Generating final meta domain...", ConsoleColor.Blue);
+            GenerateMetaDomain(domain, validMetaActions, outPath, tempPath);
             Print($"Done!", ConsoleColor.Green);
 
             Print($"Copying testing problems...", ConsoleColor.Blue);
-
             CopyTestingProblems(testProblems, _outProblems);
-
             Print($"Done!", ConsoleColor.Green);
 
             return _domainName;
@@ -183,6 +191,49 @@ namespace MetaActions.Learn
             ConsoleHelper.WriteLineColor($"\t[{_domainName}] {text}", color);
 #endif
             }
+        }
+
+        private static List<FileInfo> GetUsefulMetaActions(List<FileInfo> metaActions, List<FileInfo> problems, string tempFolder)
+        {
+            var useful = new List<FileInfo>();
+
+            var listener = new ErrorListener();
+            var planParser = new FastDownwardPlanParser(listener);
+
+            bool any = false;
+            foreach(var problem in problems)
+            {
+                if (useful.Count == metaActions.Count)
+                    break;
+
+                using (ArgsCaller fdCaller = new ArgsCaller("python3"))
+                {
+                    fdCaller.Arguments.Add(PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"), "");
+                    fdCaller.Arguments.Add("--alias", "lama-first");
+                    fdCaller.Arguments.Add("--overall-time-limit", $"1m");
+                    fdCaller.Arguments.Add("--plan-file", "plan.plan");
+                    fdCaller.Arguments.Add("metaDomain.pddl", "");
+                    fdCaller.Arguments.Add(problem.FullName, "");
+                    fdCaller.Process.StartInfo.WorkingDirectory = tempFolder;
+                    if (fdCaller.Run() == 0)
+                    {
+                        var plan = planParser.Parse(new FileInfo(Path.Combine(tempFolder, "plan.plan")));
+                        var used = metaActions.Where(x => plan.Plan.Any(y => y.ActionName == x.Name.Replace(x.Extension, "")));
+                        foreach (var use in used)
+                        {
+                            if (!useful.Contains(use))
+                            {
+                                useful.Add(use);
+                                any = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!any)
+                throw new Exception($"Out of {metaActions.Count} valid meta actions, none was used in all the {problems.Count} problems.");
+
+            return useful;
         }
 
         private static void CopyFilesRecursively(string sourcePath, string targetPath)
@@ -216,7 +267,7 @@ namespace MetaActions.Learn
             }
         }
 
-        private void GenerateMetaDomain(FileInfo domainFile, List<FileInfo> metaActionFiles, string outFolder)
+        private void GenerateMetaDomain(FileInfo domainFile, List<FileInfo> metaActionFiles, string outFolder, string tempFolder)
         {
             IErrorListener listener = new ErrorListener();
             IParser<INode> parser = new PDDLParser(listener);
@@ -232,6 +283,7 @@ namespace MetaActions.Learn
                 domain.Actions.Add(metaAction);
             }
             generator.Generate(domain, Path.Combine(outFolder, "metaDomain.pddl"));
+            generator.Generate(domain, Path.Combine(tempFolder, "metaDomain.pddl"));
         }
 
         private void ExtractMacrosFromPlans(FileInfo domain, string macroPlans, string outFolder)
