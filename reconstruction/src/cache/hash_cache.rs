@@ -11,7 +11,6 @@ use crate::{
     },
     state::State,
     tools::{status_print, Status},
-    world::World,
 };
 
 use super::{cache_data::CacheData, generate_plan, Cache};

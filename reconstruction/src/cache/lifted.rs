@@ -68,19 +68,20 @@ impl Cache for LiftedCache {
             let candidates = replacement.candidates.clone();
             let permutations = permute_unary(candidates);
             for permutation in permutations.into_iter() {
-                let operator = extract_from_action(&instance, &permutation, action).unwrap();
-                if desired.iter().any(|(i, v)| match v {
-                    true => !operator.eff_pos.contains(&i),
-                    false => !operator.eff_neg.contains(&i),
-                } || !init.is_legal(&operator)) {
-                    continue;
+                if let Some(operator) = extract_from_action(&instance, &permutation, action) {
+                    if desired.iter().any(|(i, v)| match v {
+                        true => !operator.eff_pos.contains(&i),
+                        false => !operator.eff_neg.contains(&i),
+                    } || !init.is_legal(&operator)) {
+                        continue;
+                    }
+                    return Some(generate_plan(
+                        instance,
+                        &replacement.action,
+                        &replacement.plan,
+                        &permutation,
+                    ));
                 }
-                return Some(generate_plan(
-                    instance,
-                    &replacement.action,
-                    &replacement.plan,
-                    &permutation,
-                ));
             }
         }
         None
