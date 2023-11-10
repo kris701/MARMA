@@ -1,11 +1,14 @@
 ﻿using PDDLSharp.CodeGenerators;
 using PDDLSharp.CodeGenerators.PDDL;
 using PDDLSharp.ErrorListeners;
+using PDDLSharp.Models.FastDownward.Plans;
 using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
+using PDDLSharp.Models.PDDL.Problem;
 using PDDLSharp.Parsers;
 using PDDLSharp.Parsers.FastDownward.Plans;
 using PDDLSharp.Parsers.PDDL;
+using PDDLSharp.Toolkit.MacroGenerators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +24,7 @@ namespace MetaActions.Learn
         private string _tempProblemPath = "problems";
         private string _tempMacroPath = "macros";
         private string _tempMacroTempPath = "macrosTemp";
-        private string _tempCSMPath = "CSMsTemp";
+        private string _tempMacroGeneratorPath = "macrosGeneratorTemp";
         private string _tempMetaActionPath = "metaActions";
         private string _tempCompiledPath = "compiled";
         private string _tempVerificationPath = "verification";
@@ -77,7 +80,7 @@ namespace MetaActions.Learn
             _tempProblemPath = Path.Combine(tempPath, _tempProblemPath);
             _tempMacroPath = Path.Combine(tempPath, _tempMacroPath);
             _tempMacroTempPath = Path.Combine(tempPath, _tempMacroTempPath);
-            _tempCSMPath = Path.Combine(tempPath, _tempCSMPath);
+            _tempMacroGeneratorPath = Path.Combine(tempPath, _tempMacroGeneratorPath);
             _tempMetaActionPath = Path.Combine(tempPath, _tempMetaActionPath);
             _tempCompiledPath = Path.Combine(tempPath, _tempCompiledPath);
             _tempVerificationPath = Path.Combine(tempPath, _tempVerificationPath);
@@ -89,7 +92,7 @@ namespace MetaActions.Learn
             PathHelper.RecratePath(_tempProblemPath);
             PathHelper.RecratePath(_tempMacroPath);
             PathHelper.RecratePath(_tempMacroTempPath);
-            PathHelper.RecratePath(_tempCSMPath);
+            PathHelper.RecratePath(_tempMacroGeneratorPath);
             PathHelper.RecratePath(_tempMetaActionPath);
             PathHelper.RecratePath(_tempCompiledPath);
             PathHelper.RecratePath(_tempVerificationPath);
@@ -102,13 +105,8 @@ namespace MetaActions.Learn
 
             Print($"There is a total of {problems.Count} problems to train with.", ConsoleColor.Blue);
 
-            Print($"Copying CSM to temp", ConsoleColor.Blue);
-            // Make a temp copy of CSMs, since it cant handle multiple runs at the same time.
-            CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/src"), Path.Combine(_tempCSMPath, "src"));
-            CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/scripts"), Path.Combine(_tempCSMPath, "scripts"));
-            Print($"Generating macros", ConsoleColor.Blue);
-            List<FileInfo> allMacros = GenerateMacros(domain.FullName);
-            Print($"A total of {allMacros.Count} macros was found.", ConsoleColor.Blue);
+            //var allMacros = GetCSMMacros(domain);
+            var allMacros = GetPDDLSharpMacros(domain, problems);
             if (allMacros.Count == 0)
                 return _domainName;
 
@@ -143,6 +141,7 @@ namespace MetaActions.Learn
                     {
                         Print($"\tMeta action was invalid in problem '{problem.Name}'.", ConsoleColor.Red);
                         allValid = false;
+                        break;
                     }
                     problemCounter++;
                 }
@@ -153,7 +152,6 @@ namespace MetaActions.Learn
                     Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
 
                     ExtractMacrosFromPlans(domain, _tempReplacementsPath, _outCache);
-                    break;
                 }
                 metaActionCounter++;
             }
@@ -179,6 +177,86 @@ namespace MetaActions.Learn
             return _domainName;
         }
 
+        private List<FileInfo> GetCSMMacros(FileInfo domain)
+        {
+            var checkPath = Path.Combine(_macroCachePath, _runHash.ToString());
+            if (Directory.Exists(checkPath) && _runHash != -1)
+            {
+                Print($"Using macros from cache '{_runHash}'", ConsoleColor.Yellow);
+                CopyFilesRecursively(checkPath, _tempMacroPath);
+            }
+            else
+            {
+                Print($"Copying CSM to temp", ConsoleColor.Blue);
+                // Make a temp copy of CSMs, since it cant handle multiple runs at the same time.
+                CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/src"), Path.Combine(_tempMacroGeneratorPath, "src"));
+                CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/scripts"), Path.Combine(_tempMacroGeneratorPath, "scripts"));
+
+                Print($"Generating macros with CSM", ConsoleColor.Blue);
+                var macroGenerator = ArgsCallerBuilder.GetRustRunner("macros");
+                macroGenerator.Arguments.Add("-d", domain.FullName);
+                macroGenerator.Arguments.Add("-p", _tempProblemPath);
+                macroGenerator.Arguments.Add("-o", _tempMacroPath);
+                macroGenerator.Arguments.Add("-t", _tempMacroTempPath);
+                macroGenerator.Arguments.Add("-c", _tempMacroGeneratorPath);
+                macroGenerator.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
+                if (macroGenerator.Run() != 0)
+                    throw new Exception("Macro generation failed!");
+
+                PathHelper.RecratePath(checkPath);
+                CopyFilesRecursively(_tempMacroPath, checkPath);
+            }
+            return new DirectoryInfo(_tempMacroPath).GetFiles().ToList();
+        }
+
+        private List<FileInfo> GetPDDLSharpMacros(FileInfo domain, List<FileInfo> problems)
+        {
+            var checkPath = Path.Combine(_macroCachePath, _runHash.ToString());
+            if (Directory.Exists(checkPath) && _runHash != -1)
+            {
+                Print($"Using macros from cache '{_runHash}'", ConsoleColor.Yellow);
+                CopyFilesRecursively(checkPath, _tempMacroPath);
+            }
+            else
+            {
+                Print($"Generating macros with PDDLSharp", ConsoleColor.Blue);
+                IErrorListener listener = new ErrorListener();
+                IParser<INode> parser = new PDDLParser(listener);
+                var planParser = new FDPlanParser(listener);
+                var plans = new List<ActionPlan>();
+                foreach (var problem in problems)
+                {
+                    using (ArgsCaller fdCaller = new ArgsCaller("python3"))
+                    {
+                        fdCaller.StdOut += (s, o) => { };
+                        fdCaller.StdErr += (s, o) => { };
+                        fdCaller.Arguments.Add(PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"), "");
+                        fdCaller.Arguments.Add("--alias", "lama-first");
+                        fdCaller.Arguments.Add("--overall-time-limit", "5m");
+                        fdCaller.Arguments.Add("--plan-file", "plan.plan");
+                        fdCaller.Arguments.Add(domain.FullName, "");
+                        fdCaller.Arguments.Add(problem.FullName, "");
+                        fdCaller.Process.StartInfo.WorkingDirectory = _tempMacroGeneratorPath;
+                        if (fdCaller.Run() == 0)
+                            plans.Add(planParser.Parse(new FileInfo(Path.Combine(_tempMacroGeneratorPath, "plan.plan"))));
+                    }
+                }
+
+                var domainDecl = parser.ParseAs<DomainDecl>(domain);
+                var macroGenerator = new SequentialMacroGenerator(new PDDLDecl(domainDecl, new ProblemDecl()));
+                var macros = macroGenerator.FindMacros(plans, 10);
+                var codeGenerator = new PDDLCodeGenerator(listener);
+                int counter = 0;
+                foreach (var macro in macros)
+                {
+                    var newMacro = Path.Combine(_tempMacroPath, $"{counter++}.pddl");
+                    codeGenerator.Generate(macro, newMacro);
+                }
+                CopyFilesRecursively(_tempMacroPath, checkPath);
+            }
+            return new DirectoryInfo(_tempMacroPath).GetFiles().ToList();
+        }
+
         private void Print(string text, ConsoleColor color)
         {
             ConsoleHelper.WriteLineColor($"\t[{_domainName}] {text}", color);
@@ -189,7 +267,7 @@ namespace MetaActions.Learn
             var useful = new List<FileInfo>();
 
             var listener = new ErrorListener();
-            var planParser = new FastDownwardPlanParser(listener);
+            var planParser = new FDPlanParser(listener);
 
             int counter = 1;
             foreach(var problem in problems)
@@ -316,7 +394,7 @@ namespace MetaActions.Learn
                 macroGenerator.Arguments.Add("-p", _tempProblemPath);
                 macroGenerator.Arguments.Add("-o", _tempMacroPath);
                 macroGenerator.Arguments.Add("-t", _tempMacroTempPath);
-                macroGenerator.Arguments.Add("-c", _tempCSMPath);
+                macroGenerator.Arguments.Add("-c", _tempMacroGeneratorPath);
                 macroGenerator.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
                 if (macroGenerator.Run() != 0)
                     throw new Exception("Macro generation failed!");

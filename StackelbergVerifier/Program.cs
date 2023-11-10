@@ -46,6 +46,13 @@ namespace StacklebergVerifier
             Console.WriteLine();
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
+            if (process.ExitCode != 0)
+            {
+                _returnCode = 1;
+                ConsoleHelper.WriteLineColor("== Frontier is not valid ==", ConsoleColor.Red);
+                return;
+            }
+
             ConsoleHelper.WriteLineColor("Checking Frontier...");
             if (IsFrontierValid(Path.Combine(opts.OutputPath, "pareto_frontier.json")))
             {
