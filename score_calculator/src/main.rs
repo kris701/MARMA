@@ -28,7 +28,7 @@ pub struct Args {
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
     let records = get_records(&args.input)?;
-    let report = generate_report(records, &args.time_limit);
+    let report = generate_report(records, &args.time_limit.as_secs_f64());
     match &args.out {
         Some(path) => fs::write(path, report)?,
         None => print!("{}", report),

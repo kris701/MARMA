@@ -1,25 +1,22 @@
-use std::{collections::HashMap, time::Duration};
+use std::collections::HashMap;
 
 use crate::input_handling::Record;
 
-fn calculate_score(time_used: &Duration, time_limit: &Duration) -> f64 {
-    let time_used = time_used.as_secs_f64();
-    if time_used < 1.0 {
+fn calculate_score(time_used: &f64, time_limit: &f64) -> f64 {
+    if *time_used < 1.0 {
         return 1.0;
     } else {
-        let time_limit = time_limit.as_secs_f64();
         return 1.0 - (time_used.log2() / time_limit.log2());
     }
 }
 
-fn generate_scores(records: Vec<Record>, time_limit: &Duration) -> HashMap<String, f64> {
+fn generate_scores(records: Vec<Record>, time_limit: &f64) -> HashMap<String, f64> {
     let mut scores: HashMap<String, f64> = HashMap::new();
     for record in records.into_iter() {
         if !record.solved {
             continue;
         }
-        if let Some(total_time) = record.total_time {
-            let time_used = Duration::from_secs_f64(total_time);
+        if let Some(time_used) = record.total_time {
             let score = calculate_score(&time_used, time_limit);
 
             match scores.get(&record.name) {
@@ -31,7 +28,7 @@ fn generate_scores(records: Vec<Record>, time_limit: &Duration) -> HashMap<Strin
     scores
 }
 
-pub fn generate_report(records: Vec<Record>, time_limit: &Duration) -> String {
+pub fn generate_report(records: Vec<Record>, time_limit: &f64) -> String {
     let scores = generate_scores(records, time_limit);
     let mut s = String::new();
     s.push_str("name,score\n");
