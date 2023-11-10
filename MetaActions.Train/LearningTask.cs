@@ -149,7 +149,7 @@ namespace MetaActions.Learn
                 }
                 if (allValid)
                 {
-                    Print($"\tMeta action was valid in all {problems.Count} problems.", ConsoleColor.Magenta);
+                    Print($"\tMeta action was valid in all {problems.Count} problems.", ConsoleColor.Green);
                     validMetaActions.Add(metaAction);
                     Print($"Extracting macros from plans...", ConsoleColor.Magenta);
 
