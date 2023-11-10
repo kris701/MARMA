@@ -33,6 +33,8 @@ namespace StacklebergVerifier
                 throw new FileNotFoundException($"Problem file not found: {opts.ProblemFilePath}");
             if (!File.Exists(opts.StackelbergPath))
                 throw new FileNotFoundException($"Stackelberg planner file not found: {opts.StackelbergPath}");
+            if (File.Exists(Path.Combine(opts.OutputPath, "pareto_frontier.json")))
+                File.Delete(Path.Combine(opts.OutputPath, "pareto_frontier.json"));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor("Executing Stackelberg Planner");
