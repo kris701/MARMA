@@ -58,7 +58,7 @@ namespace MetaActions.Learn
                 var tempPath = Path.Combine(opts.TempPath, domainName);
                 var outPath = Path.Combine(opts.OutputPath, domainName);
 
-                runTasks.Add(new Task<string>(() => new LearningTask().LearnDomain(tempPath, outPath, domain, domainTrainProblems, domainTestProblems, opts.Useful), token));
+                runTasks.Add(new Task<string>(() => new LearningTask().LearnDomain(tempPath, outPath, domain, domainTrainProblems, domainTestProblems, opts.Useful, opts.MacroLimit), token));
             }
 
             try
