@@ -1,3 +1,4 @@
+use pathsearch::find_executable_in_path;
 use spingus::sas_plan::{parse_sas, SASPlan};
 use std::{
     fs,
@@ -13,7 +14,12 @@ pub struct Downward {
 }
 
 impl Downward {
-    pub fn new(path: &PathBuf, temp_dir: &PathBuf) -> Self {
+    pub fn new(path: &Option<PathBuf>, temp_dir: &PathBuf) -> Self {
+        status_print(Status::Init, "Finding fast downward");
+        let path = match path {
+            Some(path) => path.into(),
+            None => find_executable_in_path("fast-downward.py").unwrap(),
+        };
         if !Path::new(&path).exists() {
             panic!("Could not find fast downward at given location");
         }
@@ -49,16 +55,14 @@ impl Downward {
         let sas_path = random_file_name(&self.temp_dir);
 
         cmd.args(&[
+            "--alias",
+            "lama-first",
             "--sas-file",
             &sas_path,
             "--plan-file",
             &plan_path,
             domain_path.to_str().unwrap(),
             problem_path.to_str().unwrap(),
-            "--evaluator",
-            "hff=ff()",
-            "--search",
-            "lazy_greedy([hff], preferred=[hff])",
         ]);
 
         let result = self.run(&mut cmd, &plan_path);
