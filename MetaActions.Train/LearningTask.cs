@@ -148,6 +148,18 @@ namespace MetaActions.Learn
                 if (allValid)
                 {
                     Print($"\tMeta action was valid in all {problems.Count} problems.", ConsoleColor.Green);
+
+                    if (useful)
+                    {
+                        Print($"\tGenerating initial meta domain...", ConsoleColor.Magenta);
+                        GenerateMetaDomain(domain, new List<FileInfo>() { metaAction }, outPath, tempPath);
+
+                        Print("\tChecking for meta action usefulness...", ConsoleColor.Magenta);
+                        if (!IsMetaActionUseful(metaAction, problems, tempPath))
+                            continue;
+                        Print("\tMeta Action is Useful!", ConsoleColor.Green);
+                    }
+
                     validMetaActions.Add(metaAction);
                     Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
 
@@ -156,17 +168,6 @@ namespace MetaActions.Learn
                 metaActionCounter++;
             }
             Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green);
-
-            if (useful)
-            {
-                Print($"Generating initial meta domain...", ConsoleColor.Blue);
-                GenerateMetaDomain(domain, validMetaActions, outPath, tempPath);
-
-                Print("Checking for meta action usefulness...", ConsoleColor.Blue);
-                int preCount = validMetaActions.Count;
-                validMetaActions = GetUsefulMetaActions(validMetaActions, problems, tempPath);
-                Print($"A total of {validMetaActions.Count} useful meta actions was found out of {preCount}.", ConsoleColor.Blue);
-            }
 
             Print($"Generating final meta domain...", ConsoleColor.Blue);
             GenerateMetaDomain(domain, validMetaActions, outPath, tempPath);
@@ -262,20 +263,15 @@ namespace MetaActions.Learn
             ConsoleHelper.WriteLineColor($"\t[{_domainName}] {text}", color);
         }
 
-        private List<FileInfo> GetUsefulMetaActions(List<FileInfo> metaActions, List<FileInfo> problems, string tempFolder)
+        private bool IsMetaActionUseful(FileInfo metaAction, List<FileInfo> problems, string tempFolder)
         {
-            var useful = new List<FileInfo>();
-
             var listener = new ErrorListener();
             var planParser = new FDPlanParser(listener);
 
             int counter = 1;
             foreach(var problem in problems)
             {
-                Print($"\tUseful check on problem '{problem.Name}' [{counter++}/{problems.Count}]", ConsoleColor.Magenta);
-
-                if (useful.Count == metaActions.Count)
-                    break;
+                Print($"\t\tUseful check on problem '{problem.Name}' [{counter++}/{problems.Count}]", ConsoleColor.DarkMagenta);
 
                 using (ArgsCaller fdCaller = new ArgsCaller("python3"))
                 {
@@ -291,15 +287,13 @@ namespace MetaActions.Learn
                     if (fdCaller.Run() == 0)
                     {
                         var plan = planParser.Parse(new FileInfo(Path.Combine(tempFolder, "plan.plan")));
-                        var used = metaActions.Where(x => plan.Plan.Any(y => y.ActionName == x.Name.Replace(x.Extension, "")));
-                        foreach (var use in used)
-                            if (!useful.Contains(use))
-                                useful.Add(use);
+                        if (plan.Plan.Any(y => y.ActionName == metaAction.Name.Replace(metaAction.Extension, "")))
+                            return true;
                     }
                 }
             }
 
-            return useful;
+            return false;
         }
 
         private static void CopyFilesRecursively(string sourcePath, string targetPath)
