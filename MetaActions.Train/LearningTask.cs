@@ -143,7 +143,6 @@ namespace MetaActions.Learn
                     {
                         Print($"\tMeta action was invalid in problem '{problem.Name}'.", ConsoleColor.Red);
                         allValid = false;
-                        break;
                     }
                     problemCounter++;
                 }
@@ -154,6 +153,7 @@ namespace MetaActions.Learn
                     Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
 
                     ExtractMacrosFromPlans(domain, _tempReplacementsPath, _outCache);
+                    break;
                 }
                 metaActionCounter++;
             }
@@ -165,8 +165,9 @@ namespace MetaActions.Learn
                 GenerateMetaDomain(domain, validMetaActions, outPath, tempPath);
 
                 Print("Checking for meta action usefulness...", ConsoleColor.Blue);
+                int preCount = validMetaActions.Count;
                 validMetaActions = GetUsefulMetaActions(validMetaActions, problems, tempPath);
-                Print($"A total of {validMetaActions.Count} useful meta actions was found.", ConsoleColor.Blue);
+                Print($"A total of {validMetaActions.Count} useful meta actions was found out of {preCount}.", ConsoleColor.Blue);
             }
 
             Print($"Generating final meta domain...", ConsoleColor.Blue);
@@ -183,20 +184,25 @@ namespace MetaActions.Learn
             ConsoleHelper.WriteLineColor($"\t[{_domainName}] {text}", color);
         }
 
-        private static List<FileInfo> GetUsefulMetaActions(List<FileInfo> metaActions, List<FileInfo> problems, string tempFolder)
+        private List<FileInfo> GetUsefulMetaActions(List<FileInfo> metaActions, List<FileInfo> problems, string tempFolder)
         {
             var useful = new List<FileInfo>();
 
             var listener = new ErrorListener();
             var planParser = new FastDownwardPlanParser(listener);
 
+            int counter = 1;
             foreach(var problem in problems)
             {
+                Print($"\tUseful check on problem '{problem.Name}' [{counter++}/{problems.Count}]", ConsoleColor.Magenta);
+
                 if (useful.Count == metaActions.Count)
                     break;
 
                 using (ArgsCaller fdCaller = new ArgsCaller("python3"))
                 {
+                    fdCaller.StdOut += (s, o) => { };
+                    fdCaller.StdErr += (s, o) => { };
                     fdCaller.Arguments.Add(PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"), "");
                     fdCaller.Arguments.Add("--alias", "lama-first");
                     fdCaller.Arguments.Add("--overall-time-limit", "5m");
