@@ -19,7 +19,7 @@ namespace MetaActions.Learn
         public bool Rebuild { get; set; } = false;
         [Option("useful-check", Required = false, HelpText = "Check for useful meta actions?", Default = false)]
         public bool Useful { get; set; } = false;
-        [Option("macro-limit", Required = false, HelpText = "Upper limit for how many macros are allowed to be made", Default = false)]
+        [Option("macro-limit", Required = false, HelpText = "Upper limit for how many macros are allowed to be made", Default = 10)]
         public int MacroLimit { get; set; } = 10;
     }
 }
