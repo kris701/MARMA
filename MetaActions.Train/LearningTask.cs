@@ -56,7 +56,7 @@ namespace MetaActions.Learn
             }
         }
 
-        public string LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems)
+        public string LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems, bool useful)
         {
             if (domain.Directory == null)
                 throw new FileNotFoundException("Domain does not have a parent directory!");
@@ -160,14 +160,17 @@ namespace MetaActions.Learn
             }
             Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green, false);
 
-            Print($"Generating initial meta domain...", ConsoleColor.Blue);
-            GenerateMetaDomain(domain, validMetaActions, outPath, tempPath);
-            Print($"Done!", ConsoleColor.Green);
+            if (useful)
+            {
+                Print($"Generating initial meta domain...", ConsoleColor.Blue);
+                GenerateMetaDomain(domain, validMetaActions, outPath, tempPath);
+                Print($"Done!", ConsoleColor.Green);
 
-            Print("Checking for meta action usefulness...", ConsoleColor.Blue);
-            validMetaActions = GetUsefulMetaActions(validMetaActions, problems, tempPath);
-            Print($"A total of {validMetaActions.Count} useful meta actions was found.", ConsoleColor.Blue, false);
-            Print($"Done!", ConsoleColor.Green);
+                Print("Checking for meta action usefulness...", ConsoleColor.Blue);
+                validMetaActions = GetUsefulMetaActions(validMetaActions, problems, tempPath);
+                Print($"A total of {validMetaActions.Count} useful meta actions was found.", ConsoleColor.Blue, false);
+                Print($"Done!", ConsoleColor.Green);
+            }
 
             Print($"Generating final meta domain...", ConsoleColor.Blue);
             GenerateMetaDomain(domain, validMetaActions, outPath, tempPath);
