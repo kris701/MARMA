@@ -59,13 +59,13 @@ namespace MetaActions.Learn
             }
         }
 
-        public string LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems, bool useful)
+        public string LearnDomain(string tempPath, string outPath, FileInfo domain, List<FileInfo> trainProblems, List<FileInfo> testProblems, bool useful, int macroLimit)
         {
             if (domain.Directory == null)
                 throw new FileNotFoundException("Domain does not have a parent directory!");
             _domainName = domain.Directory.Name;
 
-            _runHash = GetDeterministicHashCode(domain.FullName).GetHashCode();
+            _runHash = GetDeterministicHashCode(domain.FullName).GetHashCode() + macroLimit;
             foreach(var trainProblem in trainProblems)
                 _runHash ^= GetDeterministicHashCode(trainProblem.FullName).GetHashCode();
 
@@ -106,7 +106,7 @@ namespace MetaActions.Learn
             Print($"There is a total of {problems.Count} problems to train with.", ConsoleColor.Blue);
 
             //var allMacros = GetCSMMacros(domain);
-            var allMacros = GetPDDLSharpMacros(domain, problems);
+            var allMacros = GetPDDLSharpMacros(domain, problems, macroLimit);
             if (allMacros.Count == 0)
                 return _domainName;
 
@@ -210,7 +210,7 @@ namespace MetaActions.Learn
             return new DirectoryInfo(_tempMacroPath).GetFiles().ToList();
         }
 
-        private List<FileInfo> GetPDDLSharpMacros(FileInfo domain, List<FileInfo> problems)
+        private List<FileInfo> GetPDDLSharpMacros(FileInfo domain, List<FileInfo> problems, int macroLimit)
         {
             var checkPath = Path.Combine(_macroCachePath, _runHash.ToString());
             if (Directory.Exists(checkPath) && _runHash != -1)
@@ -245,7 +245,7 @@ namespace MetaActions.Learn
 
                 var domainDecl = parser.ParseAs<DomainDecl>(domain);
                 var macroGenerator = new SequentialMacroGenerator(new PDDLDecl(domainDecl, new ProblemDecl()));
-                var macros = macroGenerator.FindMacros(plans, 10);
+                var macros = macroGenerator.FindMacros(plans, macroLimit);
                 var codeGenerator = new PDDLCodeGenerator(listener);
                 int counter = 0;
                 foreach (var macro in macros)
