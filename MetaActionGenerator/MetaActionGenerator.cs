@@ -45,7 +45,10 @@ namespace MetaActionGenerator
                     continue;
 
                 bool areEqual = true;
-                foreach(var pre in asOps[i].Pre)
+                if (asOps[i].Pre.Length == 0 && (asOps[i].Add.Length != 0 || asOps[i].Del.Length != 0))
+                    areEqual = false;
+
+                foreach (var pre in asOps[i].Pre)
                 {
                     if (asOps[i].Del.Length + asOps[i].Add.Length != asOps[i].Pre.Length)
                         areEqual = false;

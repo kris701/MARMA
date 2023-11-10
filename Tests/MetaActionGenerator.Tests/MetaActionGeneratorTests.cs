@@ -113,7 +113,7 @@ namespace MetaActionGenerator.Tests
             // ARRANGE
             var act1 = new ActionDecl("act1");
             act1.Preconditions = new PredicateExp("abc");
-            var act2 = new ActionDecl("act2");
+            var act2 = new ActionDecl("act1");
             act2.Preconditions = new PredicateExp("abc");
             var metaActions = new List<ActionDecl>() { act1, act2 };
             var generator = new MetaActionGenerator();
