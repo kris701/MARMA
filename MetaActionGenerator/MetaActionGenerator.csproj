@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="PDDLSharp" Version="1.1.8" />
+    <PackageReference Include="PDDLSharp" Version="1.3.8" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\blocksworld-macros\0.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\blocksworld-macros\1.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\gripper-macros\macro1.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
