@@ -38,7 +38,7 @@ pub struct Args {
     meta_domain: PathBuf,
     /// Path to fast-downward.
     #[arg(short = 'f')]
-    downward: PathBuf,
+    downward: Option<PathBuf>,
     /// Path to solution for meta domain + problem.
     /// If not provided, uses fast downward to generate it
     #[arg(short = 's')]

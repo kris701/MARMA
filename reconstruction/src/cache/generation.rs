@@ -14,6 +14,7 @@ pub enum CacheMethod {
     #[default]
     Hash,
     Lifted,
+    None
 }
 
 pub fn generate_cache(
@@ -27,6 +28,7 @@ pub fn generate_cache(
         match cache_type {
             CacheMethod::Hash => Some(Box::new(HashCache::new(instance, data))),
             CacheMethod::Lifted => Some(Box::new(LiftedCache::new(instance, data))),
+            CacheMethod::None => None,
         }
     } else {
         return None;
