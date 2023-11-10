@@ -102,22 +102,23 @@ namespace MetaActions.Learn
 
             Print($"There is a total of {problems.Count} problems to train with.", ConsoleColor.Blue);
 
-            Print($"Generating macros", ConsoleColor.Blue, false);
+            Print($"Copying CSM to temp", ConsoleColor.Blue);
             // Make a temp copy of CSMs, since it cant handle multiple runs at the same time.
             CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/src"), Path.Combine(_tempCSMPath, "src"));
             CopyFilesRecursively(PathHelper.RootPath("Dependencies/CSMs/scripts"), Path.Combine(_tempCSMPath, "scripts"));
+            Print($"Generating macros", ConsoleColor.Blue);
             List<FileInfo> allMacros = GenerateMacros(domain.FullName);
-            Print($"A total of {allMacros.Count} macros was found.", ConsoleColor.Blue, false);
+            Print($"A total of {allMacros.Count} macros was found.", ConsoleColor.Blue);
             if (allMacros.Count == 0)
                 return _domainName;
 
-            Print($"Generating meta actions", ConsoleColor.Blue, false);
+            Print($"Generating meta actions", ConsoleColor.Blue);
             List<FileInfo> allMetaActions = GenerateMetaActions();
-            Print($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Blue, false);
+            Print($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Blue);
             if (allMetaActions.Count == 0)
                 return _domainName;
 
-            Print($"Validating meta actions", ConsoleColor.Blue, false);
+            Print($"Validating meta actions", ConsoleColor.Blue);
             List<FileInfo> validMetaActions = new List<FileInfo>();
             int metaActionCounter = 1;
             foreach (var metaAction in allMetaActions)
@@ -153,47 +154,33 @@ namespace MetaActions.Learn
                     Print($"Extracting macros from plans...", ConsoleColor.Blue);
 
                     ExtractMacrosFromPlans(domain, _tempReplacementsPath, _outCache);
-
-                    Print($"Done!", ConsoleColor.Green);
                 }
                 metaActionCounter++;
             }
-            Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green, false);
+            Print($"A total of {validMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green);
 
             if (useful)
             {
                 Print($"Generating initial meta domain...", ConsoleColor.Blue);
                 GenerateMetaDomain(domain, validMetaActions, outPath, tempPath);
-                Print($"Done!", ConsoleColor.Green);
 
                 Print("Checking for meta action usefulness...", ConsoleColor.Blue);
                 validMetaActions = GetUsefulMetaActions(validMetaActions, problems, tempPath);
-                Print($"A total of {validMetaActions.Count} useful meta actions was found.", ConsoleColor.Blue, false);
-                Print($"Done!", ConsoleColor.Green);
+                Print($"A total of {validMetaActions.Count} useful meta actions was found.", ConsoleColor.Blue);
             }
 
             Print($"Generating final meta domain...", ConsoleColor.Blue);
             GenerateMetaDomain(domain, validMetaActions, outPath, tempPath);
-            Print($"Done!", ConsoleColor.Green);
 
             Print($"Copying testing problems...", ConsoleColor.Blue);
             CopyTestingProblems(testProblems, _outProblems);
-            Print($"Done!", ConsoleColor.Green);
 
             return _domainName;
         }
 
-        private void Print(string text, ConsoleColor color, bool debugOnly = true)
+        private void Print(string text, ConsoleColor color)
         {
-# if DEBUG
             ConsoleHelper.WriteLineColor($"\t[{_domainName}] {text}", color);
-# endif
-            if (!debugOnly)
-            {
-#if !DEBUG
-            ConsoleHelper.WriteLineColor($"\t[{_domainName}] {text}", color);
-#endif
-            }
         }
 
         private static List<FileInfo> GetUsefulMetaActions(List<FileInfo> metaActions, List<FileInfo> problems, string tempFolder)
@@ -203,7 +190,6 @@ namespace MetaActions.Learn
             var listener = new ErrorListener();
             var planParser = new FastDownwardPlanParser(listener);
 
-            bool any = false;
             foreach(var problem in problems)
             {
                 if (useful.Count == metaActions.Count)
@@ -223,18 +209,11 @@ namespace MetaActions.Learn
                         var plan = planParser.Parse(new FileInfo(Path.Combine(tempFolder, "plan.plan")));
                         var used = metaActions.Where(x => plan.Plan.Any(y => y.ActionName == x.Name.Replace(x.Extension, "")));
                         foreach (var use in used)
-                        {
                             if (!useful.Contains(use))
-                            {
                                 useful.Add(use);
-                                any = true;
-                            }
-                        }
                     }
                 }
             }
-            if (!any)
-                throw new Exception($"Out of {metaActions.Count} valid meta actions, none was used in all the {problems.Count} problems.");
 
             return useful;
         }
@@ -321,6 +300,7 @@ namespace MetaActions.Learn
             var checkPath = Path.Combine(_macroCachePath, _runHash.ToString());
             if (Directory.Exists(checkPath) && _runHash != -1)
             {
+                Print($"Using macros from cache '{_runHash}'", ConsoleColor.Yellow);
                 CopyFilesRecursively(checkPath, _tempMacroPath);
             }
             else

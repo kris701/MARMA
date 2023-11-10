@@ -8,7 +8,7 @@
       "distributionName": "",
       //"commandLineArgs": "MetaActionGenerator/bin/Debug/net7.0/MetaActionGenerator.dll --domain MetaActionGenerator/bin/Debug/net7.0/TestData/gripper-domain.pddl --macros MetaActionGenerator/bin/Debug/net7.0/TestData/gripper-macros --output MetaActions/gripper",
       //"commandLineArgs": "MetaActionGenerator/bin/Debug/net7.0/MetaActionGenerator.dll --domain MetaActionGenerator/bin/Debug/net7.0/TestData/satellite-domain.pddl --macros MetaActionGenerator/bin/Debug/net7.0/TestData/satellite-macros --output MetaActions/satellite",
-      "commandLineArgs": "MetaActionGenerator/bin/Debug/net7.0/MetaActionGenerator.dll --macros MetaActionGenerator/bin/Debug/net7.0/TestData/gripper-macros --output MetaActions/gripper",
+      "commandLineArgs": "MetaActionGenerator/bin/Debug/net7.0/MetaActionGenerator.dll --macros MetaActionGenerator/bin/Debug/net7.0/TestData/blocksworld-macros --output MetaActions/blocksworld",
       "workingDirectory": "MetaActionGenerator/../"
     }
   }

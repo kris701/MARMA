@@ -47,8 +47,9 @@ namespace MetaActionGenerator
                 bool areEqual = true;
                 foreach(var pre in asOps[i].Pre)
                 {
-                    if (!asOps[i].Del.Any(x => AreFactsEqual(pre, x)) &&
-                        !asOps[i].Add.Any(x => AreFactsEqual(pre, x)))
+                    if (asOps[i].Del.Length + asOps[i].Add.Length != asOps[i].Pre.Length)
+                        areEqual = false;
+                    else if (!asOps[i].Del.Any(x => AreFactsEqual(pre, x)) && !asOps[i].Add.Any(x => AreFactsEqual(pre, x)))
                         areEqual = false;
 
                     if (!areEqual)
