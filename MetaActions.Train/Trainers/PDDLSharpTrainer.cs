@@ -43,6 +43,7 @@ namespace MetaActions.Train.Trainers
 
             Print($"Generating meta actions", ConsoleColor.Blue);
             var allMetaActions = GenerateMetaActions();
+            allMetaActions.Shuffle();
             Print($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Blue);
             if (allMetaActions.Count == 0)
                 return null;

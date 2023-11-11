@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using MetaActions.Train;
+using MetaActions.Train.Tools;
 using MetaActions.Train.Trainers;
 using System.IO.Compression;
 using System.Text.Json;
@@ -40,6 +41,7 @@ namespace MetaActions.Learn
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Executing Training Tasks", ConsoleColor.Blue);
+            ConsoleHelper.WriteLineColor($"Time limit: {opts.TimeLimit}m", ConsoleColor.Blue);
             ExecuteTasks(trainingTasks, opts.Multitask, opts.OutputPath);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
@@ -109,23 +111,9 @@ namespace MetaActions.Learn
                 }
             }
 
-            Shuffle(runTasks);
+            runTasks.Shuffle();
 
             return runTasks;
-        }
-
-        private static Random rng = new Random();
-        public static void Shuffle<T>(IList<T> list)
-        {
-            int n = list.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = rng.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
         }
 
         private static void ExecuteTasks(List<ITrainer> runTasks, bool multitask, string outPath)

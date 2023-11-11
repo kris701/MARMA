@@ -32,7 +32,7 @@ namespace MetaActions.Learn
         public bool Multitask { get; set; } = false;
         [Option("method", Required = false, HelpText = "What training method to use", Default = TrainingMethods.PDDLSharpMacros)]
         public TrainingMethods TrainingMethod { get; set; } = TrainingMethods.PDDLSharpMacros;
-        [Option("timelimit", Required = false, HelpText = "Time limit for each training task, in minutes", Default = 30)]
-        public int TimeLimit { get; set; } = 30;
+        [Option("timelimit", Required = false, HelpText = "Time limit for each training task, in minutes", Default = 120)]
+        public int TimeLimit { get; set; } = 120;
     }
 }
