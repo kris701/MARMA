@@ -9,7 +9,7 @@ use crate::{
     },
     reconstruction::{problem_writing::write_problem, stiching::stich},
     state::State,
-    tools::{generate_progressbar, random_file_name},
+    tools::{generate_progressbar, random_file_name, statbar, status_print, Status},
 };
 
 use super::downward_wrapper::Downward;
@@ -47,7 +47,9 @@ pub fn reconstruct(
 
     let mut found_in_cache: usize = 0;
     let progress_bar = generate_progressbar(meta_actions.len());
+    status_print(Status::Reconstruction, "Generating replacements");
     for (i, operator) in operators.iter().enumerate() {
+        progress_bar.set_message(statbar());
         if !meta_actions.contains(&i) {
             state.apply(operator);
             continue;
@@ -56,14 +58,12 @@ pub fn reconstruct(
         let init = state.clone();
         state.apply(operator);
         if let Some(cache) = cache {
-            progress_bar.set_message("Checking cache");
             if let Some(replacement) = cache.get_replacement(instance, &plan[i], &init, &state) {
                 replacements.push(replacement);
                 found_in_cache += 1;
                 continue;
             }
         }
-        progress_bar.set_message("Using fast downward");
         let problem_file = PathBuf::from(random_file_name(&downward.temp_dir));
         assert_ne!(init, state);
         write_problem(instance, &init, &state, &problem_file);
@@ -81,11 +81,14 @@ pub fn reconstruct(
         }
     }
     progress_bar.finish_and_clear();
-    println!(
-        "found {} out of {} in cache ({})",
-        found_in_cache,
-        meta_actions.len(),
-        found_in_cache as f64 / meta_actions.len() as f64
+    status_print(
+        Status::Reconstruction,
+        &format!(
+            "Found {} of {} in cache ({})",
+            found_in_cache,
+            meta_actions.len(),
+            found_in_cache as f64 / meta_actions.len() as f64
+        ),
     );
     stich(&plan, meta_actions.into_iter().zip(replacements).collect())
 }

@@ -24,9 +24,7 @@ pub fn random_file_name(dir: &PathBuf) -> String {
 }
 
 pub fn generate_progressbar(limit: usize) -> ProgressBar {
-    let bar_style =
-        ProgressStyle::with_template("[{elapsed_precise}] {bar:40} {pos:>4}/{len:4} {msg}")
-            .unwrap();
+    let bar_style = ProgressStyle::with_template("{msg} {bar:40} {pos:>4}/{len:4}").unwrap();
     let bar = ProgressBar::new(limit as u64);
     bar.set_style(bar_style);
     bar
