@@ -56,14 +56,14 @@ namespace MetaActions.Train.Trainers
         internal List<FileInfo> _currentMetaActions = new List<FileInfo>();
         internal Process? _activeProcess;
 
-        protected BaseTrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls, CancellationTokenSource cancellationToken)
+        protected BaseTrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls)
         {
             DomainName = domainName;
             Domain = domain;
             TrainingProblems = trainingProblems;
             TestingProblems = testingProblems;
             TimeLimit = timeLimit;
-            CancellationToken = cancellationToken;
+            CancellationToken = new CancellationTokenSource();
             CancellationToken.Token.Register(Kill);
             TempPath = PathHelper.RootPath(tempPath);
             OutPath = PathHelper.RootPath(outPath);
@@ -188,7 +188,10 @@ namespace MetaActions.Train.Trainers
             stackelCompiler.Arguments.Add("--meta-action", metaAction);
             stackelCompiler.Arguments.Add("--output", _tempCompiledPath);
             if (stackelCompiler.Run() != 0 && !CancellationToken.IsCancellationRequested)
-                throw new Exception("Stackelberg Compiler failed!");
+            {
+                Print("Stackelberg Compilation failed!", ConsoleColor.Red);
+                CancellationToken.Cancel();
+            }
         }
 
         internal bool VerifyMetaAction()
@@ -202,7 +205,10 @@ namespace MetaActions.Train.Trainers
             stackelVerifier.Arguments.Add("--stackelberg", PathHelper.RootPath("Dependencies/stackelberg-planner/src/fast-downward.py"));
             var code = stackelVerifier.Run();
             if (code != 0 && code != 1 && !CancellationToken.IsCancellationRequested)
-                throw new Exception("Stackelberg verifier failed!");
+            {
+                Print("Stackelberg Verification failed!", ConsoleColor.Red);
+                CancellationToken.Cancel();
+            }
             return code == 0;
         }
 
@@ -241,7 +247,10 @@ namespace MetaActions.Train.Trainers
             macroExtractor.Arguments.Add("--follower-plans", macroPlansStr);
             macroExtractor.Arguments.Add("--output", outFolder);
             if (macroExtractor.Run() != 0 && !CancellationToken.IsCancellationRequested)
-                throw new Exception("Macro Extractor failed!");
+            {
+                Print("Macro Extractor failed!", ConsoleColor.Red);
+                CancellationToken.Cancel();
+            }
         }
 
         internal List<FileInfo> GenerateMetaActions()
@@ -251,7 +260,10 @@ namespace MetaActions.Train.Trainers
             metaCaller.Arguments.Add("--macros", _tempMacroPath);
             metaCaller.Arguments.Add("--output", _tempMetaActionPath);
             if (metaCaller.Run() != 0 && !CancellationToken.IsCancellationRequested)
-                throw new Exception("Meta action generation failed!");
+            {
+                Print("Meta Action Generation failed!", ConsoleColor.Red);
+                CancellationToken.Cancel();
+            }
             return new DirectoryInfo(_tempMetaActionPath).GetFiles().ToList();
         }
 

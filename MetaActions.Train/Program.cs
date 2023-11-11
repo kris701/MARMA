@@ -10,8 +10,6 @@ namespace MetaActions.Learn
 {
     internal class Program : BaseCLI
     {
-        private static CancellationTokenSource _tokenSource = new CancellationTokenSource();
-
         static int Main(string[] args)
         {
             var parser = new CommandLine.Parser(with => with.HelpWriter = null);
@@ -91,8 +89,7 @@ namespace MetaActions.Learn
                             TimeSpan.FromMinutes(opts.TimeLimit),
                             tempPath,
                             outPath,
-                            opts.Useful,
-                            _tokenSource
+                            opts.Useful
                             ));
                         break;
                     case Options.TrainingMethods.PDDLSharpMacros:
@@ -104,8 +101,7 @@ namespace MetaActions.Learn
                             TimeSpan.FromMinutes(opts.TimeLimit),
                             tempPath,
                             outPath,
-                            opts.Useful,
-                            _tokenSource
+                            opts.Useful
                             ));
                         break;
                     default:
@@ -160,11 +156,12 @@ namespace MetaActions.Learn
                     }
                     catch (Exception ex)
                     {
-                        _tokenSource.Cancel();
                         ConsoleHelper.WriteLineColor($"Something failed in the training!", ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor($"", ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor($"Killing tasks...!", ConsoleColor.Red);
+                        foreach (var cancel in runTasks)
+                            cancel.CancellationToken.Cancel();
                     }
                 }
             }
@@ -175,8 +172,6 @@ namespace MetaActions.Learn
                 {
                     try
                     {
-                        if (_tokenSource.IsCancellationRequested)
-                            break;
                         var resultTask = task.RunTask();
                         resultTask.Start();
                         resultTask.Wait();
@@ -190,9 +185,10 @@ namespace MetaActions.Learn
                     }
                     catch (Exception ex)
                     {
-                        _tokenSource.Cancel();
                         ConsoleHelper.WriteLineColor($"Something failed in the training!", ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
+                        foreach (var cancel in runTasks)
+                            cancel.CancellationToken.Cancel();
                     }
                 }
             }

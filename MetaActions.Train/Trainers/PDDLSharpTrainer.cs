@@ -16,7 +16,7 @@ namespace MetaActions.Train.Trainers
 {
     public class PDDLSharpTrainer : BaseTrainer
     {
-        public PDDLSharpTrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls, CancellationTokenSource cancellationToken) : base(domainName, domain, trainingProblems, testingProblems, timeLimit, tempPath, outPath, usefuls, cancellationToken)
+        public PDDLSharpTrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls) : base(domainName, domain, trainingProblems, testingProblems, timeLimit, tempPath, outPath, usefuls)
         {
         }
 

@@ -6,7 +6,7 @@ namespace MetaActions.Train.Trainers
 {
     public class CSMTrainer : BaseTrainer
     {
-        public CSMTrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls, CancellationTokenSource cancellationToken) : base(domainName, domain, trainingProblems, testingProblems, timeLimit, tempPath, outPath, usefuls, cancellationToken)
+        public CSMTrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls) : base(domainName, domain, trainingProblems, testingProblems, timeLimit, tempPath, outPath, usefuls)
         {
         }
 
@@ -127,7 +127,10 @@ namespace MetaActions.Train.Trainers
                 macroGenerator.Arguments.Add("-c", _tempMacroGeneratorPath);
                 macroGenerator.Arguments.Add("-f", PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py"));
                 if (macroGenerator.Run() != 0 && !CancellationToken.IsCancellationRequested)
-                    throw new Exception("Macro generation failed!");
+                {
+                    Print("Macro Generation failed!", ConsoleColor.Red);
+                    CancellationToken.Cancel();
+                }
 
                 PathHelper.RecratePath(checkPath);
                 IOHelper.CopyFilesRecursively(_tempMacroPath, checkPath);
