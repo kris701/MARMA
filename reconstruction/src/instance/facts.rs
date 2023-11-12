@@ -12,7 +12,7 @@ pub struct Facts {
 
 impl Facts {
     pub fn new(_actions: &Actions, inits: &Inits) -> Self {
-        let init = inits
+        let init: Vec<u64> = inits
             .iter()
             .map(|init| {
                 let predicate = World::global().get_predicate_index(&init.name);
@@ -20,7 +20,6 @@ impl Facts {
                 Facts::index(predicate, &parameters)
             })
             .collect();
-
         Self { init }
     }
 
@@ -30,20 +29,19 @@ impl Facts {
             + parameters
                 .iter()
                 .enumerate()
-                .map(|(i, p)| (*p as u64) << 16 * i)
+                .map(|(i, p)| (*p as u64) << 16 * (i + 1))
                 .sum::<u64>()
     }
 
-    pub fn fact_predicate(&self, fact_index: u64) -> u16 {
-        (fact_index & 0xffff) as u16
+    pub fn fact_predicate(fact_index: u64) -> u16 {
+        fact_index as u16
     }
 
-    pub fn fact_parameters(&self, fact_index: u64) -> Vec<u16> {
+    pub fn fact_parameters(mut fact_index: u64) -> Vec<u16> {
         let mut parameters: Vec<u16> = Vec::new();
-        let mut fact_index = fact_index;
         fact_index = fact_index >> 16;
         while fact_index != 0 {
-            parameters.push((fact_index & 0xffff) as u16);
+            parameters.push(fact_index as u16);
             fact_index = fact_index >> 16;
         }
         parameters

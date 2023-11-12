@@ -62,7 +62,7 @@ impl World {
     }
 
     pub fn get_default_type_index(&self) -> u16 {
-        0
+        1
     }
 
     pub fn get_type_index(&self, name: &str) -> u16 {
@@ -164,7 +164,7 @@ impl World {
     }
 
     pub fn iterate_objects<'a>(&'a self) -> impl Iterator<Item = (u16, u16)> + 'a {
-        (0..self.get_object_count())
+        (1..self.get_object_count() + 1)
             .into_iter()
             .map(|i| (i, self.get_object_type(i)))
     }
@@ -193,17 +193,17 @@ impl World {
 fn extract_types(types: &Option<Types>) -> (HashMap<String, u16>, HashMap<u16, Vec<u16>>) {
     let mut index_map: HashMap<String, u16> = HashMap::new();
     let mut type_children: HashMap<u16, Vec<u16>> = HashMap::new();
-    index_map.insert("object".to_string(), 0);
+    index_map.insert("object".to_string(), 1);
 
     if let Some(types) = types {
         for t in types.iter() {
             if !index_map.contains_key(&t.name) {
-                index_map.insert(t.name.to_owned(), index_map.len() as u16);
+                index_map.insert(t.name.to_owned(), index_map.len() as u16 + 1);
             }
             let type_index = index_map.get(&t.name).unwrap().to_owned();
             for t in t.sub_types.iter() {
                 if !index_map.contains_key(t) {
-                    index_map.insert(t.to_owned(), index_map.len() as u16);
+                    index_map.insert(t.to_owned(), index_map.len() as u16 + 1);
                 }
                 let child_index = index_map.get(t).unwrap();
                 let children_entry = &mut type_children.entry(type_index).or_default();
@@ -219,7 +219,7 @@ fn extract_predicates(predicates: &Predicates) -> HashMap<String, u16> {
     predicates
         .iter()
         .enumerate()
-        .map(|(i, p)| (p.name.to_owned(), i as u16))
+        .map(|(i, p)| (p.name.to_owned(), i as u16 + 1))
         .collect()
 }
 
@@ -227,7 +227,7 @@ fn extract_actions(actions: &Actions) -> HashMap<String, u16> {
     actions
         .iter()
         .enumerate()
-        .map(|(i, a)| (a.name.to_owned(), i as u16))
+        .map(|(i, a)| (a.name.to_owned(), i as u16 + 1))
         .collect()
 }
 
@@ -238,7 +238,7 @@ fn extract_meta_actions(
     let mut index_map: HashMap<String, u16> = HashMap::new();
     for (i, a) in meta_actions.iter().enumerate() {
         if !actions.contains_key(&a.name) {
-            index_map.insert(a.name.to_owned(), i as u16);
+            index_map.insert(a.name.to_owned(), i as u16 + 1);
         }
     }
     index_map
@@ -253,7 +253,7 @@ fn extract_objects(
         .enumerate()
         .map(|(i, o)| {
             let object_name = o.name.to_owned();
-            let object_index = i as u16;
+            let object_index = i as u16 + 1;
             let object_type = match &o.type_name {
                 Some(t) => t,
                 None => "object",

@@ -56,9 +56,9 @@ impl Instance {
     }
 
     pub fn get_fact_string(&self, index: u64) -> String {
-        let predicate = self.facts.fact_predicate(index);
+        let predicate = Facts::fact_predicate(index);
         let predicate = World::global().get_predicate_name(predicate);
-        let parameters = self.facts.fact_parameters(index);
+        let parameters = Facts::fact_parameters(index);
         let parameters = World::global().get_object_names(&parameters);
         let mut s = format!("{}", predicate);
         for param in parameters {
