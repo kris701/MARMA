@@ -1,14 +1,11 @@
-use spingus::domain::Domain;
-
-use crate::{
-    tools::{status_print, Status},
-    world::World,
-};
-
 use self::{
     actions::{Action, Actions},
     facts::Facts,
     predicates::Predicates,
+};
+use crate::{
+    tools::{status_print, Status},
+    world::World,
 };
 
 pub mod actions;
@@ -23,7 +20,6 @@ pub struct Instance {
     predicates: Predicates,
     actions: Actions,
     meta_actions: Actions,
-    pub meta_domain: Domain,
     pub facts: Facts,
 }
 
@@ -46,7 +42,6 @@ impl Instance {
             predicates,
             actions,
             meta_actions,
-            meta_domain,
             facts,
         }
     }

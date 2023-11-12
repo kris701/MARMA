@@ -95,11 +95,6 @@ impl World {
     }
 
     pub fn get_action_index(&self, name: &str) -> u32 {
-        assert!(
-            self.actions.contains_key(name),
-            "Found undeclared action: {}",
-            name
-        );
         self.actions[name]
     }
 
@@ -112,11 +107,6 @@ impl World {
     }
 
     pub fn get_meta_index(&self, name: &str) -> u32 {
-        assert!(
-            self.meta_actions.contains_key(name),
-            "Found undeclared action: {}",
-            name
-        );
         self.meta_actions[name]
     }
 
@@ -130,11 +120,6 @@ impl World {
     }
 
     pub fn get_predicate_index(&self, name: &str) -> u32 {
-        assert!(
-            self.predicates.contains_key(name),
-            "Found undeclared predicate: {}",
-            name
-        );
         self.predicates[name]
     }
 
@@ -152,11 +137,6 @@ impl World {
     }
 
     pub fn get_object_index(&self, name: &str) -> u32 {
-        assert!(
-            self.objects.contains_key(name),
-            "Found undeclared object: {}",
-            name
-        );
         self.objects[name]
     }
 

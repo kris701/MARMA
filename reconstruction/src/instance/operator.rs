@@ -4,7 +4,7 @@ use itertools::Itertools;
 
 use crate::world::World;
 
-use super::{actions::Action, expression::Expression, permute::permute_mutable, Instance};
+use super::{actions::Action, expression::Expression, Instance};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Operator {
@@ -75,7 +75,13 @@ pub fn generate_operators<'a>(
     instance: &'a Instance,
     action: &'a Action,
 ) -> impl Iterator<Item = (Operator, Vec<u32>)> + 'a {
-    let permutations = permute_mutable(&action.parameters.parameter_types);
+    let candidates: Vec<Vec<u32>> = action
+        .parameters
+        .parameter_types
+        .iter()
+        .map(move |t| World::global().get_objects_with_type(*t))
+        .collect();
+    let permutations = candidates.into_iter().multi_cartesian_product();
     permutations.into_iter().filter_map(|p| {
         let operator = extract_from_action(instance, &p, action)?;
         Some((operator, p))
