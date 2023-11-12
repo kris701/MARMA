@@ -6,102 +6,71 @@ namespace MetaActions.Train.Trainers
 {
     public class CSMTrainer : BaseTrainer
     {
+        internal string _tempProblemPath = "problems";
+        internal string _tempMetaActionPath = "metaActions";
+        internal string _tempMacroPath = "macros";
+        internal string _tempMacroTempPath = "macrosTemp";
+        internal string _tempMacroGeneratorPath = "macrosGeneratorTemp";
+
+        internal string _macroCachePath = "cache/macros";
+
         public CSMTrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls) : base(domainName, domain, trainingProblems, testingProblems, timeLimit, tempPath, outPath, usefuls)
         {
+            _tempMacroPath = Path.Combine(TempPath, _tempMacroPath);
+            _tempMacroTempPath = Path.Combine(TempPath, _tempMacroTempPath);
+            _tempMacroGeneratorPath = Path.Combine(TempPath, _tempMacroGeneratorPath);
+            _tempMetaActionPath = Path.Combine(TempPath, _tempMetaActionPath);
+            _tempProblemPath = Path.Combine(TempPath, _tempProblemPath);
+
+            _macroCachePath = PathHelper.RootPath(_macroCachePath);
+
+            PathHelper.RecratePath(_tempMetaActionPath);
+            PathHelper.RecratePath(_tempProblemPath);
+            PathHelper.RecratePath(_tempMacroPath);
+            PathHelper.RecratePath(_tempMacroTempPath);
+            PathHelper.RecratePath(_tempMacroGeneratorPath);
         }
 
-        public override RunReport? Run()
+        public override List<FileInfo> GetMetaActions()
         {
-            Print($"Training started (CSM Macros)", ConsoleColor.Blue);
-            var timer = new System.Timers.Timer();
-            timer.Interval = TimeLimit.TotalMilliseconds;
-            timer.AutoReset = false;
-            timer.Elapsed += (s, e) => {
-                CancellationToken.Cancel();
-            };
-            timer.Start();
-
             Print($"Copying training problems...", ConsoleColor.Blue);
             var problems = CopyProblemsToTemp(TrainingProblems);
-            Print($"There is a total of {problems.Count} problems to train with.", ConsoleColor.Blue);
+            if (CancellationToken.IsCancellationRequested) return new List<FileInfo>();
 
             var allMacros = GetCSMMacros(Domain);
             if (allMacros.Count == 0)
-                return null;
-            if (CancellationToken.IsCancellationRequested)
-                return null;
+            {
+                Print($"No macros was found for the domain.", ConsoleColor.Red);
+                CancellationToken.Cancel();
+                return new List<FileInfo>();
+            }
+            if (CancellationToken.IsCancellationRequested) return new List<FileInfo>();
 
             Print($"Generating meta actions", ConsoleColor.Blue);
             var allMetaActions = GenerateMetaActions();
             allMetaActions.Shuffle();
             Print($"A total of {allMetaActions.Count} meta actions was found.", ConsoleColor.Blue);
             if (allMetaActions.Count == 0)
-                return null;
-            if (CancellationToken.IsCancellationRequested)
-                return null;
+            {
+                Print($"No meta actions was found for the domain.", ConsoleColor.Red);
+                CancellationToken.Cancel();
+                return new List<FileInfo>();
+            }
+            if (CancellationToken.IsCancellationRequested) return new List<FileInfo>();
+            return allMetaActions;
+        }
 
-            Print($"Validating meta actions", ConsoleColor.Blue);
-            int metaActionCounter = 1;
-            int validMetaActionCount = 0;
-            foreach (var metaAction in allMetaActions)
+        private List<FileInfo> CopyProblemsToTemp(List<FileInfo> allProblems)
+        {
+            var problems = new List<FileInfo>();
+            foreach (var problem in allProblems)
             {
                 if (CancellationToken.IsCancellationRequested)
-                    return null;
-                PathHelper.RecratePath(_tempReplacementsPath);
-                Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(((double)metaActionCounter / (double)allMetaActions.Count) * 100, 0)}%]", ConsoleColor.Magenta);
-                int problemCounter = 1;
-                bool allValid = true;
-                foreach (var problem in problems)
-                {
-                    if (CancellationToken.IsCancellationRequested)
-                        return null;
-                    Print($"\t\tProblem {problemCounter} out of {problems.Count} [{Math.Round(((double)problemCounter / (double)problems.Count) * 100, 0)}%].", ConsoleColor.DarkMagenta);
-                    // Compile Meta Actions
-                    Print($"\t\tCompiling meta action.", ConsoleColor.DarkMagenta);
-                    CompileMetaAction(Domain.FullName, problem.FullName, metaAction.FullName);
-
-                    // Verify Meta Actions
-                    Print($"\t\tVerifying meta action.", ConsoleColor.DarkMagenta);
-                    var isMetaActionValid = VerifyMetaAction();
-
-                    // Stop if invalid
-                    if (!isMetaActionValid)
-                    {
-                        Print($"\tMeta action was invalid in problem '{problem.Name}'.", ConsoleColor.Red);
-                        allValid = false;
-                        break;
-                    }
-                    problemCounter++;
-                }
-                if (allValid)
-                {
-                    validMetaActionCount++;
-                    Print($"\tMeta action was valid in all {problems.Count} problems.", ConsoleColor.Green);
-
-                    if (OnlyUsefuls)
-                    {
-                        Print($"\tGenerating initial meta domain...", ConsoleColor.Magenta);
-                        GenerateMetaDomain(Domain, new List<FileInfo>() { metaAction }, OutPath, TempPath);
-
-                        Print("\tChecking for meta action usefulness...", ConsoleColor.Magenta);
-                        if (!IsMetaActionUseful(metaAction, problems, TempPath))
-                            continue;
-                        Print("\tMeta Action is Useful!", ConsoleColor.Green);
-                    }
-
-                    _currentMetaActions.Add(metaAction);
-                    Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
-
-                    ExtractMacrosFromPlans(Domain, _tempReplacementsPath, _outCache);
-                }
-                metaActionCounter++;
+                    return new List<FileInfo>();
+                File.Copy(problem.FullName, Path.Combine(_tempProblemPath, problem.Name));
+                problems.Add(new FileInfo(Path.Combine(_tempProblemPath, problem.Name)));
             }
-            Print($"A total of {_currentMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green);
-
-            Print($"Generating final meta domain...", ConsoleColor.Blue);
-            GenerateMetaDomain(Domain, _currentMetaActions, OutPath, TempPath);
-
-            return new RunReport(DomainName, allMacros.Count, allMetaActions.Count, validMetaActionCount, _currentMetaActions.Count);
+            return problems;
         }
 
         private List<FileInfo> GetCSMMacros(FileInfo domain)
@@ -137,6 +106,20 @@ namespace MetaActions.Train.Trainers
                 IOHelper.CopyFilesRecursively(_tempMacroPath, checkPath);
             }
             return new DirectoryInfo(_tempMacroPath).GetFiles().ToList();
+        }
+
+        private List<FileInfo> GenerateMetaActions()
+        {
+            ArgsCaller metaCaller = ArgsCallerBuilder.GetDotnetRunner("MetaActionGenerator");
+            _activeProcess = metaCaller.Process;
+            metaCaller.Arguments.Add("--macros", _tempMacroPath);
+            metaCaller.Arguments.Add("--output", _tempMetaActionPath);
+            if (metaCaller.Run() != 0 && !CancellationToken.IsCancellationRequested)
+            {
+                Print("Meta Action Generation failed!", ConsoleColor.Red);
+                CancellationToken.Cancel();
+            }
+            return new DirectoryInfo(_tempMetaActionPath).GetFiles().ToList();
         }
     }
 }

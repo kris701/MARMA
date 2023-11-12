@@ -57,6 +57,7 @@ namespace MetaActions.Learn
 
         private static List<ITrainer> GenerateTasks(Options opts)
         {
+            ConsoleHelper.WriteLineColor($"\tResolving input wildcards...", ConsoleColor.Magenta);
             var domains = PathHelper.ResolveFileWildcards(opts.Domains.ToList());
             if (domains.Any(x => !File.Exists(x.FullName)))
                 throw new FileNotFoundException("Domain file not found!");
@@ -68,12 +69,13 @@ namespace MetaActions.Learn
                 throw new FileNotFoundException("Test problem file not found!");
 
             List<ITrainer> runTasks = new List<ITrainer>();
+            int count = 1; 
             foreach (var domain in domains)
             {
                 if (domain.Directory == null)
                     throw new ArgumentNullException();
                 var domainName = domain.Directory.Name;
-                ConsoleHelper.WriteLineColor($"\tGenerating Task for domain {domainName}", ConsoleColor.Magenta);
+                ConsoleHelper.WriteLineColor($"\tGenerating Task for domain {domainName} [{count++}/{domains.Count}]", ConsoleColor.Magenta);
                 var domainTrainProblems = trainProblems.Where(x => x.FullName.Contains(domainName)).ToList();
                 var domainTestProblems = testProblems.Where(x => x.FullName.Contains(domainName)).ToList();
 
@@ -137,7 +139,10 @@ namespace MetaActions.Learn
 
                         if (result != null)
                         {
-                            ConsoleHelper.WriteLineColor($"Test for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                            ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                            ConsoleHelper.WriteLineColor($"Total meta actions:              {result.TotalMetaActions}", ConsoleColor.DarkGreen);
+                            ConsoleHelper.WriteLineColor($"Total valid meta actions:        {result.TotalValidMetaActions}", ConsoleColor.DarkGreen);
+                            ConsoleHelper.WriteLineColor($"Total useful valid meta actions: {result.TotalUsefulMetaActions}", ConsoleColor.DarkGreen);
                         }
                         else
                             ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
@@ -166,7 +171,7 @@ namespace MetaActions.Learn
                         var result = resultTask.Result;
                         if (result != null)
                         {
-                            ConsoleHelper.WriteLineColor($"Test for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                            ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                         }
                         else
                             ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
