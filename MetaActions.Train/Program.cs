@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using MetaActions.Train;
+using MetaActions.Train.Tools;
 using MetaActions.Train.Trainers;
 using System.IO.Compression;
 using System.Text.Json;
@@ -10,8 +11,6 @@ namespace MetaActions.Learn
 {
     internal class Program : BaseCLI
     {
-        private static CancellationTokenSource _tokenSource = new CancellationTokenSource();
-
         static int Main(string[] args)
         {
             var parser = new CommandLine.Parser(with => with.HelpWriter = null);
@@ -42,6 +41,7 @@ namespace MetaActions.Learn
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Executing Training Tasks", ConsoleColor.Blue);
+            ConsoleHelper.WriteLineColor($"Time limit: {opts.TimeLimit}m", ConsoleColor.Blue);
             ExecuteTasks(trainingTasks, opts.Multitask, opts.OutputPath);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
@@ -57,6 +57,7 @@ namespace MetaActions.Learn
 
         private static List<ITrainer> GenerateTasks(Options opts)
         {
+            ConsoleHelper.WriteLineColor($"\tResolving input wildcards...", ConsoleColor.Magenta);
             var domains = PathHelper.ResolveFileWildcards(opts.Domains.ToList());
             if (domains.Any(x => !File.Exists(x.FullName)))
                 throw new FileNotFoundException("Domain file not found!");
@@ -68,12 +69,13 @@ namespace MetaActions.Learn
                 throw new FileNotFoundException("Test problem file not found!");
 
             List<ITrainer> runTasks = new List<ITrainer>();
+            int count = 1; 
             foreach (var domain in domains)
             {
                 if (domain.Directory == null)
                     throw new ArgumentNullException();
                 var domainName = domain.Directory.Name;
-                ConsoleHelper.WriteLineColor($"\tGenerating Task for domain {domainName}", ConsoleColor.Magenta);
+                ConsoleHelper.WriteLineColor($"\tGenerating Task for domain {domainName} [{count++}/{domains.Count}]", ConsoleColor.Magenta);
                 var domainTrainProblems = trainProblems.Where(x => x.FullName.Contains(domainName)).ToList();
                 var domainTestProblems = testProblems.Where(x => x.FullName.Contains(domainName)).ToList();
 
@@ -91,8 +93,7 @@ namespace MetaActions.Learn
                             TimeSpan.FromMinutes(opts.TimeLimit),
                             tempPath,
                             outPath,
-                            opts.Useful,
-                            _tokenSource
+                            opts.Useful
                             ));
                         break;
                     case Options.TrainingMethods.PDDLSharpMacros:
@@ -104,8 +105,7 @@ namespace MetaActions.Learn
                             TimeSpan.FromMinutes(opts.TimeLimit),
                             tempPath,
                             outPath,
-                            opts.Useful,
-                            _tokenSource
+                            opts.Useful
                             ));
                         break;
                     default:
@@ -113,23 +113,9 @@ namespace MetaActions.Learn
                 }
             }
 
-            Shuffle(runTasks);
+            runTasks.Shuffle();
 
             return runTasks;
-        }
-
-        private static Random rng = new Random();
-        public static void Shuffle<T>(IList<T> list)
-        {
-            int n = list.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = rng.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
         }
 
         private static void ExecuteTasks(List<ITrainer> runTasks, bool multitask, string outPath)
@@ -153,18 +139,22 @@ namespace MetaActions.Learn
 
                         if (result != null)
                         {
-                            ConsoleHelper.WriteLineColor($"Test for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                            ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                            ConsoleHelper.WriteLineColor($"Total meta actions:              {result.TotalMetaActions}", ConsoleColor.DarkGreen);
+                            ConsoleHelper.WriteLineColor($"Total valid meta actions:        {result.TotalValidMetaActions}", ConsoleColor.DarkGreen);
+                            ConsoleHelper.WriteLineColor($"Total useful valid meta actions: {result.TotalUsefulMetaActions}", ConsoleColor.DarkGreen);
                         }
                         else
                             ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
                     }
                     catch (Exception ex)
                     {
-                        _tokenSource.Cancel();
                         ConsoleHelper.WriteLineColor($"Something failed in the training!", ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor($"", ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor($"Killing tasks...!", ConsoleColor.Red);
+                        foreach (var cancel in runTasks)
+                            cancel.CancellationToken.Cancel();
                     }
                 }
             }
@@ -175,24 +165,23 @@ namespace MetaActions.Learn
                 {
                     try
                     {
-                        if (_tokenSource.IsCancellationRequested)
-                            break;
                         var resultTask = task.RunTask();
                         resultTask.Start();
                         resultTask.Wait();
                         var result = resultTask.Result;
                         if (result != null)
                         {
-                            ConsoleHelper.WriteLineColor($"Test for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                            ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                         }
                         else
                             ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
                     }
                     catch (Exception ex)
                     {
-                        _tokenSource.Cancel();
                         ConsoleHelper.WriteLineColor($"Something failed in the training!", ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
+                        foreach (var cancel in runTasks)
+                            cancel.CancellationToken.Cancel();
                     }
                 }
             }

@@ -21,5 +21,6 @@ namespace MetaActions.Train.Trainers
         public CancellationTokenSource CancellationToken { get; }
         public Task<RunReport?> RunTask();
         public RunReport? Run();
+        public List<FileInfo> GetMetaActions();
     }
 }
