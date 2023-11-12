@@ -7,8 +7,8 @@ use crate::{
 };
 
 use super::{
-    actions::Actions, expression::Expression, objects::Objects, parameters::Parameters,
-    permute::permute_mutable, predicates::Predicates, types::Types,
+    actions::Actions, expression::Expression, parameters::Parameters, permute::permute_mutable,
+    predicates::Predicates, types::Types,
 };
 
 #[derive(Debug, PartialEq)]
@@ -18,7 +18,6 @@ struct PredicateFacts {
 impl PredicateFacts {
     fn new(
         types: &Option<Types>,
-        objects: &Objects,
         predicate: u32,
         statics: &Vec<(u32, Vec<u32>)>,
         is_static: bool,
@@ -33,7 +32,7 @@ impl PredicateFacts {
                     false => None,
                 })
                 .collect(),
-            false => permute_mutable(types, objects, &parameters.parameter_types),
+            false => permute_mutable(types, &parameters.parameter_types),
         };
         let mut index_map: HashMap<Vec<u32>, u32> = HashMap::new();
         for permutation in permutations.into_iter() {
@@ -75,7 +74,6 @@ impl Facts {
         types: &Option<Types>,
         predicates: &Predicates,
         actions: &Actions,
-        objects: &Objects,
         inits: &Inits,
     ) -> Self {
         let mut facts: Vec<PredicateFacts> = Vec::new();
@@ -99,9 +97,8 @@ impl Facts {
             if is_static {
                 static_predicates.insert(i as u32);
             }
-            let predicate_facts = PredicateFacts::new(
-                types, objects, i as u32, &statics, is_static, predicate, offset,
-            );
+            let predicate_facts =
+                PredicateFacts::new(types, i as u32, &statics, is_static, predicate, offset);
             println!("facts: {}", predicate_facts.count());
             offset += predicate_facts.count() as u32;
             facts.push(predicate_facts);

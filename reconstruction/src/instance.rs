@@ -8,7 +8,6 @@ use crate::{
 use self::{
     actions::{Action, Actions},
     facts::Facts,
-    objects::Objects,
     predicates::Predicates,
     types::Types,
 };
@@ -16,7 +15,6 @@ use self::{
 pub mod actions;
 mod expression;
 pub mod facts;
-mod objects;
 pub mod operator;
 mod parameters;
 pub mod permute;
@@ -28,7 +26,6 @@ pub struct Instance {
     predicates: Predicates,
     actions: Actions,
     meta_actions: Actions,
-    objects: Objects,
     pub meta_domain: Domain,
     pub facts: Facts,
 }
@@ -50,17 +47,14 @@ impl Instance {
         let actions = Actions::new(&predicates, domain.actions.to_owned());
         status_print(Status::Init, "Generating meta actions");
         let meta_actions = Actions::new(&predicates, meta_domain.actions.to_owned());
-        status_print(Status::Init, "Generating objects");
-        let objects = Objects::new(problem.objects.to_owned());
         status_print(Status::Init, "Generating facts");
-        let facts = Facts::new(&types, &predicates, &actions, &objects, &problem.inits);
+        let facts = Facts::new(&types, &predicates, &actions, &problem.inits);
 
         Self {
             types,
             predicates,
             actions,
             meta_actions,
-            objects,
             meta_domain,
             facts,
         }

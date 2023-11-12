@@ -164,7 +164,7 @@ impl World {
     pub fn iterate_objects_named<'a>(&'a self) -> impl Iterator<Item = (&String, &String)> + 'a {
         self.objects.iter().map(|(name, index)| {
             let object_type = self.get_object_type(*index);
-            let type_name = self.get_type_name(*index);
+            let type_name = self.get_type_name(object_type);
             (name, type_name)
         })
     }
