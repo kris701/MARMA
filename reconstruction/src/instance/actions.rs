@@ -1,4 +1,4 @@
-use super::{expression::Expression, parameters::Parameters, predicates::Predicates};
+use super::{expression::Expression, parameters::Parameters};
 
 #[derive(Debug)]
 pub struct Action {
@@ -10,7 +10,6 @@ pub struct Action {
 
 impl Action {
     pub fn new(
-        predicates: &Predicates,
         name: String,
         parameters: spingus::domain::parameter::Parameters,
         precondition: Option<spingus::domain::action::string_expression::StringExpression>,
@@ -18,10 +17,10 @@ impl Action {
     ) -> Self {
         let parameters = Parameters::new(parameters);
         let precondition = match precondition {
-            Some(e) => Some(Expression::new(predicates, &parameters, e)),
+            Some(e) => Some(Expression::new(&parameters, e)),
             None => None,
         };
-        let effect = Expression::new(predicates, &parameters, effect);
+        let effect = Expression::new(&parameters, effect);
         Self {
             name,
             parameters,
@@ -37,12 +36,11 @@ pub struct Actions {
 }
 
 impl Actions {
-    pub fn new(predicates: &Predicates, o_actions: spingus::domain::action::Actions) -> Self {
+    pub fn new(o_actions: spingus::domain::action::Actions) -> Self {
         let mut actions: Vec<Action> = Vec::new();
 
         for action in o_actions {
             actions.push(Action::new(
-                predicates,
                 action.name,
                 action.parameters,
                 action.precondition,

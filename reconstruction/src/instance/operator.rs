@@ -1,17 +1,17 @@
-use super::{actions::Action, expression::Expression, Instance};
+use super::{actions::Action, expression::Expression, facts::Facts, Instance};
 use crate::world::World;
 use itertools::Itertools;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Operator {
-    pub pre_pos: Vec<u32>,
-    pub pre_neg: Vec<u32>,
-    pub eff_pos: Vec<u32>,
-    pub eff_neg: Vec<u32>,
+    pub pre_pos: Vec<u64>,
+    pub pre_neg: Vec<u64>,
+    pub eff_pos: Vec<u64>,
+    pub eff_neg: Vec<u64>,
 }
 
 impl Operator {
-    pub fn get_effect(&self) -> Vec<(u32, bool)> {
+    pub fn get_effect(&self) -> Vec<(u64, bool)> {
         let mut effect = vec![];
 
         for i in self.eff_pos.iter() {
@@ -28,13 +28,13 @@ impl Operator {
 
 pub fn extract_from_action(
     instance: &Instance,
-    parameters: &Vec<u32>,
+    parameters: &Vec<u16>,
     action: &Action,
 ) -> Option<Operator> {
-    let mut pre_pos: Vec<u32> = Vec::new();
-    let mut pre_neg: Vec<u32> = Vec::new();
-    let mut eff_pos: Vec<u32> = Vec::new();
-    let mut eff_neg: Vec<u32> = Vec::new();
+    let mut pre_pos: Vec<u64> = Vec::new();
+    let mut pre_neg: Vec<u64> = Vec::new();
+    let mut eff_pos: Vec<u64> = Vec::new();
+    let mut eff_neg: Vec<u64> = Vec::new();
     if let Some(exp) = &action.precondition {
         if !walk(instance, parameters, &mut pre_pos, &mut pre_neg, exp) {
             return None;
@@ -63,32 +63,32 @@ pub fn generate_operator_string(
     parameters: &Vec<String>,
 ) -> Operator {
     let action: &Action = instance.get_action(action);
-    let parameters: Vec<u32> = World::global().get_object_indexes(parameters);
+    let parameters: Vec<u16> = World::global().get_object_indexes(parameters);
     extract_from_action(instance, &parameters, action).unwrap()
 }
 
 pub fn generate_operators<'a>(
     instance: &'a Instance,
     action: &'a Action,
-) -> impl Iterator<Item = (Operator, Vec<u32>)> + 'a {
-    let candidates: Vec<Vec<u32>> = action
+) -> impl Iterator<Item = (Operator, Vec<u16>)> + 'a {
+    action
         .parameters
         .parameter_types
         .iter()
         .map(move |t| World::global().get_objects_with_type(*t))
-        .collect();
-    let permutations = candidates.into_iter().multi_cartesian_product();
-    permutations.into_iter().filter_map(|p| {
-        let operator = extract_from_action(instance, &p, action)?;
-        Some((operator, p))
-    })
+        .into_iter()
+        .multi_cartesian_product()
+        .filter_map(|p| {
+            let operator = extract_from_action(instance, &p, action)?;
+            Some((operator, p))
+        })
 }
 
 fn walk(
     instance: &Instance,
-    permutation: &Vec<u32>,
-    pos: &mut Vec<u32>,
-    neg: &mut Vec<u32>,
+    permutation: &Vec<u16>,
+    pos: &mut Vec<u64>,
+    neg: &mut Vec<u64>,
     exp: &Expression,
 ) -> bool {
     let facts = &instance.facts;
@@ -113,7 +113,7 @@ fn walk(
         if facts.is_static(predicate) && !facts.is_statically_true(predicate, &parameters) {
             return false;
         } else {
-            let fact = facts.index(predicate, &parameters);
+            let fact = Facts::index(predicate, &parameters);
             match literal.value {
                 true => pos.push(fact),
                 false => neg.push(fact),

@@ -4,12 +4,12 @@ use crate::instance::{operator::Operator, Instance};
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
-    internal: HashSet<u32>,
+    internal: HashSet<u64>,
 }
 
 impl State {
     pub fn new(instance: &Instance) -> Self {
-        let internal: HashSet<u32> = instance.facts.get_init();
+        let internal: HashSet<u64> = instance.facts.get_init();
         Self { internal }
     }
 
@@ -22,7 +22,7 @@ impl State {
         }
     }
 
-    pub fn get(&self) -> &HashSet<u32> {
+    pub fn get(&self) -> &HashSet<u64> {
         &self.internal
     }
 
@@ -32,7 +32,7 @@ impl State {
         has_pos && has_neg
     }
 
-    pub fn diff(&self, state: &State) -> Vec<(u32, bool)> {
+    pub fn diff(&self, state: &State) -> Vec<(u64, bool)> {
         let mut diff = vec![];
         for i in self.get().difference(state.get()) {
             diff.push((*i, false))
