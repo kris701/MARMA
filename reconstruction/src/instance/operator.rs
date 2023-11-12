@@ -1,17 +1,13 @@
-use std::collections::HashSet;
-
-use itertools::Itertools;
-
-use crate::world::World;
-
 use super::{actions::Action, expression::Expression, Instance};
+use crate::world::World;
+use itertools::Itertools;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Operator {
-    pub pre_pos: HashSet<u32>,
-    pub pre_neg: HashSet<u32>,
-    pub eff_pos: HashSet<u32>,
-    pub eff_neg: HashSet<u32>,
+    pub pre_pos: Vec<u32>,
+    pub pre_neg: Vec<u32>,
+    pub eff_pos: Vec<u32>,
+    pub eff_neg: Vec<u32>,
 }
 
 impl Operator {
@@ -35,10 +31,10 @@ pub fn extract_from_action(
     parameters: &Vec<u32>,
     action: &Action,
 ) -> Option<Operator> {
-    let mut pre_pos: HashSet<u32> = HashSet::new();
-    let mut pre_neg: HashSet<u32> = HashSet::new();
-    let mut eff_pos: HashSet<u32> = HashSet::new();
-    let mut eff_neg: HashSet<u32> = HashSet::new();
+    let mut pre_pos: Vec<u32> = Vec::new();
+    let mut pre_neg: Vec<u32> = Vec::new();
+    let mut eff_pos: Vec<u32> = Vec::new();
+    let mut eff_neg: Vec<u32> = Vec::new();
     if let Some(exp) = &action.precondition {
         if !walk(instance, parameters, &mut pre_pos, &mut pre_neg, exp) {
             return None;
@@ -91,8 +87,8 @@ pub fn generate_operators<'a>(
 fn walk(
     instance: &Instance,
     permutation: &Vec<u32>,
-    pos: &mut HashSet<u32>,
-    neg: &mut HashSet<u32>,
+    pos: &mut Vec<u32>,
+    neg: &mut Vec<u32>,
     exp: &Expression,
 ) -> bool {
     let facts = &instance.facts;
@@ -119,8 +115,8 @@ fn walk(
         } else {
             let fact = facts.index(predicate, &parameters);
             match literal.value {
-                true => pos.insert(fact),
-                false => neg.insert(fact),
+                true => pos.push(fact),
+                false => neg.push(fact),
             };
         }
     }
