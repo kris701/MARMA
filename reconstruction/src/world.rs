@@ -13,6 +13,8 @@ pub struct World {
     domain_name: String,
     /// Maps type name to its index
     types: HashMap<String, u32>,
+    /// The parent of each index
+    type_children: HashMap<u32, Vec<u32>>,
     /// Maps predicate name to its index
     predicates: HashMap<String, u32>,
     /// Maps action name to its index
@@ -38,7 +40,7 @@ impl World {
         problem: &spingus::problem::Problem,
     ) -> World {
         let domain_name = domain.name.to_owned();
-        let types = extract_tyes(&domain.types);
+        let (types, type_children) = extract_types(&domain.types);
         let predicates = extract_predicates(&domain.predicates);
         let actions = extract_actions(&domain.actions);
         let meta_actions = extract_meta_actions(&actions, &meta_domain.actions);
@@ -46,6 +48,7 @@ impl World {
         Self {
             domain_name,
             types,
+            type_children,
             predicates,
             actions,
             meta_actions,
@@ -56,6 +59,10 @@ impl World {
 
     pub fn domain_name(&self) -> &str {
         &self.domain_name
+    }
+
+    pub fn get_default_type_index(&self) -> u32 {
+        0
     }
 
     pub fn get_type_index(&self, name: &str) -> u32 {
@@ -70,6 +77,21 @@ impl World {
 
     pub fn get_type_name(&self, index: u32) -> &String {
         &self.types.iter().find(|(_, i)| **i == index).unwrap().0
+    }
+
+    pub fn get_type_children(&self, index: u32) -> Option<&Vec<u32>> {
+        self.type_children.get(&index)
+    }
+
+    pub fn is_of_type(&self, type_index: u32, wished_index: u32) -> bool {
+        if type_index == wished_index {
+            return true;
+        }
+        let children = self.get_type_children(wished_index);
+        match children {
+            Some(children) => children.iter().any(|i| self.is_of_type(*i, wished_index)),
+            None => false,
+        }
     }
 
     pub fn get_action_index(&self, name: &str) -> u32 {
@@ -161,6 +183,12 @@ impl World {
         self.object_types[&object]
     }
 
+    pub fn iterate_objects<'a>(&'a self) -> impl Iterator<Item = (u32, u32)> + 'a {
+        (0..self.get_object_count())
+            .into_iter()
+            .map(|i| (i, self.get_object_type(i)))
+    }
+
     pub fn iterate_objects_named<'a>(&'a self) -> impl Iterator<Item = (&String, &String)> + 'a {
         self.objects.iter().map(|(name, index)| {
             let object_type = self.get_object_type(*index);
@@ -170,8 +198,9 @@ impl World {
     }
 }
 
-fn extract_tyes(types: &Option<Types>) -> HashMap<String, u32> {
+fn extract_types(types: &Option<Types>) -> (HashMap<String, u32>, HashMap<u32, Vec<u32>>) {
     let mut index_map: HashMap<String, u32> = HashMap::new();
+    let mut type_children: HashMap<u32, Vec<u32>> = HashMap::new();
     index_map.insert("object".to_string(), 0);
 
     if let Some(types) = types {
@@ -179,15 +208,19 @@ fn extract_tyes(types: &Option<Types>) -> HashMap<String, u32> {
             if !index_map.contains_key(&t.name) {
                 index_map.insert(t.name.to_owned(), index_map.len() as u32);
             }
+            let type_index = index_map.get(&t.name).unwrap().to_owned();
             for t in t.sub_types.iter() {
                 if !index_map.contains_key(t) {
                     index_map.insert(t.to_owned(), index_map.len() as u32);
                 }
+                let child_index = index_map.get(t).unwrap();
+                let children_entry = &mut type_children.entry(type_index).or_default();
+                children_entry.push(*child_index);
             }
         }
     }
 
-    index_map
+    (index_map, type_children)
 }
 
 fn extract_predicates(predicates: &Predicates) -> HashMap<String, u32> {

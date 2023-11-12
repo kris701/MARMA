@@ -75,7 +75,7 @@ pub fn generate_operators<'a>(
     instance: &'a Instance,
     action: &'a Action,
 ) -> impl Iterator<Item = (Operator, Vec<u32>)> + 'a {
-    let permutations = permute_mutable(&instance.types, &action.parameters.parameter_types);
+    let permutations = permute_mutable(&action.parameters.parameter_types);
     permutations.into_iter().filter_map(|p| {
         let operator = extract_from_action(instance, &p, action)?;
         Some((operator, p))
