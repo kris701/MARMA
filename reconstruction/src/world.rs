@@ -196,6 +196,18 @@ impl World {
             (name, type_name)
         })
     }
+
+    pub fn get_objects_with_type(&self, type_id: u32) -> Vec<u32> {
+        World::global()
+            .iterate_objects()
+            .filter_map(
+                |(object_id, t)| match World::global().is_of_type(t, type_id) {
+                    true => Some(object_id),
+                    false => None,
+                },
+            )
+            .collect()
+    }
 }
 
 fn extract_types(types: &Option<Types>) -> (HashMap<String, u32>, HashMap<u32, Vec<u32>>) {
