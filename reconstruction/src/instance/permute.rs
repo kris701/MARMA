@@ -30,23 +30,6 @@ pub fn get_candidates_typed(
         .collect()
 }
 
-pub fn get_candidates(
-    types: &Option<Types>,
-    objects: &Objects,
-    parameter_types: &Vec<Option<u32>>,
-) -> Vec<Vec<u32>> {
-    if let Some(types) = types {
-        return get_candidates_typed(types, objects, parameter_types);
-    } else {
-        let object_range: Vec<u32> = (0..World::global().get_object_count()).collect();
-
-        parameter_types
-            .iter()
-            .map(|_| object_range.iter().map(|o| *o).collect())
-            .collect()
-    }
-}
-
 fn permute_untyped(parameter_count: u32) -> Vec<Vec<u32>> {
     (0..parameter_count)
         .into_iter()

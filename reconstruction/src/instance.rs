@@ -1,4 +1,4 @@
-use spingus::{domain::Domain, problem::Problem};
+use spingus::domain::Domain;
 
 use crate::{
     tools::{status_print, Status},
@@ -28,9 +28,7 @@ pub struct Instance {
     predicates: Predicates,
     actions: Actions,
     meta_actions: Actions,
-    pub objects: Objects,
-    pub domain: Domain,
-    pub problem: Problem,
+    objects: Objects,
     pub meta_domain: Domain,
     pub facts: Facts,
 }
@@ -63,8 +61,6 @@ impl Instance {
             actions,
             meta_actions,
             objects,
-            domain,
-            problem,
             meta_domain,
             facts,
         }

@@ -1,17 +1,12 @@
-use spingus::problem::Problem;
-
 use std::{fs, path::PathBuf};
 
-use crate::{instance::Instance, state::State};
+use crate::{instance::Instance, state::State, world::World};
 
-fn generate_objects(problem: &Problem) -> String {
+fn generate_objects() -> String {
     let mut s = "".to_string();
-    problem.objects.iter().for_each(|o| {
-        s.push_str(&format!(" {}", o.name));
-        if o.type_name.is_some() {
-            s.push_str(&format!(" - {}", o.type_name.as_ref().unwrap()));
-        }
-    });
+    for (object_name, type_name) in World::global().iterate_objects_named() {
+        s.push_str(&format!(" {} - {}", object_name, type_name));
+    }
     s
 }
 
@@ -36,11 +31,8 @@ pub fn generate_static(instance: &Instance) -> String {
 
 fn generate_problem(instance: &Instance, init_state: &State, goal_state: &State) -> String {
     let mut s: String = "(define\n\t(problem temp)\n".to_string();
-    s.push_str(&format!("\t(:domain {})\n", instance.domain.name));
-    s.push_str(&format!(
-        "\t(:objects{})\n",
-        generate_objects(&instance.problem)
-    ));
+    s.push_str(&format!("\t(:domain {})\n", World::global().domain_name()));
+    s.push_str(&format!("\t(:objects{})\n", generate_objects()));
     s.push_str(&format!(
         "\t(:init\n{}\n{}\t)\n",
         generate_static(instance),

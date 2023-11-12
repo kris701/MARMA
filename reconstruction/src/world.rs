@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
 use once_cell::sync::OnceCell;
 use spingus::{
     domain::{action::Actions, predicate::Predicates, types::Types},
@@ -6,22 +9,25 @@ use spingus::{
 use std::collections::HashMap;
 
 pub struct World {
-    #[allow(dead_code)]
+    /// Name of original domain
+    domain_name: String,
+    /// Maps type name to its index
     types: HashMap<String, u32>,
-    #[allow(dead_code)]
+    /// Maps predicate name to its index
     predicates: HashMap<String, u32>,
-    #[allow(dead_code)]
+    /// Maps action name to its index
     actions: HashMap<String, u32>,
-    #[allow(dead_code)]
+    /// Maps meta action name to its index
     meta_actions: HashMap<String, u32>,
-    #[allow(dead_code)]
+    /// Maps object name to its index
     objects: HashMap<String, u32>,
+    /// Maps object index to its type index
+    object_types: HashMap<u32, u32>,
 }
 
 pub static WORLD: OnceCell<World> = OnceCell::new();
 
 impl World {
-    #[allow(dead_code)]
     pub fn global() -> &'static World {
         WORLD.get().expect("world is not initialized")
     }
@@ -31,21 +37,27 @@ impl World {
         meta_domain: &spingus::domain::Domain,
         problem: &spingus::problem::Problem,
     ) -> World {
+        let domain_name = domain.name.to_owned();
         let types = extract_tyes(&domain.types);
         let predicates = extract_predicates(&domain.predicates);
         let actions = extract_actions(&domain.actions);
         let meta_actions = extract_meta_actions(&actions, &meta_domain.actions);
-        let objects = extract_objects(&problem.objects);
+        let (objects, object_types) = extract_objects(&types, &problem.objects);
         Self {
+            domain_name,
             types,
             predicates,
             actions,
             meta_actions,
             objects,
+            object_types,
         }
     }
 
-    #[allow(dead_code)]
+    pub fn domain_name(&self) -> &str {
+        &self.domain_name
+    }
+
     pub fn get_type_index(&self, name: &str) -> u32 {
         assert!(
             self.types.contains_key(name),
@@ -56,12 +68,10 @@ impl World {
         self.types[name]
     }
 
-    #[allow(dead_code)]
     pub fn get_type_name(&self, index: u32) -> &String {
         &self.types.iter().find(|(_, i)| **i == index).unwrap().0
     }
 
-    #[allow(dead_code)]
     pub fn get_action_index(&self, name: &str) -> u32 {
         assert!(
             self.actions.contains_key(name),
@@ -71,17 +81,14 @@ impl World {
         self.actions[name]
     }
 
-    #[allow(dead_code)]
     pub fn get_action_name(&self, index: u32) -> &String {
         &self.actions.iter().find(|(_, i)| **i == index).unwrap().0
     }
 
-    #[allow(dead_code)]
     pub fn is_meta_action(&self, name: &str) -> bool {
         self.meta_actions.contains_key(name) && !self.actions.contains_key(name)
     }
 
-    #[allow(dead_code)]
     pub fn get_meta_index(&self, name: &str) -> u32 {
         assert!(
             self.meta_actions.contains_key(name),
@@ -91,7 +98,6 @@ impl World {
         self.meta_actions[name]
     }
 
-    #[allow(dead_code)]
     pub fn get_meta_name(&self, index: u32) -> &String {
         &self
             .meta_actions
@@ -101,7 +107,6 @@ impl World {
             .0
     }
 
-    #[allow(dead_code)]
     pub fn get_predicate_index(&self, name: &str) -> u32 {
         assert!(
             self.predicates.contains_key(name),
@@ -111,7 +116,6 @@ impl World {
         self.predicates[name]
     }
 
-    #[allow(dead_code)]
     pub fn get_predicate_name(&self, index: u32) -> &String {
         &self
             .predicates
@@ -125,7 +129,6 @@ impl World {
         self.objects.len() as u32
     }
 
-    #[allow(dead_code)]
     pub fn get_object_index(&self, name: &str) -> u32 {
         assert!(
             self.objects.contains_key(name),
@@ -135,32 +138,41 @@ impl World {
         self.objects[name]
     }
 
-    #[allow(dead_code)]
     pub fn get_object_indexes(&self, indexes: &Vec<String>) -> Vec<u32> {
         indexes.iter().map(|i| self.get_object_index(i)).collect()
     }
 
-    #[allow(dead_code)]
     pub fn get_object_name(&self, index: u32) -> &String {
         &self.objects.iter().find(|(_, i)| **i == index).unwrap().0
     }
 
-    #[allow(dead_code)]
     pub fn get_object_names(&self, indexes: &Vec<u32>) -> Vec<&String> {
         indexes.iter().map(|i| self.get_object_name(*i)).collect()
     }
 
-    #[allow(dead_code)]
     pub fn get_object_names_cloned(&self, indexes: &Vec<u32>) -> Vec<String> {
         indexes
             .iter()
             .map(|i| self.get_object_name(*i).to_owned())
             .collect()
     }
+
+    pub fn get_object_type(&self, object: u32) -> u32 {
+        self.object_types[&object]
+    }
+
+    pub fn iterate_objects_named<'a>(&'a self) -> impl Iterator<Item = (&String, &String)> + 'a {
+        self.objects.iter().map(|(name, index)| {
+            let object_type = self.get_object_type(*index);
+            let type_name = self.get_type_name(*index);
+            (name, type_name)
+        })
+    }
 }
 
 fn extract_tyes(types: &Option<Types>) -> HashMap<String, u32> {
     let mut index_map: HashMap<String, u32> = HashMap::new();
+    index_map.insert("object".to_string(), 0);
 
     if let Some(types) = types {
         for t in types.iter() {
@@ -207,10 +219,23 @@ fn extract_meta_actions(
     index_map
 }
 
-fn extract_objects(objects: &Objects) -> HashMap<String, u32> {
-    objects
+fn extract_objects(
+    type_map: &HashMap<String, u32>,
+    objects: &Objects,
+) -> (HashMap<String, u32>, HashMap<u32, u32>) {
+    let temp: Vec<((String, u32), (u32, u32))> = objects
         .iter()
         .enumerate()
-        .map(|(i, o)| (o.name.to_owned(), i as u32))
-        .collect()
+        .map(|(i, o)| {
+            let object_name = o.name.to_owned();
+            let object_index = i as u32;
+            let object_type = match &o.type_name {
+                Some(t) => t,
+                None => "object",
+            };
+            let type_index = type_map[object_type];
+            ((object_name, object_index), (object_index, type_index))
+        })
+        .collect();
+    temp.into_iter().unzip()
 }
