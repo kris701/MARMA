@@ -16,8 +16,4 @@ impl Predicates {
             predicate_parameters,
         }
     }
-
-    pub fn predicate_parameters(&self) -> &Vec<Parameters> {
-        &self.predicate_parameters
-    }
 }

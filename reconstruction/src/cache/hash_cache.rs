@@ -4,6 +4,7 @@ use itertools::Itertools;
 use spingus::{sas_plan::SASPlan, term::Term};
 
 use crate::{
+    fact::Fact,
     instance::{
         actions::Action,
         operator::{generate_operators, Operator},
@@ -18,18 +19,18 @@ use super::{cache_data::CacheData, generate_plan, Cache};
 #[derive(Debug)]
 pub struct HashCache {
     lifted_macros: Vec<(Action, SASPlan)>,
-    entries: Vec<(Operator, Vec<u32>)>,
-    effect_map: HashMap<Vec<(u32, bool)>, Vec<usize>>,
-    entry_macro: Vec<u32>,
+    entries: Vec<(Operator, Vec<u16>)>,
+    effect_map: HashMap<Vec<(Fact, bool)>, Vec<usize>>,
+    entry_macro: Vec<u16>,
 }
 
 impl HashCache {
     pub fn new(instance: &Instance, cache_data: CacheData) -> Self {
         status_print(Status::Cache, "Init Hash Cache");
         let mut lifted_macros: Vec<(Action, SASPlan)> = Vec::new();
-        let mut entries: Vec<(Operator, Vec<u32>)> = Vec::new();
-        let mut effect_map: HashMap<Vec<(u32, bool)>, Vec<usize>> = HashMap::new();
-        let mut entry_macro: Vec<u32> = Vec::new();
+        let mut entries: Vec<(Operator, Vec<u16>)> = Vec::new();
+        let mut effect_map: HashMap<Vec<(Fact, bool)>, Vec<usize>> = HashMap::new();
+        let mut entry_macro: Vec<u16> = Vec::new();
         for (action, plan) in cache_data
             .into_iter()
             .flat_map(|(_, d)| {
@@ -40,8 +41,8 @@ impl HashCache {
             .collect::<Vec<(Action, SASPlan)>>()
         {
             status_print(Status::Cache, &format!("Grounding {}", action.name));
-            let action_index = lifted_macros.len() as u32;
-            let operators = generate_operators(&instance, &action);
+            let action_index = lifted_macros.len() as u16;
+            let operators = generate_operators(&action);
             let mut count = 0;
             for (operator, permutation) in operators {
                 let entry_index = entries.len();

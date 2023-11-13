@@ -25,7 +25,7 @@ pub(super) fn generate_plan(
     instance: &Instance,
     replacement_macro: &Action,
     replacement_plan: &SASPlan,
-    parameters: &Vec<u32>,
+    parameters: &Vec<u16>,
 ) -> SASPlan {
     let macro_parameters = &replacement_macro.parameters;
     let actions: Vec<String> = replacement_plan.iter().map(|t| t.name.to_owned()).collect();
@@ -33,7 +33,7 @@ pub(super) fn generate_plan(
     let mut plan: SASPlan = Vec::new();
     for (action, step) in replacements.iter().zip(replacement_plan.iter()) {
         let name = action.name.to_owned();
-        let parameters: Vec<u32> = step
+        let parameters: Vec<u16> = step
             .parameters
             .iter()
             .map(|n| {

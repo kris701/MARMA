@@ -1,4 +1,5 @@
 mod cache;
+mod fact;
 mod instance;
 mod reconstruction;
 mod state;
@@ -96,7 +97,7 @@ fn main() {
     }
     status_print(Status::Init, "Plan contains meta actions. Continuing");
     status_print(Status::Init, "Generating instance");
-    let instance = Instance::new(domain, problem, meta_domain.to_owned());
+    let instance = Instance::new(domain, meta_domain.to_owned());
     let cache = generate_cache(&instance, &args.cache, args.cache_method);
     status_print(Status::Reconstruction, "Finding meta solution downward");
     let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
