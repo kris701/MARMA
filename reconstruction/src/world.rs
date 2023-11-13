@@ -1,14 +1,18 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+use crate::fact::Fact;
 use once_cell::sync::OnceCell;
 use spingus::{
-    domain::{action::Actions, predicate::Predicates, types::Types},
-    problem::object::Objects,
+    domain::{
+        action::Actions,
+        parameter::{Parameter, Parameters},
+        predicate::Predicates,
+        types::Types,
+    },
+    problem::object::{Object, Objects},
 };
 use std::collections::HashMap;
-
-use crate::fact::Fact;
 
 pub struct World {
     /// Name of original domain
@@ -48,7 +52,7 @@ impl World {
         let predicates = extract_predicates(&domain.predicates);
         let actions = extract_actions(&domain.actions);
         let meta_actions = extract_meta_actions(&actions, &meta_domain.actions);
-        let (objects, object_types) = extract_objects(&types, &problem.objects);
+        let (objects, object_types) = extract_objects(&types, &problem.objects, &domain.constants);
         let init = problem
             .inits
             .iter()
@@ -266,7 +270,28 @@ fn extract_meta_actions(
 fn extract_objects(
     type_map: &HashMap<String, u16>,
     objects: &Objects,
+    constants: &Option<Parameters>,
 ) -> (HashMap<String, u16>, HashMap<u16, u16>) {
+    let mut objects = objects.clone();
+    match constants {
+        Some(parameters) => objects.append(
+            &mut parameters
+                .iter()
+                .map(|p| match p {
+                    Parameter::Untyped { name } => Object {
+                        name: name.to_string(),
+                        type_name: None,
+                    },
+                    Parameter::Typed { name, type_name } => Object {
+                        name: name.to_string(),
+                        type_name: Some(type_name.to_string()),
+                    },
+                    _ => todo!(),
+                })
+                .collect(),
+        ),
+        None => {}
+    };
     let temp: Vec<((String, u16), (u16, u16))> = objects
         .iter()
         .enumerate()
