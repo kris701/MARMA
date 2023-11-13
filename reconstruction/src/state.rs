@@ -1,6 +1,10 @@
 use std::collections::HashSet;
 
-use crate::{fact::Fact, instance::operator::Operator, world::World};
+use crate::{
+    fact::Fact,
+    instance::{operator::Operator, Instance},
+    world::World,
+};
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
@@ -9,16 +13,14 @@ pub struct State {
 }
 
 impl State {
-    pub fn new(facts: &Vec<Fact>) -> Self {
-        let mutable: HashSet<Fact> = facts.iter().map(|x| *x).collect();
-        Self {
-            statics: HashSet::new(),
-            mutable,
-        }
+    pub fn new(instance: &Instance, facts: &Vec<Fact>) -> Self {
+        let (statics, mutable): (HashSet<Fact>, HashSet<Fact>) =
+            facts.iter().partition(|fact| is_static(instance, &fact));
+        Self { statics, mutable }
     }
 
-    pub fn from_init() -> Self {
-        State::new(World::global().init())
+    pub fn from_init(instance: &Instance) -> Self {
+        State::new(instance, World::global().init())
     }
 
     pub fn apply(&mut self, operator: &Operator) {
@@ -51,4 +53,13 @@ impl State {
         diff.sort_by(|a, b| a.0.cmp(&b.0));
         diff
     }
+}
+
+fn is_static(instance: &Instance, fact: &Fact) -> bool {
+    let predicate = fact.predicate();
+    instance
+        .actions
+        .actions
+        .iter()
+        .any(|a| a.effect.literals.iter().any(|l| l.predicate == predicate))
 }

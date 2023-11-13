@@ -10,7 +10,7 @@ pub mod operator;
 mod parameters;
 
 pub struct Instance {
-    actions: Actions,
+    pub actions: Actions,
     meta_actions: Actions,
 }
 

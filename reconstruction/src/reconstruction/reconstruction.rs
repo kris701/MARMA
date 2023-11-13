@@ -42,7 +42,7 @@ pub fn reconstruct(
     plan: SASPlan,
 ) -> SASPlan {
     let mut replacements: Vec<SASPlan> = Vec::new();
-    let mut state = State::from_init();
+    let mut state = State::from_init(instance);
     let (meta_actions, operators) = generate_operators(&instance, downward, &plan);
 
     let mut found_in_cache: usize = 0;
