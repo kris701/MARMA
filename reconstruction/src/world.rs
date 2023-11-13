@@ -8,6 +8,8 @@ use spingus::{
 };
 use std::collections::HashMap;
 
+use crate::fact::Fact;
+
 pub struct World {
     /// Name of original domain
     domain_name: String,
@@ -25,6 +27,8 @@ pub struct World {
     objects: HashMap<String, u16>,
     /// Maps object index to its type index
     object_types: HashMap<u16, u16>,
+    /// Initial facts
+    init: Vec<Fact>,
 }
 
 pub static WORLD: OnceCell<World> = OnceCell::new();
@@ -45,6 +49,16 @@ impl World {
         let actions = extract_actions(&domain.actions);
         let meta_actions = extract_meta_actions(&actions, &meta_domain.actions);
         let (objects, object_types) = extract_objects(&types, &problem.objects);
+        let init = problem
+            .inits
+            .iter()
+            .map(|i| {
+                Fact::new(
+                    predicates[&i.name],
+                    i.parameters.iter().map(|p| objects[p]).collect(),
+                )
+            })
+            .collect();
         Self {
             domain_name,
             types,
@@ -54,6 +68,7 @@ impl World {
             meta_actions,
             objects,
             object_types,
+            init,
         }
     }
 
@@ -187,6 +202,10 @@ impl World {
                 },
             )
             .collect()
+    }
+
+    pub fn init(&self) -> &Vec<Fact> {
+        &self.init
     }
 }
 

@@ -1,17 +1,17 @@
-use super::{actions::Action, expression::Expression, facts::Facts, Instance};
-use crate::world::World;
+use super::{actions::Action, expression::Expression, Instance};
+use crate::{fact::Fact, world::World};
 use itertools::Itertools;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Operator {
-    pub pre_pos: Vec<u64>,
-    pub pre_neg: Vec<u64>,
-    pub eff_pos: Vec<u64>,
-    pub eff_neg: Vec<u64>,
+    pub pre_pos: Vec<Fact>,
+    pub pre_neg: Vec<Fact>,
+    pub eff_pos: Vec<Fact>,
+    pub eff_neg: Vec<Fact>,
 }
 
 impl Operator {
-    pub fn get_effect(&self) -> Vec<(u64, bool)> {
+    pub fn get_effect(&self) -> Vec<(Fact, bool)> {
         let mut effect = vec![];
 
         for i in self.eff_pos.iter() {
@@ -26,27 +26,17 @@ impl Operator {
     }
 }
 
-pub fn extract_from_action(
-    instance: &Instance,
-    parameters: &Vec<u16>,
-    action: &Action,
-) -> Option<Operator> {
-    let mut pre_pos: Vec<u64> = Vec::new();
-    let mut pre_neg: Vec<u64> = Vec::new();
-    let mut eff_pos: Vec<u64> = Vec::new();
-    let mut eff_neg: Vec<u64> = Vec::new();
+pub fn extract_from_action(parameters: &Vec<u16>, action: &Action) -> Option<Operator> {
+    let mut pre_pos: Vec<Fact> = Vec::new();
+    let mut pre_neg: Vec<Fact> = Vec::new();
+    let mut eff_pos: Vec<Fact> = Vec::new();
+    let mut eff_neg: Vec<Fact> = Vec::new();
     if let Some(exp) = &action.precondition {
-        if !walk(instance, parameters, &mut pre_pos, &mut pre_neg, exp) {
+        if !walk(parameters, &mut pre_pos, &mut pre_neg, exp) {
             return None;
         }
     }
-    if !walk(
-        instance,
-        parameters,
-        &mut eff_pos,
-        &mut eff_neg,
-        &action.effect,
-    ) {
+    if !walk(parameters, &mut eff_pos, &mut eff_neg, &action.effect) {
         return None;
     }
     Some(Operator {
@@ -64,11 +54,10 @@ pub fn generate_operator_string(
 ) -> Operator {
     let action: &Action = instance.get_action(action);
     let parameters: Vec<u16> = World::global().get_object_indexes(parameters);
-    extract_from_action(instance, &parameters, action).unwrap()
+    extract_from_action(&parameters, action).unwrap()
 }
 
 pub fn generate_operators<'a>(
-    instance: &'a Instance,
     action: &'a Action,
 ) -> impl Iterator<Item = (Operator, Vec<u16>)> + 'a {
     action
@@ -79,19 +68,17 @@ pub fn generate_operators<'a>(
         .into_iter()
         .multi_cartesian_product()
         .filter_map(|p| {
-            let operator = extract_from_action(instance, &p, action)?;
+            let operator = extract_from_action(&p, action)?;
             Some((operator, p))
         })
 }
 
 fn walk(
-    instance: &Instance,
     permutation: &Vec<u16>,
-    pos: &mut Vec<u64>,
-    neg: &mut Vec<u64>,
+    pos: &mut Vec<Fact>,
+    neg: &mut Vec<Fact>,
     exp: &Expression,
 ) -> bool {
-    let facts = &instance.facts;
     for equal in exp.equals.iter() {
         let parameters = equal
             .parameters
@@ -110,15 +97,14 @@ fn walk(
             .map(|p| permutation[*p as usize])
             .collect_vec();
 
-        if facts.is_static(predicate) && !facts.is_statically_true(predicate, &parameters) {
-            return false;
-        } else {
-            let fact = Facts::index(predicate, &parameters);
-            match literal.value {
-                true => pos.push(fact),
-                false => neg.push(fact),
-            };
-        }
+        // TODO: Return false on statically false
+        //if facts.is_static(predicate) && !facts.is_statically_true(predicate, &parameters) {
+        //    return false;
+        let fact = Fact::new(predicate, parameters);
+        match literal.value {
+            true => pos.push(fact),
+            false => neg.push(fact),
+        };
     }
     true
 }

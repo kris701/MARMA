@@ -42,7 +42,7 @@ pub fn reconstruct(
     plan: SASPlan,
 ) -> SASPlan {
     let mut replacements: Vec<SASPlan> = Vec::new();
-    let mut state = State::new(&instance);
+    let mut state = State::from_init();
     let (meta_actions, operators) = generate_operators(&instance, downward, &plan);
 
     let mut found_in_cache: usize = 0;
@@ -66,7 +66,7 @@ pub fn reconstruct(
         }
         let problem_file = PathBuf::from(random_file_name(&downward.temp_dir));
         assert_ne!(init, state);
-        write_problem(instance, &init, &state, &problem_file);
+        write_problem(&init, &state, &problem_file);
         let plan = downward.solve(domain_path, &problem_file);
         if let Ok(plan) = plan {
             assert!(!plan.is_empty());

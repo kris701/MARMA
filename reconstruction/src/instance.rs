@@ -1,7 +1,4 @@
-use self::{
-    actions::{Action, Actions},
-    facts::Facts,
-};
+use self::actions::{Action, Actions};
 use crate::{
     tools::{status_print, Status},
     world::World,
@@ -9,33 +6,24 @@ use crate::{
 
 pub mod actions;
 mod expression;
-pub mod facts;
 pub mod operator;
 mod parameters;
 
 pub struct Instance {
     actions: Actions,
     meta_actions: Actions,
-    pub facts: Facts,
 }
 
 impl Instance {
-    pub fn new(
-        domain: spingus::domain::Domain,
-        problem: spingus::problem::Problem,
-        meta_domain: spingus::domain::Domain,
-    ) -> Self {
+    pub fn new(domain: spingus::domain::Domain, meta_domain: spingus::domain::Domain) -> Self {
         status_print(Status::Init, "Generating actions");
         let actions = Actions::new(domain.actions.to_owned());
         status_print(Status::Init, "Generating meta actions");
         let meta_actions = Actions::new(meta_domain.actions.to_owned());
-        status_print(Status::Init, "Generating facts");
-        let facts = Facts::new(&actions, &problem.inits);
 
         Self {
             actions,
             meta_actions,
-            facts,
         }
     }
 
@@ -53,17 +41,5 @@ impl Instance {
             action.precondition,
             action.effect,
         )
-    }
-
-    pub fn get_fact_string(&self, index: u64) -> String {
-        let predicate = Facts::fact_predicate(index);
-        let predicate = World::global().get_predicate_name(predicate);
-        let parameters = Facts::fact_parameters(index);
-        let parameters = World::global().get_object_names(&parameters);
-        let mut s = format!("{}", predicate);
-        for param in parameters {
-            s.push_str(&format!(" {}", param));
-        }
-        s
     }
 }

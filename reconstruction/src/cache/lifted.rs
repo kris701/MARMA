@@ -50,7 +50,7 @@ impl Cache for LiftedCache {
         let replacement_candidates = &self.replacements.get(&meta_term.name)?;
         for replacement in replacement_candidates.iter() {
             let action = &replacement.action;
-            for (operator, permutation) in generate_operators(instance, action) {
+            for (operator, permutation) in generate_operators(action) {
                 if desired.iter().any(|(i, v)| match v {
                         true => !operator.eff_pos.contains(&i),
                         false => !operator.eff_neg.contains(&i),
