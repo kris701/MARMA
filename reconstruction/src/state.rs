@@ -37,8 +37,14 @@ impl State {
     }
 
     pub fn is_legal(&self, operator: &Operator) -> bool {
-        let has_pos = operator.pre_pos.iter().all(|i| self.mutable.contains(i));
-        let has_neg = operator.pre_neg.iter().all(|i| !self.mutable.contains(i));
+        let has_pos = operator
+            .pre_pos
+            .iter()
+            .all(|i| self.mutable.contains(i) || self.statics.contains(i));
+        let has_neg = operator
+            .pre_neg
+            .iter()
+            .all(|i| !self.mutable.contains(i) && !self.statics.contains(i));
         has_pos && has_neg
     }
 
