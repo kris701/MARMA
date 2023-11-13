@@ -42,10 +42,10 @@ pub fn reconstruct(
     plan: SASPlan,
 ) -> SASPlan {
     let mut replacements: Vec<SASPlan> = Vec::new();
+    let mut found_in_cache: Vec<usize> = Vec::new();
     let mut state = State::from_init(instance);
     let (meta_actions, operators) = generate_operators(&instance, downward, &plan);
 
-    let mut found_in_cache: usize = 0;
     let progress_bar = generate_progressbar(meta_actions.len());
     status_print(Status::Reconstruction, "Generating replacements");
     for (i, operator) in operators.iter().enumerate() {
@@ -60,7 +60,7 @@ pub fn reconstruct(
         if let Some(cache) = cache {
             if let Some(replacement) = cache.get_replacement(instance, &plan[i], &init, &state) {
                 replacements.push(replacement);
-                found_in_cache += 1;
+                found_in_cache.push(i);
                 continue;
             }
         }
@@ -85,10 +85,15 @@ pub fn reconstruct(
         Status::Reconstruction,
         &format!(
             "Found {} of {} in cache ({})",
-            found_in_cache,
+            found_in_cache.len(),
             meta_actions.len(),
-            found_in_cache as f64 / meta_actions.len() as f64
+            found_in_cache.len() as f64 / meta_actions.len() as f64
         ),
     );
+    for (i, step) in plan.iter().enumerate() {
+        if !found_in_cache.contains(&i) {
+            println!("Not found in cache: {:?}", step);
+        }
+    }
     stich(&plan, meta_actions.into_iter().zip(replacements).collect())
 }
