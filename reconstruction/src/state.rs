@@ -32,7 +32,7 @@ impl State {
         }
     }
 
-    pub fn get(&self) -> &HashSet<Fact> {
+    fn get(&self) -> &HashSet<Fact> {
         &self.mutable
     }
 
@@ -53,6 +53,23 @@ impl State {
         diff.sort_by(|a, b| a.0.cmp(&b.0));
         diff
     }
+
+    pub fn export_all(&self) -> String {
+        let mut s: String = "".to_owned();
+        self.statics
+            .iter()
+            .chain(self.mutable.iter())
+            .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
+        s
+    }
+
+    pub fn export_mutable(&self) -> String {
+        let mut s: String = "".to_owned();
+        self.mutable
+            .iter()
+            .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
+        s
+    }
 }
 
 fn is_static(instance: &Instance, fact: &Fact) -> bool {
@@ -61,5 +78,5 @@ fn is_static(instance: &Instance, fact: &Fact) -> bool {
         .actions
         .actions
         .iter()
-        .any(|a| a.effect.literals.iter().any(|l| l.predicate == predicate))
+        .any(|a| !a.effect.literals.iter().any(|l| l.predicate == predicate))
 }
