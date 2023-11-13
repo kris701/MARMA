@@ -10,12 +10,13 @@ use cache::generation::{generate_cache, CacheMethod};
 use reconstruction::reconstruction::reconstruct;
 use spingus::domain::parse_domain;
 use spingus::problem::parse_problem;
-use spingus::sas_plan::{export_sas, SASPlan};
+use spingus::sas_plan::{export_sas, parse_sas, SASPlan};
 use tools::time::init_time;
 use tools::Status;
 
 use std::fs;
 use std::path::PathBuf;
+use std::process::exit;
 
 use clap::Parser;
 
@@ -43,7 +44,7 @@ pub struct Args {
     /// Path to solution for meta domain + problem.
     /// If not provided, uses fast downward to generate it
     #[arg(short = 's')]
-    solution: Option<PathBuf>,
+    solution: PathBuf,
     /// Path to write final solution to
     /// If not given, simply prints to stdout
     #[arg(short = 'o')]
@@ -65,6 +66,12 @@ pub struct Args {
 // TODO: Make plan object with this
 fn contains_meta(plan: &SASPlan) -> bool {
     plan.iter().any(|s| World::global().is_meta_action(&s.name))
+}
+
+fn meta_action_count(plan: &SASPlan) -> usize {
+    plan.iter()
+        .filter(|s| World::global().is_meta_action(&s.name))
+        .count()
 }
 
 fn main() {
@@ -89,39 +96,39 @@ fn main() {
     let _ = WORLD.set(world);
     status_print(Status::Init, "Finding fast downward");
     let downward = Downward::new(&args.downward, &args.temp_dir);
-    status_print(Status::Init, "Checking plan for meta actions");
-    let meta_plan = downward.find_or_solve(&args.meta_domain, &args.problem, &args.solution);
-    if !contains_meta(&meta_plan) {
-        status_print(Status::Init, "None found. Exiting.");
-        return;
-    }
-    status_print(Status::Init, "Plan contains meta actions. Continuing");
-    status_print(Status::Init, "Generating instance");
-    let instance = Instance::new(domain, meta_domain.to_owned());
-    let cache = generate_cache(&instance, &args.cache, args.cache_method);
-    status_print(Status::Reconstruction, "Finding meta solution downward");
-    let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
-    if let Some(val_path) = args.val {
-        status_print(Status::Validation, "Checking VAL");
-        if check_val(
-            &args.domain,
-            &args.problem,
-            &val_path,
-            &args.temp_dir,
-            &plan,
-        ) {
-            println!("---VALID---");
-        } else {
-            println!("---NOT VALID---");
+    let meta_plan = parse_sas(&fs::read_to_string(&args.solution).unwrap()).unwrap();
+    println!("meta_plan_length {}", meta_plan.len());
+    println!("meta_actions_in_plan {}", meta_action_count(&meta_plan));
+    let plan = match contains_meta(&meta_plan) {
+        true => {
+            status_print(Status::Init, "Generating instance");
+            let instance = Instance::new(domain, meta_domain.to_owned());
+            let cache = generate_cache(&instance, &args.cache, args.cache_method);
+            status_print(Status::Reconstruction, "Finding meta solution downward");
+            let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
+            if let Some(val_path) = args.val {
+                status_print(Status::Validation, "Checking VAL");
+                if check_val(
+                    &args.domain,
+                    &args.problem,
+                    &val_path,
+                    &args.temp_dir,
+                    &plan,
+                ) {
+                    println!("---VALID---");
+                } else {
+                    println!("---NOT VALID---");
+                }
+            }
+            plan
         }
+        false => meta_plan,
+    };
+    status_print(Status::Report, "Finished reconstruction");
+    println!("final_plan_length {}", &plan.len());
+    if let Some(path) = args.out {
+        let plan_export = export_sas(&plan);
+        fs::write(path, plan_export).unwrap();
     }
-    match args.out {
-        Some(path) => {
-            let plan_export = export_sas(&plan);
-            fs::write(path, plan_export).unwrap();
-        }
-        None => {
-            println!("Final plan had {} steps", plan.len());
-        }
-    }
+    exit(0)
 }

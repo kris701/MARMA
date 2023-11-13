@@ -90,10 +90,6 @@ pub fn reconstruct(
             found_in_cache.len() as f64 / meta_actions.len() as f64
         ),
     );
-    for (i, step) in plan.iter().enumerate() {
-        if !found_in_cache.contains(&i) {
-            println!("Not found in cache: {:?}", step);
-        }
-    }
+    println!("found_in_cache {}", found_in_cache.len());
     stich(&plan, meta_actions.into_iter().zip(replacements).collect())
 }
