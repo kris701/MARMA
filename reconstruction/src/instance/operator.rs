@@ -97,9 +97,6 @@ fn walk(
             .map(|p| permutation[*p as usize])
             .collect_vec();
 
-        // TODO: Return false on statically false
-        //if facts.is_static(predicate) && !facts.is_statically_true(predicate, &parameters) {
-        //    return false;
         let fact = Fact::new(predicate, parameters);
         match literal.value {
             true => pos.push(fact),
