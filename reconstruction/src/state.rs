@@ -78,5 +78,5 @@ fn is_static(instance: &Instance, fact: &Fact) -> bool {
         .actions
         .actions
         .iter()
-        .any(|a| !a.effect.literals.iter().any(|l| l.predicate == predicate))
+        .all(|a| !a.effect.literals.iter().any(|l| l.predicate == predicate))
 }
