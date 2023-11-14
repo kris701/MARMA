@@ -96,9 +96,10 @@ fn main() {
     let _ = WORLD.set(world);
     status_print(Status::Init, "Finding fast downward");
     let downward = Downward::new(&args.downward, &args.temp_dir);
+    status_print(Status::Init, "Reading meta solution");
     let meta_plan = parse_sas(&fs::read_to_string(&args.solution).unwrap()).unwrap();
-    println!("meta_plan_length {}", meta_plan.len());
-    println!("meta_actions_in_plan {}", meta_action_count(&meta_plan));
+    println!("meta_plan_length={}", meta_plan.len());
+    println!("meta_actions_in_plan={}", meta_action_count(&meta_plan));
     let plan = match contains_meta(&meta_plan) {
         true => {
             status_print(Status::Init, "Generating instance");
@@ -125,7 +126,7 @@ fn main() {
         false => meta_plan,
     };
     status_print(Status::Report, "Finished reconstruction");
-    println!("final_plan_length {}", &plan.len());
+    println!("final_plan_length={}", &plan.len());
     if let Some(path) = args.out {
         let plan_export = export_sas(&plan);
         fs::write(path, plan_export).unwrap();
