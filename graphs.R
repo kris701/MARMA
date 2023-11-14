@@ -5,9 +5,9 @@ imgWidth <- 8
 imgHeight <- 9
 	
 # Get both data files
-data1 <- read.csv("norm.csv", header = T, sep = ",", colClasses=c('character','character','character','character','numeric','numeric','numeric'))
+data1 <- read.csv("norm.csv", header = T, sep = ",", colClasses=c('character','character','character','character','numeric','numeric','numeric','numeric','numeric','numeric','numeric'))
 data1Name = data1["name"][1,]
-data2All <- read.csv("meta.csv", header = T, sep = ",", colClasses=c('character','character','character','character','numeric','numeric','numeric'))
+data2All <- read.csv("meta.csv", header = T, sep = ",", colClasses=c('character','character','character','character','numeric','numeric','numeric','numeric','numeric','numeric','numeric'))
 
 names <- unique(data2All["name"])
 names <- names[names != "" & names != data1Name,]
@@ -43,7 +43,7 @@ for (i in names)
 			axis.title=element_blank(),
 			legend.position="bottom") +
 		coord_polar(theta = "y") 
-	 plot
+	# plot
 	ggsave(plot=plot, filename=paste(data2Name, "solvedvsunsolved.pdf"), width=imgWidth, height=imgHeight)
 
 	print("Generating: Search Time Scatter")
@@ -91,6 +91,54 @@ for (i in names)
 		)
 	# plot
 	ggsave(plot=plot, filename=paste(data2Name, "totalTime.pdf"), width=imgWidth, height=imgHeight)
+
+	print("Generating: Plan Length Scatter")
+	# Generate Plan Length Scatterplot
+	plot <- ggplot(finished, aes(x=final_plan_length.meta, y=final_plan_length.norm, color=domain)) + 
+		geom_point(size=2) +
+		geom_abline(intercept = 0, slope = 1, color = "black") +
+		  scale_x_log10(
+			limits=c(min(finished$final_plan_length.meta,finished$final_plan_length.norm),max(finished$final_plan_length.meta,finished$final_plan_length.norm)),
+			labels = scales::trans_format("log10", scales::math_format(10^.x))
+		) +
+		  scale_y_log10(
+			limits=c(min(finished$final_plan_length.meta,finished$final_plan_length.norm),max(finished$final_plan_length.meta,finished$final_plan_length.norm)),
+			labels = scales::trans_format("log10", scales::math_format(10^.x))
+		) +
+		ggtitle("Final Plan Lengths") + 
+		labs(shape = "", color = "") +
+		xlab(data2Name) +
+		ylab(data1Name) + 
+		theme(text = element_text(size=15, family="serif"),
+			axis.text.x = element_text(angle=90, hjust=1),
+			legend.position="bottom"
+		)
+	# plot
+	ggsave(plot=plot, filename=paste(data2Name, "finalPlanLength.pdf"), width=imgWidth, height=imgHeight)
+
+	print("Generating: Meta Plan Length Scatter")
+	# Generate Meta Plan Lenth Scatterplot
+	plot <- ggplot(finished, aes(x=meta_plan_length.meta, y=meta_plan_length.norm, color=domain)) + 
+		geom_point(size=2) +
+		geom_abline(intercept = 0, slope = 1, color = "black") +
+		  scale_x_log10(
+			limits=c(min(finished$meta_plan_length.meta,finished$meta_plan_length.norm),max(finished$meta_plan_length.meta,finished$meta_plan_length.norm)),
+			labels = scales::trans_format("log10", scales::math_format(10^.x))
+		) +
+		  scale_y_log10(
+			limits=c(min(finished$meta_plan_length.meta,finished$meta_plan_length.norm),max(finished$meta_plan_length.meta,finished$meta_plan_length.norm)),
+			labels = scales::trans_format("log10", scales::math_format(10^.x))
+		) +
+		ggtitle("Meta Plan Lengths") + 
+		labs(shape = "", color = "") +
+		xlab(data2Name) +
+		ylab(data1Name) + 
+		theme(text = element_text(size=15, family="serif"),
+			axis.text.x = element_text(angle=90, hjust=1),
+			legend.position="bottom"
+		)
+	# plot
+	ggsave(plot=plot, filename=paste(data2Name, "metaPlanLength.pdf"), width=imgWidth, height=imgHeight)
 
 	print("Generating: Coverage plot")
 	# Generate Coverage plot
