@@ -1,16 +1,12 @@
-use std::collections::HashMap;
-
-use itertools::Itertools;
-use spingus::{sas_plan::SASPlan, term::Term};
-
+use super::{cache_data::CacheData, generate_plan, Cache};
 use crate::{
     instance::{actions::Action, operator::generate_operators_by_candidates, Instance},
     state::State,
     tools::{status_print, Status},
     world::World,
 };
-
-use super::{cache_data::CacheData, generate_plan, Cache};
+use spingus::{sas_plan::SASPlan, term::Term};
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug)]
 struct Replacement {
@@ -27,9 +23,7 @@ fn generate_replacements(
 ) -> Option<Vec<Replacement>> {
     let relevant_replacements = cache_data
         .iter()
-        .find(|(meta_action, replacements)| {
-            *meta_index == World::global().get_meta_index(meta_action)
-        })?
+        .find(|(meta_action, ..)| *meta_index == **meta_action)?
         .1;
     let replacements = relevant_replacements
         .iter()
@@ -68,20 +62,19 @@ impl LiftedCache {
     pub fn new(
         instance: &Instance,
         cache_data: CacheData,
-        used_meta_actions: Vec<(u16, Vec<u16>)>,
+        used_meta_actions: HashMap<u16, HashSet<Vec<u16>>>,
     ) -> Self {
         status_print(Status::Cache, "Init Lifted Cache");
         let mut replacements: HashMap<(u16, Vec<u16>), Vec<Replacement>> = HashMap::new();
 
-        for meta_action in used_meta_actions.into_iter() {
-            let meta_index = meta_action.0.to_owned();
-            let parameters = meta_action.1.to_owned();
+        for (meta_action, permutations) in used_meta_actions.into_iter() {
+            for permutation in permutations.into_iter() {
+                let action_replacements =
+                    generate_replacements(instance, &cache_data, &meta_action, &permutation);
 
-            let action_replacements =
-                generate_replacements(instance, &cache_data, &meta_index, &parameters);
-
-            if let Some(action_replacements) = action_replacements {
-                replacements.insert(meta_action, action_replacements);
+                if let Some(action_replacements) = action_replacements {
+                    replacements.insert((meta_action, permutation), action_replacements);
+                }
             }
         }
 

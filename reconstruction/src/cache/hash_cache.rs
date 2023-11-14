@@ -1,80 +1,80 @@
-use std::collections::HashMap;
-
-use itertools::Itertools;
-use spingus::{sas_plan::SASPlan, term::Term};
-
+use super::{cache_data::CacheData, generate_plan, Cache};
 use crate::{
     fact::Fact,
     instance::{
         actions::Action,
-        operator::{generate_operators, Operator},
+        operator::{extract_from_action, generate_operators_by_candidates, Operator},
         Instance,
     },
     state::State,
     tools::{status_print, Status},
+    world::World,
 };
-
-use super::{cache_data::CacheData, generate_plan, Cache};
+use spingus::{sas_plan::SASPlan, term::Term};
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug)]
 pub struct HashCache {
+    /// All macros that can potentially be used
     lifted_macros: Vec<(Action, SASPlan)>,
-    entries: Vec<(Operator, Vec<u16>)>,
+    /// Grounded macros
+    entries: Vec<(u16, Vec<u16>)>,
+    /// A map from effect to those entries that fulfill it
     effect_map: HashMap<Vec<(Fact, bool)>, Vec<usize>>,
-    entry_macro: Vec<u16>,
 }
 
 impl HashCache {
     pub fn new(
         instance: &Instance,
         cache_data: CacheData,
-        used_meta_actions: Vec<(u16, Vec<u16>)>,
+        used_meta_actions: HashMap<u16, HashSet<Vec<u16>>>,
     ) -> Self {
         status_print(Status::Cache, "Init Hash Cache");
         let mut lifted_macros: Vec<(Action, SASPlan)> = Vec::new();
-        let mut entries: Vec<(Operator, Vec<u16>)> = Vec::new();
+        let mut entries: Vec<(u16, Vec<u16>)> = Vec::new();
         let mut effect_map: HashMap<Vec<(Fact, bool)>, Vec<usize>> = HashMap::new();
-        let mut entry_macro: Vec<u16> = Vec::new();
-        for (action, plan) in cache_data
-            .into_iter()
-            .flat_map(|(_, d)| {
-                d.into_iter()
-                    .map(|(a, p)| (instance.convert_action(a), p))
-                    .collect_vec()
-            })
-            .collect::<Vec<(Action, SASPlan)>>()
-        {
-            status_print(Status::Cache, &format!("Grounding {}", action.name));
-            let action_index = lifted_macros.len() as u16;
-            let operators = generate_operators(&action);
-            let mut count = 0;
-            for (operator, permutation) in operators {
-                let entry_index = entries.len();
-                entry_macro.push(action_index);
-                let c_effect = operator.get_effect();
-                match effect_map.get_mut(&c_effect) {
-                    Some(e) => {
-                        e.push(entry_index);
+
+        for (meta_index, macros) in cache_data.into_iter() {
+            for (macro_action, plan) in macros.into_iter() {
+                let macro_index = lifted_macros.len();
+                let macro_action = instance.convert_action(macro_action);
+                if !used_meta_actions.contains_key(&meta_index) {
+                    continue;
+                }
+                for meta_permutation in used_meta_actions[&meta_index].iter() {
+                    let candidates: Vec<Vec<u16>> = macro_action
+                        .parameters
+                        .parameter_names
+                        .iter()
+                        .zip(macro_action.parameters.parameter_types.iter())
+                        .map(|(name, type_id)| match name.to_uppercase().contains('O') {
+                            true => World::global().get_objects_with_type(*type_id),
+                            false => {
+                                let parameter_index = name.parse::<usize>().unwrap();
+                                vec![meta_permutation[parameter_index]]
+                            }
+                        })
+                        .collect();
+                    for (operator, permutation) in
+                        generate_operators_by_candidates(&macro_action, candidates)
+                    {
+                        let entry_index = entries.len();
+                        entries.push((macro_index as u16, permutation));
+                        let effect = operator.get_effect();
+                        effect_map.entry(effect).or_default().push(entry_index);
                     }
-                    None => {
-                        effect_map.insert(c_effect.to_owned(), vec![entry_index]);
-                    }
-                };
-                entries.push((operator, permutation));
-                count += 1;
+                }
+                lifted_macros.push((macro_action, plan));
             }
-            println!("Entries: {}", count);
-            lifted_macros.push((action, plan));
         }
-        let c = HashCache {
+
+        println!("Cache entries: {}", entries.len());
+
+        Self {
             lifted_macros,
             entries,
             effect_map,
-            entry_macro,
-        };
-        println!("Generated cache with {} entries", c.entries.len());
-        println!("Number of effects {}", c.effect_map.len());
-        c
+        }
     }
 }
 impl Cache for HashCache {
@@ -87,12 +87,14 @@ impl Cache for HashCache {
     ) -> Option<SASPlan> {
         let desired = init.diff(goal);
         let candidates: &Vec<usize> = self.effect_map.get(&desired)?;
-        let index: &usize = candidates
-            .iter()
-            .find(|i| init.is_legal(&self.entries[**i].0))?;
-        let (_, parameters) = &self.entries[*index as usize];
-        let macro_index = self.entry_macro[*index as usize];
-        let (lifted_macro, plan) = self.lifted_macros.get(macro_index as usize)?;
-        Some(generate_plan(instance, lifted_macro, plan, parameters))
+        for candidate in candidates.iter() {
+            let (macro_index, parameters) = &self.entries[*candidate];
+            let (macro_action, plan) = &self.lifted_macros[*macro_index as usize];
+            let operator = extract_from_action(&parameters, &macro_action).unwrap();
+            if init.is_legal(&operator) {
+                return Some(generate_plan(instance, macro_action, plan, parameters));
+            }
+        }
+        None
     }
 }

@@ -1,4 +1,7 @@
-use std::path::PathBuf;
+use std::{
+    collections::{HashMap, HashSet},
+    path::PathBuf,
+};
 
 use clap::ValueEnum;
 use spingus::sas_plan::SASPlan;
@@ -19,18 +22,14 @@ pub enum CacheMethod {
     None,
 }
 
-fn find_used_meta_actions(meta_plan: &SASPlan) -> Vec<(u16, Vec<u16>)> {
-    meta_plan
-        .iter()
-        .filter_map(|s| match World::global().is_meta_action(&s.name) {
-            true => {
-                let meta_index = World::global().get_meta_index(&s.name);
-                let parameters = World::global().get_object_indexes(&s.parameters);
-                Some((meta_index, parameters))
-            }
-            false => None,
-        })
-        .collect()
+fn find_used_meta_actions(meta_plan: &SASPlan) -> HashMap<u16, HashSet<Vec<u16>>> {
+    let mut used: HashMap<u16, HashSet<Vec<u16>>> = HashMap::new();
+    for step in meta_plan.iter() {
+        let meta_index = World::global().get_meta_index(&step.name);
+        let parameters = World::global().get_object_indexes(&step.parameters);
+        used.entry(meta_index).or_default().insert(parameters);
+    }
+    used
 }
 
 pub fn generate_cache(
