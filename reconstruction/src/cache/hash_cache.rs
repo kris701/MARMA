@@ -3,7 +3,7 @@ use crate::{
     fact::Fact,
     instance::{
         actions::Action,
-        operator::{extract_from_action, generate_operators_by_candidates, Operator},
+        operator::{extract_from_action, generate_operators_by_candidates},
         Instance,
     },
     state::State,

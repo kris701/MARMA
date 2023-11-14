@@ -57,22 +57,6 @@ pub fn generate_operator_string(
     extract_from_action(&parameters, action).unwrap()
 }
 
-pub fn generate_operators<'a>(
-    action: &'a Action,
-) -> impl Iterator<Item = (Operator, Vec<u16>)> + 'a {
-    action
-        .parameters
-        .parameter_types
-        .iter()
-        .map(move |t| World::global().get_objects_with_type(*t))
-        .into_iter()
-        .multi_cartesian_product()
-        .filter_map(|p| {
-            let operator = extract_from_action(&p, action)?;
-            Some((operator, p))
-        })
-}
-
 pub fn generate_operators_by_candidates<'a>(
     action: &'a Action,
     candidates: Vec<Vec<u16>>,
