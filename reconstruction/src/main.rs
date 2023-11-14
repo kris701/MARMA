@@ -14,11 +14,10 @@ use spingus::sas_plan::{export_sas, parse_sas, SASPlan};
 use tools::time::init_time;
 use tools::Status;
 
+use clap::Parser;
 use std::fs;
 use std::path::PathBuf;
 use std::process::exit;
-
-use clap::Parser;
 
 use crate::instance::Instance;
 use crate::reconstruction::downward_wrapper::Downward;
@@ -104,7 +103,7 @@ fn main() {
         true => {
             status_print(Status::Init, "Generating instance");
             let instance = Instance::new(domain, meta_domain.to_owned());
-            let cache = generate_cache(&instance, &args.cache, args.cache_method);
+            let cache = generate_cache(&instance, &meta_plan, &args.cache, args.cache_method);
             status_print(Status::Reconstruction, "Finding meta solution downward");
             let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
             if let Some(val_path) = args.val {

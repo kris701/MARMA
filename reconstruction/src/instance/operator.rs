@@ -73,6 +73,19 @@ pub fn generate_operators<'a>(
         })
 }
 
+pub fn generate_operators_by_candidates<'a>(
+    action: &'a Action,
+    candidates: Vec<Vec<u16>>,
+) -> impl Iterator<Item = (Operator, Vec<u16>)> + 'a {
+    candidates
+        .into_iter()
+        .multi_cartesian_product()
+        .filter_map(|p| {
+            let operator = extract_from_action(&p, action)?;
+            Some((operator, p))
+        })
+}
+
 fn walk(
     permutation: &Vec<u16>,
     pos: &mut Vec<Fact>,

@@ -25,7 +25,11 @@ pub struct HashCache {
 }
 
 impl HashCache {
-    pub fn new(instance: &Instance, cache_data: CacheData) -> Self {
+    pub fn new(
+        instance: &Instance,
+        cache_data: CacheData,
+        used_meta_actions: Vec<(u16, Vec<u16>)>,
+    ) -> Self {
         status_print(Status::Cache, "Init Hash Cache");
         let mut lifted_macros: Vec<(Action, SASPlan)> = Vec::new();
         let mut entries: Vec<(Operator, Vec<u16>)> = Vec::new();
