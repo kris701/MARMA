@@ -1,7 +1,4 @@
-﻿using CommandLine;
-using CommandLine.Text;
-
-namespace Tools
+﻿namespace Tools
 {
     public abstract class BaseCLI
     {

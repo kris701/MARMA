@@ -1,13 +1,7 @@
-﻿using CommandLine;
-using PDDLSharp.ErrorListeners;
+﻿using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Parsers.PDDL;
 using PDDLSharp.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StackelbergCompiler.Tests
 {
@@ -69,7 +63,7 @@ namespace StackelbergCompiler.Tests
             // ASSERT
             Assert.IsNotNull(decl.Problem.Init);
             Assert.IsNotNull(result.Problem.Init);
-            foreach(var item in decl.Problem.Init.Predicates)
+            foreach (var item in decl.Problem.Init.Predicates)
                 if (item is PredicateExp pred && !StaticPredicateDetector.StaticPredicates.Any(x => x == pred.Name))
                     Assert.IsTrue(result.Problem.Init.Predicates.Any(x => x is PredicateExp cPred && cPred.Name == $"{ReservedNames.LeaderStatePrefix}{pred.Name}"));
         }
@@ -207,7 +201,7 @@ namespace StackelbergCompiler.Tests
             var result = compiler.GenerateConditionalEffects(decl.Domain, decl.Problem, metaAction.Copy());
 
             // ASSERT
-            foreach(var act in decl.Domain.Actions)
+            foreach (var act in decl.Domain.Actions)
             {
                 Assert.IsTrue(result.Domain.Actions.Any(x => x.Name.StartsWith(ReservedNames.LeaderActionPrefix)));
                 Assert.IsTrue(result.Domain.Actions.Any(x => x.Name.StartsWith(ReservedNames.FollowerActionPrefix)));
@@ -323,7 +317,7 @@ namespace StackelbergCompiler.Tests
             var result = compiler.GenerateConditionalEffects(decl.Domain, decl.Problem, metaAction.Copy());
 
             // ASSERT
-            foreach(var act in result.Domain.Actions)
+            foreach (var act in result.Domain.Actions)
             {
                 if (act.Name.StartsWith(ReservedNames.LeaderActionPrefix) && !act.Name.EndsWith(metaAction.Name))
                 {
@@ -336,7 +330,7 @@ namespace StackelbergCompiler.Tests
                     int leaders = 0;
                     if (act.Effects is AndExp effAnd)
                     {
-                        foreach(var child in effAnd.Children)
+                        foreach (var child in effAnd.Children)
                         {
                             if (child is PredicateExp pred)
                             {
@@ -381,7 +375,7 @@ namespace StackelbergCompiler.Tests
                     var effPreds = act.Effects.FindTypes<PredicateExp>();
                     int pos = 0;
                     int neg = 0;
-                    foreach(var pred in effPreds)
+                    foreach (var pred in effPreds)
                     {
                         if (pred.Parent is NotExp)
                             neg++;

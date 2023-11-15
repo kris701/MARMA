@@ -1,7 +1,4 @@
-﻿using CommandLine;
-using System.Runtime.InteropServices;
-
-namespace MetaActions.Learn
+﻿namespace MetaActions.Learn
 {
     public class Options
     {

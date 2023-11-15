@@ -1,5 +1,4 @@
 ﻿using PDDLSharp.Models.PDDL.Domain;
-using PDDLSharp.Models.PDDL.Expressions;
 
 namespace MetaActionGenerator.CandidateGenerators
 {
@@ -19,7 +18,7 @@ namespace MetaActionGenerator.CandidateGenerators
                 var andAct = EnsureAnd(act);
 
                 List<int> removeable = new List<int>();
-                for(int i = 0; i < andAct.Parameters.Values.Count; i++)
+                for (int i = 0; i < andAct.Parameters.Values.Count; i++)
                     if (andAct.Effects.FindNames(andAct.Parameters.Values[i].Name).Count == 0)
                         removeable.Add(i);
 
@@ -27,10 +26,10 @@ namespace MetaActionGenerator.CandidateGenerators
                     continue;
 
                 var permutations = GeneratePermutations(removeable.Count);
-                foreach(var premutation in permutations)
+                foreach (var premutation in permutations)
                 {
                     var toRemove = new List<string>();
-                    for(int i = 0; i < premutation.Length; i++)
+                    for (int i = 0; i < premutation.Length; i++)
                         if (!premutation[i])
                             toRemove.Add(andAct.Parameters.Values[removeable[i]].Name);
                     if (toRemove.Count == 0)

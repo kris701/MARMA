@@ -2,11 +2,6 @@
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Parsers.PDDL;
 using PDDLSharp.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StackelbergCompiler.Tests
 {
@@ -72,9 +67,9 @@ namespace StackelbergCompiler.Tests
             var result = simplifyer.SimplifyConditionalEffects(compiled.Domain, compiled.Problem);
 
             // ASSERT
-            foreach(var compiledAct in compiled.Domain.Actions)
+            foreach (var compiledAct in compiled.Domain.Actions)
             {
-                if (!compiledAct.Name.EndsWith(metaAction.Name) && compiledAct.Name.StartsWith(ReservedNames.FollowerActionPrefix)) 
+                if (!compiledAct.Name.EndsWith(metaAction.Name) && compiledAct.Name.StartsWith(ReservedNames.FollowerActionPrefix))
                 {
                     if (compiledAct.Effects is AndExp and)
                     {

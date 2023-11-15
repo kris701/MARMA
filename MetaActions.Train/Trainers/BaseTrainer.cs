@@ -1,18 +1,5 @@
-﻿using PDDLSharp.CodeGenerators.PDDL;
-using PDDLSharp.CodeGenerators;
-using PDDLSharp.ErrorListeners;
-using PDDLSharp.Models.PDDL.Domain;
-using PDDLSharp.Models.PDDL;
-using PDDLSharp.Parsers.PDDL;
-using PDDLSharp.Parsers;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Tools;
-using PDDLSharp.Parsers.FastDownward.Plans;
 
 namespace MetaActions.Train.Trainers
 {
@@ -35,7 +22,10 @@ namespace MetaActions.Train.Trainers
         public bool OnlyUsefuls { get; }
         public CancellationTokenSource CancellationToken { get; }
         private int _runID = -1;
-        public int RunID { get {
+        public int RunID
+        {
+            get
+            {
                 if (_runID != -1)
                     return _runID;
                 _runID = GetDeterministicHashCode(Domain.FullName).GetHashCode() + GetDeterministicHashCode(GetType().Name);
@@ -94,7 +84,8 @@ namespace MetaActions.Train.Trainers
             var timer = new System.Timers.Timer();
             timer.Interval = TimeLimit.TotalMilliseconds;
             timer.AutoReset = false;
-            timer.Elapsed += (s, e) => {
+            timer.Elapsed += (s, e) =>
+            {
                 CancellationToken.Cancel();
             };
             timer.Start();

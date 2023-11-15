@@ -1,6 +1,5 @@
 ﻿using MetaActions.Train.Tools;
 using Tools;
-using System.Timers;
 
 namespace MetaActions.Train.Trainers
 {

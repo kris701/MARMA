@@ -3,11 +3,6 @@ using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Parsers.PDDL;
 using PDDLSharp.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MacroExtractor.Tests
 {
@@ -73,7 +68,7 @@ namespace MacroExtractor.Tests
             var result = extractor.ExtractMacros(decl, plans);
 
             // ASSERT
-            foreach(var item in result)
+            foreach (var item in result)
             {
                 foreach (var other in result)
                 {
@@ -102,7 +97,7 @@ namespace MacroExtractor.Tests
             var result = extractor.ExtractMacros(decl, plans);
 
             // ASSERT
-            foreach(var item in result)
+            foreach (var item in result)
                 Assert.AreEqual(metaName, item.MetaAction.ActionName);
         }
 

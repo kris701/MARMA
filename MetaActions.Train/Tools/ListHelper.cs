@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MetaActions.Train.Tools
+﻿namespace MetaActions.Train.Tools
 {
     public static class ListHelper
     {

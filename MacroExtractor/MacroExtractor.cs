@@ -2,14 +2,9 @@
 using PDDLSharp.Models.FastDownward.Plans;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
-using PDDLSharp.Parsers.FastDownward.Plans;
 using PDDLSharp.Parsers;
+using PDDLSharp.Parsers.FastDownward.Plans;
 using PDDLSharp.Toolkit.MacroGenerators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tools;
 
 namespace MacroExtractor
