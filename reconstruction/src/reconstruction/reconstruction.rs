@@ -1,5 +1,5 @@
 use spingus::sas_plan::SASPlan;
-use std::{fs, path::PathBuf};
+use std::{fs, path::PathBuf, time::Instant};
 
 use crate::{
     cache::Cache,
@@ -9,7 +9,7 @@ use crate::{
     },
     reconstruction::{problem_writing::write_problem, stiching::stich},
     state::State,
-    tools::{generate_progressbar, random_file_name, statbar, status_print, Status},
+    tools::{random_file_name, status_print, Status},
 };
 
 use super::downward_wrapper::Downward;
@@ -41,24 +41,26 @@ pub fn reconstruct(
     cache: &Option<Box<dyn Cache>>,
     plan: SASPlan,
 ) -> SASPlan {
+    let mut cache_time: f64 = 0.0;
+    let mut fd_time: f64 = 0.0;
     let mut replacements: Vec<SASPlan> = Vec::new();
     let mut found_in_cache: Vec<usize> = Vec::new();
     let mut state = State::from_init(instance);
     let (meta_actions, operators) = generate_operators(&instance, downward, &plan);
 
-    let progress_bar = generate_progressbar(meta_actions.len());
     status_print(Status::Reconstruction, "Generating replacements");
     for (i, operator) in operators.iter().enumerate() {
-        progress_bar.set_message(statbar());
         if !meta_actions.contains(&i) {
             state.apply(operator);
             continue;
         }
-        progress_bar.inc(1);
         let init = state.clone();
         state.apply(operator);
         if let Some(cache) = cache {
-            if let Some(replacement) = cache.get_replacement(instance, &plan[i], &init, &state) {
+            let cache_lookup_begin = Instant::now();
+            let replacement = cache.get_replacement(instance, &plan[i], &init, &state);
+            cache_time += cache_lookup_begin.elapsed().as_secs_f64();
+            if let Some(replacement) = replacement {
                 replacements.push(replacement);
                 found_in_cache.push(i);
                 continue;
@@ -67,7 +69,9 @@ pub fn reconstruct(
         let problem_file = PathBuf::from(random_file_name(&downward.temp_dir));
         debug_assert_ne!(init, state);
         write_problem(&init, &state, &problem_file);
+        let fd_plan_time = Instant::now();
         let plan = downward.solve(domain_path, &problem_file);
+        fd_time += fd_plan_time.elapsed().as_secs_f64();
         if let Ok(plan) = plan {
             debug_assert!(!plan.is_empty());
             let _ = fs::remove_file(&problem_file);
@@ -80,7 +84,8 @@ pub fn reconstruct(
             )
         }
     }
-    progress_bar.finish_and_clear();
     println!("found_in_cache={}", found_in_cache.len());
+    println!("cache_lookup_time={}", cache_time);
+    println!("planner_time={}", fd_time);
     stich(&plan, meta_actions.into_iter().zip(replacements).collect())
 }

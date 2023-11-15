@@ -57,7 +57,7 @@ impl World {
         let meta_actions = extract_meta_actions(&actions, &meta_domain.actions);
         println!("meta_action_count={}", meta_actions.len());
         let (objects, object_types) = extract_objects(&types, &problem.objects, &domain.constants);
-        println!("object_count={}", meta_actions.len());
+        println!("object_count={}", objects.len());
         let init = problem
             .inits
             .iter()
