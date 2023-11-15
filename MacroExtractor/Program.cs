@@ -1,21 +1,10 @@
 ﻿using CommandLine;
-using PDDLSharp.CodeGenerators;
 using PDDLSharp.CodeGenerators.PDDL;
 using PDDLSharp.CodeGenerators.Plans;
 using PDDLSharp.ErrorListeners;
-using PDDLSharp.Models.FastDownward.Plans;
-using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
-using PDDLSharp.Models.PDDL.Expressions;
-using PDDLSharp.Parsers;
-using PDDLSharp.Parsers.FastDownward.Plans;
 using PDDLSharp.Parsers.PDDL;
-using PDDLSharp.Toolkit.MacroGenerators;
-using System;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using Tools;
-using static System.Collections.Specialized.BitVector32;
 
 namespace MacroExtractor
 {
@@ -66,7 +55,7 @@ namespace MacroExtractor
             var listener = new ErrorListener();
             var codeGenerator = new PDDLCodeGenerator(listener);
             var planGenerator = new FastDownwardPlanGenerator(listener);
-            foreach(var item in repairSequences)
+            foreach (var item in repairSequences)
                 PathHelper.RecratePath(Path.Combine(outPath, item.MetaAction.ActionName));
             int id = 1;
             foreach (var replacement in repairSequences)

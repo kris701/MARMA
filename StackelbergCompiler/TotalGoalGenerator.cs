@@ -1,5 +1,4 @@
-﻿using PDDLSharp.Models;
-using PDDLSharp.Models.PDDL;
+﻿using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.PDDL.Problem;
@@ -20,7 +19,7 @@ namespace StackelbergCompiler
         public static List<PredicateExp> GenerateTotalGoal(ProblemDecl problem, DomainDecl domain)
         {
             var grounder = new PredicateGrounder(new PDDLDecl(domain, problem));
-            if (domain.Predicates != null) 
+            if (domain.Predicates != null)
             {
                 var newGoals = new List<PredicateExp>();
                 foreach (var predicate in domain.Predicates.Predicates)

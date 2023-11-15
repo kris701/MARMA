@@ -1,16 +1,11 @@
 ﻿using CommandLine;
-using MetaActionGenerator.CandidateGenerators;
 using PDDLSharp.CodeGenerators;
 using PDDLSharp.CodeGenerators.PDDL;
 using PDDLSharp.ErrorListeners;
-using PDDLSharp.Models;
 using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
-using PDDLSharp.Models.PDDL.Expressions;
-using PDDLSharp.Models.PDDL.Problem;
 using PDDLSharp.Parsers;
 using PDDLSharp.Parsers.PDDL;
-using PDDLSharp.Toolkit.MutexDetector;
 using Tools;
 
 namespace MetaActionGenerator

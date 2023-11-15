@@ -1,5 +1,4 @@
 ﻿using CommandLine;
-using System.Runtime.InteropServices;
 
 namespace MetaActions.Learn
 {

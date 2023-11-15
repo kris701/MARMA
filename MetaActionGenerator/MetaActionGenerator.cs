@@ -1,18 +1,9 @@
 ﻿using MetaActionGenerator.CandidateGenerators;
-using PDDLSharp.Models;
 using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Expressions;
 using PDDLSharp.Models.SAS;
-using PDDLSharp.Toolkit.MutexDetector;
 using PDDLSharp.Tools;
-using PDDLSharp.Translators;
-using PDDLSharp.Translators.Grounders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MetaActionGenerator
 {
@@ -71,7 +62,7 @@ namespace MetaActionGenerator
                 asOps.Add(ToOperator(act));
 
             var nonDuplicates = new List<ActionDecl>();
-            for(int i = 0; i < asOps.Count; i++)
+            for (int i = 0; i < asOps.Count; i++)
             {
                 bool any = false;
                 for (int j = i + 1; j < asOps.Count; j++)
@@ -206,7 +197,7 @@ namespace MetaActionGenerator
                 return false;
             if (f1.Arguments.Length != f2.Arguments.Length)
                 return false;
-            for(int i = 0; i < f1.Arguments.Length; i++)
+            for (int i = 0; i < f1.Arguments.Length; i++)
                 if (f1.Arguments[i] != f2.Arguments[i])
                     return false;
             return true;

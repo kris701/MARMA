@@ -1,16 +1,15 @@
 ﻿using MetaActions.Train.Tools;
-using Tools;
-using System.Timers;
 using PDDLSharp.CodeGenerators.PDDL;
 using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.FastDownward.Plans;
+using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Problem;
-using PDDLSharp.Models.PDDL;
+using PDDLSharp.Parsers;
 using PDDLSharp.Parsers.FastDownward.Plans;
 using PDDLSharp.Parsers.PDDL;
-using PDDLSharp.Parsers;
 using PDDLSharp.Toolkit.MacroGenerators;
+using Tools;
 
 namespace MetaActions.Train.Trainers
 {

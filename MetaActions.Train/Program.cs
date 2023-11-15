@@ -4,7 +4,6 @@ using MetaActions.Train.Tools;
 using MetaActions.Train.Trainers;
 using System.IO.Compression;
 using System.Text.Json;
-using System.Threading;
 using Tools;
 
 namespace MetaActions.Learn
@@ -69,7 +68,7 @@ namespace MetaActions.Learn
                 throw new FileNotFoundException("Test problem file not found!");
 
             List<ITrainer> runTasks = new List<ITrainer>();
-            int count = 1; 
+            int count = 1;
             foreach (var domain in domains)
             {
                 if (domain.Directory == null)
