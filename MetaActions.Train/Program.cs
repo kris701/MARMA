@@ -1,4 +1,5 @@
-﻿using MetaActions.Train;
+﻿using CommandLine;
+using MetaActions.Train;
 using MetaActions.Train.Tools;
 using MetaActions.Train.Trainers;
 using System.IO.Compression;

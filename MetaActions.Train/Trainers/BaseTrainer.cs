@@ -1,4 +1,12 @@
-﻿using System.Diagnostics;
+﻿using PDDLSharp.CodeGenerators;
+using PDDLSharp.CodeGenerators.PDDL;
+using PDDLSharp.ErrorListeners;
+using PDDLSharp.Models.PDDL;
+using PDDLSharp.Models.PDDL.Domain;
+using PDDLSharp.Parsers;
+using PDDLSharp.Parsers.FastDownward.Plans;
+using PDDLSharp.Parsers.PDDL;
+using System.Diagnostics;
 using Tools;
 
 namespace MetaActions.Train.Trainers

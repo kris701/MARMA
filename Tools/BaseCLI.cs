@@ -1,4 +1,7 @@
-﻿namespace Tools
+﻿using CommandLine;
+using CommandLine.Text;
+
+namespace Tools
 {
     public abstract class BaseCLI
     {

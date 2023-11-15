@@ -1,4 +1,6 @@
-﻿namespace MetaActions.Learn
+﻿using CommandLine;
+
+namespace MetaActions.Learn
 {
     public class Options
     {
