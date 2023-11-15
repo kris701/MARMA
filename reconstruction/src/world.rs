@@ -49,10 +49,15 @@ impl World {
     ) -> World {
         let domain_name = domain.name.to_owned();
         let (types, type_children) = extract_types(&domain.types);
+        println!("type_count={}", types.len());
         let predicates = extract_predicates(&domain.predicates);
+        println!("predicate_count={}", predicates.len());
         let actions = extract_actions(&domain.actions);
+        println!("action_count={}", actions.len());
         let meta_actions = extract_meta_actions(&actions, &meta_domain.actions);
+        println!("meta_action_count={}", meta_actions.len());
         let (objects, object_types) = extract_objects(&types, &problem.objects, &domain.constants);
+        println!("object_count={}", meta_actions.len());
         let init = problem
             .inits
             .iter()

@@ -81,19 +81,6 @@ pub fn reconstruct(
         }
     }
     progress_bar.finish_and_clear();
-    status_print(
-        Status::Reconstruction,
-        &format!(
-            "Found {} of {} in cache ({})",
-            found_in_cache.len(),
-            meta_actions.len(),
-            found_in_cache.len() as f64 / meta_actions.len() as f64
-        ),
-    );
-    for (i, step) in plan.iter().enumerate() {
-        if !found_in_cache.contains(&i) {
-            println!("Not found in cache: {:?}", step);
-        }
-    }
+    println!("found_in_cache={}", found_in_cache.len());
     stich(&plan, meta_actions.into_iter().zip(replacements).collect())
 }

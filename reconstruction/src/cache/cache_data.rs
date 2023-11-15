@@ -5,9 +5,12 @@ use spingus::{
     sas_plan::{parse_sas, SASPlan},
 };
 
-use crate::tools::io::file::{dir_dirs, dir_files_by_extension, dir_name, match_files, read_pairs};
+use crate::{
+    tools::io::file::{dir_dirs, dir_files_by_extension, dir_name, match_files, read_pairs},
+    world::World,
+};
 
-pub type CacheData = HashMap<String, Vec<(Action, SASPlan)>>;
+pub type CacheData = HashMap<u16, Vec<(Action, SASPlan)>>;
 
 pub fn read_cache(path: &PathBuf) -> CacheData {
     let meta_dirs = dir_dirs(path)
@@ -24,7 +27,7 @@ pub fn read_cache(path: &PathBuf) -> CacheData {
         let replacements = read_meta_dir(&dir)
             .map_err(|e| panic!("Failed to read cache dir {:?}. Had error {:?}", dir, e))
             .unwrap();
-        cache_data.insert(name, replacements);
+        cache_data.insert(World::global().get_meta_index(&name), replacements);
     }
     cache_data
 }

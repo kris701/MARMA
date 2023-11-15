@@ -6,7 +6,7 @@ use std::{
     process::Command,
 };
 
-use crate::tools::{random_file_name, status_print, Status};
+use crate::tools::random_file_name;
 
 pub struct Downward {
     pub path: PathBuf,
@@ -15,7 +15,6 @@ pub struct Downward {
 
 impl Downward {
     pub fn new(path: &Option<PathBuf>, temp_dir: &PathBuf) -> Self {
-        status_print(Status::Init, "Finding fast downward");
         let path = match path {
             Some(path) => path.into(),
             None => find_executable_in_path("fast-downward.py").unwrap(),
@@ -74,29 +73,6 @@ impl Downward {
                 "Had error during fast downward replacement. Error: {}",
                 err
             )),
-        }
-    }
-
-    pub fn find_or_solve(
-        &self,
-        domain_path: &PathBuf,
-        problem_path: &PathBuf,
-        plan: &Option<PathBuf>,
-    ) -> SASPlan {
-        if let Some(path) = plan {
-            let content = fs::read_to_string(path).unwrap();
-            match parse_sas(&content) {
-                Ok(plan) => return plan,
-                Err(err) => panic!("Could not parse given solution with error:\n{}.", err),
-            }
-        }
-        status_print(Status::Init, "No plan given, finding plan");
-        match self.solve(domain_path, problem_path) {
-            Ok(plan) => plan,
-            Err(err) => panic!(
-                "Could not solve provided meta domain / problem. Had error: {}",
-                err.to_string()
-            ),
         }
     }
 }
