@@ -3,7 +3,7 @@ library(ggplot2)
 
 source("style.R")
 
-generate_scatterplot <- function(list1, list2, title, outName) {
+generate_scatterplot <- function(list1, name1, list2, name2, title, outName) {
 	plot <- ggplot(finished, aes(x=list1, y=list2, color=domain)) + 
 		geom_point(size=2) +
 		geom_abline(intercept = 0, slope = 1, color = "black") +
@@ -17,8 +17,8 @@ generate_scatterplot <- function(list1, list2, title, outName) {
 		) +
 		ggtitle(title) + 
 		labs(shape = "", color = "") +
-		xlab(BName) +
-		ylab(AName) + 
+		xlab(name1) +
+		ylab(name2) + 
 		theme(text = element_text(size=fontSize, family=fontFamily),
 			axis.text.x = element_text(angle=90, hjust=1),
 			legend.position="bottom"
