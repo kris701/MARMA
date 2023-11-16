@@ -85,7 +85,7 @@ pub fn reconstruct(
         }
     }
     println!("found_in_cache={}", found_in_cache.len());
-    println!("cache_lookup_time={}", cache_time);
-    println!("planner_time={}", fd_time);
+    println!("cache_lookup_time={:.2?}", cache_time);
+    println!("planner_time={:.2?}", fd_time);
     stich(&plan, meta_actions.into_iter().zip(replacements).collect())
 }
