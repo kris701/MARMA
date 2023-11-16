@@ -411,3 +411,5 @@ FodyWeavers.xsd
 !/Dependencies/setup_programs.sh
 /build/
 /cache/
+results.csv
+/Graphs/*.pdf
