@@ -1,18 +1,22 @@
-library(dplyr) 
 library(ggplot2)
 
 source("style.R")
 
 generate_scatterplot <- function(list1, name1, list2, name2, title, outName) {
+	minimum = min(list1, list2)
+	if (is.na(minimum)) return ()
+	if (minimum == 0) minimum <- 0.01
+	maximum = max(list1, list2)
+	if (is.na(maximum)) return ()
 	plot <- ggplot(finished, aes(x=list1, y=list2, color=domain)) + 
 		geom_point(size=2) +
 		geom_abline(intercept = 0, slope = 1, color = "black") +
 		  scale_x_log10(
-			limits=c(min(list1, list2),max(list1, list2)),
+			#limits=c(minimum, maximum),
 			labels = scales::trans_format("log10", scales::math_format(10^.x))
 		) +
 		  scale_y_log10(
-			limits=c(min(list1, list2),max(list1, list2)),
+			#limits=c(minimum, maximum),
 			labels = scales::trans_format("log10", scales::math_format(10^.x))
 		) +
 		ggtitle(title) + 

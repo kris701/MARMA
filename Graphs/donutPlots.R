@@ -2,12 +2,12 @@ library(ggplot2)
 
 source("style.R")
 
-generate_dounotplot <- function(size1, size2, total, title, outName) {
+generate_dounotplot <- function(size1, name1, size2, name2, total, title, outName) {
 	plot <- ggplot() + 
 		geom_col(aes(x = 2, y = total), fill = "gray", color = "black") + 
-		geom_col(aes(x = 2, y = size1, fill = BName), color = "black") + 
+		geom_col(aes(x = 2, y = size1, fill = name1), color = "black") + 
 		geom_col(aes(x = 3, y = total), fill = "gray", color = "black") + 
-		geom_col(aes(x = 3, y = size2, fill = AName), color = "black") +
+		geom_col(aes(x = 3, y = size2, fill = name2), color = "black") +
 		xlim(0, 3.5) + labs(x = NULL, y = NULL) + 
 		ggtitle(title) + 
 		labs(fill = "", color = "") +

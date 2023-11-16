@@ -6,12 +6,13 @@ source("graphNames.R")
 source("scatterPlots.R")
 source("donutPlots.R")
 source("coveragePlots.R")
+source("domainBarPlots.R")
 
 # Handle arguments
 args = commandArgs(trailingOnly=TRUE)
-#args[1] <- "results.csv"
-#args[2] <- "meta_no_cache"
-#args[3] <- "meta_hashed"
+args[1] <- "results.csv"
+args[2] <- "meta_lifted"
+args[3] <- "meta_hashed"
 if (length(args) != 3) {
   stop("3 arguments must be supplied! The source data file, and one for each target reconstruction type", call.=FALSE)
 }
@@ -51,16 +52,41 @@ finished <- finished %>% select(-contains('solved.B'))
 print("Generating: Solved vs Unsolved")
 generate_dounotplot(
 	nrow(split(combined, combined$solved.A)$`true`),
+	AName,
 	nrow(split(combined, combined$solved.B)$`true`),
+	BName,
 	nrow(combined),
 	"Solved vs. Unsolved",
 	paste(AName, "_vs_", BName, "_solvedUnsolved.pdf"))
+
+print("Generating: Cache Init times")
+generate_domainBarPlot(
+	finished,
+	"cache_init_time.A",
+	AName,
+	"cache_init_time.B",
+	Bname,
+	"Cache Init Times",
+	paste(AName, "_vs_", BName, "_cacheLookupTime.pdf"))
+
+print("Generating: Cache Lookup times")
+generate_domainBarPlot(
+	finished,
+	"cache_lookup_time.A",
+	AName,
+	"cache_lookup_time.B",
+	Bname,
+	"Cache Lookup Times",
+	paste(AName, "_vs_", BName, "_cacheLookupTime.pdf"))
 
 print("Generating: Search Time Scatter")
 generate_scatterplot(finished$search_time.A, AName, finished$search_time.B, BName, "Search Time", paste(AName, "_vs_", BName, "_searchTime.pdf"))
 
 print("Generating: Total Time Scatter")
 generate_scatterplot(finished$total_time.A, AName, finished$total_time.B, BName, "Total Time", paste(AName, "_vs_", BName, "_totalTime.pdf"))
+
+print("Generating: Reconstruction Time Scatter")
+generate_scatterplot(finished$reconstruction_time.A, AName, finished$reconstruction_time.B, BName, "Reconstruction Time", paste(AName, "_vs_", BName, "_reconstructionTime.pdf"))
 
 print("Generating: Plan Length Scatter")
 generate_scatterplot(finished$final_plan_length.A, AName, finished$final_plan_length.B, BName, "Final Plan Length", paste(AName, "_vs_", BName, "_finalPlanLength.pdf"))
