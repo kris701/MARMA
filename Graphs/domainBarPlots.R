@@ -9,10 +9,10 @@ generate_domainBarPlot <- function(finished, target1, name1, target2, name2, tit
 	for (domain in unique(finished$domain)) {
 		domains <- append(domains, domain)
 		values <- append(values, sum(finished[finished$domain == domain,][,target1], na.rm = TRUE))
-		names <- append(names, AName)
+		names <- append(names, name1)
 		domains <- append(domains, domain)
 		values <- append(values, sum(finished[finished$domain == domain,][,target2], na.rm = TRUE))
-		names <- append(names, BName)
+		names <- append(names, name2)
 	}
 	transform <- data.frame(domain = domains, value = values, name = names)
 	plot <- ggplot(transform, aes(x = domain, y = value, fill = name)) +

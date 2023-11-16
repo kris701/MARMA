@@ -10,9 +10,9 @@ source("domainBarPlots.R")
 
 # Handle arguments
 args = commandArgs(trailingOnly=TRUE)
-args[1] <- "results.csv"
-args[2] <- "meta_lifted"
-args[3] <- "meta_hashed"
+#args[1] <- "results.csv"
+#args[2] <- "meta_lifted"
+#args[3] <- "meta_hashed"
 if (length(args) != 3) {
   stop("3 arguments must be supplied! The source data file, and one for each target reconstruction type", call.=FALSE)
 }
@@ -65,9 +65,9 @@ generate_domainBarPlot(
 	"cache_init_time.A",
 	AName,
 	"cache_init_time.B",
-	Bname,
+	BName,
 	"Cache Init Times",
-	paste(AName, "_vs_", BName, "_cacheLookupTime.pdf"))
+	paste(AName, "_vs_", BName, "_cacheInitTime.pdf"))
 
 print("Generating: Cache Lookup times")
 generate_domainBarPlot(
@@ -75,9 +75,29 @@ generate_domainBarPlot(
 	"cache_lookup_time.A",
 	AName,
 	"cache_lookup_time.B",
-	Bname,
+	BName,
 	"Cache Lookup Times",
 	paste(AName, "_vs_", BName, "_cacheLookupTime.pdf"))
+
+print("Generating: Used Meta Actions (A)")
+generate_domainBarPlot(
+	finished,
+	"meta_actions_in_plan.A",
+	"Meta Actions In Plan",
+	"found_in_cache.A",
+	"Replacements Found",
+	paste("Meta Actions in plan vs. Replacements found (", AName, ")"),
+	paste(AName, "_metaActionCoverage.pdf"))
+
+print("Generating: Used Meta Actions (B)")
+generate_domainBarPlot(
+	finished,
+	"meta_actions_in_plan.B",
+	"Meta Actions In Plan",
+	"found_in_cache.B",
+	"Replacements Found",
+	paste("Meta Actions in plan vs. Replacements found (", BName, ")"),
+	paste(BName, "_metaActionCoverage.pdf"))
 
 print("Generating: Search Time Scatter")
 generate_scatterplot(finished$search_time.A, AName, finished$search_time.B, BName, "Search Time", paste(AName, "_vs_", BName, "_searchTime.pdf"))
