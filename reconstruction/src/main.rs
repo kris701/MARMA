@@ -7,6 +7,7 @@ mod tools;
 mod world;
 
 use cache::generation::{generate_cache, CacheMethod};
+use itertools::Itertools;
 use reconstruction::reconstruction::reconstruct;
 use spingus::domain::parse_domain;
 use spingus::problem::parse_problem;
@@ -18,6 +19,7 @@ use clap::Parser;
 use std::fs;
 use std::path::PathBuf;
 use std::process::exit;
+use std::time::Instant;
 
 use crate::instance::Instance;
 use crate::reconstruction::downward_wrapper::Downward;
@@ -73,6 +75,14 @@ fn meta_action_count(plan: &SASPlan) -> usize {
         .count()
 }
 
+fn meta_action_count_unique(plan: &SASPlan) -> usize {
+    plan.iter()
+        .filter(|s| World::global().is_meta_action(&s.name))
+        .map(|s| &s.name)
+        .unique()
+        .count()
+}
+
 fn main() {
     init_time();
 
@@ -99,11 +109,20 @@ fn main() {
     let meta_plan = parse_sas(&fs::read_to_string(&args.solution).unwrap()).unwrap();
     println!("meta_plan_length={}", meta_plan.len());
     println!("meta_actions_in_plan={}", meta_action_count(&meta_plan));
+    println!(
+        "meta_actions_in_plan_unique={}",
+        meta_action_count_unique(&meta_plan)
+    );
     let plan = match contains_meta(&meta_plan) {
         true => {
             status_print(Status::Init, "Generating instance");
             let instance = Instance::new(domain, meta_domain.to_owned());
+            let cache_begin = Instant::now();
             let cache = generate_cache(&instance, &meta_plan, &args.cache, args.cache_method);
+            println!(
+                "cache_init_time={:.2?}",
+                cache_begin.elapsed().as_secs_f64()
+            );
             status_print(Status::Reconstruction, "Finding meta solution downward");
             let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
             if let Some(val_path) = args.val {

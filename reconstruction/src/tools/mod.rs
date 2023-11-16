@@ -1,6 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use indicatif::{ProgressBar, ProgressStyle};
 use rand::{distributions::Alphanumeric, Rng};
 
 use crate::tools::{memory::memory_usage, time::run_time};
@@ -21,13 +20,6 @@ pub fn random_name() -> String {
 pub fn random_file_name(dir: &PathBuf) -> String {
     let name = random_name();
     Path::new(&dir).join(name).to_str().unwrap().to_string()
-}
-
-pub fn generate_progressbar(limit: usize) -> ProgressBar {
-    let bar_style = ProgressStyle::with_template("{msg} {bar:40} {pos:>4}/{len:4}").unwrap();
-    let bar = ProgressBar::new(limit as u64);
-    bar.set_style(bar_style);
-    bar
 }
 
 pub fn statbar() -> String {
