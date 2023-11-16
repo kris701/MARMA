@@ -1,39 +1,94 @@
 library(dplyr) 
 library(ggplot2)
 
-imgWidth <- 8
-imgHeight <- 9
-	
-# Get both data files
-data1 <- read.csv("norm.csv", header = T, sep = ",", colClasses=c('character','character','character','character','numeric','numeric','numeric','numeric','numeric','numeric','numeric'))
-data1Name = data1["name"][1,]
-data2All <- read.csv("meta.csv", header = T, sep = ",", colClasses=c('character','character','character','character','numeric','numeric','numeric','numeric','numeric','numeric','numeric'))
+imgWidth <- 4
+imgHeight <- 5
 
-names <- unique(data2All["name"])
-names <- names[names != "" & names != data1Name,]
-for (i in names)
-{
-	data2 <- data2All[data2All$name == i,]
-	data2Name = data2["name"][1,]
-	print("Generating for:")
-	print(data2Name)
+recon_names <- function(name) { 
+  	if (name == "fast_downward") return ("Fast Downward")
+  	if (name == "fast_downward_meta") return ("Fast Downward (Meta)")
+  	if (name == "meta_no_cache") return ("FD Reconstruction")
+  	if (name == "meta_hashed") return ("MARMA (Hashed)")
+  	if (name == "meta_lifted") return ("MARMA (Lifted)")
+	return (name)
+}
 
-	# Stitch data
-	combined <- merge(data1, data2, by = c("domain", "problem"), suffixes=c(".norm", ".meta"))
-	combined <- combined %>% select(-contains('name.norm'))
-	combined <- combined %>% select(-contains('name.meta'))
-	finished <- split(combined, combined$solved.meta)$`true`
-	finished <- split(finished, finished$solved.norm)$`true`
-	finished <- finished %>% select(-contains('solved.norm'))
-	finished <- finished %>% select(-contains('solved.meta'))
+generate_scatterplot <- function(list1, list2, title, outName) {
+	plot <- ggplot(finished, aes(x=list1, y=list2, color=domain)) + 
+		geom_point(size=2) +
+		geom_abline(intercept = 0, slope = 1, color = "black") +
+		  scale_x_log10(
+			limits=c(min(list1, list2),max(list1, list2)),
+			labels = scales::trans_format("log10", scales::math_format(10^.x))
+		) +
+		  scale_y_log10(
+			limits=c(min(list1, list2),max(list1, list2)),
+			labels = scales::trans_format("log10", scales::math_format(10^.x))
+		) +
+		ggtitle(title) + 
+		labs(shape = "", color = "") +
+		xlab(BName) +
+		ylab(AName) + 
+		theme(text = element_text(size=15, family="serif"),
+			axis.text.x = element_text(angle=90, hjust=1),
+			legend.position="bottom"
+		)
+	ggsave(plot=plot, filename=outName, width=imgWidth, height=imgHeight)
+	return (plot)
+}
+
+# Handle arguments
+args = commandArgs(trailingOnly=TRUE)
+args[1] <- "results.csv"
+args[2] <- "meta_no_cache"
+args[3] <- "meta_hashed"
+if (length(args) != 3) {
+  stop("3 arguments must be supplied! The source data file, and one for each target reconstruction type", call.=FALSE)
+}
+AName <- recon_names(args[2])
+BName <- recon_names(args[3])
+
+# Read data file
+data <- read.csv(
+	args[1], 
+	header = T, 
+	sep = ",", 
+	colClasses = c(
+		'character','character',
+		'character','character',
+		'numeric','numeric',
+		'numeric','numeric',
+		'numeric','numeric',
+		'numeric','numeric',
+		'numeric','numeric',
+		'numeric','numeric'
+	)
+)
+data[data=="fast_downward"] <- "Fast Downward"
+data[data=="fast_downward_meta"] <- "Fast Downward (Meta)"
+data[data=="meta_no_cache"] <- "FD Reconstruction"
+data[data=="meta_hashed"] <- "MARMA (Hashed)"
+data[data=="meta_lifted"] <- "MARMA (Lifted)"
+
+# Split data
+AData = data[data$name == AName,]
+BData = data[data$name == BName,]
+
+combined <- merge(AData, BData, by = c("domain", "problem"), suffixes=c(".A", ".B"))
+combined <- combined %>% select(-contains('name.A'))
+combined <- combined %>% select(-contains('name.B'))
+finished <- split(combined, combined$solved.A)$`true`
+finished <- split(finished, finished$solved.B)$`true`
+finished <- finished %>% select(-contains('solved.A'))
+finished <- finished %>% select(-contains('solved.B'))
 
 	print("Generating: Solved vs Unsolved")
 	# Solved vs Not solved donut
 	plot <- ggplot() + 
 		geom_col(aes(x = 2, y = nrow(combined)), fill = "gray", color = "black") + 
-		geom_col(aes(x = 2, y = nrow(split(combined, combined$solved.meta)$`true`), fill = data2Name), color = "black") + 
+		geom_col(aes(x = 2, y = nrow(split(combined, combined$solved.B)$`true`), fill = BName), color = "black") + 
 		geom_col(aes(x = 3, y = nrow(combined)), fill = "gray", color = "black") + 
-		geom_col(aes(x = 3, y = nrow(split(combined, combined$solved.norm)$`true`), fill = data1Name), color = "black") +
+		geom_col(aes(x = 3, y = nrow(split(combined, combined$solved.A)$`true`), fill = AName), color = "black") +
 		xlim(0, 3.5) + labs(x = NULL, y = NULL) + 
 		ggtitle("Solved vs. Unsolved") + 
 		labs(fill = "", color = "") +
@@ -44,106 +99,24 @@ for (i in names)
 			legend.position="bottom") +
 		coord_polar(theta = "y") 
 	# plot
-	ggsave(plot=plot, filename=paste(data2Name, "solvedvsunsolved.pdf"), width=imgWidth, height=imgHeight)
+	ggsave(plot=plot, filename=paste(BName, "solvedvsunsolved.pdf"), width=imgWidth, height=imgHeight)
 
 	print("Generating: Search Time Scatter")
-	# Generate Search Time Scatterplot
-	plot <- ggplot(finished, aes(x=search_time.meta, y=search_time.norm, color=domain)) + 
-		geom_point(size=2) +
-		geom_abline(intercept = 0, slope = 1, color = "black") +
-		  scale_x_log10(
-			limits=c(min(finished$search_time.meta,finished$search_time.norm),max(finished$search_time.meta,finished$search_time.norm)),
-			labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-		  scale_y_log10(
-			limits=c(min(finished$search_time.meta,finished$search_time.norm),max(finished$search_time.meta,finished$search_time.norm)),
-			labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-		ggtitle("Search Time") + 
-		labs(shape = "", color = "") +
-		xlab(data2Name) +
-		ylab(data1Name) + 
-		theme(text = element_text(size=15, family="serif"),
-			axis.text.x = element_text(angle=90, hjust=1),
-			legend.position="bottom"
-		)
-	# plot
-	ggsave(plot=plot, filename=paste(data2Name, "searchTime.pdf"), width=imgWidth, height=imgHeight)
+	generate_scatterplot(finished$search_time.A, finished$search_time.B, "Search Time", paste(AName, "_vs_", BName, "_searchTime.pdf"))
 
 	print("Generating: Total Time Scatter")
-	# Generate Total Time Scatterplot
-	plot <- ggplot(finished, aes(x=total_time.meta, y=total_time.norm, color=domain)) + 
-		geom_point(size=2) +
-		geom_abline(intercept = 0, slope = 1, color = "black") +
-		  scale_x_log10(
-			limits=c(min(finished$total_time.meta,finished$total_time.norm),max(finished$total_time.meta,finished$total_time.norm)),
-			labels = scales::trans_format("log10", scales::math_format(10^.x))
-		) +
-		  scale_y_log10(
-			limits=c(min(finished$total_time.meta,finished$total_time.norm),max(finished$total_time.meta,finished$total_time.norm)),
-			labels = scales::trans_format("log10", scales::math_format(10^.x))
-		) +
-		ggtitle("Total Time") + 
-		labs(shape = "", color = "") +
-		xlab(data2Name) +
-		ylab(data1Name) + 
-		theme(text = element_text(size=15, family="serif"),
-			axis.text.x = element_text(angle=90, hjust=1),
-			legend.position="bottom"
-		)
-	# plot
-	ggsave(plot=plot, filename=paste(data2Name, "totalTime.pdf"), width=imgWidth, height=imgHeight)
+	generate_scatterplot(finished$total_time.A, finished$total_time.B, "Total Time", paste(AName, "_vs_", BName, "_totalTime.pdf"))
 
 	print("Generating: Plan Length Scatter")
-	# Generate Plan Length Scatterplot
-	plot <- ggplot(finished, aes(x=final_plan_length.meta, y=final_plan_length.norm, color=domain)) + 
-		geom_point(size=2) +
-		geom_abline(intercept = 0, slope = 1, color = "black") +
-		  scale_x_log10(
-			limits=c(min(finished$final_plan_length.meta,finished$final_plan_length.norm),max(finished$final_plan_length.meta,finished$final_plan_length.norm)),
-			labels = scales::trans_format("log10", scales::math_format(10^.x))
-		) +
-		  scale_y_log10(
-			limits=c(min(finished$final_plan_length.meta,finished$final_plan_length.norm),max(finished$final_plan_length.meta,finished$final_plan_length.norm)),
-			labels = scales::trans_format("log10", scales::math_format(10^.x))
-		) +
-		ggtitle("Final Plan Lengths") + 
-		labs(shape = "", color = "") +
-		xlab(data2Name) +
-		ylab(data1Name) + 
-		theme(text = element_text(size=15, family="serif"),
-			axis.text.x = element_text(angle=90, hjust=1),
-			legend.position="bottom"
-		)
-	# plot
-	ggsave(plot=plot, filename=paste(data2Name, "finalPlanLength.pdf"), width=imgWidth, height=imgHeight)
+	generate_scatterplot(finished$final_plan_length.A, finished$final_plan_length.B, "Final Plan Length", paste(AName, "_vs_", BName, "_finalPlanLength.pdf"))
 
 	print("Generating: Meta Plan Length Scatter")
-	# Generate Meta Plan Lenth Scatterplot
-	plot <- ggplot(finished, aes(x=meta_plan_length.meta, y=meta_plan_length.norm, color=domain)) + 
-		geom_point(size=2) +
-		geom_abline(intercept = 0, slope = 1, color = "black") +
-		  scale_x_log10(
-			limits=c(min(finished$meta_plan_length.meta,finished$meta_plan_length.norm),max(finished$meta_plan_length.meta,finished$meta_plan_length.norm)),
-			labels = scales::trans_format("log10", scales::math_format(10^.x))
-		) +
-		  scale_y_log10(
-			limits=c(min(finished$meta_plan_length.meta,finished$meta_plan_length.norm),max(finished$meta_plan_length.meta,finished$meta_plan_length.norm)),
-			labels = scales::trans_format("log10", scales::math_format(10^.x))
-		) +
-		ggtitle("Meta Plan Lengths") + 
-		labs(shape = "", color = "") +
-		xlab(data2Name) +
-		ylab(data1Name) + 
-		theme(text = element_text(size=15, family="serif"),
-			axis.text.x = element_text(angle=90, hjust=1),
-			legend.position="bottom"
-		)
-	# plot
-	ggsave(plot=plot, filename=paste(data2Name, "metaPlanLength.pdf"), width=imgWidth, height=imgHeight)
+	generate_scatterplot(finished$meta_plan_length.A, finished$meta_plan_length.B, "Meta Plan Length", paste(AName, "_vs_", BName, "_metaPlanLength.pdf"))
 
 	print("Generating: Coverage plot")
 	# Generate Coverage plot
-	metaSearchTime <- lapply(list(finished$total_time.meta), sort)[[1]]
-	normSearchTime <- lapply(list(finished$total_time.norm), sort)[[1]]
+	metaSearchTime <- lapply(list(finished$total_time.B), sort)[[1]]
+	normSearchTime <- lapply(list(finished$total_time.A), sort)[[1]]
 	highestValue <- max(metaSearchTime, normSearchTime)
 
 	metaUnique <- unique(metaSearchTime)
@@ -192,10 +165,10 @@ for (i in names)
 	normCoverageData <- data.frame(time=normUnique, coverage=normCounter)
 
 	plot <- ggplot() +
-		geom_line(data=metaCoverageData, aes(y=coverage,x= time,colour=data2Name)) +
-		geom_line(data=normCoverageData, aes(y=coverage,x= time,colour=data1Name)) +
+		geom_line(data=metaCoverageData, aes(y=coverage,x= time,colour=BName)) +
+		geom_line(data=normCoverageData, aes(y=coverage,x= time,colour=AName)) +
 		  scale_x_log10(
-			limits=c(min(finished$total_time.meta,finished$total_time.norm),max(finished$total_time.meta,finished$total_time.norm)),
+			limits=c(min(finished$total_time.B,finished$total_time.A),max(finished$total_time.B,finished$total_time.A)),
 			labels = scales::trans_format("log10", scales::math_format(10^.x))) +
 		ggtitle("Coverage") + 
 		xlab("Time") +
@@ -206,6 +179,6 @@ for (i in names)
 			legend.title = element_blank()
 		)
 	# plot
-	ggsave(plot=plot, filename=paste(data2Name, "coverage.pdf"), width=imgWidth, height=imgHeight)
-}
+	ggsave(plot=plot, filename=paste(BName, "coverage.pdf"), width=imgWidth, height=imgHeight)
+
 
