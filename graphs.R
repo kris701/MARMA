@@ -1,41 +1,9 @@
 library(dplyr) 
 library(ggplot2)
 
-imgWidth <- 4
-imgHeight <- 5
-
-recon_names <- function(name) { 
-  	if (name == "fast_downward") return ("Fast Downward")
-  	if (name == "fast_downward_meta") return ("Fast Downward (Meta)")
-  	if (name == "meta_no_cache") return ("FD Reconstruction")
-  	if (name == "meta_hashed") return ("MARMA (Hashed)")
-  	if (name == "meta_lifted") return ("MARMA (Lifted)")
-	return (name)
-}
-
-generate_scatterplot <- function(list1, list2, title, outName) {
-	plot <- ggplot(finished, aes(x=list1, y=list2, color=domain)) + 
-		geom_point(size=2) +
-		geom_abline(intercept = 0, slope = 1, color = "black") +
-		  scale_x_log10(
-			limits=c(min(list1, list2),max(list1, list2)),
-			labels = scales::trans_format("log10", scales::math_format(10^.x))
-		) +
-		  scale_y_log10(
-			limits=c(min(list1, list2),max(list1, list2)),
-			labels = scales::trans_format("log10", scales::math_format(10^.x))
-		) +
-		ggtitle(title) + 
-		labs(shape = "", color = "") +
-		xlab(BName) +
-		ylab(AName) + 
-		theme(text = element_text(size=15, family="serif"),
-			axis.text.x = element_text(angle=90, hjust=1),
-			legend.position="bottom"
-		)
-	ggsave(plot=plot, filename=outName, width=imgWidth, height=imgHeight)
-	return (plot)
-}
+source("style.R")
+source("graphNames.R")
+source("scatterPlots.R)
 
 # Handle arguments
 args = commandArgs(trailingOnly=TRUE)
@@ -64,11 +32,7 @@ data <- read.csv(
 		'numeric','numeric'
 	)
 )
-data[data=="fast_downward"] <- "Fast Downward"
-data[data=="fast_downward_meta"] <- "Fast Downward (Meta)"
-data[data=="meta_no_cache"] <- "FD Reconstruction"
-data[data=="meta_hashed"] <- "MARMA (Hashed)"
-data[data=="meta_lifted"] <- "MARMA (Lifted)"
+data <- rename_data(data)
 
 # Split data
 AData = data[data$name == AName,]
