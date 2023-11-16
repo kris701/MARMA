@@ -38,4 +38,5 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						Dependencies/downward-benchmarks/zenotravel/p1*.pddl \
 						Dependencies/downward-benchmarks/zenotravel/p2*.pddl \
 	--method PDDLSharpMacros \
-	--multitask 
+	--multitask \
+	--rebuild
