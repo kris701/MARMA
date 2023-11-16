@@ -7,11 +7,12 @@ source("scatterPlots.R")
 source("donutPlots.R")
 source("coveragePlots.R")
 source("domainBarPlots.R")
+source("clamper.R")
 
 # Handle arguments
 args = commandArgs(trailingOnly=TRUE)
 #args[1] <- "results.csv"
-#args[2] <- "meta_lifted"
+#args[2] <- "meta_no_cache"
 #args[3] <- "meta_hashed"
 if (length(args) != 3) {
   stop("3 arguments must be supplied! The source data file, and one for each target reconstruction type", call.=FALSE)
@@ -36,6 +37,10 @@ data <- read.csv(
 	)
 )
 data <- rename_data(data)
+
+data <- max_unsolved(data, "total_time")
+data <- max_unsolved(data, "search_time")
+data <- max_unsolved(data, "reconstruction_time")
 
 # Split data
 AData = data[data$name == AName,]
@@ -86,7 +91,7 @@ generate_domainBarPlot(
 	"Meta Actions In Plan",
 	"found_in_cache.A",
 	"Replacements Found",
-	paste("Meta Actions in plan vs. Replacements found (", AName, ")"),
+	paste("Meta Actions vs. Replacements found (", AName, ")"),
 	paste(AName, "_metaActionCoverage.pdf"))
 
 print("Generating: Used Meta Actions (B)")
@@ -96,24 +101,21 @@ generate_domainBarPlot(
 	"Meta Actions In Plan",
 	"found_in_cache.B",
 	"Replacements Found",
-	paste("Meta Actions in plan vs. Replacements found (", BName, ")"),
+	paste("Meta Actions vs. Replacements found (", BName, ")"),
 	paste(BName, "_metaActionCoverage.pdf"))
 
 print("Generating: Search Time Scatter")
-generate_scatterplot(finished$search_time.A, AName, finished$search_time.B, BName, "Search Time", paste(AName, "_vs_", BName, "_searchTime.pdf"))
+searchData <- data.frame(x = combined$search_time.A, y = combined$search_time.B, domain = combined$domain)
+generate_scatterplot(searchData , AName, BName, "Search Time", paste(AName, "_vs_", BName, "_searchTime.pdf"))
 
 print("Generating: Total Time Scatter")
-generate_scatterplot(finished$total_time.A, AName, finished$total_time.B, BName, "Total Time", paste(AName, "_vs_", BName, "_totalTime.pdf"))
+totalData <- data.frame(x = combined$total_time.A, y = combined$total_time.B, domain = combined$domain)
+generate_scatterplot(totalData, AName, BName, "Total Time", paste(AName, "_vs_", BName, "_totalTime.pdf"))
 
 print("Generating: Reconstruction Time Scatter")
-generate_scatterplot(finished$reconstruction_time.A, AName, finished$reconstruction_time.B, BName, "Reconstruction Time", paste(AName, "_vs_", BName, "_reconstructionTime.pdf"))
-
-print("Generating: Plan Length Scatter")
-generate_scatterplot(finished$final_plan_length.A, AName, finished$final_plan_length.B, BName, "Final Plan Length", paste(AName, "_vs_", BName, "_finalPlanLength.pdf"))
-
-print("Generating: Meta Plan Length Scatter")
-generate_scatterplot(finished$meta_plan_length.A, AName, finished$meta_plan_length.B, BName, "Meta Plan Length", paste(AName, "_vs_", BName, "_metaPlanLength.pdf"))
+reconData <- data.frame(x = combined$reconstruction_time.A, y = combined$reconstruction_time.B, domain = combined$domain)
+generate_scatterplot(reconData, AName, BName, "Reconstruction Time", paste(AName, "_vs_", BName, "_reconstructionTime.pdf"))
 
 print("Generating: Coverage plot")
-generate_coveragePlot(finished$total_time.A, AName, finished$total_time.B, BName, "Coverage", "test.pdf")
+generate_coveragePlot(finished$total_time.A, AName, finished$total_time.B, BName, "Coverage", paste(AName, "_vs_", BName, "_coverage.pdf"))
 
