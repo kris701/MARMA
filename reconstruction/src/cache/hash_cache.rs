@@ -1,11 +1,8 @@
 use super::{cache_data::CacheData, generate_plan, Cache};
 use crate::{
     fact::Fact,
-    instance::{
-        actions::Action,
-        operator::{extract_from_action, generate_operators_by_candidates},
-        Instance,
-    },
+    instance::{actions::Action, Instance},
+    operator::{extract_from_action, generate_operators_by_candidates},
     state::State,
     tools::{status_print, Status},
     world::World,

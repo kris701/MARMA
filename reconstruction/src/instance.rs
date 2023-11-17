@@ -5,8 +5,7 @@ use crate::{
 };
 
 pub mod actions;
-mod expression;
-pub mod operator;
+pub mod expression;
 mod parameters;
 
 pub struct Instance {

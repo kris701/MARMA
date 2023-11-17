@@ -1,6 +1,7 @@
 mod cache;
 mod fact;
 mod instance;
+mod operator;
 mod reconstruction;
 mod state;
 mod tools;

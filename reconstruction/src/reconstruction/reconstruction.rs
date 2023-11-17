@@ -3,10 +3,8 @@ use std::{fs, path::PathBuf, time::Instant};
 
 use crate::{
     cache::Cache,
-    instance::{
-        operator::{generate_operator_string, Operator},
-        Instance,
-    },
+    instance::Instance,
+    operator::{generate_operator_string, Operator},
     reconstruction::{problem_writing::write_problem, stiching::stich},
     state::State,
     tools::{random_file_name, status_print, Status},

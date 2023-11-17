@@ -1,10 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{
-    fact::Fact,
-    instance::{operator::Operator, Instance},
-    world::World,
-};
+use crate::{fact::Fact, instance::Instance, operator::Operator, world::World};
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {

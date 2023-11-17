@@ -1,5 +1,8 @@
-use super::{actions::Action, expression::Expression, Instance};
-use crate::{fact::Fact, world::World};
+use crate::{
+    fact::Fact,
+    instance::{actions::Action, expression::Expression, Instance},
+    world::World,
+};
 use itertools::Itertools;
 
 #[derive(Clone, Debug, PartialEq, Eq)]

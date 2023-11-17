@@ -1,6 +1,7 @@
 use super::{cache_data::CacheData, generate_plan, Cache};
 use crate::{
-    instance::{actions::Action, operator::generate_operators_by_candidates, Instance},
+    instance::{actions::Action, Instance},
+    operator::generate_operators_by_candidates,
     state::State,
     tools::{status_print, Status},
     world::World,
