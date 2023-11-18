@@ -1,10 +1,9 @@
 use super::{cache_data::CacheData, generate_plan, Cache};
 use crate::{
-    instance::{actions::Action, Instance},
     operator::generate_operators_by_candidates,
     state::State,
     tools::{status_print, Status},
-    world::World,
+    world::{action::Action, World},
 };
 use spingus::{sas_plan::SASPlan, term::Term};
 use std::collections::{HashMap, HashSet};
@@ -32,9 +31,9 @@ fn generate_replacements(
             let plan = sas_plan.to_owned();
             let candidates = action
                 .parameters
-                .parameter_names
+                .names
                 .iter()
-                .zip(action.parameters.parameter_types.iter())
+                .zip(action.parameters.types.iter())
                 .map(|(name, type_id)| match name.to_uppercase().contains('O') {
                     true => World::global().objects.iterate_with_type(type_id).collect(),
                     false => {
@@ -78,15 +77,9 @@ impl LiftedCache {
     }
 }
 impl Cache for LiftedCache {
-    fn get_replacement(
-        &self,
-        instance: &Instance,
-        meta_term: &Term,
-        init: &State,
-        goal: &State,
-    ) -> Option<SASPlan> {
+    fn get_replacement(&self, meta_term: &Term, init: &State, goal: &State) -> Option<SASPlan> {
         let desired = init.diff(goal);
-        let meta_index = World::global().get_meta_index(&meta_term.name);
+        let meta_index = World::global().meta_index(&meta_term.name);
         let meta_parameters = World::global().objects.indexes(&meta_term.parameters);
         let replacement_candidates = &self.replacements.get(&(meta_index, meta_parameters))?;
         for replacement in replacement_candidates.iter() {
@@ -101,7 +94,6 @@ impl Cache for LiftedCache {
                         continue;
                     }
                 return Some(generate_plan(
-                    instance,
                     &replacement.action,
                     &replacement.plan,
                     &permutation,

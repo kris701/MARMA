@@ -1,3 +1,5 @@
+use core::fmt;
+
 use crate::world::World;
 
 #[derive(Hash, PartialEq, Eq, Clone, Copy, Debug)]
@@ -32,7 +34,13 @@ impl Fact {
         parameters
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn cmp(&self, b: &Fact) -> std::cmp::Ordering {
+        self.internal.cmp(&b.internal)
+    }
+}
+
+impl fmt::Display for Fact {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let predicate = self.predicate();
         let predicate = World::global().predicates.name(predicate);
         let parameters = self.parameters();
@@ -41,10 +49,6 @@ impl Fact {
         for param in parameters {
             s.push_str(&format!(" {}", param));
         }
-        s
-    }
-
-    pub fn cmp(&self, b: &Fact) -> std::cmp::Ordering {
-        self.internal.cmp(&b.internal)
+        write!(f, "{}", s)
     }
 }

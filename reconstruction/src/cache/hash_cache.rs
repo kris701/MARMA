@@ -1,11 +1,10 @@
 use super::{cache_data::CacheData, generate_plan, Cache};
 use crate::{
     fact::Fact,
-    instance::{actions::Action, Instance},
     operator::{extract_from_action, generate_operators_by_candidates},
     state::State,
     tools::{status_print, Status},
-    world::World,
+    world::{action::Action, World},
 };
 use spingus::{sas_plan::SASPlan, term::Term};
 use std::collections::{HashMap, HashSet};
@@ -37,9 +36,9 @@ impl HashCache {
                 for meta_permutation in used_meta_actions[&meta_index].iter() {
                     let candidates: Vec<Vec<u16>> = macro_action
                         .parameters
-                        .parameter_names
+                        .names
                         .iter()
-                        .zip(macro_action.parameters.parameter_types.iter())
+                        .zip(macro_action.parameters.types.iter())
                         .map(|(name, type_id)| match name.to_uppercase().contains('O') {
                             true => World::global().objects.iterate_with_type(type_id).collect(),
                             false => {
@@ -71,13 +70,7 @@ impl HashCache {
     }
 }
 impl Cache for HashCache {
-    fn get_replacement(
-        &self,
-        instance: &Instance,
-        _meta_term: &Term,
-        init: &State,
-        goal: &State,
-    ) -> Option<SASPlan> {
+    fn get_replacement(&self, _meta_term: &Term, init: &State, goal: &State) -> Option<SASPlan> {
         let desired = init.diff(goal);
         let candidates: &Vec<usize> = self.effect_map.get(&desired)?;
         for candidate in candidates.iter() {
@@ -85,7 +78,7 @@ impl Cache for HashCache {
             let (macro_action, plan) = &self.lifted_macros[*macro_index as usize];
             let operator = extract_from_action(&parameters, &macro_action).unwrap();
             if init.is_legal(&operator) {
-                return Some(generate_plan(instance, macro_action, plan, parameters));
+                return Some(generate_plan(&macro_action, plan, parameters));
             }
         }
         None

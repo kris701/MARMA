@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+pub mod action;
 mod objects;
 mod parameter;
 mod predicates;
@@ -8,23 +9,24 @@ mod types;
 
 use crate::{
     fact::Fact,
-    world::{objects::translate_objects, predicates::translate_predicates, types::translate_types},
+    world::{
+        action::translate_actions, objects::translate_objects, predicates::translate_predicates,
+        types::translate_types,
+    },
 };
 use once_cell::sync::OnceCell;
 use spingus::domain::action::Actions;
 use std::collections::{HashMap, HashSet};
 
-use self::{objects::Objects, predicates::Predicates, types::Types};
+use self::{action::Action, objects::Objects, predicates::Predicates, types::Types};
 
 pub struct World {
     pub domain_name: String,
     pub types: Types,
     pub objects: Objects,
     pub predicates: Predicates,
-    /// Maps action name to its index
-    actions: HashMap<String, u16>,
-    /// Maps meta action name to its index
-    meta_actions: HashMap<String, u16>,
+    pub actions: Vec<Action>,
+    pub meta_actions: Vec<Action>,
     /// Initial facts
     pub init: Vec<Fact>,
     pub static_facts: HashSet<Fact>,
@@ -46,9 +48,11 @@ impl World {
         let types = translate_types(domain.types.to_owned());
         let predicates =
             translate_predicates(&types, &domain.actions, domain.predicates.to_owned());
-        let actions = extract_actions(&domain.actions);
+        let actions: Vec<Action> =
+            translate_actions(&types, &predicates, domain.actions.to_owned());
         println!("action_count={}", actions.len());
-        let meta_actions = extract_meta_actions(&actions, &meta_domain.actions);
+        let meta_actions: Vec<Action> =
+            translate_actions(&types, &predicates, meta_domain.actions.to_owned());
         println!("meta_action_count={}", meta_actions.len());
         let objects = translate_objects(
             &types,
@@ -82,37 +86,33 @@ impl World {
         }
     }
 
-    pub fn domain_name(&self) -> &str {
-        &self.domain_name
-    }
-
-    pub fn get_action_index(&self, name: &str) -> u16 {
-        self.actions[name]
-    }
-
-    pub fn get_action_name(&self, index: u16) -> &String {
-        &self.actions.iter().find(|(_, i)| **i == index).unwrap().0
-    }
-
     pub fn is_meta_action(&self, name: &str) -> bool {
-        self.meta_actions.contains_key(name) && !self.actions.contains_key(name)
+        if self.actions.iter().any(|a| a.name == name) {
+            return false;
+        }
+
+        if self.meta_actions.iter().any(|a| a.name == name) {
+            return true;
+        }
+        panic!("Undeclared action: {}", name);
     }
 
-    pub fn get_meta_index(&self, name: &str) -> u16 {
-        self.meta_actions[name]
+    pub fn action_index(&self, name: &str) -> u16 {
+        self.actions.iter().position(|a| a.name == name).unwrap() as u16
     }
 
-    pub fn get_meta_name(&self, index: u16) -> &String {
-        &self
-            .meta_actions
+    pub fn meta_index(&self, name: &str) -> u16 {
+        self.meta_actions
             .iter()
-            .find(|(_, i)| **i == index)
-            .unwrap()
-            .0
+            .position(|a| a.name == name)
+            .unwrap() as u16
     }
 
-    pub fn init(&self) -> &Vec<Fact> {
-        &self.init
+    pub fn get_action(&self, name: &str) -> &Action {
+        match self.is_meta_action(name) {
+            true => &self.meta_actions[self.meta_index(name) as usize],
+            false => &self.actions[self.action_index(name) as usize],
+        }
     }
 }
 

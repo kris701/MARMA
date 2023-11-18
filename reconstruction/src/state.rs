@@ -18,7 +18,7 @@ impl State {
     }
 
     pub fn from_init() -> Self {
-        State::new(World::global().init())
+        State::new(&World::global().init)
     }
 
     pub fn apply(&mut self, operator: &Operator) {

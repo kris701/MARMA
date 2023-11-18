@@ -27,7 +27,7 @@ impl Predicates {
     }
 
     pub fn arity(&self, index: u16) -> usize {
-        self.parameters[&index].len()
+        self.parameters[&index].arity()
     }
 
     pub fn is_static(&self, index: u16) -> bool {

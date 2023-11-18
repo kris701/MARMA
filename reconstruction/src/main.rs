@@ -1,6 +1,5 @@
 mod cache;
 mod fact;
-mod instance;
 mod operator;
 mod reconstruction;
 mod state;
@@ -22,7 +21,6 @@ use std::path::PathBuf;
 use std::process::exit;
 use std::time::Instant;
 
-use crate::instance::Instance;
 use crate::reconstruction::downward_wrapper::Downward;
 use crate::tools::status_print;
 use crate::tools::val::check_val;
@@ -117,7 +115,6 @@ fn main() {
     let plan = match contains_meta(&meta_plan) {
         true => {
             status_print(Status::Init, "Generating instance");
-            let instance = Instance::new(domain, meta_domain.to_owned());
             let cache_begin = Instant::now();
             let cache = generate_cache(&meta_plan, &args.cache, args.cache_method);
             println!(
@@ -125,7 +122,7 @@ fn main() {
                 cache_begin.elapsed().as_secs_f64()
             );
             status_print(Status::Reconstruction, "Finding meta solution downward");
-            let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
+            let plan = reconstruct(&args.domain, &downward, &cache, meta_plan);
             if let Some(val_path) = args.val {
                 status_print(Status::Validation, "Checking VAL");
                 if check_val(
