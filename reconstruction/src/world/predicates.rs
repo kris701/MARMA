@@ -40,11 +40,7 @@ fn find_static_predicates(
     index_map: &HashMap<String, u16>,
 ) -> HashSet<u16> {
     let mut mutable_predicates: HashSet<u16> = HashSet::new();
-    let mut queue: Vec<&StringExpression> = Vec::new();
-
-    for action in actions.iter() {
-        queue.push(&action.effect);
-    }
+    let mut queue: Vec<&StringExpression> = actions.iter().map(|a| &a.effect).collect();
 
     while !queue.is_empty() {
         let e: &StringExpression = queue.pop().unwrap();

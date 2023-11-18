@@ -119,7 +119,7 @@ fn main() {
             status_print(Status::Init, "Generating instance");
             let instance = Instance::new(domain, meta_domain.to_owned());
             let cache_begin = Instant::now();
-            let cache = generate_cache(&instance, &meta_plan, &args.cache, args.cache_method);
+            let cache = generate_cache(&meta_plan, &args.cache, args.cache_method);
             println!(
                 "cache_init_time={:.2?}",
                 cache_begin.elapsed().as_secs_f64()

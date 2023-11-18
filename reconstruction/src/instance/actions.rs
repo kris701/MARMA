@@ -9,20 +9,15 @@ pub struct Action {
 }
 
 impl Action {
-    pub fn new(
-        name: String,
-        parameters: spingus::domain::parameter::Parameters,
-        precondition: Option<spingus::domain::action::string_expression::StringExpression>,
-        effect: spingus::domain::action::string_expression::StringExpression,
-    ) -> Self {
-        let parameters = Parameters::new(parameters);
-        let precondition = match precondition {
+    pub fn new(action: spingus::domain::action::Action) -> Self {
+        let parameters = Parameters::new(action.parameters);
+        let precondition = match action.precondition {
             Some(e) => Some(Expression::new(&parameters, e)),
             None => None,
         };
-        let effect = Expression::new(&parameters, effect);
+        let effect = Expression::new(&parameters, action.effect);
         Self {
-            name,
+            name: action.name,
             parameters,
             precondition,
             effect,
@@ -37,17 +32,7 @@ pub struct Actions {
 
 impl Actions {
     pub fn new(o_actions: spingus::domain::action::Actions) -> Self {
-        let mut actions: Vec<Action> = Vec::new();
-
-        for action in o_actions {
-            actions.push(Action::new(
-                action.name,
-                action.parameters,
-                action.precondition,
-                action.effect,
-            ));
-        }
-
+        let actions = o_actions.into_iter().map(|a| Action::new(a)).collect();
         Self { actions }
     }
 }

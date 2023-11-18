@@ -17,7 +17,6 @@ struct Replacement {
 }
 
 fn generate_replacements(
-    instance: &Instance,
     cache_data: &CacheData,
     meta_index: &u16,
     parameters: &Vec<u16>,
@@ -29,7 +28,7 @@ fn generate_replacements(
     let replacements = relevant_replacements
         .iter()
         .map(|(action, sas_plan)| {
-            let action = instance.convert_action(action.clone());
+            let action = Action::new(action.clone());
             let plan = sas_plan.to_owned();
             let candidates = action
                 .parameters
@@ -60,18 +59,14 @@ pub struct LiftedCache {
 }
 
 impl LiftedCache {
-    pub fn new(
-        instance: &Instance,
-        cache_data: CacheData,
-        used_meta_actions: HashMap<u16, HashSet<Vec<u16>>>,
-    ) -> Self {
+    pub fn new(cache_data: CacheData, used_meta_actions: HashMap<u16, HashSet<Vec<u16>>>) -> Self {
         status_print(Status::Cache, "Init Lifted Cache");
         let mut replacements: HashMap<(u16, Vec<u16>), Vec<Replacement>> = HashMap::new();
 
         for (meta_action, permutations) in used_meta_actions.into_iter() {
             for permutation in permutations.into_iter() {
                 let action_replacements =
-                    generate_replacements(instance, &cache_data, &meta_action, &permutation);
+                    generate_replacements(&cache_data, &meta_action, &permutation);
 
                 if let Some(action_replacements) = action_replacements {
                     replacements.insert((meta_action, permutation), action_replacements);

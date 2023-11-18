@@ -9,7 +9,6 @@ use spingus::sas_plan::SASPlan;
 use super::{cache_data::read_cache, lifted::LiftedCache, Cache};
 use crate::{
     cache::hash_cache::HashCache,
-    instance::Instance,
     tools::{status_print, Status},
     world::World,
 };
@@ -36,7 +35,6 @@ fn find_used_meta_actions(meta_plan: &SASPlan) -> HashMap<u16, HashSet<Vec<u16>>
 }
 
 pub fn generate_cache(
-    instance: &Instance,
     meta_plan: &SASPlan,
     cache_path: &Option<PathBuf>,
     cache_type: CacheMethod,
@@ -46,12 +44,8 @@ pub fn generate_cache(
         let data = read_cache(path);
         let used_meta_actions = find_used_meta_actions(meta_plan);
         match cache_type {
-            CacheMethod::Hash => Some(Box::new(HashCache::new(instance, data, used_meta_actions))),
-            CacheMethod::Lifted => Some(Box::new(LiftedCache::new(
-                instance,
-                data,
-                used_meta_actions,
-            ))),
+            CacheMethod::Hash => Some(Box::new(HashCache::new(data, used_meta_actions))),
+            CacheMethod::Lifted => Some(Box::new(LiftedCache::new(data, used_meta_actions))),
             CacheMethod::None => None,
         }
     } else {

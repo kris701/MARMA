@@ -21,11 +21,7 @@ pub struct HashCache {
 }
 
 impl HashCache {
-    pub fn new(
-        instance: &Instance,
-        cache_data: CacheData,
-        used_meta_actions: HashMap<u16, HashSet<Vec<u16>>>,
-    ) -> Self {
+    pub fn new(cache_data: CacheData, used_meta_actions: HashMap<u16, HashSet<Vec<u16>>>) -> Self {
         status_print(Status::Cache, "Init Hash Cache");
         let mut lifted_macros: Vec<(Action, SASPlan)> = Vec::new();
         let mut entries: Vec<(u16, Vec<u16>)> = Vec::new();
@@ -34,7 +30,7 @@ impl HashCache {
         for (meta_index, macros) in cache_data.into_iter() {
             for (macro_action, plan) in macros.into_iter() {
                 let macro_index = lifted_macros.len();
-                let macro_action = instance.convert_action(macro_action);
+                let macro_action = Action::new(macro_action);
                 if !used_meta_actions.contains_key(&meta_index) {
                     continue;
                 }

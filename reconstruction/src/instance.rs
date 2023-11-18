@@ -32,13 +32,4 @@ impl Instance {
             false => &self.actions.actions[World::global().get_action_index(name) as usize],
         }
     }
-
-    pub fn convert_action(&self, action: spingus::domain::action::Action) -> Action {
-        Action::new(
-            action.name,
-            action.parameters,
-            action.precondition,
-            action.effect,
-        )
-    }
 }
