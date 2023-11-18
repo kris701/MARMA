@@ -1,3 +1,0 @@
-(up ?f1 ?f2)
-(board ?f2 ?p)
-(down ?f2 ?f1)
