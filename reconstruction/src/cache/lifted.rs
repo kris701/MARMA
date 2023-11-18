@@ -37,7 +37,7 @@ fn generate_replacements(
                 .iter()
                 .zip(action.parameters.parameter_types.iter())
                 .map(|(name, type_id)| match name.to_uppercase().contains('O') {
-                    true => World::global().get_objects_with_type(*type_id),
+                    true => World::global().objects.iterate_with_type(type_id).collect(),
                     false => {
                         let parameter_index = name.parse::<usize>().unwrap();
                         vec![parameters[parameter_index]]
@@ -92,7 +92,7 @@ impl Cache for LiftedCache {
     ) -> Option<SASPlan> {
         let desired = init.diff(goal);
         let meta_index = World::global().get_meta_index(&meta_term.name);
-        let meta_parameters = World::global().get_object_indexes(&meta_term.parameters);
+        let meta_parameters = World::global().objects.indexes(&meta_term.parameters);
         let replacement_candidates = &self.replacements.get(&(meta_index, meta_parameters))?;
         for replacement in replacement_candidates.iter() {
             let action = &replacement.action;

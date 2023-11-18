@@ -45,7 +45,7 @@ impl HashCache {
                         .iter()
                         .zip(macro_action.parameters.parameter_types.iter())
                         .map(|(name, type_id)| match name.to_uppercase().contains('O') {
-                            true => World::global().get_objects_with_type(*type_id),
+                            true => World::global().objects.iterate_with_type(type_id).collect(),
                             false => {
                                 let parameter_index = name.parse::<usize>().unwrap();
                                 vec![meta_permutation[parameter_index]]

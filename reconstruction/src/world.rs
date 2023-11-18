@@ -1,35 +1,28 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+mod objects;
 mod types;
 
-use crate::{fact::Fact, world::types::translate_types};
-use once_cell::sync::OnceCell;
-use spingus::{
-    domain::{
-        action::Actions,
-        parameter::{Parameter, Parameters},
-        predicate::Predicates,
-    },
-    problem::object::{Object, Objects},
+use crate::{
+    fact::Fact,
+    world::{objects::translate_objects, types::translate_types},
 };
+use once_cell::sync::OnceCell;
+use spingus::domain::{action::Actions, predicate::Predicates};
 use std::collections::HashMap;
 
-use self::types::Types;
+use self::{objects::Objects, types::Types};
 
 pub struct World {
     pub domain_name: String,
     pub types: Types,
-    /// Maps predicate name to its index
+    pub objects: Objects,
     predicates: HashMap<String, u16>,
     /// Maps action name to its index
     actions: HashMap<String, u16>,
     /// Maps meta action name to its index
     meta_actions: HashMap<String, u16>,
-    /// Maps object name to its index
-    objects: HashMap<String, u16>,
-    /// Maps object index to its type index
-    object_types: HashMap<u16, usize>,
     /// Initial facts
     init: Vec<Fact>,
 }
@@ -54,15 +47,18 @@ impl World {
         println!("action_count={}", actions.len());
         let meta_actions = extract_meta_actions(&actions, &meta_domain.actions);
         println!("meta_action_count={}", meta_actions.len());
-        let (objects, object_types) = extract_objects(&types, &problem.objects, &domain.constants);
-        println!("object_count={}", objects.len());
+        let objects = translate_objects(
+            &types,
+            domain.constants.to_owned(),
+            problem.objects.to_owned(),
+        );
         let init = problem
             .inits
             .iter()
             .map(|i| {
                 Fact::new(
                     predicates[&i.name],
-                    i.parameters.iter().map(|p| objects[p]).collect(),
+                    i.parameters.iter().map(|p| objects.index(p)).collect(),
                 )
             })
             .collect();
@@ -73,7 +69,6 @@ impl World {
             actions,
             meta_actions,
             objects,
-            object_types,
             init,
         }
     }
@@ -120,61 +115,6 @@ impl World {
             .0
     }
 
-    pub fn get_object_count(&self) -> u16 {
-        self.objects.len() as u16
-    }
-
-    pub fn get_object_index(&self, name: &str) -> u16 {
-        self.objects[name]
-    }
-
-    pub fn get_object_indexes(&self, indexes: &Vec<String>) -> Vec<u16> {
-        indexes.iter().map(|i| self.get_object_index(i)).collect()
-    }
-
-    pub fn get_object_name(&self, index: u16) -> &String {
-        &self.objects.iter().find(|(_, i)| **i == index).unwrap().0
-    }
-
-    pub fn get_object_names(&self, indexes: &Vec<u16>) -> Vec<&String> {
-        indexes.iter().map(|i| self.get_object_name(*i)).collect()
-    }
-
-    pub fn get_object_names_cloned(&self, indexes: &Vec<u16>) -> Vec<String> {
-        indexes
-            .iter()
-            .map(|i| self.get_object_name(*i).to_owned())
-            .collect()
-    }
-
-    pub fn get_object_type(&self, object: u16) -> usize {
-        self.object_types[&object]
-    }
-
-    pub fn iterate_objects<'a>(&'a self) -> impl Iterator<Item = (u16, usize)> + 'a {
-        (1..self.get_object_count() + 1)
-            .into_iter()
-            .map(|i| (i, self.get_object_type(i)))
-    }
-
-    pub fn iterate_objects_named<'a>(&'a self) -> impl Iterator<Item = (&String, &String)> + 'a {
-        self.objects.iter().map(|(name, index)| {
-            let object_type = self.get_object_type(*index);
-            let type_name = self.types.name(object_type);
-            (name, type_name)
-        })
-    }
-
-    pub fn get_objects_with_type(&self, type_id: usize) -> Vec<u16> {
-        World::global()
-            .iterate_objects()
-            .filter_map(|(object_id, t)| match self.types.is_of_type(t, type_id) {
-                true => Some(object_id),
-                false => None,
-            })
-            .collect()
-    }
-
     pub fn init(&self) -> &Vec<Fact> {
         &self.init
     }
@@ -207,46 +147,4 @@ fn extract_meta_actions(
         }
     }
     index_map
-}
-
-fn extract_objects(
-    types: &Types,
-    objects: &Objects,
-    constants: &Option<Parameters>,
-) -> (HashMap<String, u16>, HashMap<u16, usize>) {
-    let mut objects = objects.clone();
-    match constants {
-        Some(parameters) => objects.append(
-            &mut parameters
-                .iter()
-                .map(|p| match p {
-                    Parameter::Untyped { name } => Object {
-                        name: name.to_string(),
-                        type_name: None,
-                    },
-                    Parameter::Typed { name, type_name } => Object {
-                        name: name.to_string(),
-                        type_name: Some(type_name.to_string()),
-                    },
-                    _ => todo!(),
-                })
-                .collect(),
-        ),
-        None => {}
-    };
-    let temp: Vec<((String, u16), (u16, usize))> = objects
-        .iter()
-        .enumerate()
-        .map(|(i, o)| {
-            let object_name = o.name.to_owned();
-            let object_index = i as u16 + 1;
-            let object_type = match &o.type_name {
-                Some(t) => t,
-                None => "object",
-            };
-            let type_index = types.index(object_type);
-            ((object_name, object_index), (object_index, type_index))
-        })
-        .collect();
-    temp.into_iter().unzip()
 }

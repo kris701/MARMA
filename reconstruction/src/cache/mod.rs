@@ -45,7 +45,7 @@ pub(super) fn generate_plan(
                 parameters[index]
             })
             .collect();
-        let parameters = World::global().get_object_names_cloned(&parameters);
+        let parameters = World::global().objects.names_cloned(&parameters);
         plan.push(Term { name, parameters })
     }
     plan

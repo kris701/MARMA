@@ -29,7 +29,7 @@ fn find_used_meta_actions(meta_plan: &SASPlan) -> HashMap<u16, HashSet<Vec<u16>>
         .filter(|t| World::global().is_meta_action(&t.name))
     {
         let meta_index = World::global().get_meta_index(&step.name);
-        let parameters = World::global().get_object_indexes(&step.parameters);
+        let parameters = World::global().objects.indexes(&step.parameters);
         used.entry(meta_index).or_default().insert(parameters);
     }
     used

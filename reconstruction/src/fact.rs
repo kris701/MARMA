@@ -36,7 +36,7 @@ impl Fact {
         let predicate = self.predicate();
         let predicate = World::global().get_predicate_name(predicate);
         let parameters = self.parameters();
-        let parameters = World::global().get_object_names(&parameters);
+        let parameters = World::global().objects.names(&parameters);
         let mut s = format!("{}", predicate);
         for param in parameters {
             s.push_str(&format!(" {}", param));

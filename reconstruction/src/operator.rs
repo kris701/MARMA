@@ -56,7 +56,7 @@ pub fn generate_operator_string(
     parameters: &Vec<String>,
 ) -> Operator {
     let action: &Action = instance.get_action(action);
-    let parameters: Vec<u16> = World::global().get_object_indexes(parameters);
+    let parameters: Vec<u16> = World::global().objects.indexes(parameters);
     extract_from_action(&parameters, action).unwrap()
 }
 

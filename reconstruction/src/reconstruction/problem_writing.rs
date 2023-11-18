@@ -4,7 +4,7 @@ use crate::{state::State, world::World};
 
 fn generate_objects() -> String {
     let mut s = "".to_string();
-    for (object_name, type_name) in World::global().iterate_objects_named() {
+    for (object_name, type_name) in World::global().objects.iterate_named() {
         s.push_str(&format!(" {} - {}", object_name, type_name));
     }
     s
