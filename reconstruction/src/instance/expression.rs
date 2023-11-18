@@ -40,7 +40,7 @@ fn extract(
 ) {
     match expression {
         StringExpression::Predicate(p) => literals.push(Literal {
-            predicate: World::global().get_predicate_index(&p.name),
+            predicate: World::global().predicates.index(&p.name),
             parameters: parameters.get_indexes(&p.parameters),
             value,
         }),

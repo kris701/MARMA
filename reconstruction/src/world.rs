@@ -2,23 +2,25 @@
 #![allow(unused_variables)]
 
 mod objects;
+mod parameter;
+mod predicates;
 mod types;
 
 use crate::{
     fact::Fact,
-    world::{objects::translate_objects, types::translate_types},
+    world::{objects::translate_objects, predicates::translate_predicates, types::translate_types},
 };
 use once_cell::sync::OnceCell;
-use spingus::domain::{action::Actions, predicate::Predicates};
+use spingus::domain::action::Actions;
 use std::collections::HashMap;
 
-use self::{objects::Objects, types::Types};
+use self::{objects::Objects, predicates::Predicates, types::Types};
 
 pub struct World {
     pub domain_name: String,
     pub types: Types,
     pub objects: Objects,
-    predicates: HashMap<String, u16>,
+    pub predicates: Predicates,
     /// Maps action name to its index
     actions: HashMap<String, u16>,
     /// Maps meta action name to its index
@@ -41,8 +43,8 @@ impl World {
     ) -> World {
         let domain_name = domain.name.to_owned();
         let types = translate_types(domain.types.to_owned());
-        let predicates = extract_predicates(&domain.predicates);
-        println!("predicate_count={}", predicates.len());
+        let predicates =
+            translate_predicates(&types, &domain.actions, domain.predicates.to_owned());
         let actions = extract_actions(&domain.actions);
         println!("action_count={}", actions.len());
         let meta_actions = extract_meta_actions(&actions, &meta_domain.actions);
@@ -57,7 +59,7 @@ impl World {
             .iter()
             .map(|i| {
                 Fact::new(
-                    predicates[&i.name],
+                    predicates.index(&i.name),
                     i.parameters.iter().map(|p| objects.index(p)).collect(),
                 )
             })
@@ -102,30 +104,9 @@ impl World {
             .0
     }
 
-    pub fn get_predicate_index(&self, name: &str) -> u16 {
-        self.predicates[name]
-    }
-
-    pub fn get_predicate_name(&self, index: u16) -> &String {
-        &self
-            .predicates
-            .iter()
-            .find(|(_, i)| **i == index)
-            .unwrap()
-            .0
-    }
-
     pub fn init(&self) -> &Vec<Fact> {
         &self.init
     }
-}
-
-fn extract_predicates(predicates: &Predicates) -> HashMap<String, u16> {
-    predicates
-        .iter()
-        .enumerate()
-        .map(|(i, p)| (p.name.to_owned(), i as u16 + 1))
-        .collect()
 }
 
 fn extract_actions(actions: &Actions) -> HashMap<String, u16> {

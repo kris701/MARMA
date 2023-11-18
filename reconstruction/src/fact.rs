@@ -34,7 +34,7 @@ impl Fact {
 
     pub fn to_string(&self) -> String {
         let predicate = self.predicate();
-        let predicate = World::global().get_predicate_name(predicate);
+        let predicate = World::global().predicates.name(predicate);
         let parameters = self.parameters();
         let parameters = World::global().objects.names(&parameters);
         let mut s = format!("{}", predicate);
