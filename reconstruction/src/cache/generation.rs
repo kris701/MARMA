@@ -8,7 +8,6 @@ use spingus::sas_plan::SASPlan;
 
 use super::{cache_data::read_cache, lifted::LiftedCache, Cache};
 use crate::{
-    cache::hash_cache::HashCache,
     tools::{status_print, Status},
     world::World,
 };
@@ -16,7 +15,6 @@ use crate::{
 #[derive(Debug, Copy, Clone, PartialEq, Default, ValueEnum)]
 pub enum CacheMethod {
     #[default]
-    Hash,
     Lifted,
     None,
 }
@@ -44,7 +42,6 @@ pub fn generate_cache(
         let data = read_cache(path);
         let used_meta_actions = find_used_meta_actions(meta_plan);
         match cache_type {
-            CacheMethod::Hash => Some(Box::new(HashCache::new(data, used_meta_actions))),
             CacheMethod::Lifted => Some(Box::new(LiftedCache::new(data, used_meta_actions))),
             CacheMethod::None => None,
         }

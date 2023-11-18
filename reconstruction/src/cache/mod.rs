@@ -1,6 +1,5 @@
 mod cache_data;
 pub mod generation;
-mod hash_cache;
 mod lifted;
 
 use crate::{
@@ -17,7 +16,7 @@ pub trait Cache {
 pub(super) fn generate_plan(
     replacement_macro: &Action,
     replacement_plan: &SASPlan,
-    parameters: &Vec<u16>,
+    parameters: &Vec<usize>,
 ) -> SASPlan {
     let macro_parameters = &replacement_macro.parameters;
     let actions: Vec<String> = replacement_plan.iter().map(|t| t.name.to_owned()).collect();
@@ -28,7 +27,7 @@ pub(super) fn generate_plan(
     let mut plan: SASPlan = Vec::new();
     for (action, step) in replacements.iter().zip(replacement_plan.iter()) {
         let name = action.name.to_owned();
-        let parameters: Vec<u16> = step
+        let parameters: Vec<usize> = step
             .parameters
             .iter()
             .map(|n| {

@@ -30,8 +30,11 @@ impl Objects {
         indexes.iter().map(|i| self.name(*i)).collect()
     }
 
-    pub fn names_cloned(&self, indexes: &Vec<u16>) -> Vec<String> {
-        indexes.iter().map(|i| self.name(*i).to_owned()).collect()
+    pub fn names_cloned(&self, indexes: &Vec<usize>) -> Vec<String> {
+        indexes
+            .iter()
+            .map(|i| self.name(*i as u16).to_owned())
+            .collect()
     }
 
     pub fn object_type(&self, index: u16) -> usize {

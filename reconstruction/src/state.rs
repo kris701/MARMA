@@ -1,6 +1,9 @@
 use std::collections::HashSet;
 
-use crate::{fact::Fact, operator::Operator, world::World};
+use crate::{
+    fact::Fact,
+    world::{action::Action, World},
+};
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
@@ -9,11 +12,7 @@ pub struct State {
 
 impl State {
     pub fn new(facts: &Vec<Fact>) -> Self {
-        let internal: HashSet<Fact> = facts
-            .into_iter()
-            .filter(|fact| !World::global().predicates.is_static(fact.predicate()))
-            .cloned()
-            .collect();
+        let internal: HashSet<Fact> = facts.iter().cloned().collect();
         Self { internal }
     }
 
@@ -21,12 +20,18 @@ impl State {
         State::new(&World::global().init)
     }
 
-    pub fn apply(&mut self, operator: &Operator) {
-        for i in operator.eff_neg.iter() {
-            self.internal.remove(i);
-        }
-        for i in operator.eff_pos.iter() {
-            self.internal.insert(*i);
+    pub fn apply(&mut self, action: &Action, arguments: &Vec<u16>) {
+        for atom in action.effect.iter() {
+            let corresponding: Vec<u16> = atom
+                .parameters
+                .iter()
+                .map(|p| arguments[*p as usize])
+                .collect();
+            let fact = Fact::new(atom.predicate, corresponding);
+            match atom.value {
+                true => self.internal.insert(fact),
+                false => self.internal.remove(&fact),
+            };
         }
     }
 
@@ -34,10 +39,9 @@ impl State {
         &self.internal
     }
 
-    pub fn is_legal(&self, operator: &Operator) -> bool {
-        let has_pos = operator.pre_pos.iter().all(|i| self.internal.contains(i));
-        let has_neg = operator.pre_neg.iter().all(|i| !self.internal.contains(i));
-        has_pos && has_neg
+    pub fn has(&self, predicate: u16, arguments: &Vec<u16>) -> bool {
+        self.internal
+            .contains(&Fact::new(predicate, arguments.clone()))
     }
 
     pub fn diff(&self, state: &State) -> Vec<(Fact, bool)> {

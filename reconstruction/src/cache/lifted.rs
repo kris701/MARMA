@@ -1,7 +1,8 @@
 use super::{cache_data::CacheData, generate_plan, Cache};
 use crate::{
-    operator::generate_operators_by_candidates,
+    fact::Fact,
     state::State,
+    successor_genrator::get_applicable_with_fixed,
     tools::{status_print, Status},
     world::{action::Action, World},
 };
@@ -12,7 +13,7 @@ use std::collections::{HashMap, HashSet};
 struct Replacement {
     action: Action,
     plan: SASPlan,
-    candidates: Vec<Vec<u16>>,
+    fixed: HashMap<usize, usize>,
 }
 
 fn generate_replacements(
@@ -29,23 +30,23 @@ fn generate_replacements(
         .map(|(action, sas_plan)| {
             let action = Action::new(action.clone());
             let plan = sas_plan.to_owned();
-            let candidates = action
+            let fixed = action
                 .parameters
                 .names
                 .iter()
-                .zip(action.parameters.types.iter())
-                .map(|(name, type_id)| match name.to_uppercase().contains('O') {
-                    true => World::global().objects.iterate_with_type(type_id).collect(),
+                .enumerate()
+                .filter_map(|(i, name)| match name.to_uppercase().contains('O') {
+                    true => None,
                     false => {
                         let parameter_index = name.parse::<usize>().unwrap();
-                        vec![parameters[parameter_index]]
+                        Some((i, parameters[parameter_index] as usize))
                     }
                 })
                 .collect();
             Replacement {
                 action,
                 plan,
-                candidates,
+                fixed,
             }
         })
         .collect();
@@ -84,15 +85,27 @@ impl Cache for LiftedCache {
         let replacement_candidates = &self.replacements.get(&(meta_index, meta_parameters))?;
         for replacement in replacement_candidates.iter() {
             let action = &replacement.action;
-            for (operator, permutation) in
-                generate_operators_by_candidates(action, replacement.candidates.to_owned())
-            {
+            for permutation in get_applicable_with_fixed(&action, init, &replacement.fixed) {
+                let mut eff_neg: HashSet<Fact> = HashSet::new();
+                let mut eff_pos: HashSet<Fact> = HashSet::new();
+                for atom in action.effect.iter() {
+                    let corresponding: Vec<u16> = atom
+                        .parameters
+                        .iter()
+                        .map(|p| permutation[*p as usize] as u16)
+                        .collect();
+                    let fact = Fact::new(atom.predicate, corresponding);
+                    match atom.value {
+                        true => eff_pos.insert(fact),
+                        false => eff_neg.insert(fact),
+                    };
+                }
                 if desired.iter().any(|(i, v)| match v {
-                        true => !operator.eff_pos.contains(&i),
-                        false => !operator.eff_neg.contains(&i),
-                    } || !init.is_legal(&operator)) {
-                        continue;
-                    }
+                    true => !eff_pos.contains(&i),
+                    false => !eff_neg.contains(&i),
+                }) {
+                    continue;
+                }
                 return Some(generate_plan(
                     &replacement.action,
                     &replacement.plan,

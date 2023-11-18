@@ -1,8 +1,8 @@
 mod cache;
 mod fact;
-mod operator;
 mod reconstruction;
 mod state;
+mod successor_genrator;
 mod tools;
 mod world;
 
@@ -115,12 +115,14 @@ fn main() {
     let plan = match contains_meta(&meta_plan) {
         true => {
             status_print(Status::Init, "Generating instance");
+
             let cache_begin = Instant::now();
             let cache = generate_cache(&meta_plan, &args.cache, args.cache_method);
             println!(
                 "cache_init_time={:.2?}",
                 cache_begin.elapsed().as_secs_f64()
             );
+
             status_print(Status::Reconstruction, "Finding meta solution downward");
             let plan = reconstruct(&args.domain, &downward, &cache, meta_plan);
             if let Some(val_path) = args.val {
