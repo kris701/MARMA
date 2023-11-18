@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{fact::Fact, instance::Instance, operator::Operator, world::World};
+use crate::{fact::Fact, operator::Operator, world::World};
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
@@ -8,17 +8,17 @@ pub struct State {
 }
 
 impl State {
-    pub fn new(instance: &Instance, facts: &Vec<Fact>) -> Self {
+    pub fn new(facts: &Vec<Fact>) -> Self {
         let internal: HashSet<Fact> = facts
             .into_iter()
-            .filter(|fact| !is_static(instance, &fact))
+            .filter(|fact| !World::global().predicates.is_static(fact.predicate()))
             .cloned()
             .collect();
         Self { internal }
     }
 
-    pub fn from_init(instance: &Instance) -> Self {
-        State::new(instance, World::global().init())
+    pub fn from_init() -> Self {
+        State::new(World::global().init())
     }
 
     pub fn apply(&mut self, operator: &Operator) {
@@ -75,13 +75,4 @@ impl State {
             .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
         s
     }
-}
-
-fn is_static(instance: &Instance, fact: &Fact) -> bool {
-    let predicate = fact.predicate();
-    instance
-        .actions
-        .actions
-        .iter()
-        .all(|a| !a.effect.literals.iter().any(|l| l.predicate == predicate))
 }

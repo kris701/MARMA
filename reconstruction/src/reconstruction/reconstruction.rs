@@ -43,7 +43,7 @@ pub fn reconstruct(
     let mut fd_time: f64 = 0.0;
     let mut replacements: Vec<SASPlan> = Vec::new();
     let mut found_in_cache: Vec<usize> = Vec::new();
-    let mut state = State::from_init(instance);
+    let mut state = State::from_init();
     let (meta_actions, operators) = generate_operators(&instance, downward, &plan);
 
     status_print(Status::Reconstruction, "Generating replacements");
