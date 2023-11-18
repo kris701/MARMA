@@ -3,22 +3,22 @@ use crate::world::World;
 #[derive(Debug)]
 pub struct Parameters {
     pub parameter_names: Vec<String>,
-    pub parameter_types: Vec<u16>,
+    pub parameter_types: Vec<usize>,
 }
 
 impl Parameters {
     pub fn new(parameters: spingus::domain::parameter::Parameters) -> Self {
         let mut parameter_names: Vec<String> = Vec::new();
-        let mut parameter_types: Vec<u16> = Vec::new();
+        let mut parameter_types: Vec<usize> = Vec::new();
 
         for parameter in parameters {
             match parameter {
                 spingus::domain::parameter::Parameter::Untyped { name } => {
-                    parameter_types.push(World::global().get_default_type_index());
+                    parameter_types.push(World::global().types.default());
                     parameter_names.push(name);
                 }
                 spingus::domain::parameter::Parameter::Typed { name, type_name } => {
-                    parameter_types.push(World::global().get_type_index(&type_name));
+                    parameter_types.push(World::global().types.index(&type_name));
                     parameter_names.push(name);
                 }
                 spingus::domain::parameter::Parameter::Either { .. } => {
