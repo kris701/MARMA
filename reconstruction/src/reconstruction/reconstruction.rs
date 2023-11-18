@@ -55,7 +55,7 @@ pub fn reconstruct(
             }
         }
         let problem_file = PathBuf::from(random_file_name(&downward.temp_dir));
-        debug_assert_ne!(init, state);
+        assert_ne!(init, state);
         write_problem(&init, &state, &problem_file);
         let fd_plan_time = Instant::now();
         let plan = downward.solve(domain_path, &problem_file);

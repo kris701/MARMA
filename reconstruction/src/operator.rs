@@ -33,7 +33,7 @@ impl Operator {
 
 pub fn extract_from_action(parameters: &Vec<u16>, action: &Action) -> Option<Operator> {
     let (pre_neg, pre_pos) = walk(parameters, &action.precondition)?;
-    let (eff_neg, eff_pos) = walk(parameters, &action.precondition)?;
+    let (eff_neg, eff_pos) = walk(parameters, &action.effect)?;
     Some(Operator {
         pre_pos,
         pre_neg,
