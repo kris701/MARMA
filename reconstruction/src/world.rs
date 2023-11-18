@@ -12,7 +12,7 @@ use crate::{
 };
 use once_cell::sync::OnceCell;
 use spingus::domain::action::Actions;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use self::{objects::Objects, predicates::Predicates, types::Types};
 
@@ -26,7 +26,8 @@ pub struct World {
     /// Maps meta action name to its index
     meta_actions: HashMap<String, u16>,
     /// Initial facts
-    init: Vec<Fact>,
+    pub init: Vec<Fact>,
+    pub static_facts: HashSet<Fact>,
 }
 
 pub static WORLD: OnceCell<World> = OnceCell::new();
@@ -54,7 +55,7 @@ impl World {
             domain.constants.to_owned(),
             problem.objects.to_owned(),
         );
-        let init = problem
+        let init: Vec<Fact> = problem
             .inits
             .iter()
             .map(|i| {
@@ -64,6 +65,11 @@ impl World {
                 )
             })
             .collect();
+        let static_facts = init
+            .iter()
+            .filter(|f| predicates.is_static(f.predicate()))
+            .cloned()
+            .collect();
         Self {
             domain_name,
             types,
@@ -72,6 +78,7 @@ impl World {
             meta_actions,
             objects,
             init,
+            static_facts,
         }
     }
 

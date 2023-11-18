@@ -4,15 +4,17 @@ use crate::{fact::Fact, instance::Instance, operator::Operator, world::World};
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
-    statics: HashSet<Fact>,
-    mutable: HashSet<Fact>,
+    internal: HashSet<Fact>,
 }
 
 impl State {
     pub fn new(instance: &Instance, facts: &Vec<Fact>) -> Self {
-        let (statics, mutable): (HashSet<Fact>, HashSet<Fact>) =
-            facts.iter().partition(|fact| is_static(instance, &fact));
-        Self { statics, mutable }
+        let internal: HashSet<Fact> = facts
+            .into_iter()
+            .filter(|fact| !is_static(instance, &fact))
+            .cloned()
+            .collect();
+        Self { internal }
     }
 
     pub fn from_init(instance: &Instance) -> Self {
@@ -21,26 +23,26 @@ impl State {
 
     pub fn apply(&mut self, operator: &Operator) {
         for i in operator.eff_neg.iter() {
-            self.mutable.remove(i);
+            self.internal.remove(i);
         }
         for i in operator.eff_pos.iter() {
-            self.mutable.insert(*i);
+            self.internal.insert(*i);
         }
     }
 
     fn get(&self) -> &HashSet<Fact> {
-        &self.mutable
+        &self.internal
     }
 
     pub fn is_legal(&self, operator: &Operator) -> bool {
         let has_pos = operator
             .pre_pos
             .iter()
-            .all(|i| self.mutable.contains(i) || self.statics.contains(i));
+            .all(|i| self.internal.contains(i) || World::global().static_facts.contains(i));
         let has_neg = operator
             .pre_neg
             .iter()
-            .all(|i| !self.mutable.contains(i) && !self.statics.contains(i));
+            .all(|i| !self.internal.contains(i) && !World::global().static_facts.contains(i));
         has_pos && has_neg
     }
 
@@ -58,16 +60,17 @@ impl State {
 
     pub fn export_all(&self) -> String {
         let mut s: String = "".to_owned();
-        self.statics
+        World::global()
+            .static_facts
             .iter()
-            .chain(self.mutable.iter())
+            .chain(self.internal.iter())
             .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
         s
     }
 
     pub fn export_mutable(&self) -> String {
         let mut s: String = "".to_owned();
-        self.mutable
+        self.internal
             .iter()
             .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
         s
