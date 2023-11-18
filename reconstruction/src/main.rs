@@ -100,7 +100,7 @@ fn main() {
     status_print(Status::Init, "Parsing problem");
     let problem = parse_problem(&problem).unwrap();
     status_print(Status::Init, "Generating world");
-    let world = World::generate(&domain, &meta_domain, &problem);
+    let world = World::generate(domain, meta_domain, problem);
     let _ = WORLD.set(world);
     status_print(Status::Init, "Finding fast downward");
     let downward = Downward::new(&args.downward, &args.temp_dir);

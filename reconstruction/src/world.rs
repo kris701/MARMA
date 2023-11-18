@@ -27,7 +27,6 @@ pub struct World {
     pub predicates: Predicates,
     pub actions: Vec<Action>,
     pub meta_actions: Vec<Action>,
-    /// Initial facts
     pub init: Vec<Fact>,
     pub static_facts: HashSet<Fact>,
 }
@@ -40,25 +39,18 @@ impl World {
     }
 
     pub fn generate(
-        domain: &spingus::domain::Domain,
-        meta_domain: &spingus::domain::Domain,
-        problem: &spingus::problem::Problem,
+        domain: spingus::domain::Domain,
+        meta_domain: spingus::domain::Domain,
+        problem: spingus::problem::Problem,
     ) -> World {
-        let domain_name = domain.name.to_owned();
-        let types = translate_types(domain.types.to_owned());
-        let predicates =
-            translate_predicates(&types, &domain.actions, domain.predicates.to_owned());
-        let actions: Vec<Action> =
-            translate_actions(&types, &predicates, domain.actions.to_owned());
+        let domain_name = domain.name;
+        let types = translate_types(domain.types);
+        let predicates = translate_predicates(&types, &domain.actions, domain.predicates);
+        let actions: Vec<Action> = translate_actions(&types, &predicates, domain.actions);
         println!("action_count={}", actions.len());
-        let meta_actions: Vec<Action> =
-            translate_actions(&types, &predicates, meta_domain.actions.to_owned());
+        let meta_actions: Vec<Action> = translate_actions(&types, &predicates, meta_domain.actions);
         println!("meta_action_count={}", meta_actions.len());
-        let objects = translate_objects(
-            &types,
-            domain.constants.to_owned(),
-            problem.objects.to_owned(),
-        );
+        let objects = translate_objects(&types, domain.constants, problem.objects);
         let init: Vec<Fact> = problem
             .inits
             .iter()
