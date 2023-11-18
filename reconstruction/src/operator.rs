@@ -66,12 +66,13 @@ fn walk(permutation: &Vec<u16>, atoms: &Vec<Atom>) -> Option<(Vec<Fact>, Vec<Fac
     let mut pos: Vec<Fact> = Vec::new();
 
     for atom in atoms.iter() {
+        let predicate = atom.predicate;
         let arguments: Vec<u16> = atom
             .parameters
             .iter()
             .map(|p| permutation[*p as usize])
             .collect();
-        if atom.predicate == 0 {
+        if predicate == 0 {
             // Check equality atoms
             if !arguments.iter().all_equal() {
                 return None;
@@ -79,9 +80,18 @@ fn walk(permutation: &Vec<u16>, atoms: &Vec<Atom>) -> Option<(Vec<Fact>, Vec<Fac
             continue;
         }
         let fact = Fact::new(atom.predicate, arguments);
-        match atom.value {
-            true => pos.push(fact),
-            false => neg.push(fact),
+        match World::global().predicates.is_static(predicate) {
+            true => {
+                if atom.value != World::global().static_facts.contains(&fact) {
+                    return None;
+                }
+            }
+            false => {
+                match atom.value {
+                    true => pos.push(fact),
+                    false => neg.push(fact),
+                };
+            }
         };
     }
 

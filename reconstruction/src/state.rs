@@ -35,14 +35,8 @@ impl State {
     }
 
     pub fn is_legal(&self, operator: &Operator) -> bool {
-        let has_pos = operator
-            .pre_pos
-            .iter()
-            .all(|i| self.internal.contains(i) || World::global().static_facts.contains(i));
-        let has_neg = operator
-            .pre_neg
-            .iter()
-            .all(|i| !self.internal.contains(i) && !World::global().static_facts.contains(i));
+        let has_pos = operator.pre_pos.iter().all(|i| self.internal.contains(i));
+        let has_neg = operator.pre_neg.iter().all(|i| !self.internal.contains(i));
         has_pos && has_neg
     }
 
