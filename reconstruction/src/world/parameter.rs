@@ -15,8 +15,8 @@ impl Parameters {
         self.names.iter().position(|n| n == name).unwrap()
     }
 
-    pub fn indexes(&self, names: &Vec<String>) -> Vec<u16> {
-        names.iter().map(|n| self.index(n) as u16).collect()
+    pub fn indexes(&self, names: &Vec<String>) -> Vec<usize> {
+        names.iter().map(|n| self.index(n)).collect()
     }
 }
 

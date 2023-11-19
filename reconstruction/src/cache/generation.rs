@@ -19,8 +19,8 @@ pub enum CacheMethod {
     None,
 }
 
-fn find_used_meta_actions(meta_plan: &SASPlan) -> HashMap<u16, HashSet<Vec<u16>>> {
-    let mut used: HashMap<u16, HashSet<Vec<u16>>> = HashMap::new();
+fn find_used_meta_actions(meta_plan: &SASPlan) -> HashMap<usize, HashSet<Vec<usize>>> {
+    let mut used: HashMap<usize, HashSet<Vec<usize>>> = HashMap::new();
     for step in meta_plan
         .iter()
         .filter(|t| World::global().is_meta_action(&t.name))

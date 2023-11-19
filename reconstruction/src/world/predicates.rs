@@ -8,9 +8,9 @@ use super::{
 };
 
 pub struct Predicates {
-    index_map: HashMap<String, u16>,
-    static_predicates: HashSet<u16>,
-    parameters: HashMap<u16, Parameters>,
+    index_map: HashMap<String, usize>,
+    static_predicates: HashSet<usize>,
+    parameters: HashMap<usize, Parameters>,
 }
 
 impl Predicates {
@@ -18,28 +18,28 @@ impl Predicates {
         self.index_map.len()
     }
 
-    pub fn index(&self, name: &str) -> u16 {
+    pub fn index(&self, name: &str) -> usize {
         self.index_map[name]
     }
 
-    pub fn name(&self, index: u16) -> &String {
+    pub fn name(&self, index: usize) -> &String {
         self.index_map.iter().find(|(_, v)| **v == index).unwrap().0
     }
 
-    pub fn arity(&self, index: u16) -> usize {
+    pub fn arity(&self, index: usize) -> usize {
         self.parameters[&index].arity()
     }
 
-    pub fn is_static(&self, index: u16) -> bool {
+    pub fn is_static(&self, index: usize) -> bool {
         self.static_predicates.contains(&index)
     }
 }
 
 fn find_static_predicates(
     actions: &spingus::domain::action::Actions,
-    index_map: &HashMap<String, u16>,
-) -> HashSet<u16> {
-    let mut mutable_predicates: HashSet<u16> = HashSet::new();
+    index_map: &HashMap<String, usize>,
+) -> HashSet<usize> {
+    let mut mutable_predicates: HashSet<usize> = HashSet::new();
     let mut queue: Vec<&StringExpression> = actions.iter().map(|a| &a.effect).collect();
 
     while !queue.is_empty() {
@@ -66,12 +66,12 @@ pub(super) fn translate_predicates(
     actions: &spingus::domain::action::Actions,
     predicates: spingus::domain::predicate::Predicates,
 ) -> Predicates {
-    let index_map: HashMap<String, u16> = predicates
+    let index_map: HashMap<String, usize> = predicates
         .iter()
         .enumerate()
-        .map(|(i, p)| (p.name.to_owned(), i as u16 + 1))
+        .map(|(i, p)| (p.name.to_owned(), i + 1))
         .collect();
-    let parameters: HashMap<u16, Parameters> = predicates
+    let parameters: HashMap<usize, Parameters> = predicates
         .into_iter()
         .map(|p| {
             let index = index_map[&p.name];

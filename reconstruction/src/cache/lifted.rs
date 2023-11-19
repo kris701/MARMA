@@ -18,8 +18,8 @@ struct Replacement {
 
 fn generate_replacements(
     cache_data: &CacheData,
-    meta_index: &u16,
-    parameters: &Vec<u16>,
+    meta_index: &usize,
+    parameters: &Vec<usize>,
 ) -> Option<Vec<Replacement>> {
     let relevant_replacements = cache_data
         .iter()
@@ -55,13 +55,16 @@ fn generate_replacements(
 
 #[derive(Debug)]
 pub struct LiftedCache {
-    replacements: HashMap<(u16, Vec<u16>), Vec<Replacement>>,
+    replacements: HashMap<(usize, Vec<usize>), Vec<Replacement>>,
 }
 
 impl LiftedCache {
-    pub fn new(cache_data: CacheData, used_meta_actions: HashMap<u16, HashSet<Vec<u16>>>) -> Self {
+    pub fn new(
+        cache_data: CacheData,
+        used_meta_actions: HashMap<usize, HashSet<Vec<usize>>>,
+    ) -> Self {
         status_print(Status::Cache, "Init Lifted Cache");
-        let mut replacements: HashMap<(u16, Vec<u16>), Vec<Replacement>> = HashMap::new();
+        let mut replacements: HashMap<(usize, Vec<usize>), Vec<Replacement>> = HashMap::new();
 
         for (meta_action, permutations) in used_meta_actions.into_iter() {
             for permutation in permutations.into_iter() {
@@ -89,11 +92,8 @@ impl Cache for LiftedCache {
                 let mut eff_neg: HashSet<Fact> = HashSet::new();
                 let mut eff_pos: HashSet<Fact> = HashSet::new();
                 for atom in action.effect.iter() {
-                    let corresponding: Vec<u16> = atom
-                        .parameters
-                        .iter()
-                        .map(|p| permutation[*p as usize] as u16)
-                        .collect();
+                    let corresponding: Vec<usize> =
+                        atom.parameters.iter().map(|p| permutation[*p]).collect();
                     let fact = Fact::new(atom.predicate, corresponding);
                     match atom.value {
                         true => eff_pos.insert(fact),

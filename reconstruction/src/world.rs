@@ -62,7 +62,7 @@ impl World {
             .collect();
         let static_facts = init
             .iter()
-            .filter(|f| predicates.is_static(f.predicate()))
+            .filter(|f| predicates.is_static(f.predicate() as usize))
             .cloned()
             .collect();
         Self {
@@ -88,15 +88,15 @@ impl World {
         panic!("Undeclared action: {}", name);
     }
 
-    pub fn action_index(&self, name: &str) -> u16 {
-        self.actions.iter().position(|a| a.name == name).unwrap() as u16
+    pub fn action_index(&self, name: &str) -> usize {
+        self.actions.iter().position(|a| a.name == name).unwrap()
     }
 
-    pub fn meta_index(&self, name: &str) -> u16 {
+    pub fn meta_index(&self, name: &str) -> usize {
         self.meta_actions
             .iter()
             .position(|a| a.name == name)
-            .unwrap() as u16
+            .unwrap()
     }
 
     pub fn get_action(&self, name: &str) -> &Action {

@@ -10,7 +10,7 @@ use crate::{
     world::World,
 };
 
-pub type CacheData = HashMap<u16, Vec<(Action, SASPlan)>>;
+pub type CacheData = HashMap<usize, Vec<(Action, SASPlan)>>;
 
 pub fn read_cache(path: &PathBuf) -> CacheData {
     let meta_dirs = dir_dirs(path)

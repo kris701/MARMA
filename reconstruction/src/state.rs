@@ -20,13 +20,9 @@ impl State {
         State::new(&World::global().init)
     }
 
-    pub fn apply(&mut self, action: &Action, arguments: &Vec<u16>) {
+    pub fn apply(&mut self, action: &Action, arguments: &Vec<usize>) {
         for atom in action.effect.iter() {
-            let corresponding: Vec<u16> = atom
-                .parameters
-                .iter()
-                .map(|p| arguments[*p as usize])
-                .collect();
+            let corresponding: Vec<usize> = atom.parameters.iter().map(|p| arguments[*p]).collect();
             let fact = Fact::new(atom.predicate, corresponding);
             match atom.value {
                 true => self.internal.insert(fact),
@@ -39,7 +35,7 @@ impl State {
         &self.internal
     }
 
-    pub fn has(&self, predicate: u16, arguments: &Vec<u16>) -> bool {
+    pub fn has(&self, predicate: usize, arguments: &Vec<usize>) -> bool {
         self.internal
             .contains(&Fact::new(predicate, arguments.clone()))
     }

@@ -5,43 +5,40 @@ use spingus::domain::parameter::Parameter;
 use super::{types::Types, World};
 
 pub struct Objects {
-    objects: HashMap<String, u16>,
-    object_types: HashMap<u16, usize>,
+    objects: HashMap<String, usize>,
+    object_types: HashMap<usize, usize>,
 }
 
 impl Objects {
-    pub fn count(&self) -> u16 {
-        self.objects.len() as u16
+    pub fn count(&self) -> usize {
+        self.objects.len()
     }
 
-    pub fn index(&self, name: &str) -> u16 {
-        self.objects[name] as u16
+    pub fn index(&self, name: &str) -> usize {
+        self.objects[name]
     }
 
-    pub fn indexes(&self, names: &Vec<String>) -> Vec<u16> {
+    pub fn indexes(&self, names: &Vec<String>) -> Vec<usize> {
         names.iter().map(|i| self.index(i)).collect()
     }
 
-    pub fn name(&self, index: u16) -> &String {
+    pub fn name(&self, index: usize) -> &String {
         &self.objects.iter().find(|(_, i)| **i == index).unwrap().0
     }
 
-    pub fn names(&self, indexes: &Vec<u16>) -> Vec<&String> {
+    pub fn names(&self, indexes: &Vec<usize>) -> Vec<&String> {
         indexes.iter().map(|i| self.name(*i)).collect()
     }
 
     pub fn names_cloned(&self, indexes: &Vec<usize>) -> Vec<String> {
-        indexes
-            .iter()
-            .map(|i| self.name(*i as u16).to_owned())
-            .collect()
+        indexes.iter().map(|i| self.name(*i).to_owned()).collect()
     }
 
-    pub fn object_type(&self, index: u16) -> usize {
+    pub fn object_type(&self, index: usize) -> usize {
         self.object_types[&index]
     }
 
-    pub fn iterate_typed<'a>(&'a self) -> impl Iterator<Item = (u16, usize)> + 'a {
+    pub fn iterate_typed<'a>(&'a self) -> impl Iterator<Item = (usize, usize)> + 'a {
         self.objects.iter().map(|(_, v)| (*v, self.object_type(*v)))
     }
 
@@ -53,7 +50,7 @@ impl Objects {
         })
     }
 
-    pub fn iterate_with_type<'a>(&'a self, type_id: &'a usize) -> impl Iterator<Item = u16> + 'a {
+    pub fn iterate_with_type<'a>(&'a self, type_id: &'a usize) -> impl Iterator<Item = usize> + 'a {
         self.iterate_typed().filter_map(|(object_id, t)| {
             match World::global().types.is_of_type(t, *type_id) {
                 true => Some(object_id),
@@ -88,12 +85,12 @@ pub(super) fn translate_objects(
         ),
         None => {}
     };
-    let temp: Vec<((String, u16), (u16, usize))> = objects
+    let temp: Vec<((String, usize), (usize, usize))> = objects
         .iter()
         .enumerate()
         .map(|(i, o)| {
             let object_name = o.name.to_owned();
-            let object_index = i as u16 + 1;
+            let object_index = i + 1;
             let object_type = match &o.type_name {
                 Some(t) => t,
                 None => "object",
@@ -102,7 +99,7 @@ pub(super) fn translate_objects(
             ((object_name, object_index), (object_index, type_index))
         })
         .collect();
-    let (objects, object_types): (HashMap<String, u16>, HashMap<u16, usize>) =
+    let (objects, object_types): (HashMap<String, usize>, HashMap<usize, usize>) =
         temp.into_iter().unzip();
     println!("object_count={}", objects.len());
     Objects {

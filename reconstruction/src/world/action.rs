@@ -10,8 +10,8 @@ use super::{
 #[derive(Debug)]
 pub struct Atom {
     /// NOTE: predicate of 0 indicates equality
-    pub predicate: u16,
-    pub parameters: Vec<u16>,
+    pub predicate: usize,
+    pub parameters: Vec<usize>,
     pub value: bool,
 }
 

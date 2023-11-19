@@ -8,7 +8,7 @@ pub struct Fact {
 }
 
 impl Fact {
-    pub fn new(predicate: u16, parameters: Vec<u16>) -> Self {
+    pub fn new(predicate: usize, parameters: Vec<usize>) -> Self {
         debug_assert!(parameters.len() <= 3);
         let internal = predicate as u64
             + parameters
@@ -19,16 +19,16 @@ impl Fact {
         Self { internal }
     }
 
-    pub fn predicate(&self) -> u16 {
-        self.internal as u16
+    pub fn predicate(&self) -> usize {
+        self.internal as usize
     }
 
-    pub fn parameters(&self) -> Vec<u16> {
-        let mut parameters: Vec<u16> = Vec::new();
+    pub fn parameters(&self) -> Vec<usize> {
+        let mut parameters: Vec<usize> = Vec::new();
         let mut index = self.internal;
         index = index >> 16;
         while index != 0 {
-            parameters.push(index as u16);
+            parameters.push(index as usize);
             index = index >> 16;
         }
         parameters
