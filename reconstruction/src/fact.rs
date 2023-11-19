@@ -20,7 +20,7 @@ impl Fact {
     }
 
     pub fn predicate(&self) -> usize {
-        self.internal as usize
+        (self.internal as u16) as usize
     }
 
     pub fn parameters(&self) -> Vec<usize> {
@@ -28,7 +28,7 @@ impl Fact {
         let mut index = self.internal;
         index = index >> 16;
         while index != 0 {
-            parameters.push(index as usize);
+            parameters.push((index as u16) as usize);
             index = index >> 16;
         }
         parameters
