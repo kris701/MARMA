@@ -15,8 +15,7 @@ use crate::{
     },
 };
 use once_cell::sync::OnceCell;
-use spingus::domain::action::Actions;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use self::{action::Action, objects::Objects, predicates::Predicates, types::Types};
 
@@ -106,25 +105,4 @@ impl World {
             false => &self.actions[self.action_index(name) as usize],
         }
     }
-}
-
-fn extract_actions(actions: &Actions) -> HashMap<String, u16> {
-    actions
-        .iter()
-        .enumerate()
-        .map(|(i, a)| (a.name.to_owned(), i as u16))
-        .collect()
-}
-
-fn extract_meta_actions(
-    actions: &HashMap<String, u16>,
-    meta_actions: &Actions,
-) -> HashMap<String, u16> {
-    let mut index_map: HashMap<String, u16> = HashMap::new();
-    for (i, a) in meta_actions.iter().enumerate() {
-        if !actions.contains_key(&a.name) {
-            index_map.insert(a.name.to_owned(), i as u16);
-        }
-    }
-    index_map
 }
