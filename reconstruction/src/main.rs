@@ -22,6 +22,7 @@ use std::process::exit;
 use std::time::Instant;
 
 use crate::reconstruction::downward_wrapper::Downward;
+use crate::successor_genrator::get_permutation_count;
 use crate::tools::status_print;
 use crate::tools::val::check_val;
 use crate::world::{World, WORLD};
@@ -149,5 +150,6 @@ fn main() {
         let plan_export = export_sas(&plan);
         fs::write(path, plan_export).unwrap();
     }
+    println!("operator_count={}", get_permutation_count());
     exit(0)
 }

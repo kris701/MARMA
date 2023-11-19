@@ -1,11 +1,22 @@
-use std::collections::HashMap;
-
-use itertools::Itertools;
-
 use crate::{
     state::State,
     world::{action::Action, World},
 };
+use itertools::Itertools;
+use std::{
+    collections::HashMap,
+    sync::atomic::{AtomicUsize, Ordering},
+};
+
+static PERMUTATION_COUNT: AtomicUsize = AtomicUsize::new(0);
+
+fn increment_counter() {
+    PERMUTATION_COUNT.fetch_add(1, Ordering::SeqCst);
+}
+
+pub fn get_permutation_count() -> usize {
+    PERMUTATION_COUNT.load(Ordering::SeqCst)
+}
 
 /// Generates all legal permutations, with some parameters fixed, of an action in a given state
 pub fn get_applicable_with_fixed<'a>(
@@ -38,7 +49,10 @@ pub fn get_applicable_with_fixed<'a>(
     candidates
         .into_iter()
         .multi_cartesian_product()
-        .filter(|p| is_valid(action, state, p))
+        .filter(|p| {
+            increment_counter();
+            is_valid(action, state, p)
+        })
 }
 
 fn is_valid<'a>(action: &'a Action, state: &'a State, permutation: &Vec<usize>) -> bool {
