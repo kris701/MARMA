@@ -63,7 +63,7 @@ fn is_valid<'a>(action: &'a Action, permutation: &Vec<usize>) -> bool {
             return false;
         } else if World::global()
             .static_facts
-            .contains(&Fact::new(atom.predicate, atom.parameters.clone()))
+            .contains(&Fact::new(atom.predicate, corresponding))
             != atom.value
         {
             return false;

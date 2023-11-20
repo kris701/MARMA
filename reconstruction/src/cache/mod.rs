@@ -3,6 +3,8 @@ pub mod generation;
 mod hash;
 mod lifted;
 
+use std::collections::HashMap;
+
 use crate::{
     state::State,
     world::{action::Action, World},
@@ -40,4 +42,20 @@ pub(super) fn generate_plan(
         plan.push(Term { name, parameters })
     }
     plan
+}
+
+pub(super) fn find_fixed(arguments: &Vec<usize>, macro_action: &Action) -> HashMap<usize, usize> {
+    macro_action
+        .parameters
+        .names
+        .iter()
+        .enumerate()
+        .filter_map(|(i, name)| match name.to_uppercase().contains('O') {
+            true => None,
+            false => {
+                let parameter_index = name.parse::<usize>().unwrap();
+                Some((i, arguments[parameter_index]))
+            }
+        })
+        .collect()
 }

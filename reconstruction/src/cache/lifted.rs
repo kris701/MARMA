@@ -1,4 +1,4 @@
-use super::{cache_data::CacheData, generate_plan, Cache};
+use super::{cache_data::CacheData, find_fixed, generate_plan, Cache};
 use crate::{
     fact::Fact,
     state::State,
@@ -30,19 +30,7 @@ fn generate_replacements(
         .map(|(action, sas_plan)| {
             let action = Action::new(action.clone());
             let plan = sas_plan.to_owned();
-            let fixed = action
-                .parameters
-                .names
-                .iter()
-                .enumerate()
-                .filter_map(|(i, name)| match name.to_uppercase().contains('O') {
-                    true => None,
-                    false => {
-                        let parameter_index = name.parse::<usize>().unwrap();
-                        Some((i, parameters[parameter_index] as usize))
-                    }
-                })
-                .collect();
+            let fixed = find_fixed(parameters, &action);
             Replacement {
                 action,
                 plan,
