@@ -42,7 +42,7 @@ impl State {
         action
             .precondition
             .iter()
-            .filter(|a| World::global().predicates.is_static(a.predicate))
+            .filter(|a| !World::global().predicates.is_static(a.predicate))
             .all(|atom| {
                 let corresponding: Vec<usize> =
                     atom.parameters.iter().map(|p| arguments[*p]).collect();
