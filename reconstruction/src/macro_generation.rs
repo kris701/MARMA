@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use itertools::Itertools;
+use spingus::{sas_plan::SASPlan, term::Term};
 
 use crate::{
     fact::Fact,
@@ -12,7 +13,7 @@ use crate::{
 };
 
 // NOTE: Assumes that is a legal macro
-pub fn generate_macro(operators: Vec<(&Action, Vec<usize>)>) -> Action {
+pub fn generate_macro(operators: Vec<(&Action, Vec<usize>)>) -> (Action, SASPlan) {
     let name: String = operators
         .iter()
         .map(|(a, ..)| format!("_{}", a.name))
@@ -25,13 +26,26 @@ pub fn generate_macro(operators: Vec<(&Action, Vec<usize>)>) -> Action {
         let new_args = args.iter().filter(|a| !cul_args.contains(a)).collect_vec();
         cul_args.extend(new_args);
         combine_pre(&mut cul_pre, &cul_eff, &action.precondition, args);
-        combine_eff(&mut cul_eff, &action.precondition, args);
+        combine_eff(&mut cul_eff, &action.effect, args);
     }
 
-    let parameter_names = cul_args
+    let parameter_names: Vec<String> = cul_args
         .iter()
         .enumerate()
-        .map(|(i, _)| i.to_string())
+        .map(|(i, _)| format!("O{}", i))
+        .collect();
+    let replacement_plan = operators
+        .iter()
+        .map(|(action, args)| Term {
+            name: action.name.to_owned(),
+            parameters: args
+                .iter()
+                .map(|a| {
+                    parameter_names[cul_args.iter().position(|c_arg| a == c_arg).unwrap()]
+                        .to_owned()
+                })
+                .collect(),
+        })
         .collect();
     let parameter_types = cul_args
         .iter()
@@ -42,20 +56,10 @@ pub fn generate_macro(operators: Vec<(&Action, Vec<usize>)>) -> Action {
         types: parameter_types,
     };
 
-    let precondition = cul_pre
-        .into_iter()
-        .map(|(fact, value)| Atom {
-            predicate: fact.predicate(),
-            parameters: fact
-                .parameters()
-                .iter()
-                .map(|f_a| cul_args.iter().position(|a| f_a == a).unwrap())
-                .collect(),
-            value,
-        })
-        .collect();
     let effect = cul_eff
         .into_iter()
+        .filter(|(fact, value)| !(cul_pre.contains_key(fact) && cul_pre[fact] == *value))
+        .sorted()
         .map(|(fact, value)| Atom {
             predicate: fact.predicate(),
             parameters: fact
@@ -66,12 +70,29 @@ pub fn generate_macro(operators: Vec<(&Action, Vec<usize>)>) -> Action {
             value,
         })
         .collect();
-    Action {
-        name,
-        parameters,
-        precondition,
-        effect,
-    }
+    let precondition = cul_pre
+        .into_iter()
+        .sorted()
+        .map(|(fact, value)| Atom {
+            predicate: fact.predicate(),
+            parameters: fact
+                .parameters()
+                .iter()
+                .map(|f_a| cul_args.iter().position(|a| f_a == a).unwrap())
+                .collect(),
+            value,
+        })
+        .collect();
+
+    (
+        Action {
+            name,
+            parameters,
+            precondition,
+            effect,
+        },
+        replacement_plan,
+    )
 }
 
 fn combine_pre(

@@ -1,3 +1,5 @@
+use core::fmt;
+
 use spingus::domain::action::string_expression::StringExpression;
 
 use super::{
@@ -13,6 +15,21 @@ pub struct Atom {
     pub predicate: usize,
     pub parameters: Vec<usize>,
     pub value: bool,
+}
+
+impl fmt::Display for Atom {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}{} {:?}",
+            match self.value {
+                true => "",
+                false => "!",
+            },
+            World::global().predicates.name(self.predicate),
+            self.parameters
+        )
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -38,6 +55,22 @@ impl Action {
             precondition,
             effect,
         }
+    }
+}
+
+impl fmt::Display for Action {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "{}", self.name)?;
+        writeln!(f, "parameters: {:?}", self.parameters.names)?;
+        writeln!(f, "precondition:")?;
+        for atom in self.precondition.iter() {
+            writeln!(f, "\t{}", atom)?;
+        }
+        writeln!(f, "effect:")?;
+        for atom in self.effect.iter() {
+            writeln!(f, "\t{}", atom)?;
+        }
+        Ok(())
     }
 }
 

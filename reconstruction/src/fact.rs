@@ -2,7 +2,7 @@ use core::fmt;
 
 use crate::world::World;
 
-#[derive(Hash, PartialEq, Eq, Clone, Copy, Debug)]
+#[derive(Hash, PartialEq, Eq, Clone, Copy, Debug, PartialOrd, Ord)]
 pub struct Fact {
     internal: u64,
 }
