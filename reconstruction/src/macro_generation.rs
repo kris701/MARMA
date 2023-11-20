@@ -13,7 +13,10 @@ use crate::{
 };
 
 // NOTE: Assumes that is a legal macro
-pub fn generate_macro(operators: Vec<(&Action, Vec<usize>)>) -> (Action, SASPlan) {
+pub fn generate_macro(
+    meta_action: &Action,
+    operators: Vec<(&Action, Vec<usize>)>,
+) -> (Action, SASPlan) {
     let name: String = operators
         .iter()
         .map(|(a, ..)| format!("_{}", a.name))
@@ -29,34 +32,7 @@ pub fn generate_macro(operators: Vec<(&Action, Vec<usize>)>) -> (Action, SASPlan
         combine_eff(&mut cul_eff, &action.effect, args);
     }
 
-    let parameter_names: Vec<String> = cul_args
-        .iter()
-        .enumerate()
-        .map(|(i, _)| format!("O{}", i))
-        .collect();
-    let replacement_plan = operators
-        .iter()
-        .map(|(action, args)| Term {
-            name: action.name.to_owned(),
-            parameters: args
-                .iter()
-                .map(|a| {
-                    parameter_names[cul_args.iter().position(|c_arg| a == c_arg).unwrap()]
-                        .to_owned()
-                })
-                .collect(),
-        })
-        .collect();
-    let parameter_types = cul_args
-        .iter()
-        .map(|a| World::global().objects.object_type(*a))
-        .collect();
-    let parameters = Parameters {
-        names: parameter_names,
-        types: parameter_types,
-    };
-
-    let effect = cul_eff
+    let effect: Vec<Atom> = cul_eff
         .into_iter()
         .filter(|(fact, value)| !(cul_pre.contains_key(fact) && cul_pre[fact] == *value))
         .sorted()
@@ -83,6 +59,47 @@ pub fn generate_macro(operators: Vec<(&Action, Vec<usize>)>) -> (Action, SASPlan
             value,
         })
         .collect();
+    // macro parameter maps to meta parameter
+    let mut fixed_parameters: HashMap<usize, usize> = HashMap::new();
+    for atom in meta_action.effect.iter() {
+        let corresponding_atom = effect
+            .iter()
+            .find(|a| a.predicate == atom.predicate)
+            .unwrap();
+        for (i, parameter) in corresponding_atom.parameters.iter().enumerate() {
+            fixed_parameters.insert(*parameter, atom.parameters[i]);
+        }
+    }
+
+    let parameter_names: Vec<String> = cul_args
+        .iter()
+        .enumerate()
+        .map(|(i, _)| match fixed_parameters.contains_key(&i) {
+            true => format!("{}", fixed_parameters[&i]),
+            false => format!("O{}", i),
+        })
+        .collect();
+    let replacement_plan = operators
+        .iter()
+        .map(|(action, args)| Term {
+            name: action.name.to_owned(),
+            parameters: args
+                .iter()
+                .map(|a| {
+                    parameter_names[cul_args.iter().position(|c_arg| a == c_arg).unwrap()]
+                        .to_owned()
+                })
+                .collect(),
+        })
+        .collect();
+    let parameter_types = cul_args
+        .iter()
+        .map(|a| World::global().objects.object_type(*a))
+        .collect();
+    let parameters = Parameters {
+        names: parameter_names,
+        types: parameter_types,
+    };
 
     (
         Action {

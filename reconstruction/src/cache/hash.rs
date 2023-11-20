@@ -9,7 +9,6 @@ use std::collections::{HashMap, HashSet};
 
 #[derive(Debug)]
 struct Entry {
-    meta_index: usize,
     permutation: Vec<usize>,
     macro_index: usize,
 }
@@ -54,7 +53,6 @@ impl HashCache {
                             .collect();
                         effect_map.entry(effect).or_default().push(entry_index);
                         entries.push(Entry {
-                            meta_index,
                             permutation,
                             macro_index,
                         });
@@ -93,7 +91,7 @@ impl Cache for HashCache {
         None
     }
 
-    fn add_entry(&mut self, meta_term: &Term, replacement_plan: &SASPlan) {
-        todo!()
+    fn add_entry(&mut self, _meta_term: &Term, _replacement_plan: &SASPlan) {
+        eprintln!("iterative cache not implemented for hash cache")
     }
 }

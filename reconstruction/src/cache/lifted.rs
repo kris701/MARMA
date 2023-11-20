@@ -92,6 +92,7 @@ impl Cache for LiftedCache {
 
     fn add_entry(&mut self, meta_term: &Term, replacement_plan: &SASPlan) {
         let meta_index = World::global().meta_index(&meta_term.name);
+        let meta_action = World::global().get_action(&meta_term.name);
         let operators = replacement_plan
             .iter()
             .map(|s| {
@@ -101,7 +102,7 @@ impl Cache for LiftedCache {
                 )
             })
             .collect();
-        let (action, plan) = generate_macro(operators);
+        let (action, plan) = generate_macro(meta_action, operators);
         let replacement = Replacement { action, plan };
         self.replacements
             .entry(meta_index)
