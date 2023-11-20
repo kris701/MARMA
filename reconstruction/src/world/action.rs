@@ -7,7 +7,7 @@ use super::{
     World,
 };
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Atom {
     /// NOTE: predicate of 0 indicates equality
     pub predicate: usize,
@@ -15,19 +15,12 @@ pub struct Atom {
     pub value: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Action {
     pub name: String,
     pub parameters: Parameters,
     pub precondition: Vec<Atom>,
     pub effect: Vec<Atom>,
-
-    /// Atoms in precondition with an arity of 0
-    pub nullary: Vec<usize>,
-    /// Atoms in precondition with an arity of 1
-    pub unary: Vec<usize>,
-    /// Atoms in precondition with an arity higher than 1
-    pub nary: Vec<usize>,
 }
 
 impl Action {
@@ -39,38 +32,11 @@ impl Action {
             None => vec![],
         };
         let effect = translate_expression(&World::global().predicates, &parameters, action.effect);
-        let nullary = precondition
-            .iter()
-            .enumerate()
-            .filter_map(|(i, a)| match a.parameters.len() == 0 {
-                true => Some(i),
-                false => None,
-            })
-            .collect();
-        let unary = precondition
-            .iter()
-            .enumerate()
-            .filter_map(|(i, a)| match a.parameters.len() == 1 {
-                true => Some(i),
-                false => None,
-            })
-            .collect();
-        let nary = precondition
-            .iter()
-            .enumerate()
-            .filter_map(|(i, a)| match a.parameters.len() > 1 {
-                true => Some(i),
-                false => None,
-            })
-            .collect();
         Action {
             name,
             parameters,
             precondition,
             effect,
-            nullary,
-            unary,
-            nary,
         }
     }
 }
@@ -121,38 +87,11 @@ pub(super) fn translate_actions(
                 None => vec![],
             };
             let effect = translate_expression(predicates, &parameters, a.effect);
-            let nullary = precondition
-                .iter()
-                .enumerate()
-                .filter_map(|(i, a)| match a.parameters.len() == 0 {
-                    true => Some(i),
-                    false => None,
-                })
-                .collect();
-            let unary = precondition
-                .iter()
-                .enumerate()
-                .filter_map(|(i, a)| match a.parameters.len() == 1 {
-                    true => Some(i),
-                    false => None,
-                })
-                .collect();
-            let nary = precondition
-                .iter()
-                .enumerate()
-                .filter_map(|(i, a)| match a.parameters.len() > 1 {
-                    true => Some(i),
-                    false => None,
-                })
-                .collect();
             Action {
                 name,
                 parameters,
                 precondition,
                 effect,
-                nullary,
-                unary,
-                nary,
             }
         })
         .collect()

@@ -14,6 +14,7 @@ use spingus::{sas_plan::SASPlan, term::Term};
 pub trait Cache {
     /// Retrives replacement from cache from given init to goal
     fn get_replacement(&self, meta_term: &Term, init: &State, goal: &State) -> Option<SASPlan>;
+    fn add_entry(&mut self, meta_term: &Term, replacement_plan: &SASPlan);
 }
 
 pub(super) fn generate_plan(

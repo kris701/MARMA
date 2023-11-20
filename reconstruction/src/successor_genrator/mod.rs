@@ -41,8 +41,11 @@ pub fn get_applicable_with_fixed<'a>(
         })
         .collect();
 
-    for unary in action.unary.iter() {
-        let atom = &action.precondition[*unary];
+    for atom in action
+        .precondition
+        .iter()
+        .filter(|a| a.parameters.len() == 1)
+    {
         let parameter = atom.parameters[0];
         candidates[parameter].retain(|o| state.has(atom.predicate, &vec![*o]) == atom.value);
     }
@@ -57,11 +60,10 @@ pub fn get_applicable_with_fixed<'a>(
 }
 
 fn is_valid<'a>(action: &'a Action, state: &'a State, permutation: &Vec<usize>) -> bool {
-    for (_, atom) in action
+    for atom in action
         .precondition
         .iter()
-        .enumerate()
-        .filter(|(i, ..)| !action.unary.contains(i))
+        .filter(|a| a.parameters.len() != 1)
     {
         let corresponding: Vec<usize> = atom.parameters.iter().map(|p| permutation[*p]).collect();
         if atom.predicate == 0 && corresponding.iter().all_equal() != atom.value {

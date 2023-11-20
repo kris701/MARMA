@@ -92,4 +92,8 @@ impl Cache for HashCache {
         }
         None
     }
+
+    fn add_entry(&mut self, meta_term: &Term, replacement_plan: &SASPlan) {
+        todo!()
+    }
 }

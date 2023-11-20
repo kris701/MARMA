@@ -1,5 +1,6 @@
 mod cache;
 mod fact;
+mod macro_generation;
 mod reconstruction;
 mod state;
 mod successor_genrator;
@@ -118,14 +119,14 @@ fn main() {
             status_print(Status::Init, "Generating instance");
 
             let cache_begin = Instant::now();
-            let cache = generate_cache(&meta_plan, &args.cache, args.cache_method);
+            let mut cache = generate_cache(&meta_plan, &args.cache, args.cache_method);
             println!(
                 "cache_init_time={:.4?}",
                 cache_begin.elapsed().as_secs_f64()
             );
 
             status_print(Status::Reconstruction, "Finding meta solution downward");
-            let plan = reconstruct(&args.domain, &downward, &cache, meta_plan);
+            let plan = reconstruct(&args.domain, &downward, &mut cache, meta_plan);
             if let Some(val_path) = args.val {
                 status_print(Status::Validation, "Checking VAL");
                 if check_val(

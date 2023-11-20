@@ -1,6 +1,7 @@
 use super::{cache_data::CacheData, find_fixed, generate_plan, Cache};
 use crate::{
     fact::Fact,
+    macro_generation::generate_macro,
     state::State,
     successor_genrator::get_applicable_with_fixed,
     tools::{status_print, Status},
@@ -102,5 +103,29 @@ impl Cache for LiftedCache {
             }
         }
         None
+    }
+
+    fn add_entry(&mut self, meta_term: &Term, replacement_plan: &SASPlan) {
+        let meta_index = World::global().meta_index(&meta_term.name);
+        let arguments = World::global().objects.indexes(&meta_term.parameters);
+        let operators = replacement_plan
+            .iter()
+            .map(|s| {
+                (
+                    World::global().get_action(&s.name),
+                    World::global().objects.indexes(&s.parameters),
+                )
+            })
+            .collect();
+        let action = generate_macro(operators);
+        let replacement = Replacement {
+            action,
+            plan: replacement_plan.to_owned(),
+            fixed: HashMap::new(),
+        };
+        self.replacements
+            .entry((meta_index, arguments))
+            .or_default()
+            .push(replacement);
     }
 }
