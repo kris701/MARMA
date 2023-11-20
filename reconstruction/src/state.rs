@@ -68,7 +68,7 @@ impl State {
         for i in state.get().difference(self.get()) {
             diff.push((*i, true))
         }
-        diff.sort_by(|a, b| a.0.cmp(&b.0));
+        diff.sort();
         diff
     }
 

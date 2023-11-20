@@ -62,12 +62,11 @@ pub fn generate_macro(
     // macro parameter maps to meta parameter
     let mut fixed_parameters: HashMap<usize, usize> = HashMap::new();
     for atom in meta_action.effect.iter() {
-        let corresponding_atom = effect
-            .iter()
-            .find(|a| a.predicate == atom.predicate)
-            .unwrap();
-        for (i, parameter) in corresponding_atom.parameters.iter().enumerate() {
-            fixed_parameters.insert(*parameter, atom.parameters[i]);
+        let corresponding_atom = effect.iter().find(|a| a.predicate == atom.predicate);
+        if let Some(corresponding_atom) = corresponding_atom {
+            for (i, parameter) in corresponding_atom.parameters.iter().enumerate() {
+                fixed_parameters.insert(*parameter, atom.parameters[i]);
+            }
         }
     }
 

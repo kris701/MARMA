@@ -63,21 +63,17 @@ impl Cache for LiftedCache {
             let action = &replacement.action;
             let fixed = find_fixed(&meta_parameters, action);
             for permutation in get_applicable_with_fixed(&action, init, &fixed) {
-                let mut eff_neg: HashSet<Fact> = HashSet::new();
-                let mut eff_pos: HashSet<Fact> = HashSet::new();
+                let mut eff: Vec<(Fact, bool)> = Vec::new();
                 for atom in action.effect.iter() {
                     let corresponding: Vec<usize> =
                         atom.parameters.iter().map(|p| permutation[*p]).collect();
-                    let fact = Fact::new(atom.predicate, corresponding);
-                    match atom.value {
-                        true => eff_pos.insert(fact),
-                        false => eff_neg.insert(fact),
-                    };
+                    if atom.value != init.has(atom.predicate, &corresponding) {
+                        let fact = Fact::new(atom.predicate, corresponding);
+                        eff.push((fact, atom.value))
+                    }
                 }
-                if desired.iter().any(|(i, v)| match v {
-                    true => !eff_pos.contains(&i),
-                    false => !eff_neg.contains(&i),
-                }) {
+                eff.sort();
+                if eff != desired {
                     continue;
                 }
                 return Some(generate_plan(
