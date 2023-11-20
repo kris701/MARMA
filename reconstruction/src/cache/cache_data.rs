@@ -10,7 +10,7 @@ use crate::{
     world::World,
 };
 
-pub type CacheData = HashMap<u16, Vec<(Action, SASPlan)>>;
+pub type CacheData = HashMap<usize, Vec<(Action, SASPlan)>>;
 
 pub fn read_cache(path: &PathBuf) -> CacheData {
     let meta_dirs = dir_dirs(path)
@@ -27,7 +27,7 @@ pub fn read_cache(path: &PathBuf) -> CacheData {
         let replacements = read_meta_dir(&dir)
             .map_err(|e| panic!("Failed to read cache dir {:?}. Had error {:?}", dir, e))
             .unwrap();
-        cache_data.insert(World::global().get_meta_index(&name), replacements);
+        cache_data.insert(World::global().meta_index(&name), replacements);
     }
     cache_data
 }

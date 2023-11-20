@@ -1,9 +1,10 @@
-use super::{cache_data::CacheData, generate_plan, Cache};
+use super::{cache_data::CacheData, find_fixed, generate_plan, Cache};
 use crate::{
-    instance::{actions::Action, operator::generate_operators_by_candidates, Instance},
+    fact::Fact,
     state::State,
+    successor_genrator::get_applicable_with_fixed,
     tools::{status_print, Status},
-    world::World,
+    world::{action::Action, World},
 };
 use spingus::{sas_plan::SASPlan, term::Term};
 use std::collections::{HashMap, HashSet};
@@ -12,14 +13,13 @@ use std::collections::{HashMap, HashSet};
 struct Replacement {
     action: Action,
     plan: SASPlan,
-    candidates: Vec<Vec<u16>>,
+    fixed: HashMap<usize, usize>,
 }
 
 fn generate_replacements(
-    instance: &Instance,
     cache_data: &CacheData,
-    meta_index: &u16,
-    parameters: &Vec<u16>,
+    meta_index: &usize,
+    parameters: &Vec<usize>,
 ) -> Option<Vec<Replacement>> {
     let relevant_replacements = cache_data
         .iter()
@@ -28,25 +28,13 @@ fn generate_replacements(
     let replacements = relevant_replacements
         .iter()
         .map(|(action, sas_plan)| {
-            let action = instance.convert_action(action.clone());
+            let action = Action::new(action.clone());
             let plan = sas_plan.to_owned();
-            let candidates = action
-                .parameters
-                .parameter_names
-                .iter()
-                .zip(action.parameters.parameter_types.iter())
-                .map(|(name, type_id)| match name.to_uppercase().contains('O') {
-                    true => World::global().get_objects_with_type(*type_id),
-                    false => {
-                        let parameter_index = name.parse::<usize>().unwrap();
-                        vec![parameters[parameter_index]]
-                    }
-                })
-                .collect();
+            let fixed = find_fixed(parameters, &action);
             Replacement {
                 action,
                 plan,
-                candidates,
+                fixed,
             }
         })
         .collect();
@@ -55,22 +43,21 @@ fn generate_replacements(
 
 #[derive(Debug)]
 pub struct LiftedCache {
-    replacements: HashMap<(u16, Vec<u16>), Vec<Replacement>>,
+    replacements: HashMap<(usize, Vec<usize>), Vec<Replacement>>,
 }
 
 impl LiftedCache {
     pub fn new(
-        instance: &Instance,
         cache_data: CacheData,
-        used_meta_actions: HashMap<u16, HashSet<Vec<u16>>>,
+        used_meta_actions: HashMap<usize, HashSet<Vec<usize>>>,
     ) -> Self {
         status_print(Status::Cache, "Init Lifted Cache");
-        let mut replacements: HashMap<(u16, Vec<u16>), Vec<Replacement>> = HashMap::new();
+        let mut replacements: HashMap<(usize, Vec<usize>), Vec<Replacement>> = HashMap::new();
 
         for (meta_action, permutations) in used_meta_actions.into_iter() {
             for permutation in permutations.into_iter() {
                 let action_replacements =
-                    generate_replacements(instance, &cache_data, &meta_action, &permutation);
+                    generate_replacements(&cache_data, &meta_action, &permutation);
 
                 if let Some(action_replacements) = action_replacements {
                     replacements.insert((meta_action, permutation), action_replacements);
@@ -82,30 +69,32 @@ impl LiftedCache {
     }
 }
 impl Cache for LiftedCache {
-    fn get_replacement(
-        &self,
-        instance: &Instance,
-        meta_term: &Term,
-        init: &State,
-        goal: &State,
-    ) -> Option<SASPlan> {
+    fn get_replacement(&self, meta_term: &Term, init: &State, goal: &State) -> Option<SASPlan> {
         let desired = init.diff(goal);
-        let meta_index = World::global().get_meta_index(&meta_term.name);
-        let meta_parameters = World::global().get_object_indexes(&meta_term.parameters);
+        let meta_index = World::global().meta_index(&meta_term.name);
+        let meta_parameters = World::global().objects.indexes(&meta_term.parameters);
         let replacement_candidates = &self.replacements.get(&(meta_index, meta_parameters))?;
         for replacement in replacement_candidates.iter() {
             let action = &replacement.action;
-            for (operator, permutation) in
-                generate_operators_by_candidates(action, replacement.candidates.to_owned())
-            {
+            for permutation in get_applicable_with_fixed(&action, init, &replacement.fixed) {
+                let mut eff_neg: HashSet<Fact> = HashSet::new();
+                let mut eff_pos: HashSet<Fact> = HashSet::new();
+                for atom in action.effect.iter() {
+                    let corresponding: Vec<usize> =
+                        atom.parameters.iter().map(|p| permutation[*p]).collect();
+                    let fact = Fact::new(atom.predicate, corresponding);
+                    match atom.value {
+                        true => eff_pos.insert(fact),
+                        false => eff_neg.insert(fact),
+                    };
+                }
                 if desired.iter().any(|(i, v)| match v {
-                        true => !operator.eff_pos.contains(&i),
-                        false => !operator.eff_neg.contains(&i),
-                    } || !init.is_legal(&operator)) {
-                        continue;
-                    }
+                    true => !eff_pos.contains(&i),
+                    false => !eff_neg.contains(&i),
+                }) {
+                    continue;
+                }
                 return Some(generate_plan(
-                    instance,
                     &replacement.action,
                     &replacement.plan,
                     &permutation,

@@ -1,8 +1,8 @@
 mod cache;
 mod fact;
-mod instance;
 mod reconstruction;
 mod state;
+mod successor_genrator;
 mod tools;
 mod world;
 
@@ -21,8 +21,8 @@ use std::path::PathBuf;
 use std::process::exit;
 use std::time::Instant;
 
-use crate::instance::Instance;
 use crate::reconstruction::downward_wrapper::Downward;
+use crate::successor_genrator::get_permutation_count;
 use crate::tools::status_print;
 use crate::tools::val::check_val;
 use crate::world::{World, WORLD};
@@ -101,7 +101,7 @@ fn main() {
     status_print(Status::Init, "Parsing problem");
     let problem = parse_problem(&problem).unwrap();
     status_print(Status::Init, "Generating world");
-    let world = World::generate(&domain, &meta_domain, &problem);
+    let world = World::generate(domain, meta_domain, problem);
     let _ = WORLD.set(world);
     status_print(Status::Init, "Finding fast downward");
     let downward = Downward::new(&args.downward, &args.temp_dir);
@@ -116,15 +116,16 @@ fn main() {
     let plan = match contains_meta(&meta_plan) {
         true => {
             status_print(Status::Init, "Generating instance");
-            let instance = Instance::new(domain, meta_domain.to_owned());
+
             let cache_begin = Instant::now();
-            let cache = generate_cache(&instance, &meta_plan, &args.cache, args.cache_method);
+            let cache = generate_cache(&meta_plan, &args.cache, args.cache_method);
             println!(
-                "cache_init_time={:.2?}",
+                "cache_init_time={:.4?}",
                 cache_begin.elapsed().as_secs_f64()
             );
+
             status_print(Status::Reconstruction, "Finding meta solution downward");
-            let plan = reconstruct(&instance, &args.domain, &downward, &cache, meta_plan);
+            let plan = reconstruct(&args.domain, &downward, &cache, meta_plan);
             if let Some(val_path) = args.val {
                 status_print(Status::Validation, "Checking VAL");
                 if check_val(
@@ -149,5 +150,6 @@ fn main() {
         let plan_export = export_sas(&plan);
         fs::write(path, plan_export).unwrap();
     }
+    println!("operator_count={}", get_permutation_count());
     exit(0)
 }

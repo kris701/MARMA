@@ -1,41 +1,15 @@
-use spingus::sas_plan::SASPlan;
-use std::{fs, path::PathBuf, time::Instant};
-
+use super::downward_wrapper::Downward;
 use crate::{
     cache::Cache,
-    instance::{
-        operator::{generate_operator_string, Operator},
-        Instance,
-    },
     reconstruction::{problem_writing::write_problem, stiching::stich},
     state::State,
     tools::{random_file_name, status_print, Status},
+    world::World,
 };
-
-use super::downward_wrapper::Downward;
-
-fn generate_operators(
-    instance: &Instance,
-    _downward: &Downward,
-    plan: &SASPlan,
-) -> (Vec<usize>, Vec<Operator>) {
-    let mut meta_actions: Vec<usize> = Vec::new();
-    let mut operators: Vec<Operator> = Vec::new();
-    for (i, step) in plan.iter().enumerate() {
-        if step.name.contains('$') {
-            meta_actions.push(i);
-        }
-        operators.push(generate_operator_string(
-            instance,
-            &step.name,
-            &step.parameters,
-        ));
-    }
-    (meta_actions, operators)
-}
+use spingus::sas_plan::SASPlan;
+use std::{fs, path::PathBuf, time::Instant};
 
 pub fn reconstruct(
-    instance: &Instance,
     domain_path: &PathBuf,
     downward: &Downward,
     cache: &Option<Box<dyn Cache>>,
@@ -43,31 +17,32 @@ pub fn reconstruct(
 ) -> SASPlan {
     let mut cache_time: f64 = 0.0;
     let mut fd_time: f64 = 0.0;
-    let mut replacements: Vec<SASPlan> = Vec::new();
-    let mut found_in_cache: Vec<usize> = Vec::new();
-    let mut state = State::from_init(instance);
-    let (meta_actions, operators) = generate_operators(&instance, downward, &plan);
+    let mut replacements: Vec<(usize, SASPlan)> = Vec::new();
+    let mut found_in_cache: usize = 0;
+    let mut state = State::from_init();
 
     status_print(Status::Reconstruction, "Generating replacements");
-    for (i, operator) in operators.iter().enumerate() {
-        if !meta_actions.contains(&i) {
-            state.apply(operator);
+    for (i, step) in plan.iter().enumerate() {
+        let action = World::global().get_action(&step.name);
+        let arguments = World::global().objects.indexes(&step.parameters);
+        if !World::global().is_meta_action(&step.name) {
+            state.apply(action, &arguments);
             continue;
         }
         let init = state.clone();
-        state.apply(operator);
+        state.apply(action, &arguments);
         if let Some(cache) = cache {
             let cache_lookup_begin = Instant::now();
-            let replacement = cache.get_replacement(instance, &plan[i], &init, &state);
+            let replacement = cache.get_replacement(&plan[i], &init, &state);
             cache_time += cache_lookup_begin.elapsed().as_secs_f64();
             if let Some(replacement) = replacement {
-                replacements.push(replacement);
-                found_in_cache.push(i);
+                replacements.push((i, replacement));
+                found_in_cache += 1;
                 continue;
             }
         }
         let problem_file = PathBuf::from(random_file_name(&downward.temp_dir));
-        debug_assert_ne!(init, state);
+        assert_ne!(init, state);
         write_problem(&init, &state, &problem_file);
         let fd_plan_time = Instant::now();
         let plan = downward.solve(domain_path, &problem_file);
@@ -75,7 +50,7 @@ pub fn reconstruct(
         if let Ok(plan) = plan {
             debug_assert!(!plan.is_empty());
             let _ = fs::remove_file(&problem_file);
-            replacements.push(plan);
+            replacements.push((i, plan));
         } else {
             panic!(
                 "Had error trying to replace meta action at index {}. Error: {}",
@@ -84,8 +59,8 @@ pub fn reconstruct(
             )
         }
     }
-    println!("found_in_cache={}", found_in_cache.len());
-    println!("cache_lookup_time={}", cache_time);
-    println!("planner_time={}", fd_time);
-    stich(&plan, meta_actions.into_iter().zip(replacements).collect())
+    println!("found_in_cache={}", found_in_cache);
+    println!("cache_lookup_time={:.4?}", cache_time);
+    println!("planner_time={:.4?}", fd_time);
+    stich(&plan, replacements)
 }

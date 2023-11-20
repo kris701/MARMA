@@ -1,51 +1,63 @@
 use std::collections::HashSet;
 
+use itertools::Itertools;
+
 use crate::{
     fact::Fact,
-    instance::{operator::Operator, Instance},
-    world::World,
+    world::{action::Action, World},
 };
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
-    statics: HashSet<Fact>,
-    mutable: HashSet<Fact>,
+    internal: HashSet<Fact>,
 }
 
 impl State {
-    pub fn new(instance: &Instance, facts: &Vec<Fact>) -> Self {
-        let (statics, mutable): (HashSet<Fact>, HashSet<Fact>) =
-            facts.iter().partition(|fact| is_static(instance, &fact));
-        Self { statics, mutable }
+    pub fn new(facts: &Vec<Fact>) -> Self {
+        let internal: HashSet<Fact> = facts.iter().cloned().collect();
+        Self { internal }
     }
 
-    pub fn from_init(instance: &Instance) -> Self {
-        State::new(instance, World::global().init())
+    pub fn from_init() -> Self {
+        State::new(&World::global().init)
     }
 
-    pub fn apply(&mut self, operator: &Operator) {
-        for i in operator.eff_neg.iter() {
-            self.mutable.remove(i);
-        }
-        for i in operator.eff_pos.iter() {
-            self.mutable.insert(*i);
+    pub fn apply(&mut self, action: &Action, arguments: &Vec<usize>) {
+        for atom in action.effect.iter() {
+            let corresponding: Vec<usize> = atom.parameters.iter().map(|p| arguments[*p]).collect();
+            let fact = Fact::new(atom.predicate, corresponding);
+            match atom.value {
+                true => self.internal.insert(fact),
+                false => self.internal.remove(&fact),
+            };
         }
     }
 
     fn get(&self) -> &HashSet<Fact> {
-        &self.mutable
+        &self.internal
     }
 
-    pub fn is_legal(&self, operator: &Operator) -> bool {
-        let has_pos = operator
-            .pre_pos
+    /// NOTE: checks only non-static atoms
+    pub fn is_legal(&self, action: &Action, arguments: &Vec<usize>) -> bool {
+        action
+            .precondition
             .iter()
-            .all(|i| self.mutable.contains(i) || self.statics.contains(i));
-        let has_neg = operator
-            .pre_neg
-            .iter()
-            .all(|i| !self.mutable.contains(i) && !self.statics.contains(i));
-        has_pos && has_neg
+            .filter(|a| World::global().predicates.is_static(a.predicate))
+            .all(|atom| {
+                let corresponding: Vec<usize> =
+                    atom.parameters.iter().map(|p| arguments[*p]).collect();
+                if atom.predicate == 0 && corresponding.iter().all_equal() != atom.value {
+                    return false;
+                } else if self.has(atom.predicate, &corresponding) != atom.value {
+                    return false;
+                }
+                true
+            })
+    }
+
+    pub fn has(&self, predicate: usize, arguments: &Vec<usize>) -> bool {
+        self.internal
+            .contains(&Fact::new(predicate, arguments.clone()))
     }
 
     pub fn diff(&self, state: &State) -> Vec<(Fact, bool)> {
@@ -62,27 +74,19 @@ impl State {
 
     pub fn export_all(&self) -> String {
         let mut s: String = "".to_owned();
-        self.statics
+        World::global()
+            .static_facts
             .iter()
-            .chain(self.mutable.iter())
+            .chain(self.internal.iter())
             .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
         s
     }
 
     pub fn export_mutable(&self) -> String {
         let mut s: String = "".to_owned();
-        self.mutable
+        self.internal
             .iter()
             .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
         s
     }
-}
-
-fn is_static(instance: &Instance, fact: &Fact) -> bool {
-    let predicate = fact.predicate();
-    instance
-        .actions
-        .actions
-        .iter()
-        .all(|a| !a.effect.literals.iter().any(|l| l.predicate == predicate))
 }
