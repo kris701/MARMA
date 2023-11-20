@@ -1,5 +1,6 @@
 mod cache_data;
 pub mod generation;
+mod hash;
 mod lifted;
 
 use crate::{

@@ -120,7 +120,7 @@ fn main() {
             let cache_begin = Instant::now();
             let cache = generate_cache(&meta_plan, &args.cache, args.cache_method);
             println!(
-                "cache_init_time={:.2?}",
+                "cache_init_time={:.4?}",
                 cache_begin.elapsed().as_secs_f64()
             );
 

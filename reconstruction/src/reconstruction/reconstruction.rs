@@ -1,6 +1,4 @@
-use spingus::sas_plan::SASPlan;
-use std::{fs, path::PathBuf, time::Instant};
-
+use super::downward_wrapper::Downward;
 use crate::{
     cache::Cache,
     reconstruction::{problem_writing::write_problem, stiching::stich},
@@ -8,8 +6,8 @@ use crate::{
     tools::{random_file_name, status_print, Status},
     world::World,
 };
-
-use super::downward_wrapper::Downward;
+use spingus::sas_plan::SASPlan;
+use std::{fs, path::PathBuf, time::Instant};
 
 pub fn reconstruct(
     domain_path: &PathBuf,
@@ -62,7 +60,7 @@ pub fn reconstruct(
         }
     }
     println!("found_in_cache={}", found_in_cache);
-    println!("cache_lookup_time={:.2?}", cache_time);
-    println!("planner_time={:.2?}", fd_time);
+    println!("cache_lookup_time={:.4?}", cache_time);
+    println!("planner_time={:.4?}", fd_time);
     stich(&plan, replacements)
 }
