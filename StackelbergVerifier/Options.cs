@@ -14,5 +14,7 @@ namespace StackelbergVerifier
         public bool IsEasyProblem { get; set; } = false;
         [Option("reachability-check", Required = false, HelpText = "Perform reachability check before stackelberg planning?", Default = false)]
         public bool ReachabilityCheck { get; set; } = false;
+        [Option("time-limit", Required = false, HelpText = "Time limit (in minutes) for the stackelberg planner (0 is no limit)", Default = 0)]
+        public int TimeLimit { get; set; } = 0;
     }
 }

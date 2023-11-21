@@ -54,16 +54,10 @@ namespace StacklebergVerifier
 
             ConsoleHelper.WriteLineColor("Executing Stackelberg Planner");
             ConsoleHelper.WriteLineColor("(Note, this may take a while)");
-            var process = ExecutePlanner(opts);
-            while (!process.HasExited)
-            {
-                ConsoleHelper.WriteColor(".");
-                Thread.Sleep(1000);
-            }
-            Console.WriteLine();
+            var exitCode = ExecutePlanner(opts);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
-            if (process.ExitCode != 0)
+            if (exitCode != 0)
             {
                 _returnCode = 1;
                 ConsoleHelper.WriteLineColor("== Frontier is not valid ==", ConsoleColor.Red);
@@ -97,10 +91,12 @@ namespace StacklebergVerifier
             return false;
         }
 
-        private static Process ExecutePlanner(Options opts)
+        private static int ExecutePlanner(Options opts)
         {
             StringBuilder sb = new StringBuilder("");
             sb.Append($"{_stackelbergPath} ");
+            if (opts.TimeLimit != 0)
+                sb.Append($"--overall-time-limit {opts.TimeLimit}m");
             sb.Append($"\"{opts.DomainFilePath}\" ");
             sb.Append($"\"{opts.ProblemFilePath}\" ");
             if (opts.IsEasyProblem)
@@ -123,7 +119,8 @@ namespace StacklebergVerifier
             };
 
             process.Start();
-            return process;
+            process.WaitForExit();
+            return process.ExitCode;
         }
 
     }
