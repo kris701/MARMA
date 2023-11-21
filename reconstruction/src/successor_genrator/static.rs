@@ -28,11 +28,7 @@ pub fn generate_statically_with_fixed<'a>(
         })
         .collect();
 
-    for atom in action
-        .precondition
-        .iter()
-        .filter(|a| a.parameters.len() == 1)
-    {
+    for atom in action.precondition.iter().filter(|a| a.is_unary()) {
         let predicate = atom.predicate;
         if !World::global().predicates.is_static(predicate) {
             continue;
@@ -57,10 +53,10 @@ fn is_valid<'a>(action: &'a Action, permutation: &Vec<usize>) -> bool {
     for atom in action
         .precondition
         .iter()
-        .filter(|a| a.parameters.len() != 1)
+        .filter(|a| !a.is_unary())
         .filter(|a| World::global().predicates.is_static(a.predicate))
     {
-        let corresponding: Vec<usize> = atom.parameters.iter().map(|p| permutation[*p]).collect();
+        let corresponding: Vec<usize> = atom.map_args(permutation);
         if atom.predicate == 0 && corresponding.iter().all_equal() != atom.value {
             return false;
         } else if World::global()

@@ -36,16 +36,12 @@ pub fn get_applicable_with_fixed<'a>(
             None => World::global()
                 .objects
                 .iterate_with_type(t)
-                .map(|v| v as usize)
+                .map(|v| v)
                 .collect(),
         })
         .collect();
 
-    for atom in action
-        .precondition
-        .iter()
-        .filter(|a| a.parameters.len() == 1)
-    {
+    for atom in action.precondition.iter().filter(|a| a.is_unary()) {
         let parameter = atom.parameters[0];
         candidates[parameter].retain(|o| state.has(atom.predicate, &vec![*o]) == atom.value);
     }
@@ -60,12 +56,8 @@ pub fn get_applicable_with_fixed<'a>(
 }
 
 fn is_valid<'a>(action: &'a Action, state: &'a State, permutation: &Vec<usize>) -> bool {
-    for atom in action
-        .precondition
-        .iter()
-        .filter(|a| a.parameters.len() != 1)
-    {
-        let corresponding: Vec<usize> = atom.parameters.iter().map(|p| permutation[*p]).collect();
+    for atom in action.precondition.iter().filter(|a| !a.is_unary()) {
+        let corresponding: Vec<usize> = atom.map_args(permutation);
         if atom.predicate == 0 && corresponding.iter().all_equal() != atom.value {
             return false;
         } else if state.has(atom.predicate, &corresponding) != atom.value {

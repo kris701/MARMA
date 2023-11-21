@@ -17,18 +17,21 @@ pub struct Atom {
     pub value: bool,
 }
 
-impl fmt::Display for Atom {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}{} {:?}",
-            match self.value {
-                true => "",
-                false => "!",
-            },
-            World::global().predicates.name(self.predicate),
-            self.parameters
-        )
+impl Atom {
+    pub fn is_nullary(&self) -> bool {
+        self.parameters.is_empty()
+    }
+
+    pub fn is_unary(&self) -> bool {
+        self.parameters.len() == 1
+    }
+
+    pub fn is_nary(&self) -> bool {
+        self.parameters.len() >= 2
+    }
+
+    pub fn map_args(&self, args: &Vec<usize>) -> Vec<usize> {
+        self.parameters.iter().map(|p| args[*p]).collect()
     }
 }
 
@@ -64,11 +67,11 @@ impl fmt::Display for Action {
         writeln!(f, "parameters: {:?}", self.parameters.names)?;
         writeln!(f, "precondition:")?;
         for atom in self.precondition.iter() {
-            writeln!(f, "\t{}", atom)?;
+            writeln!(f, "\t{:?}", atom)?;
         }
         writeln!(f, "effect:")?;
         for atom in self.effect.iter() {
-            writeln!(f, "\t{}", atom)?;
+            writeln!(f, "\t{:?}", atom)?;
         }
         Ok(())
     }
