@@ -12,8 +12,9 @@ use std::{fs, path::PathBuf, time::Instant};
 pub fn reconstruct(
     domain_path: &PathBuf,
     downward: &Downward,
-    cache: &Option<Box<dyn Cache>>,
+    cache: &mut Option<Box<dyn Cache>>,
     plan: SASPlan,
+    iterative_cache: bool,
 ) -> SASPlan {
     let mut cache_time: f64 = 0.0;
     let mut fd_time: f64 = 0.0;
@@ -50,6 +51,11 @@ pub fn reconstruct(
         if let Ok(plan) = plan {
             debug_assert!(!plan.is_empty());
             let _ = fs::remove_file(&problem_file);
+            if let Some(cache) = cache {
+                if iterative_cache {
+                    cache.add_entry(step, &plan);
+                }
+            }
             replacements.push((i, plan));
         } else {
             panic!(

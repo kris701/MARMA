@@ -1,6 +1,6 @@
 use super::types::Types;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Parameters {
     pub names: Vec<String>,
     pub types: Vec<usize>,

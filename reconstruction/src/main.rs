@@ -1,5 +1,6 @@
 mod cache;
 mod fact;
+mod macro_generation;
 mod reconstruction;
 mod state;
 mod successor_genrator;
@@ -56,8 +57,11 @@ pub struct Args {
     #[arg(short = 'c')]
     cache: Option<PathBuf>,
     /// Type of caching
-    #[arg(long, default_value = "hash")]
+    #[arg(long, default_value = "lifted")]
     cache_method: CacheMethod,
+    /// If given, adds entries found by planner to cache
+    #[arg(short, long)]
+    iterative_cache: bool,
     /// Path to val
     /// If given checks reconstructed plan with VAL
     #[arg(short, long)]
@@ -87,6 +91,7 @@ fn main() {
     init_time();
 
     let args = Args::parse();
+    println!("iterative_cache={}", args.iterative_cache);
 
     status_print(Status::Init, "Reading meta domain");
     let meta_domain = fs::read_to_string(&args.meta_domain).unwrap();
@@ -118,14 +123,25 @@ fn main() {
             status_print(Status::Init, "Generating instance");
 
             let cache_begin = Instant::now();
-            let cache = generate_cache(&meta_plan, &args.cache, args.cache_method);
+            let mut cache = generate_cache(
+                &meta_plan,
+                &args.cache,
+                args.cache_method,
+                args.iterative_cache,
+            );
             println!(
                 "cache_init_time={:.4?}",
                 cache_begin.elapsed().as_secs_f64()
             );
 
             status_print(Status::Reconstruction, "Finding meta solution downward");
-            let plan = reconstruct(&args.domain, &downward, &cache, meta_plan);
+            let plan = reconstruct(
+                &args.domain,
+                &downward,
+                &mut cache,
+                meta_plan,
+                args.iterative_cache,
+            );
             if let Some(val_path) = args.val {
                 status_print(Status::Validation, "Checking VAL");
                 if check_val(

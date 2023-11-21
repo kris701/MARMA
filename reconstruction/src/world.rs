@@ -3,7 +3,7 @@
 
 pub mod action;
 mod objects;
-mod parameter;
+pub mod parameter;
 mod predicates;
 mod types;
 

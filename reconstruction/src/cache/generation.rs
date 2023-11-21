@@ -37,6 +37,7 @@ pub fn generate_cache(
     meta_plan: &SASPlan,
     cache_path: &Option<PathBuf>,
     cache_type: CacheMethod,
+    iterative_cache: bool,
 ) -> Option<Box<dyn Cache>> {
     if let Some(path) = cache_path {
         status_print(Status::Cache, "Reading cache");
@@ -47,7 +48,17 @@ pub fn generate_cache(
             CacheMethod::Hash => Some(Box::new(HashCache::new(data, used_meta_actions))),
             CacheMethod::None => None,
         }
+    } else if iterative_cache {
+        let used_meta_actions = find_used_meta_actions(meta_plan);
+        match cache_type {
+            CacheMethod::Lifted => Some(Box::new(LiftedCache::new(
+                HashMap::new(),
+                used_meta_actions,
+            ))),
+            CacheMethod::Hash => Some(Box::new(HashCache::new(HashMap::new(), used_meta_actions))),
+            CacheMethod::None => None,
+        }
     } else {
-        return None;
+        None
     }
 }

@@ -42,7 +42,7 @@ impl State {
         action
             .precondition
             .iter()
-            .filter(|a| World::global().predicates.is_static(a.predicate))
+            .filter(|a| !World::global().predicates.is_static(a.predicate))
             .all(|atom| {
                 let corresponding: Vec<usize> =
                     atom.parameters.iter().map(|p| arguments[*p]).collect();
@@ -68,7 +68,7 @@ impl State {
         for i in state.get().difference(self.get()) {
             diff.push((*i, true))
         }
-        diff.sort_by(|a, b| a.0.cmp(&b.0));
+        diff.sort();
         diff
     }
 
