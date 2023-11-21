@@ -13,7 +13,7 @@ source("clamper.R")
 args = commandArgs(trailingOnly=TRUE)
 #args[1] <- "results.csv"
 #args[2] <- "meta_no_cache"
-#args[3] <- "meta_hashed"
+#args[3] <- "meta_lifted"
 if (length(args) != 3) {
   stop("3 arguments must be supplied! The source data file, and one for each target reconstruction type", call.=FALSE)
 }
@@ -31,12 +31,17 @@ data <- read.csv(
 		'numeric','numeric',
 		'numeric','numeric',
 		'numeric','numeric',
-		'numeric','numeric',
-		'numeric','numeric',
-		'numeric','numeric'
+		'numeric', 'character', 
+		'numeric', 'numeric',
+		'numeric', 'numeric',
+		'numeric', 'numeric'
 	)
 )
 data <- rename_data(data)
+if (nrow(data[data$name == AName,]) == 0)
+	stop(paste("Column name '", AName, "' not found in dataset!"), call.=FALSE)
+if (nrow(data[data$name == BName,]) == 0)
+	stop(paste("Column name '", BName, "' not found in dataset!"), call.=FALSE)
 
 data <- max_unsolved(data, "total_time")
 data <- max_unsolved(data, "search_time")
@@ -45,6 +50,10 @@ data <- max_unsolved(data, "reconstruction_time")
 # Split data
 AData = data[data$name == AName,]
 BData = data[data$name == BName,]
+if (nrow(AData[AData$solved == 'true',]) == 0)
+	stop(paste("Method '", AName, "' have no solved instances!"), call.=FALSE)
+if (nrow(BData[BData$solved == 'true',]) == 0)
+	stop(paste("Method '", BName, "' have no solved instances!"), call.=FALSE)
 
 combined <- merge(AData, BData, by = c("domain", "problem"), suffixes=c(".A", ".B"))
 combined <- combined %>% select(-contains('name.A'))
