@@ -2,18 +2,23 @@
 using PDDLSharp.CodeGenerators.PDDL;
 using PDDLSharp.ErrorListeners;
 using PDDLSharp.Models.FastDownward.Plans;
-using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
 using PDDLSharp.Models.PDDL.Problem;
-using PDDLSharp.Parsers;
+using PDDLSharp.Models.PDDL;
 using PDDLSharp.Parsers.FastDownward.Plans;
 using PDDLSharp.Parsers.PDDL;
+using PDDLSharp.Parsers;
 using PDDLSharp.Toolkit.MacroGenerators;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Tools;
 
-namespace MetaActions.Train.Trainers
+namespace MetaActions.Train.MetaActionStrategies
 {
-    public class PDDLSharpTrainer : BaseTrainer
+    public class PDDLSharpMacros : BaseCancelable, IMetaActionStrategy
     {
         internal string _tempMetaActionPath = "metaActions";
         internal string _tempMacroPath = "macros";
@@ -21,11 +26,11 @@ namespace MetaActions.Train.Trainers
 
         internal string _macroCachePath = "cache/macros";
 
-        public PDDLSharpTrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls) : base(domainName, domain, trainingProblems, testingProblems, timeLimit, tempPath, outPath, usefuls)
+        public PDDLSharpMacros(string name, int runID, string tempPath, CancellationTokenSource token) : base(name, runID, token)
         {
-            _tempMacroPath = Path.Combine(TempPath, _tempMacroPath);
-            _tempMacroGeneratorPath = Path.Combine(TempPath, _tempMacroGeneratorPath);
-            _tempMetaActionPath = Path.Combine(TempPath, _tempMetaActionPath);
+            _tempMacroPath = Path.Combine(tempPath, _tempMacroPath);
+            _tempMacroGeneratorPath = Path.Combine(tempPath, _tempMacroGeneratorPath);
+            _tempMetaActionPath = Path.Combine(tempPath, _tempMetaActionPath);
 
             _macroCachePath = PathHelper.RootPath(_macroCachePath);
 
@@ -34,9 +39,9 @@ namespace MetaActions.Train.Trainers
             PathHelper.RecratePath(_tempMacroGeneratorPath);
         }
 
-        public override List<FileInfo> GetMetaActions()
+        public List<FileInfo> GetMetaActions(FileInfo domain, List<FileInfo> trainingProblems)
         {
-            var allMacros = GetPDDLSharpMacros(Domain, TrainingProblems, 10);
+            var allMacros = GetPDDLSharpMacros(domain, trainingProblems, 10);
             if (allMacros.Count == 0)
             {
                 Print($"No macros was found for the domain.", ConsoleColor.Red);

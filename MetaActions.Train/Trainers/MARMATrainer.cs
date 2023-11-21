@@ -1,17 +1,24 @@
-﻿using PDDLSharp.CodeGenerators;
-using PDDLSharp.CodeGenerators.PDDL;
+﻿using PDDLSharp.CodeGenerators.PDDL;
+using PDDLSharp.CodeGenerators;
 using PDDLSharp.ErrorListeners;
-using PDDLSharp.Models.PDDL;
 using PDDLSharp.Models.PDDL.Domain;
-using PDDLSharp.Parsers;
+using PDDLSharp.Models.PDDL;
 using PDDLSharp.Parsers.FastDownward.Plans;
 using PDDLSharp.Parsers.PDDL;
+using PDDLSharp.Parsers;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Tools;
+using MetaActions.Train.MetaActionStrategies;
+using static MetaActions.Learn.Options;
 
 namespace MetaActions.Train.Trainers
 {
-    public abstract class BaseTrainer : ITrainer
+    public class MARMATrainer : BaseCancelable, ITrainer
     {
         internal string _tempCompiledPath = "compiled";
         internal string _tempVerificationPath = "verification";
@@ -21,42 +28,37 @@ namespace MetaActions.Train.Trainers
         internal string _outCache = "cache";
 
         public FileInfo Domain { get; }
-        public string DomainName { get; }
         public List<FileInfo> TrainingProblems { get; }
         public List<FileInfo> TestingProblems { get; }
         public TimeSpan TimeLimit { get; } = TimeSpan.FromHours(2);
         public string TempPath { get; }
         public string OutPath { get; }
         public bool OnlyUsefuls { get; }
-        public CancellationTokenSource CancellationToken { get; }
-        private int _runID = -1;
-        public int RunID
-        {
-            get
-            {
-                if (_runID != -1)
-                    return _runID;
-                _runID = GetDeterministicHashCode(Domain.FullName).GetHashCode() + GetDeterministicHashCode(GetType().Name);
-                foreach (var trainProblem in TrainingProblems)
-                    _runID ^= GetDeterministicHashCode(trainProblem.FullName).GetHashCode();
-                return _runID;
-            }
-        }
+        public IMetaActionStrategy MetaActionStrategy { get; }
 
         internal List<FileInfo> _currentMetaActions = new List<FileInfo>();
-        internal Process? _activeProcess;
         internal int _totalMetaActions = 0;
         private bool _isDone = false;
 
-        protected BaseTrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls)
+        public MARMATrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls, MetaActionStrategy metaActionStrategy) : base(domainName, 1, new CancellationTokenSource())
         {
-            DomainName = domainName;
+            var _runID = GetDeterministicHashCode(domain.FullName).GetHashCode() + GetDeterministicHashCode(GetType().Name);
+            foreach (var trainProblem in trainingProblems)
+                _runID ^= GetDeterministicHashCode(trainProblem.FullName).GetHashCode();
+            RunID = _runID;
+
+            switch (metaActionStrategy)
+            {
+                case Learn.Options.MetaActionStrategy.CSMMacros: MetaActionStrategy = new CSMMacros(domainName, RunID, tempPath, CancellationToken); break;
+                case Learn.Options.MetaActionStrategy.PDDLSharpMacros: MetaActionStrategy = new PDDLSharpMacros(domainName, RunID, tempPath, CancellationToken); break;
+                default:
+                    throw new Exception("Unknown meta action strategy!");
+            }
+
             Domain = domain;
             TrainingProblems = trainingProblems;
             TestingProblems = testingProblems;
             TimeLimit = timeLimit;
-            CancellationToken = new CancellationTokenSource();
-            CancellationToken.Token.Register(Kill);
             TempPath = PathHelper.RootPath(tempPath);
             OutPath = PathHelper.RootPath(outPath);
             OnlyUsefuls = usefuls;
@@ -101,7 +103,7 @@ namespace MetaActions.Train.Trainers
             Print($"There is a total of {TrainingProblems.Count} problems to train with.", ConsoleColor.Blue);
 
             Print($"Getting meta actions...", ConsoleColor.Blue);
-            var allMetaActions = GetMetaActions();
+            var allMetaActions = MetaActionStrategy.GetMetaActions(Domain, TrainingProblems);
             if (CancellationToken.IsCancellationRequested) return null;
 
             Print($"Validating meta actions...", ConsoleColor.Blue);
@@ -111,10 +113,8 @@ namespace MetaActions.Train.Trainers
             if (!CancellationToken.IsCancellationRequested)
                 _isDone = true;
 
-            return new RunReport(DomainName, allMetaActions.Count, _totalMetaActions, _currentMetaActions.Count);
+            return new RunReport(Name, allMetaActions.Count, _totalMetaActions, _currentMetaActions.Count);
         }
-
-        public abstract List<FileInfo> GetMetaActions();
 
         internal void VerifyMetaActions(List<FileInfo> allMetaActions)
         {
@@ -125,14 +125,14 @@ namespace MetaActions.Train.Trainers
                 if (CancellationToken.IsCancellationRequested)
                     return;
                 PathHelper.RecratePath(_tempReplacementsPath);
-                Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(((double)metaActionCounter / (double)allMetaActions.Count) * 100, 0)}%]", ConsoleColor.Magenta);
+                Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(metaActionCounter / (double)allMetaActions.Count * 100, 0)}%]", ConsoleColor.Magenta);
                 int problemCounter = 1;
                 bool allValid = true;
                 foreach (var problem in TrainingProblems)
                 {
                     if (CancellationToken.IsCancellationRequested)
                         return;
-                    Print($"\t\tProblem {problemCounter} out of {TrainingProblems.Count} [{Math.Round(((double)problemCounter / (double)TrainingProblems.Count) * 100, 0)}%].", ConsoleColor.DarkMagenta);
+                    Print($"\t\tProblem {problemCounter} out of {TrainingProblems.Count} [{Math.Round(problemCounter / (double)TrainingProblems.Count * 100, 0)}%].", ConsoleColor.DarkMagenta);
                     // Compile Meta Actions
                     Print($"\t\tCompiling meta action.", ConsoleColor.DarkMagenta);
                     CompileMetaAction(Domain.FullName, problem.FullName, metaAction.FullName);
@@ -179,7 +179,7 @@ namespace MetaActions.Train.Trainers
             GenerateMetaDomain(Domain, _currentMetaActions, OutPath, TempPath);
         }
 
-        public void Kill()
+        public new void Kill()
         {
             if (_activeProcess != null)
             {
@@ -197,18 +197,6 @@ namespace MetaActions.Train.Trainers
             }
         }
 
-        public void Dispose()
-        {
-            if (CancellationToken != null)
-                CancellationToken.Cancel();
-            Kill();
-        }
-
-        internal void Print(string text, ConsoleColor color)
-        {
-            ConsoleHelper.WriteLineColor($"\t[{DomainName}] {text}", color);
-        }
-
         private static int GetDeterministicHashCode(string str)
         {
             unchecked
@@ -218,13 +206,13 @@ namespace MetaActions.Train.Trainers
 
                 for (int i = 0; i < str.Length; i += 2)
                 {
-                    hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                    hash1 = (hash1 << 5) + hash1 ^ str[i];
                     if (i == str.Length - 1)
                         break;
-                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+                    hash2 = (hash2 << 5) + hash2 ^ str[i + 1];
                 }
 
-                return hash1 + (hash2 * 1566083941);
+                return hash1 + hash2 * 1566083941;
             }
         }
 

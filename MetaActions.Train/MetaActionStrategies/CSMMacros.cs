@@ -1,9 +1,14 @@
 ﻿using MetaActions.Train.Tools;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Tools;
 
-namespace MetaActions.Train.Trainers
+namespace MetaActions.Train.MetaActionStrategies
 {
-    public class CSMTrainer : BaseTrainer
+    public class CSMMacros : BaseCancelable, IMetaActionStrategy
     {
         internal string _tempProblemPath = "problems";
         internal string _tempMetaActionPath = "metaActions";
@@ -13,13 +18,13 @@ namespace MetaActions.Train.Trainers
 
         internal string _macroCachePath = "cache/macros";
 
-        public CSMTrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, bool usefuls) : base(domainName, domain, trainingProblems, testingProblems, timeLimit, tempPath, outPath, usefuls)
+        public CSMMacros(string name, int runID, string tempPath, CancellationTokenSource token) : base(name, runID, token)
         {
-            _tempMacroPath = Path.Combine(TempPath, _tempMacroPath);
-            _tempMacroTempPath = Path.Combine(TempPath, _tempMacroTempPath);
-            _tempMacroGeneratorPath = Path.Combine(TempPath, _tempMacroGeneratorPath);
-            _tempMetaActionPath = Path.Combine(TempPath, _tempMetaActionPath);
-            _tempProblemPath = Path.Combine(TempPath, _tempProblemPath);
+            _tempMacroPath = Path.Combine(tempPath, _tempMacroPath);
+            _tempMacroTempPath = Path.Combine(tempPath, _tempMacroTempPath);
+            _tempMacroGeneratorPath = Path.Combine(tempPath, _tempMacroGeneratorPath);
+            _tempMetaActionPath = Path.Combine(tempPath, _tempMetaActionPath);
+            _tempProblemPath = Path.Combine(tempPath, _tempProblemPath);
 
             _macroCachePath = PathHelper.RootPath(_macroCachePath);
 
@@ -30,13 +35,13 @@ namespace MetaActions.Train.Trainers
             PathHelper.RecratePath(_tempMacroGeneratorPath);
         }
 
-        public override List<FileInfo> GetMetaActions()
+        public List<FileInfo> GetMetaActions(FileInfo domain, List<FileInfo> trainingProblems)
         {
             Print($"Copying training problems...", ConsoleColor.Blue);
-            var problems = CopyProblemsToTemp(TrainingProblems);
+            var problems = CopyProblemsToTemp(trainingProblems);
             if (CancellationToken.IsCancellationRequested) return new List<FileInfo>();
 
-            var allMacros = GetCSMMacros(Domain);
+            var allMacros = GetCSMMacros(domain);
             if (allMacros.Count == 0)
             {
                 Print($"No macros was found for the domain.", ConsoleColor.Red);

@@ -80,11 +80,7 @@ namespace MetaActions.Learn
 
                 var tempPath = Path.Combine(opts.TempPath, domainName);
                 var outPath = Path.Combine(opts.OutputPath, domainName);
-
-                switch (opts.TrainingMethod)
-                {
-                    case Options.TrainingMethods.CSMMacros:
-                        runTasks.Add(new CSMTrainer(
+                runTasks.Add(new MARMATrainer(
                             domainName,
                             domain,
                             domainTrainProblems,
@@ -92,24 +88,9 @@ namespace MetaActions.Learn
                             TimeSpan.FromMinutes(opts.TimeLimit),
                             tempPath,
                             outPath,
-                            opts.Useful
+                            opts.Useful,
+                            opts.MetaStrategy
                             ));
-                        break;
-                    case Options.TrainingMethods.PDDLSharpMacros:
-                        runTasks.Add(new PDDLSharpTrainer(
-                            domainName,
-                            domain,
-                            domainTrainProblems,
-                            domainTestProblems,
-                            TimeSpan.FromMinutes(opts.TimeLimit),
-                            tempPath,
-                            outPath,
-                            opts.Useful
-                            ));
-                        break;
-                    default:
-                        throw new Exception("Training method not implemented");
-                }
             }
 
             runTasks.Shuffle();

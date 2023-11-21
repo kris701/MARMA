@@ -5,11 +5,19 @@ namespace MetaActions.Learn
     public class Options
     {
         [Flags]
-        public enum TrainingMethods
+        public enum MetaActionStrategy
         {
             None = 0,
             CSMMacros = 1,
             PDDLSharpMacros = 2
+        }
+
+        [Flags]
+        public enum VerificationStrategy
+        {
+            None = 0,
+            Strong = 1,
+            Weak_TimeLimit_10m = 2
         }
 
 
@@ -29,8 +37,8 @@ namespace MetaActions.Learn
         public bool Useful { get; set; } = false;
         [Option("multitask", Required = false, HelpText = "Run the training multitasked?", Default = false)]
         public bool Multitask { get; set; } = false;
-        [Option("method", Required = false, HelpText = "What training method to use", Default = TrainingMethods.PDDLSharpMacros)]
-        public TrainingMethods TrainingMethod { get; set; } = TrainingMethods.PDDLSharpMacros;
+        [Option("meta-strategy", Required = false, HelpText = "What training method to use", Default = MetaActionStrategy.PDDLSharpMacros)]
+        public MetaActionStrategy MetaStrategy { get; set; } = MetaActionStrategy.PDDLSharpMacros;
         [Option("timelimit", Required = false, HelpText = "Time limit for each training task, in minutes", Default = 120)]
         public int TimeLimit { get; set; } = 120;
     }
