@@ -10,10 +10,6 @@ namespace StackelbergVerifier
         public string ProblemFilePath { get; set; } = "";
         [Option("output", Required = false, HelpText = "Path to output files to")]
         public string OutputPath { get; set; } = "";
-        [Option("py", Required = false, HelpText = "What python prefix to use", Default = "python2")]
-        public string PythonPrefix { get; set; } = "python2";
-        [Option("stackelberg", Required = false, HelpText = "Path to stackelberg planner", Default = "fast-downward.py")]
-        public string StackelbergPath { get; set; } = "fast-downward.py";
         [Option("iseasy", Required = false, HelpText = "Is the problem an easy one", Default = false)]
         public bool IsEasyProblem { get; set; } = false;
     }

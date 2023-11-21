@@ -1,13 +1,16 @@
 ﻿using CommandLine;
 using StackelbergVerifier;
+using StackelbergVerifier.ReachabilityChecker;
 using System.Diagnostics;
 using System.Text;
 using Tools;
+using static StackelbergVerifier.ReachabilityChecker.IReachabilityChecker;
 
 namespace StacklebergVerifier
 {
     internal class Program : BaseCLI
     {
+        private static string _stackelbergPath = PathHelper.RootPath("Dependencies/stackelberg-planner/src/fast-downward.py");
         private static int _returnCode = int.MaxValue;
         static int Main(string[] args)
         {
@@ -22,7 +25,6 @@ namespace StacklebergVerifier
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
             opts.DomainFilePath = PathHelper.RootPath(opts.DomainFilePath);
             opts.ProblemFilePath = PathHelper.RootPath(opts.ProblemFilePath);
-            opts.StackelbergPath = PathHelper.RootPath(opts.StackelbergPath);
 
             ConsoleHelper.WriteLineColor("Verifying paths...");
             if (!Directory.Exists(opts.OutputPath))
@@ -31,11 +33,21 @@ namespace StacklebergVerifier
                 throw new FileNotFoundException($"Domain file not found: {opts.DomainFilePath}");
             if (!File.Exists(opts.ProblemFilePath))
                 throw new FileNotFoundException($"Problem file not found: {opts.ProblemFilePath}");
-            if (!File.Exists(opts.StackelbergPath))
-                throw new FileNotFoundException($"Stackelberg planner file not found: {opts.StackelbergPath}");
+            if (!File.Exists(_stackelbergPath))
+                throw new FileNotFoundException($"Stackelberg planner file not found: {_stackelbergPath}");
             if (File.Exists(Path.Combine(opts.OutputPath, "pareto_frontier.json")))
                 File.Delete(Path.Combine(opts.OutputPath, "pareto_frontier.json"));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor("Checking reachability...");
+            var checker = new FDReachabilityChecker(Path.Combine(opts.OutputPath, "reachability"));
+            var result = checker.IsTaskPossible(new FileInfo(opts.DomainFilePath), new FileInfo(opts.ProblemFilePath));
+            if (result == ReachabilityResult.Impossible)
+            {
+                ConsoleHelper.WriteLineColor("Task impossible to solve!", ConsoleColor.Red);
+                _returnCode = 1;
+                return;
+            }
 
             ConsoleHelper.WriteLineColor("Executing Stackelberg Planner");
             ConsoleHelper.WriteLineColor("(Note, this may take a while)");
@@ -85,7 +97,7 @@ namespace StacklebergVerifier
         private static Process ExecutePlanner(StackelbergVerifierOptions opts)
         {
             StringBuilder sb = new StringBuilder("");
-            sb.Append($"{opts.StackelbergPath} ");
+            sb.Append($"{_stackelbergPath} ");
             sb.Append($"\"{opts.DomainFilePath}\" ");
             sb.Append($"\"{opts.ProblemFilePath}\" ");
             if (opts.IsEasyProblem)
@@ -97,7 +109,7 @@ namespace StacklebergVerifier
             {
                 StartInfo = new ProcessStartInfo()
                 {
-                    FileName = opts.PythonPrefix,
+                    FileName = "python2",
                     Arguments = sb.ToString(),
                     CreateNoWindow = true,
                     UseShellExecute = false,
