@@ -14,13 +14,13 @@ namespace StacklebergVerifier
         private static int _returnCode = int.MaxValue;
         static int Main(string[] args)
         {
-            Parser.Default.ParseArguments<StackelbergVerifierOptions>(args)
+            Parser.Default.ParseArguments<Options>(args)
               .WithNotParsed(HandleParseError)
               .WithParsed(RunStacklebergVerifier);
             return _returnCode;
         }
 
-        public static void RunStacklebergVerifier(StackelbergVerifierOptions opts)
+        public static void RunStacklebergVerifier(Options opts)
         {
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
             opts.DomainFilePath = PathHelper.RootPath(opts.DomainFilePath);
@@ -97,7 +97,7 @@ namespace StacklebergVerifier
             return false;
         }
 
-        private static Process ExecutePlanner(StackelbergVerifierOptions opts)
+        private static Process ExecutePlanner(Options opts)
         {
             StringBuilder sb = new StringBuilder("");
             sb.Append($"{_stackelbergPath} ");
