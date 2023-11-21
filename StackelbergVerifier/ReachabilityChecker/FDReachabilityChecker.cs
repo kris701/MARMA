@@ -13,7 +13,8 @@ namespace StackelbergVerifier.ReachabilityChecker
         public string TempPath { get; }
 
         private static string _fastDownwardPath = PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py");
-        
+        private string _stdLog = "";
+
         public FDReachabilityChecker(string tempPath)
         {
             TempPath = tempPath;
@@ -23,6 +24,7 @@ namespace StackelbergVerifier.ReachabilityChecker
 
         public ReachabilityResult IsTaskPossible(FileInfo domain, FileInfo problem)
         {
+            _stdLog = "";
             var fdRunner = ArgsCallerBuilder.GetGenericRunner("python3");
             fdRunner.StdOut += (s, e) => { if (e.Data != null) _stdLog += e.Data; };
             fdRunner.Process.StartInfo.WorkingDirectory = TempPath;
@@ -34,12 +36,10 @@ namespace StackelbergVerifier.ReachabilityChecker
             {
                 if (_stdLog.Contains("Solution found."))
                     return ReachabilityResult.Possible;
-                if (_stdLog.Contains("Solution not found!"))
+                if (_stdLog.Contains("Search stopped without finding a solution."))
                     return ReachabilityResult.Impossible;
             }
             return ReachabilityResult.None;
         }
-
-        private string _stdLog = "";
     }
 }
