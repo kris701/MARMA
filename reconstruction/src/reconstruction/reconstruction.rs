@@ -20,6 +20,7 @@ pub fn reconstruct(
     let mut fd_time: f64 = 0.0;
     let mut replacements: Vec<(usize, SASPlan)> = Vec::new();
     let mut found_in_cache: usize = 0;
+    let mut iteratively_added: usize = 0;
     let mut state = State::from_init();
 
     status_print(Status::Reconstruction, "Generating replacements");
@@ -53,6 +54,7 @@ pub fn reconstruct(
             let _ = fs::remove_file(&problem_file);
             if let Some(cache) = cache {
                 if iterative_cache {
+                    iteratively_added += 1;
                     cache.add_entry(step, &plan);
                 }
             }
@@ -66,6 +68,7 @@ pub fn reconstruct(
         }
     }
     println!("found_in_cache={}", found_in_cache);
+    println!("iteratively_added={}", iteratively_added);
     println!("cache_lookup_time={:.4?}", cache_time);
     println!("planner_time={:.4?}", fd_time);
     stich(&plan, replacements)

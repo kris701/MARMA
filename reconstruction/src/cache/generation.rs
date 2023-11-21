@@ -39,26 +39,17 @@ pub fn generate_cache(
     cache_type: CacheMethod,
     iterative_cache: bool,
 ) -> Option<Box<dyn Cache>> {
-    if let Some(path) = cache_path {
-        status_print(Status::Cache, "Reading cache");
-        let data = read_cache(path);
-        let used_meta_actions = find_used_meta_actions(meta_plan);
-        match cache_type {
-            CacheMethod::Lifted => Some(Box::new(LiftedCache::new(data, used_meta_actions))),
-            CacheMethod::Hash => Some(Box::new(HashCache::new(data, used_meta_actions))),
-            CacheMethod::None => None,
-        }
-    } else if iterative_cache {
-        let used_meta_actions = find_used_meta_actions(meta_plan);
-        match cache_type {
-            CacheMethod::Lifted => Some(Box::new(LiftedCache::new(
-                HashMap::new(),
-                used_meta_actions,
-            ))),
-            CacheMethod::Hash => Some(Box::new(HashCache::new(HashMap::new(), used_meta_actions))),
-            CacheMethod::None => None,
-        }
-    } else {
-        None
+    if cache_type == CacheMethod::None || (cache_path.is_none() && !iterative_cache) {
+        return None;
+    }
+    let data = cache_path
+        .to_owned()
+        .map_or(HashMap::new(), |p| read_cache(&p));
+    status_print(Status::Cache, "Reading cache");
+    let used_meta_actions = find_used_meta_actions(meta_plan);
+    match cache_type {
+        CacheMethod::Lifted => Some(Box::new(LiftedCache::new(data, used_meta_actions))),
+        CacheMethod::Hash => Some(Box::new(HashCache::new(data, used_meta_actions))),
+        _ => panic!(),
     }
 }
