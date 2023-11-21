@@ -6,7 +6,7 @@
     "WSL": {
       "commandName": "WSL",
       "distributionName": "",
-      "commandLineArgs": "StackelbergVerifier/bin/Debug/net7.0/StackelbergVerifier.dll --domain StackelbergDomains/gripper/simplified_domain.pddl --problem StackelbergDomains/gripper/simplified_problem.pddl --stackelberg Dependencies/stackelberg-planner/src/fast-downward.py --output VerifiedDomains/gripper",
+      "commandLineArgs": "StackelbergVerifier/bin/Debug/net7.0/StackelbergVerifier.dll --domain StackelbergDomains/gripper/simplified_domain.pddl --problem StackelbergDomains/gripper/simplified_problem.pddl --output VerifiedDomains/gripper",
       "workingDirectory": "StackelbergVerifier/../"
     }
   }
