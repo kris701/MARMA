@@ -38,7 +38,7 @@ namespace MetaActions.Train.Trainers
 
         public MARMATrainer(string domainName, FileInfo domain, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, TimeSpan timeLimit, string tempPath, string outPath, MetaActionVerificationStrategy metaActionVerificationStrategy, MetaActionGenerationStrategy metaActionStrategy) : base(domainName, 1, new CancellationTokenSource())
         {
-            var _runID = GetDeterministicHashCode(domain.FullName).GetHashCode() + GetDeterministicHashCode(GetType().Name);
+            var _runID = GetDeterministicHashCode(domain.FullName).GetHashCode() + GetDeterministicHashCode($"{Enum.GetName(typeof(MetaActionGenerationStrategy), metaActionVerificationStrategy)}");
             foreach (var trainProblem in trainingProblems)
                 _runID ^= GetDeterministicHashCode(trainProblem.FullName).GetHashCode();
             RunID = _runID;
