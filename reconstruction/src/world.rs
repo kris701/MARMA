@@ -2,6 +2,7 @@
 #![allow(unused_variables)]
 
 pub mod action;
+pub mod atom;
 mod objects;
 pub mod parameter;
 mod predicates;
@@ -10,7 +11,7 @@ mod types;
 use crate::{
     fact::Fact,
     world::{
-        action::translate_actions, objects::translate_objects, predicates::translate_predicates,
+        action::translate_action, objects::translate_objects, predicates::translate_predicates,
         types::translate_types,
     },
 };
@@ -45,11 +46,19 @@ impl World {
         let domain_name = domain.name;
         let types = translate_types(domain.types);
         let predicates = translate_predicates(&types, &domain.actions, domain.predicates);
-        let actions: Vec<Action> = translate_actions(&types, &predicates, domain.actions);
-        println!("action_count={}", actions.len());
-        let meta_actions: Vec<Action> = translate_actions(&types, &predicates, meta_domain.actions);
-        println!("meta_action_count={}", meta_actions.len());
         let objects = translate_objects(&types, domain.constants, problem.objects);
+        let actions: Vec<Action> = domain
+            .actions
+            .into_iter()
+            .map(|a| translate_action(&types, &predicates, &objects, a))
+            .collect();
+        println!("action_count={}", actions.len());
+        let meta_actions: Vec<Action> = meta_domain
+            .actions
+            .into_iter()
+            .map(|a| translate_action(&types, &predicates, &objects, a))
+            .collect();
+        println!("meta_action_count={}", meta_actions.len());
         let init: Vec<Fact> = problem
             .inits
             .iter()
