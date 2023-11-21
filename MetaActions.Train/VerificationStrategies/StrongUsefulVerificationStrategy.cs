@@ -20,7 +20,7 @@ namespace MetaActions.Train.VerificationStrategies
         internal string _tempUsefulPath = "useful-check";
         public StrongUsefulVerificationStrategy(string name, int runID, string tempPath, CancellationTokenSource token) : base(name, runID, tempPath, token)
         {
-            _tempExtractedPath = Path.Combine(tempPath, _tempUsefulPath);
+            _tempUsefulPath = Path.Combine(tempPath, _tempUsefulPath);
             PathHelper.RecratePath(_tempUsefulPath);
         }
 
@@ -30,7 +30,7 @@ namespace MetaActions.Train.VerificationStrategies
             foreach (var metaAction in allMetaActions)
             {
                 if (CancellationToken.IsCancellationRequested) return CurrentlyValidMetaActions;
-                PathHelper.RecratePath(_tempReplacementsPath);
+                PathHelper.RecratePath(Path.Combine(metaAction.Name, _tempReplacementsPath));
                 Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(metaActionCounter / (double)allMetaActions.Count * 100, 0)}%]", ConsoleColor.Magenta);
                 int problemCounter = 1;
                 bool allValid = true;
@@ -66,7 +66,7 @@ namespace MetaActions.Train.VerificationStrategies
                     Print("\tMeta Action is Useful!", ConsoleColor.Green);
 
                     Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
-                    CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(metaAction.Name, domain, _tempReplacementsPath)));
+                    CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, ""))));
                 }
                 metaActionCounter++;
             }

@@ -16,6 +16,7 @@ using Tools;
 using MetaActions.Train.MetaActionStrategies;
 using static MetaActions.Options;
 using MetaActions.Train.VerificationStrategies;
+using MetaActions.Train.Tools;
 
 namespace MetaActions.Train.Trainers
 {
@@ -103,6 +104,13 @@ namespace MetaActions.Train.Trainers
 
             Print($"Validating meta actions...", ConsoleColor.Blue);
             var verifiedMetaActions = MetaActionVerificationStrategy.VerifyMetaActions(Domain, allMetaActions, TrainingProblems);
+            foreach(var valid in verifiedMetaActions)
+            {
+                var target = Path.Combine(_outCache, valid.MetaAction.Name.Replace(valid.MetaAction.Extension, ""));
+                PathHelper.RecratePath(target);
+                foreach (var replacement in valid.Replacements)
+                    File.Copy(replacement.FullName, Path.Combine(target, replacement.Name));
+            }
             Print($"Generating final meta domain...", ConsoleColor.Blue);
             GenerateMetaDomain(Domain, MetaActionVerificationStrategy.CurrentlyValidMetaActions, OutPath, TempPath);
             if (CancellationToken.IsCancellationRequested) return null;

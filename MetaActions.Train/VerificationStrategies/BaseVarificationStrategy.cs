@@ -20,7 +20,7 @@ namespace MetaActions.Train.VerificationStrategies
             CurrentlyValidMetaActions = new List<ValidMetaAction>();
             _tempCompiledPath = Path.Combine(tempPath, _tempCompiledPath);
             _tempVerificationPath = Path.Combine(tempPath, _tempVerificationPath);
-            _tempExtractedPath = Path.Combine(tempPath, _tempVerificationPath);
+            _tempExtractedPath = Path.Combine(tempPath, _tempExtractedPath);
             _tempReplacementsPath = Path.Combine(_tempVerificationPath, _tempReplacementsPath);
             PathHelper.RecratePath(_tempCompiledPath);
             PathHelper.RecratePath(_tempVerificationPath);
@@ -62,25 +62,25 @@ namespace MetaActions.Train.VerificationStrategies
             return code == 0;
         }
 
-        internal List<FileInfo> ExtractMacrosFromPlans(string metaActionName, FileInfo domain, string macroPlans)
+        internal List<FileInfo> ExtractMacrosFromPlans(FileInfo domain, string metaName)
         {
             ArgsCaller macroExtractor = ArgsCallerBuilder.GetDotnetRunner("MacroExtractor");
             _activeProcess = macroExtractor.Process;
             macroExtractor.Arguments.Add("--domain", domain.FullName);
             string macroPlansStr = "";
-            var planFiles = new DirectoryInfo(macroPlans).GetFiles();
+            var planFiles = new DirectoryInfo(_tempReplacementsPath).GetFiles();
             if (planFiles.Count() == 0 && !CancellationToken.IsCancellationRequested)
                 throw new Exception("Error, there where no plans made from the stackelberg planner");
             foreach (var plan in planFiles)
                 macroPlansStr += $" {plan.FullName}";
             macroExtractor.Arguments.Add("--follower-plans", macroPlansStr);
-            macroExtractor.Arguments.Add("--output", Path.Combine(_tempExtractedPath, metaActionName));
+            macroExtractor.Arguments.Add("--output", _tempExtractedPath);
             if (macroExtractor.Run() != 0 && !CancellationToken.IsCancellationRequested)
             {
                 Print("Macro Extractor failed!", ConsoleColor.Red);
                 CancellationToken.Cancel();
             }
-            return new DirectoryInfo(Path.Combine(_tempExtractedPath, metaActionName)).GetFiles().ToList();
+            return new DirectoryInfo(Path.Combine(_tempExtractedPath, metaName)).GetFiles().ToList();
         }
     }
 }
