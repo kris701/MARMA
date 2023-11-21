@@ -12,5 +12,7 @@ namespace StackelbergVerifier
         public string OutputPath { get; set; } = "";
         [Option("iseasy", Required = false, HelpText = "Is the problem an easy one", Default = false)]
         public bool IsEasyProblem { get; set; } = false;
+        [Option("reachability-check", Required = false, HelpText = "Perform reachability check before stackelberg planning?", Default = false)]
+        public bool ReachabilityCheck { get; set; } = false;
     }
 }

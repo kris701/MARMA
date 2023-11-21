@@ -39,14 +39,17 @@ namespace StacklebergVerifier
                 File.Delete(Path.Combine(opts.OutputPath, "pareto_frontier.json"));
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
-            ConsoleHelper.WriteLineColor("Checking reachability...");
-            var checker = new FDReachabilityChecker(Path.Combine(opts.OutputPath, "reachability"));
-            var result = checker.IsTaskPossible(new FileInfo(opts.DomainFilePath), new FileInfo(opts.ProblemFilePath));
-            if (result == ReachabilityResult.Impossible)
+            if (opts.ReachabilityCheck)
             {
-                ConsoleHelper.WriteLineColor("Task impossible to solve!", ConsoleColor.Red);
-                _returnCode = 1;
-                return;
+                ConsoleHelper.WriteLineColor("Checking reachability...");
+                var checker = new FDReachabilityChecker(Path.Combine(opts.OutputPath, "reachability"));
+                var result = checker.IsTaskPossible(new FileInfo(opts.DomainFilePath), new FileInfo(opts.ProblemFilePath));
+                if (result == ReachabilityResult.Impossible)
+                {
+                    ConsoleHelper.WriteLineColor("Task impossible to solve!", ConsoleColor.Red);
+                    _returnCode = 1;
+                    return;
+                }
             }
 
             ConsoleHelper.WriteLineColor("Executing Stackelberg Planner");
