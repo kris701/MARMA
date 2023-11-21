@@ -1,11 +1,11 @@
 ﻿using CommandLine;
 
-namespace MetaActions.Learn
+namespace MetaActions
 {
     public class Options
     {
         [Flags]
-        public enum MetaActionStrategy
+        public enum MetaActionGenerationStrategy
         {
             None = 0,
             CSMMacros = 1,
@@ -13,11 +13,12 @@ namespace MetaActions.Learn
         }
 
         [Flags]
-        public enum VerificationStrategy
+        public enum MetaActionVerificationStrategy
         {
             None = 0,
             Strong = 1,
-            Weak_TimeLimit_10m = 2
+            Strong_Useful = 2,
+            Weak_TimeLimit_10m = 3
         }
 
 
@@ -33,12 +34,12 @@ namespace MetaActions.Learn
         public string OutputPath { get; set; } = "output/train";
         [Option("rebuild", Required = false, HelpText = "Rebuild toolchain?", Default = false)]
         public bool Rebuild { get; set; } = false;
-        [Option("useful-check", Required = false, HelpText = "Check for useful meta actions?", Default = false)]
-        public bool Useful { get; set; } = false;
         [Option("multitask", Required = false, HelpText = "Run the training multitasked?", Default = false)]
         public bool Multitask { get; set; } = false;
-        [Option("meta-strategy", Required = false, HelpText = "What training method to use", Default = MetaActionStrategy.PDDLSharpMacros)]
-        public MetaActionStrategy MetaStrategy { get; set; } = MetaActionStrategy.PDDLSharpMacros;
+        [Option("generation-strategy", Required = false, HelpText = "What meta action generation method to use", Default = MetaActionGenerationStrategy.PDDLSharpMacros)]
+        public MetaActionGenerationStrategy GenerationStrategy { get; set; } = MetaActionGenerationStrategy.PDDLSharpMacros;
+        [Option("verification-strategy", Required = false, HelpText = "What verification method to use", Default = MetaActionVerificationStrategy.Strong)]
+        public MetaActionVerificationStrategy VerificationStrategy { get; set; } = MetaActionVerificationStrategy.Strong;
         [Option("timelimit", Required = false, HelpText = "Time limit for each training task, in minutes", Default = 120)]
         public int TimeLimit { get; set; } = 120;
     }

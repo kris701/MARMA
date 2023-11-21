@@ -88,8 +88,8 @@ namespace MetaActions.Learn
                             TimeSpan.FromMinutes(opts.TimeLimit),
                             tempPath,
                             outPath,
-                            opts.Useful,
-                            opts.MetaStrategy
+                            opts.VerificationStrategy,
+                            opts.GenerationStrategy
                             ));
             }
 
@@ -122,7 +122,6 @@ namespace MetaActions.Learn
                             ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                             ConsoleHelper.WriteLineColor($"Total meta actions:              {result.TotalMetaActions}", ConsoleColor.DarkGreen);
                             ConsoleHelper.WriteLineColor($"Total valid meta actions:        {result.TotalValidMetaActions}", ConsoleColor.DarkGreen);
-                            ConsoleHelper.WriteLineColor($"Total useful valid meta actions: {result.TotalUsefulMetaActions}", ConsoleColor.DarkGreen);
                         }
                         else
                             ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);

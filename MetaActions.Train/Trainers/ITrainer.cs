@@ -1,4 +1,5 @@
 ﻿using MetaActions.Train.MetaActionStrategies;
+using MetaActions.Train.VerificationStrategies;
 
 namespace MetaActions.Train.Trainers
 {
@@ -10,9 +11,9 @@ namespace MetaActions.Train.Trainers
         public TimeSpan TimeLimit { get; }
         public string TempPath { get; }
         public string OutPath { get; }
-        public bool OnlyUsefuls { get; }
         public int RunID { get; }
         public IMetaActionStrategy MetaActionStrategy { get; }
+        public IVerificationStrategy MetaActionVerificationStrategy { get; }
 
         public CancellationTokenSource CancellationToken { get; }
         public Task<RunReport?> RunTask();
