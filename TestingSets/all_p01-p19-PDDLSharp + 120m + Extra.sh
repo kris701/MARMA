@@ -40,6 +40,7 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						Dependencies/downward-benchmarks/zenotravel/p2*.pddl \
 	--method PDDLSharpMacros \
 	--multitask \
-	--timelimit 120
+	--timelimit 120 \
+	--rebuild
 	
 cp output/train/*.zip "TestingSets/all_p01-p19-PDDLSharp + 120m + Extra.zip"
