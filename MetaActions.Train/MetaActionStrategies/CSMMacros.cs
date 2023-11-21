@@ -38,7 +38,7 @@ namespace MetaActions.Train.MetaActionStrategies
         public List<FileInfo> GetMetaActions(FileInfo domain, List<FileInfo> trainingProblems)
         {
             Print($"Copying training problems...", ConsoleColor.Blue);
-            var problems = CopyProblemsToTemp(trainingProblems);
+            CopyProblemsToTemp(trainingProblems);
             if (CancellationToken.IsCancellationRequested) return new List<FileInfo>();
 
             var allMacros = GetCSMMacros(domain);
@@ -64,17 +64,15 @@ namespace MetaActions.Train.MetaActionStrategies
             return allMetaActions;
         }
 
-        private List<FileInfo> CopyProblemsToTemp(List<FileInfo> allProblems)
+        private void CopyProblemsToTemp(List<FileInfo> allProblems)
         {
             var problems = new List<FileInfo>();
             foreach (var problem in allProblems)
             {
-                if (CancellationToken.IsCancellationRequested)
-                    return new List<FileInfo>();
+                if (CancellationToken.IsCancellationRequested) return;
                 File.Copy(problem.FullName, Path.Combine(_tempProblemPath, problem.Name));
                 problems.Add(new FileInfo(Path.Combine(_tempProblemPath, problem.Name)));
             }
-            return problems;
         }
 
         private List<FileInfo> GetCSMMacros(FileInfo domain)

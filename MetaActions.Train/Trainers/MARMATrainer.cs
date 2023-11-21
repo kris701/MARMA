@@ -47,14 +47,6 @@ namespace MetaActions.Train.Trainers
                 _runID ^= GetDeterministicHashCode(trainProblem.FullName).GetHashCode();
             RunID = _runID;
 
-            switch (metaActionStrategy)
-            {
-                case Learn.Options.MetaActionStrategy.CSMMacros: MetaActionStrategy = new CSMMacros(domainName, RunID, tempPath, CancellationToken); break;
-                case Learn.Options.MetaActionStrategy.PDDLSharpMacros: MetaActionStrategy = new PDDLSharpMacros(domainName, RunID, tempPath, CancellationToken); break;
-                default:
-                    throw new Exception("Unknown meta action strategy!");
-            }
-
             Domain = domain;
             TrainingProblems = trainingProblems;
             TestingProblems = testingProblems;
@@ -78,6 +70,14 @@ namespace MetaActions.Train.Trainers
 
             PathHelper.RecratePath(_outTestProblems);
             PathHelper.RecratePath(_outCache);
+
+            switch (metaActionStrategy)
+            {
+                case Learn.Options.MetaActionStrategy.CSMMacros: MetaActionStrategy = new CSMMacros(domainName, RunID, tempPath, CancellationToken); break;
+                case Learn.Options.MetaActionStrategy.PDDLSharpMacros: MetaActionStrategy = new PDDLSharpMacros(domainName, RunID, tempPath, CancellationToken); break;
+                default:
+                    throw new Exception("Unknown meta action strategy!");
+            }
 
             CopyTestingProblems(TestingProblems, _outTestProblems);
             GenerateMetaDomain(Domain, _currentMetaActions, OutPath, TempPath);
@@ -181,14 +181,7 @@ namespace MetaActions.Train.Trainers
 
         public new void Kill()
         {
-            if (_activeProcess != null)
-            {
-                try
-                {
-                    _activeProcess.Kill(true);
-                }
-                catch { }
-            }
+            base.Kill();
 
             if (!_isDone)
             {
@@ -251,7 +244,6 @@ namespace MetaActions.Train.Trainers
             stackelVerifier.Arguments.Add("--problem", Path.Combine(_tempCompiledPath, "simplified_problem.pddl"));
             stackelVerifier.Arguments.Add("--output", _tempVerificationPath);
             stackelVerifier.Arguments.Add("--iseasy", "");
-            stackelVerifier.Arguments.Add("--stackelberg", PathHelper.RootPath("Dependencies/stackelberg-planner/src/fast-downward.py"));
             var code = stackelVerifier.Run();
             if (code != 0 && code != 1 && !CancellationToken.IsCancellationRequested)
             {
