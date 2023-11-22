@@ -4,6 +4,8 @@ using MetaActions.Train.Tools;
 using MetaActions.Train.Trainers;
 using System.Diagnostics.Metrics;
 using System.IO.Compression;
+using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using Tools;
 
@@ -43,11 +45,15 @@ namespace MetaActions.Learn
 
             ConsoleHelper.WriteLineColor($"Executing Training Tasks", ConsoleColor.Blue);
             ConsoleHelper.WriteLineColor($"Time limit: {opts.TimeLimit}m", ConsoleColor.Blue);
-            ExecuteTasks(trainingTasks, opts.Multitask);
+            var runReports = ExecuteTasks(trainingTasks, opts.Multitask);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Generating identity file...", ConsoleColor.Blue);
             File.WriteAllText(Path.Combine(opts.OutputPath, $"{timestamp}.json"), JsonSerializer.Serialize(opts));
+            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor($"Generating training information file...", ConsoleColor.Blue);
+            GenerateTrainCSV(runReports, Path.Combine(opts.OutputPath, $"{timestamp}.csv"));
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Compressing testing dataset...", ConsoleColor.Blue);
@@ -100,8 +106,9 @@ namespace MetaActions.Learn
             return runTasks;
         }
 
-        private static void ExecuteTasks(List<ITrainer> runTasks, bool multitask)
+        private static List<RunReport> ExecuteTasks(List<ITrainer> runTasks, bool multitask)
         {
+            var runReports = new List<RunReport>();
             StartTimeLeftTimer();
             if (multitask)
             {
@@ -122,9 +129,8 @@ namespace MetaActions.Learn
 
                         if (result != null)
                         {
+                            runReports.Add(result);
                             ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
-                            ConsoleHelper.WriteLineColor($"Total meta actions:              {result.TotalMetaActions}", ConsoleColor.DarkGreen);
-                            ConsoleHelper.WriteLineColor($"Total valid meta actions:        {result.TotalValidMetaActions}", ConsoleColor.DarkGreen);
                         }
                         else
                             ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
@@ -153,6 +159,7 @@ namespace MetaActions.Learn
                         var result = resultTask.Result;
                         if (result != null)
                         {
+                            runReports.Add(result);
                             ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                         }
                         else
@@ -167,6 +174,7 @@ namespace MetaActions.Learn
                     }
                 }
             }
+            return runReports;
         }
 
         private static void StartTimeLeftTimer()
@@ -179,5 +187,25 @@ namespace MetaActions.Learn
             };
             timeUpdateTimer.Start();
         }
-    }
+
+        private static void GenerateTrainCSV(List<RunReport> runReports, string resultFile)
+        {
+            var sb = new StringBuilder();
+            var header = "";
+            foreach (PropertyInfo p in typeof(RunReport).GetProperties())
+                header += $"{p.Name},";
+            header = header.Remove(header.Length - 1);
+            sb.AppendLine(header);
+            foreach (var report in runReports)
+            {
+                var line = "";
+                foreach (PropertyInfo p in typeof(RunReport).GetProperties())
+                    line += $"{p.GetValue(report, null)},";
+                line = line.Remove(line.Length - 1);
+                sb.AppendLine(line);
+            }
+
+            File.WriteAllText(resultFile, sb.ToString());
+        }
+    }   
 }

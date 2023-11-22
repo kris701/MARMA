@@ -77,19 +77,28 @@ namespace MetaActions.Train.MetaActionStrategies
                 {
                     if (!statics.Any(x => x.Name == predicate.Name) && !goals.Any(x => x == predicate.Name))
                     {
-                        var genericPredicate = predicate.Copy();
-                        int argIndex = 0;
-                        foreach (var arg in genericPredicate.Arguments)
-                            arg.Name = $"?{argIndex++}";
-                        var newMetaAction = new ActionDecl($"$meta_{metaCounter++}");
-                        foreach (var arg in genericPredicate.Arguments)
-                            newMetaAction.Parameters.Values.Add(arg);
-                        newMetaAction.Effects = new AndExp(new List<IExp>() { genericPredicate });
-                        metaActions.Add(newMetaAction);
+                        metaActions.Add(GenerateActionFromPredicate(predicate, metaCounter++, false));
+                        metaActions.Add(GenerateActionFromPredicate(predicate, metaCounter++, true));
                     }
                 }
             }
             return metaActions;
+        }
+
+        private ActionDecl GenerateActionFromPredicate(PredicateExp predicate, int id, bool isNegativeEffect)
+        {
+            var genericPredicate = predicate.Copy();
+            int argIndex = 0;
+            foreach (var arg in genericPredicate.Arguments)
+                arg.Name = $"?{argIndex++}";
+            var newMetaAction = new ActionDecl($"$meta_{id}");
+            foreach (var arg in genericPredicate.Arguments)
+                newMetaAction.Parameters.Values.Add(arg);
+            if (isNegativeEffect)
+                newMetaAction.Effects = new AndExp(new List<IExp>() { new NotExp(genericPredicate) });
+            else
+                newMetaAction.Effects = new AndExp(new List<IExp>() { genericPredicate });
+            return newMetaAction;
         }
 
         private List<FileInfo> OutputMetaActions(ICodeGenerator<INode> codeGenerator, List<ActionDecl> metaActions)

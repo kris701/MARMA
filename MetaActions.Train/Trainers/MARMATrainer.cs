@@ -114,7 +114,13 @@ namespace MetaActions.Train.Trainers
             if (!CancellationToken.IsCancellationRequested)
                 _isDone = true;
 
-            return new RunReport(Name, allMetaActions.Count, MetaActionVerificationStrategy.CurrentlyValidMetaActions.Count);
+            return new RunReport(
+                Name,
+                TrainingProblems.Count,
+                TestingProblems.Count,
+                allMetaActions.Count,
+                verifiedMetaActions.Count,
+                verifiedMetaActions.Sum(x => x.Replacements.Count / 2));
         }
 
         private void StartTimeoutTimer()
