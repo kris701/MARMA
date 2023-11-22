@@ -55,7 +55,7 @@ namespace MetaActions.Train.VerificationStrategies
             stackelVerifier.Arguments.Add("--problem", Path.Combine(_tempCompiledPath, "simplified_problem.pddl"));
             stackelVerifier.Arguments.Add("--output", _tempVerificationPath);
             if (timeLimit != -1 && timeLimit > 0)
-                stackelVerifier.Arguments.Add("--time-limit", $"{timeLimit}m");
+                stackelVerifier.Arguments.Add("--time-limit", $"{timeLimit}");
             stackelVerifier.Arguments.Add("--iseasy", "");
             var code = stackelVerifier.Run();
             if (!Enum.GetValues(typeof(VerificationResult)).Cast<int>().Any(x => x == code) && !CancellationToken.IsCancellationRequested)

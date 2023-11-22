@@ -89,14 +89,7 @@ namespace MetaActions.Train.Trainers
         {
             _isDone = false;
             Print($"Training started ({GetType().Name})", ConsoleColor.Blue);
-            var timer = new System.Timers.Timer();
-            timer.Interval = TimeLimit.TotalMilliseconds;
-            timer.AutoReset = false;
-            timer.Elapsed += (s, e) =>
-            {
-                CancellationToken.Cancel();
-            };
-            timer.Start();
+            StartTimeoutTimer();
 
             Print($"There is a total of {TrainingProblems.Count} problems to train with.", ConsoleColor.Blue);
 
@@ -121,6 +114,18 @@ namespace MetaActions.Train.Trainers
                 _isDone = true;
 
             return new RunReport(Name, allMetaActions.Count, MetaActionVerificationStrategy.CurrentlyValidMetaActions.Count);
+        }
+
+        private void StartTimeoutTimer()
+        {
+            var cancelationTimer = new System.Timers.Timer();
+            cancelationTimer.Interval = TimeLimit.TotalMilliseconds;
+            cancelationTimer.AutoReset = false;
+            cancelationTimer.Elapsed += (s, e) =>
+            {
+                CancellationToken.Cancel();
+            };
+            cancelationTimer.Start();
         }
 
         public new void Kill()

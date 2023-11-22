@@ -2,6 +2,7 @@
 using MetaActions.Train;
 using MetaActions.Train.Tools;
 using MetaActions.Train.Trainers;
+using System.Diagnostics.Metrics;
 using System.IO.Compression;
 using System.Text.Json;
 using Tools;
@@ -10,6 +11,7 @@ namespace MetaActions.Learn
 {
     internal class Program : BaseCLI
     {
+        private static int _ticked = 1;
         static int Main(string[] args)
         {
             var parser = new CommandLine.Parser(with => with.HelpWriter = null);
@@ -41,7 +43,7 @@ namespace MetaActions.Learn
 
             ConsoleHelper.WriteLineColor($"Executing Training Tasks", ConsoleColor.Blue);
             ConsoleHelper.WriteLineColor($"Time limit: {opts.TimeLimit}m", ConsoleColor.Blue);
-            ExecuteTasks(trainingTasks, opts.Multitask, opts.OutputPath);
+            ExecuteTasks(trainingTasks, opts.Multitask);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Generating identity file...", ConsoleColor.Blue);
@@ -98,8 +100,9 @@ namespace MetaActions.Learn
             return runTasks;
         }
 
-        private static void ExecuteTasks(List<ITrainer> runTasks, bool multitask, string outPath)
+        private static void ExecuteTasks(List<ITrainer> runTasks, bool multitask)
         {
+            StartTimeLeftTimer();
             if (multitask)
             {
                 int counter = 1;
@@ -164,6 +167,17 @@ namespace MetaActions.Learn
                     }
                 }
             }
+        }
+
+        private static void StartTimeLeftTimer()
+        {
+            var timeUpdateTimer = new System.Timers.Timer();
+            timeUpdateTimer.Interval = TimeSpan.FromMinutes(1).TotalMilliseconds;
+            timeUpdateTimer.Elapsed += (s, e) =>
+            {
+                ConsoleHelper.WriteLineColor($"Time passed: {_ticked++}m", ConsoleColor.Blue);
+            };
+            timeUpdateTimer.Start();
         }
     }
 }

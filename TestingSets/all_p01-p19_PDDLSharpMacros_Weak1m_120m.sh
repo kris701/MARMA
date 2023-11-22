@@ -1,4 +1,4 @@
-dotnet run --configuration Release --project MetaActions.Train -- \
+dotnet run --configuration Debug --project MetaActions.Train -- \
 	--domains 			Dependencies/learning-benchmarks/*/domain.pddl \
 						Dependencies/downward-benchmarks/depot/domain.pddl \
 						Dependencies/downward-benchmarks/driverlog/domain.pddl \
@@ -38,7 +38,7 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						Dependencies/downward-benchmarks/mystery/prob2*.pddl \
 						Dependencies/downward-benchmarks/mystery/prob3*.pddl \
 						Dependencies/downward-benchmarks/zenotravel/p2*.pddl \
-	--generation-strategy CSMMacros \
+	--generation-strategy PDDLSharpMacros \
 	--verification-strategy Weak1m \
 	--multitask \
 	--timelimit 120 \

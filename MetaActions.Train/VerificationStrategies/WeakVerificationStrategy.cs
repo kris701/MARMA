@@ -38,10 +38,15 @@ namespace MetaActions.Train.VerificationStrategies
                     var verificationResult = VerifyMetaAction(TimeLimit);
 
                     // Stop if invalid
-                    if (verificationResult != VerificationResult.Success && verificationResult != VerificationResult.TimedOut)
+                    if (verificationResult == VerificationResult.None || verificationResult == VerificationResult.Failure)
                     {
                         Print($"\tMeta action was invalid in problem '{problem.Name}'.", ConsoleColor.Red);
                         allValid = false;
+                        break;
+                    }
+                    else if (verificationResult == VerificationResult.TimedOut)
+                    {
+                        Print($"\tMeta action timed out on problem '{problem.Name}'. Assuming weak....", ConsoleColor.Yellow);
                         break;
                     }
                     problemCounter++;

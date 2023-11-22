@@ -12,6 +12,7 @@ namespace StacklebergVerifier
     {
         private static string _stackelbergPath = PathHelper.RootPath("Dependencies/stackelberg-planner/src/fast-downward.py");
         private static int _returnCode = int.MaxValue;
+        private static string _errLog = "";
         static int Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
@@ -59,7 +60,8 @@ namespace StacklebergVerifier
 
             if (exitCode != 0)
             {
-                if (exitCode == -24)
+                // Looks like the translator outputs "-24" if it times out (even tho its not documented to do so anywhere...)
+                if (exitCode == -24 || _errLog.Contains("CPU time limit exceeded"))
                 {
                     _returnCode = 2;
                     ConsoleHelper.WriteLineColor("== Planner timed out ==", ConsoleColor.Yellow);
@@ -67,7 +69,7 @@ namespace StacklebergVerifier
                 else
                 {
                     _returnCode = 1;
-                    ConsoleHelper.WriteLineColor($"== Unknown return code '{exitCode}' ==", ConsoleColor.Red);
+                    ConsoleHelper.WriteLineColor("== Frontier is not valid ==", ConsoleColor.Red);
                 }
                 return;
             }
@@ -101,10 +103,11 @@ namespace StacklebergVerifier
 
         private static int ExecutePlanner(Options opts)
         {
+            _errLog = "";
             StringBuilder sb = new StringBuilder("");
             sb.Append($"{_stackelbergPath} ");
             if (opts.TimeLimit != 0)
-                sb.Append($"--overall-time-limit {opts.TimeLimit}m");
+                sb.Append($"--overall-time-limit {opts.TimeLimit}m ");
             sb.Append($"\"{opts.DomainFilePath}\" ");
             sb.Append($"\"{opts.ProblemFilePath}\" ");
             if (opts.IsEasyProblem)
@@ -120,15 +123,18 @@ namespace StacklebergVerifier
                     Arguments = sb.ToString(),
                     CreateNoWindow = true,
                     UseShellExecute = false,
-#if !DEBUG
                     RedirectStandardError = true,
                     RedirectStandardOutput = true,
-#endif
                     WorkingDirectory = opts.OutputPath
                 }
             };
+            process.ErrorDataReceived += (s, e) => { 
+                if (e.Data != null) 
+                    _errLog += e.Data; 
+            };
 
             process.Start();
+            process.BeginErrorReadLine();
             process.WaitForExit();
             return process.ExitCode;
         }
