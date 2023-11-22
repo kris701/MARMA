@@ -1,4 +1,4 @@
-dotnet run --configuration Debug --project MetaActions.Train -- \
+dotnet run --configuration Release --project MetaActions.Train -- \
 	--domains 			Dependencies/learning-benchmarks/*/domain.pddl \
 						Dependencies/downward-benchmarks/depot/domain.pddl \
 						Dependencies/downward-benchmarks/driverlog/domain.pddl \
