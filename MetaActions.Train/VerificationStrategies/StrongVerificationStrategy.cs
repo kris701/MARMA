@@ -35,10 +35,10 @@ namespace MetaActions.Train.VerificationStrategies
 
                     // Verify Meta Actions
                     Print($"\t\tVerifying meta action.", ConsoleColor.DarkMagenta);
-                    var isMetaActionValid = VerifyMetaAction();
+                    var verificationResult = VerifyMetaAction();
 
                     // Stop if invalid
-                    if (!isMetaActionValid)
+                    if (verificationResult != VerificationResult.Success)
                     {
                         Print($"\tMeta action was invalid in problem '{problem.Name}'.", ConsoleColor.Red);
                         allValid = false;

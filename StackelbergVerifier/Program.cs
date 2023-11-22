@@ -59,8 +59,16 @@ namespace StacklebergVerifier
 
             if (exitCode != 0)
             {
-                _returnCode = 1;
-                ConsoleHelper.WriteLineColor("== Frontier is not valid ==", ConsoleColor.Red);
+                if (exitCode == -24)
+                {
+                    _returnCode = 2;
+                    ConsoleHelper.WriteLineColor("== Planner timed out ==", ConsoleColor.Yellow);
+                }
+                else
+                {
+                    _returnCode = 1;
+                    ConsoleHelper.WriteLineColor($"== Unknown return code '{exitCode}' ==", ConsoleColor.Red);
+                }
                 return;
             }
 
@@ -97,6 +105,7 @@ namespace StacklebergVerifier
             sb.Append($"{_stackelbergPath} ");
             if (opts.TimeLimit != 0)
                 sb.Append($"--overall-time-limit {opts.TimeLimit}m");
+            sb.Append($"--overall-time-limit 1s ");
             sb.Append($"\"{opts.DomainFilePath}\" ");
             sb.Append($"\"{opts.ProblemFilePath}\" ");
             if (opts.IsEasyProblem)
@@ -112,8 +121,10 @@ namespace StacklebergVerifier
                     Arguments = sb.ToString(),
                     CreateNoWindow = true,
                     UseShellExecute = false,
+#if !DEBUG
                     RedirectStandardError = true,
                     RedirectStandardOutput = true,
+#endif
                     WorkingDirectory = opts.OutputPath
                 }
             };

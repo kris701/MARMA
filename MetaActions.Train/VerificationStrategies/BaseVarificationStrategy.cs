@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommandLine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ namespace MetaActions.Train.VerificationStrategies
 {
     public abstract class BaseVarificationStrategy : BaseCancelable, IVerificationStrategy
     {
+        public enum VerificationResult { None = -1, Success = 0, Failure = 1, TimedOut = 2}
         public List<ValidMetaAction> CurrentlyValidMetaActions { get; }
         internal string _tempCompiledPath = "compiled";
         internal string _tempVerificationPath = "verification";
@@ -45,21 +47,23 @@ namespace MetaActions.Train.VerificationStrategies
             }
         }
 
-        internal bool VerifyMetaAction()
+        internal VerificationResult VerifyMetaAction(int timeLimit = -1)
         {
             ArgsCaller stackelVerifier = ArgsCallerBuilder.GetDotnetRunner("StackelbergVerifier");
             _activeProcess = stackelVerifier.Process;
             stackelVerifier.Arguments.Add("--domain", Path.Combine(_tempCompiledPath, "simplified_domain.pddl"));
             stackelVerifier.Arguments.Add("--problem", Path.Combine(_tempCompiledPath, "simplified_problem.pddl"));
             stackelVerifier.Arguments.Add("--output", _tempVerificationPath);
+            if (timeLimit != -1 && timeLimit > 0)
+                stackelVerifier.Arguments.Add("--time-limit", $"{timeLimit}m");
             stackelVerifier.Arguments.Add("--iseasy", "");
             var code = stackelVerifier.Run();
-            if (code != 0 && code != 1 && !CancellationToken.IsCancellationRequested)
+            if (!Enum.GetValues(typeof(VerificationResult)).Cast<int>().Any(x => x == code) && !CancellationToken.IsCancellationRequested)
             {
                 Print("Stackelberg Verification failed!", ConsoleColor.Red);
                 CancellationToken.Cancel();
             }
-            return code == 0;
+            return (VerificationResult)code;
         }
 
         internal List<FileInfo> ExtractMacrosFromPlans(FileInfo domain, string metaName)
