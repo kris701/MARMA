@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using MetaActions.Train.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace MetaActions.Train.VerificationStrategies
         internal string _tempVerificationPath = "verification";
         internal string _tempExtractedPath = "extracted";
         internal string _tempReplacementsPath = "replacements";
+        internal string _tempVerificationReplacementsPath = "replacements";
 
         public BaseVarificationStrategy(string name, int runID, string tempPath, CancellationTokenSource token) : base(name, runID, token)
         {
@@ -23,11 +25,13 @@ namespace MetaActions.Train.VerificationStrategies
             _tempCompiledPath = Path.Combine(tempPath, _tempCompiledPath);
             _tempVerificationPath = Path.Combine(tempPath, _tempVerificationPath);
             _tempExtractedPath = Path.Combine(tempPath, _tempExtractedPath);
-            _tempReplacementsPath = Path.Combine(_tempVerificationPath, _tempReplacementsPath);
+            _tempReplacementsPath = Path.Combine(tempPath, _tempReplacementsPath);
+            _tempVerificationReplacementsPath = Path.Combine(_tempVerificationPath, _tempVerificationReplacementsPath);
             PathHelper.RecratePath(_tempCompiledPath);
             PathHelper.RecratePath(_tempVerificationPath);
             PathHelper.RecratePath(_tempExtractedPath);
             PathHelper.RecratePath(_tempReplacementsPath);
+            PathHelper.RecratePath(_tempVerificationReplacementsPath);
         }
 
         public abstract List<ValidMetaAction> VerifyMetaActions(FileInfo domain, List<FileInfo> allMetaActions, List<FileInfo> verificationProblem);
@@ -68,13 +72,17 @@ namespace MetaActions.Train.VerificationStrategies
 
         internal List<FileInfo> ExtractMacrosFromPlans(FileInfo domain, string metaName)
         {
+            var replacementsPath = Path.Combine(_tempReplacementsPath, metaName);
+            PathHelper.RecratePath(Path.Combine(_tempExtractedPath, metaName));
+            PathHelper.RecratePath(replacementsPath);
+            IOHelper.CopyFilesRecursively(_tempVerificationReplacementsPath, replacementsPath);
             ArgsCaller macroExtractor = ArgsCallerBuilder.GetDotnetRunner("MacroExtractor");
             _activeProcess = macroExtractor.Process;
             macroExtractor.Arguments.Add("--domain", domain.FullName);
             string macroPlansStr = "";
-            var planFiles = new DirectoryInfo(_tempReplacementsPath).GetFiles();
-            if (planFiles.Count() == 0 && !CancellationToken.IsCancellationRequested)
-                throw new Exception("Error, there where no plans made from the stackelberg planner");
+            var planFiles = new DirectoryInfo(replacementsPath).GetFiles();
+            if (planFiles.Count() == 0)
+                return new List<FileInfo>();
             foreach (var plan in planFiles)
                 macroPlansStr += $" {plan.FullName}";
             macroExtractor.Arguments.Add("--follower-plans", macroPlansStr);

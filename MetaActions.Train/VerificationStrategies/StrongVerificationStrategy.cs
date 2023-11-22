@@ -19,7 +19,7 @@ namespace MetaActions.Train.VerificationStrategies
             foreach (var metaAction in allMetaActions)
             {
                 if (CancellationToken.IsCancellationRequested) return CurrentlyValidMetaActions;
-                PathHelper.RecratePath(Path.Combine(metaAction.Name, _tempReplacementsPath));
+                PathHelper.RecratePath(_tempVerificationReplacementsPath);
                 Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(metaActionCounter / (double)allMetaActions.Count * 100, 0)}%]", ConsoleColor.Magenta);
                 int problemCounter = 1;
                 bool allValid = true;
