@@ -92,6 +92,7 @@ namespace MetaActions.Train.MetaActionStrategies
 
                 Print($"Generating macros with CSM", ConsoleColor.Blue);
                 var macroGenerator = ArgsCallerBuilder.GetRustRunner("macros");
+                _activeProcess = macroGenerator.Process;
                 macroGenerator.Arguments.Add("-d", domain.FullName);
                 macroGenerator.Arguments.Add("-p", _tempProblemPath);
                 macroGenerator.Arguments.Add("-o", _tempMacroPath);
