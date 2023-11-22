@@ -74,6 +74,8 @@ namespace MetaActions.Train.Trainers
                 case Options.MetaActionVerificationStrategy.StrongUseful: MetaActionVerificationStrategy = new StrongUsefulVerificationStrategy(domainName, RunID, tempPath, CancellationToken); break;
                 case Options.MetaActionVerificationStrategy.Weak1m: MetaActionVerificationStrategy = new WeakVerificationStrategy(domainName, RunID, tempPath, CancellationToken, 1); break;
                 case Options.MetaActionVerificationStrategy.Weak1mUseful: MetaActionVerificationStrategy = new WeakUsefulVerificationStrategy(domainName, RunID, tempPath, CancellationToken, 1); break;
+                case Options.MetaActionVerificationStrategy.Weak5m: MetaActionVerificationStrategy = new WeakVerificationStrategy(domainName, RunID, tempPath, CancellationToken, 5); break;
+                case Options.MetaActionVerificationStrategy.Weak5mUseful: MetaActionVerificationStrategy = new WeakUsefulVerificationStrategy(domainName, RunID, tempPath, CancellationToken, 5); break;
                 default:
                     throw new Exception("Unknown meta action verification strategy!");
             }
