@@ -9,7 +9,8 @@ namespace MetaActions
         {
             None = 0,
             CSMMacros = 1,
-            PDDLSharpMacros = 2
+            PDDLSharpMacros = 2,
+            PredicateMetaActions = 3
         }
 
         [Flags]

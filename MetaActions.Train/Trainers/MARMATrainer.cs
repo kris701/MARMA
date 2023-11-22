@@ -63,6 +63,7 @@ namespace MetaActions.Train.Trainers
             {
                 case MetaActionGenerationStrategy.CSMMacros: MetaActionStrategy = new CSMMacros(domainName, RunID, tempPath, CancellationToken); break;
                 case MetaActionGenerationStrategy.PDDLSharpMacros: MetaActionStrategy = new PDDLSharpMacros(domainName, RunID, tempPath, CancellationToken); break;
+                case MetaActionGenerationStrategy.PredicateMetaActions: MetaActionStrategy = new PredicateMetaActionsStrategy(domainName, RunID, tempPath, CancellationToken); break;
                 default:
                     throw new Exception("Unknown meta action generation strategy!");
             }
