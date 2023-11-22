@@ -44,8 +44,7 @@ impl State {
             .iter()
             .filter(|a| !World::global().predicates.is_static(a.predicate))
             .all(|atom| {
-                let corresponding: Vec<usize> =
-                    atom.parameters.iter().map(|p| arguments[*p]).collect();
+                let corresponding: Vec<usize> = atom.map_args(arguments);
                 if atom.predicate == 0 && corresponding.iter().all_equal() != atom.value {
                     return false;
                 } else if self.has(atom.predicate, &corresponding) != atom.value {
