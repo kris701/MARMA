@@ -18,16 +18,14 @@ namespace MetaActions.Train.VerificationStrategies
             int metaActionCounter = 1;
             foreach (var metaAction in allMetaActions)
             {
-                if (CancellationToken.IsCancellationRequested)
-                    return CurrentlyValidMetaActions;
+                if (CancellationToken.IsCancellationRequested) return CurrentlyValidMetaActions;
                 PathHelper.RecratePath(Path.Combine(metaAction.Name, _tempReplacementsPath));
                 Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(metaActionCounter / (double)allMetaActions.Count * 100, 0)}%]", ConsoleColor.Magenta);
                 int problemCounter = 1;
                 bool allValid = true;
                 foreach (var problem in verificationProblem)
                 {
-                    if (CancellationToken.IsCancellationRequested)
-                        return CurrentlyValidMetaActions;
+                    if (CancellationToken.IsCancellationRequested) return CurrentlyValidMetaActions;
                     Print($"\t\tProblem {problemCounter} out of {verificationProblem.Count} [{Math.Round(problemCounter / (double)verificationProblem.Count * 100, 0)}%].", ConsoleColor.DarkMagenta);
                     // Compile Meta Actions
                     Print($"\t\tCompiling meta action.", ConsoleColor.DarkMagenta);

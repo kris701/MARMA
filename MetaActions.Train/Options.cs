@@ -17,8 +17,9 @@ namespace MetaActions
         {
             None = 0,
             Strong = 1,
-            Strong_Useful = 2,
-            Weak_TimeLimit_10m = 3
+            StrongUseful = 2,
+            Weak1m = 3,
+            Weak1mUseful = 4
         }
 
 
