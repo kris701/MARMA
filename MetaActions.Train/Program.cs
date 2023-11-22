@@ -2,6 +2,7 @@
 using MetaActions.Train;
 using MetaActions.Train.Tools;
 using MetaActions.Train.Trainers;
+using System.Diagnostics.Metrics;
 using System.IO.Compression;
 using System.Text.Json;
 using Tools;
@@ -10,6 +11,7 @@ namespace MetaActions.Learn
 {
     internal class Program : BaseCLI
     {
+        private static int _ticked = 1;
         static int Main(string[] args)
         {
             var parser = new CommandLine.Parser(with => with.HelpWriter = null);
@@ -41,7 +43,7 @@ namespace MetaActions.Learn
 
             ConsoleHelper.WriteLineColor($"Executing Training Tasks", ConsoleColor.Blue);
             ConsoleHelper.WriteLineColor($"Time limit: {opts.TimeLimit}m", ConsoleColor.Blue);
-            ExecuteTasks(trainingTasks, opts.Multitask, opts.OutputPath);
+            ExecuteTasks(trainingTasks, opts.Multitask);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Generating identity file...", ConsoleColor.Blue);
@@ -80,11 +82,7 @@ namespace MetaActions.Learn
 
                 var tempPath = Path.Combine(opts.TempPath, domainName);
                 var outPath = Path.Combine(opts.OutputPath, domainName);
-
-                switch (opts.TrainingMethod)
-                {
-                    case Options.TrainingMethods.CSMMacros:
-                        runTasks.Add(new CSMTrainer(
+                runTasks.Add(new MARMATrainer(
                             domainName,
                             domain,
                             domainTrainProblems,
@@ -92,24 +90,9 @@ namespace MetaActions.Learn
                             TimeSpan.FromMinutes(opts.TimeLimit),
                             tempPath,
                             outPath,
-                            opts.Useful
+                            opts.VerificationStrategy,
+                            opts.GenerationStrategy
                             ));
-                        break;
-                    case Options.TrainingMethods.PDDLSharpMacros:
-                        runTasks.Add(new PDDLSharpTrainer(
-                            domainName,
-                            domain,
-                            domainTrainProblems,
-                            domainTestProblems,
-                            TimeSpan.FromMinutes(opts.TimeLimit),
-                            tempPath,
-                            outPath,
-                            opts.Useful
-                            ));
-                        break;
-                    default:
-                        throw new Exception("Training method not implemented");
-                }
             }
 
             runTasks.Shuffle();
@@ -117,8 +100,9 @@ namespace MetaActions.Learn
             return runTasks;
         }
 
-        private static void ExecuteTasks(List<ITrainer> runTasks, bool multitask, string outPath)
+        private static void ExecuteTasks(List<ITrainer> runTasks, bool multitask)
         {
+            StartTimeLeftTimer();
             if (multitask)
             {
                 int counter = 1;
@@ -141,7 +125,6 @@ namespace MetaActions.Learn
                             ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
                             ConsoleHelper.WriteLineColor($"Total meta actions:              {result.TotalMetaActions}", ConsoleColor.DarkGreen);
                             ConsoleHelper.WriteLineColor($"Total valid meta actions:        {result.TotalValidMetaActions}", ConsoleColor.DarkGreen);
-                            ConsoleHelper.WriteLineColor($"Total useful valid meta actions: {result.TotalUsefulMetaActions}", ConsoleColor.DarkGreen);
                         }
                         else
                             ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
@@ -184,6 +167,17 @@ namespace MetaActions.Learn
                     }
                 }
             }
+        }
+
+        private static void StartTimeLeftTimer()
+        {
+            var timeUpdateTimer = new System.Timers.Timer();
+            timeUpdateTimer.Interval = TimeSpan.FromMinutes(1).TotalMilliseconds;
+            timeUpdateTimer.Elapsed += (s, e) =>
+            {
+                ConsoleHelper.WriteLineColor($"Time passed: {_ticked++}m", ConsoleColor.Blue);
+            };
+            timeUpdateTimer.Start();
         }
     }
 }
