@@ -105,7 +105,6 @@ namespace StacklebergVerifier
             sb.Append($"{_stackelbergPath} ");
             if (opts.TimeLimit != 0)
                 sb.Append($"--overall-time-limit {opts.TimeLimit}m");
-            sb.Append($"--overall-time-limit 1s ");
             sb.Append($"\"{opts.DomainFilePath}\" ");
             sb.Append($"\"{opts.ProblemFilePath}\" ");
             if (opts.IsEasyProblem)
