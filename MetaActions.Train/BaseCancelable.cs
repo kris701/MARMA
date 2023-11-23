@@ -35,6 +35,7 @@ namespace MetaActions.Train
                 try
                 {
                     _activeProcess.Kill(true);
+                    _activeProcess.WaitForExit();
                 }
                 catch { }
             }
