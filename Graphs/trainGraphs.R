@@ -10,6 +10,7 @@ args[1] <- "trainResults.csv"
 if (length(args) != 1) {
   stop("No results file given in arguments!", call.=FALSE)
 }
+dir.create(file.path("out"), showWarnings = FALSE)
 
 # Read and Prepare data
 data <- read.csv(args[1])
@@ -33,7 +34,7 @@ data[nrow(data) + 1,] <- list(
 )
 
 # Generate table
-pdf("trainResult.pdf", width = 6.7, height = 5.7)
+pdf("out/trainResult.pdf", width = 6.7, height = 5.7)
 g <- tableGrob(data, rows=NULL, theme=ttheme_minimal(base_size = fontSize, family = fontFamily))
 g <- gtable_add_grob(g,
         grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
