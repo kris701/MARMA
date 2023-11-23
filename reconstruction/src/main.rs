@@ -81,6 +81,7 @@ fn meta_solve(
         match reconstructed {
             Ok(plan) => {
                 println!("search_time={:.4}", search_time);
+                println!("invalid_meta_actions={}", banned_meta_actions.len());
                 return plan;
             }
             Err(err) => {
