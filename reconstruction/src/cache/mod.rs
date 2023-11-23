@@ -1,6 +1,5 @@
 mod cache_data;
 pub mod generation;
-mod hash;
 mod lifted;
 
 use std::collections::HashMap;
@@ -35,7 +34,7 @@ pub(super) fn generate_plan(
             .parameters
             .iter()
             .map(|n| {
-                let index = macro_parameters.names.iter().position(|p| p == n).unwrap();
+                let index = macro_parameters.index(n);
                 parameters[index]
             })
             .collect();
@@ -48,13 +47,12 @@ pub(super) fn generate_plan(
 pub(super) fn find_fixed(arguments: &Vec<usize>, macro_action: &Action) -> HashMap<usize, usize> {
     macro_action
         .parameters
-        .names
-        .iter()
+        .iterate()
         .enumerate()
-        .filter_map(|(i, name)| match name.to_uppercase().contains('O') {
+        .filter_map(|(i, (name, _))| match name.to_uppercase().contains('O') {
             true => None,
             false => {
-                let parameter_index = name.parse::<usize>().unwrap();
+                let parameter_index = name.replace('?', "").parse::<usize>().unwrap();
                 Some((i, arguments[parameter_index]))
             }
         })

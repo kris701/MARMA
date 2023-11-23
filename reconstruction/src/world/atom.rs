@@ -1,6 +1,6 @@
 use spingus::domain::action::string_expression::StringExpression;
 
-use super::{parameter::Parameters, predicates::Predicates};
+use super::{parameter::Parameters, predicates::Predicates, World};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Atom {
@@ -11,20 +11,26 @@ pub struct Atom {
 }
 
 impl Atom {
-    pub fn is_nullary(&self) -> bool {
-        self.parameters.is_empty()
-    }
-
     pub fn is_unary(&self) -> bool {
         self.parameters.len() == 1
     }
-
-    pub fn is_nary(&self) -> bool {
-        self.parameters.len() >= 2
-    }
-
     pub fn map_args(&self, args: &Vec<usize>) -> Vec<usize> {
         self.parameters.iter().map(|p| args[*p]).collect()
+    }
+
+    pub fn export(&self, args: &Vec<String>) -> String {
+        let s = format!(
+            "({} {})",
+            World::global().predicates.name(self.predicate),
+            self.parameters
+                .iter()
+                .map(|p| args[*p].to_owned())
+                .collect::<String>()
+        );
+        match self.value {
+            true => s,
+            false => format!("(not {})", s),
+        }
     }
 }
 

@@ -35,7 +35,6 @@ pub enum Status {
     Cache,
     Reconstruction,
     Validation,
-    Report,
 }
 
 pub fn status_print(status: Status, input: &str) {
@@ -44,7 +43,6 @@ pub fn status_print(status: Status, input: &str) {
         Status::Cache => "CACHE",
         Status::Reconstruction => "RECONSTRUCTION",
         Status::Validation => "VALIDATION",
-        Status::Report => "REPORT",
     };
     println!("{} [{}] {}", statbar(), status, input);
 }

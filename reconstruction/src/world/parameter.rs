@@ -1,4 +1,4 @@
-use super::types::Types;
+use super::{types::Types, World};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Parameters {
@@ -7,16 +7,25 @@ pub struct Parameters {
 }
 
 impl Parameters {
-    pub fn arity(&self) -> usize {
-        self.names.len()
-    }
-
     pub fn index(&self, name: &str) -> usize {
         self.names.iter().position(|n| n == name).unwrap()
     }
 
     pub fn indexes(&self, names: &Vec<String>) -> Vec<usize> {
         names.iter().map(|n| self.index(n)).collect()
+    }
+
+    pub fn iterate<'a>(&'a self) -> impl Iterator<Item = (&String, &String)> + 'a {
+        self.names
+            .iter()
+            .zip(self.types.iter())
+            .map(|(name, type_index)| (name, World::global().types.name(*type_index)))
+    }
+
+    pub fn export(&self) -> String {
+        self.iterate()
+            .map(|(p_name, t_name)| format!(" {} - {}", p_name, t_name))
+            .collect()
     }
 }
 

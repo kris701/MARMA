@@ -1,6 +1,5 @@
 use super::{
     atom::{convert_expression, Atom},
-    objects::Objects,
     parameter::{translate_parameters, Parameters},
     predicates::Predicates,
     types::Types,
@@ -18,27 +17,25 @@ pub struct Action {
 
 impl Action {
     pub fn new(action: spingus::domain::action::Action) -> Self {
-        translate_action(
-            &World::global().types,
-            &World::global().predicates,
-            &World::global().objects,
-            action,
-        )
+        translate_action(&World::global().types, &World::global().predicates, action)
     }
 }
 
 impl fmt::Display for Action {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "{}", self.name)?;
-        writeln!(f, "parameters: {:?}", self.parameters.names)?;
-        writeln!(f, "precondition:")?;
+        writeln!(f, "\t(:action {}", self.name)?;
+        writeln!(f, "\t\t:parameters ({})", self.parameters.export())?;
+        writeln!(f, "\t\t:precondition (and")?;
         for atom in self.precondition.iter() {
-            writeln!(f, "\t{:?}", atom)?;
+            writeln!(f, "\t\t\t{}", atom.export(&self.parameters.names))?;
         }
-        writeln!(f, "effect:")?;
+        writeln!(f, "\t\t)")?;
+        writeln!(f, "\t\t:effect (and")?;
         for atom in self.effect.iter() {
-            writeln!(f, "\t{:?}", atom)?;
+            writeln!(f, "\t\t\t{}", atom.export(&self.parameters.names))?;
         }
+        writeln!(f, "\t\t)")?;
+        writeln!(f, "\t)")?;
         Ok(())
     }
 }
@@ -46,7 +43,6 @@ impl fmt::Display for Action {
 pub(super) fn translate_action(
     types: &Types,
     predicates: &Predicates,
-    objects: &Objects,
     action: spingus::domain::action::Action,
 ) -> Action {
     let name = action.name;

@@ -23,6 +23,13 @@ impl Types {
         self.parent.get(&index).copied()
     }
 
+    pub fn parent_name(&self, index: usize) -> String {
+        match self.parent(index) {
+            Some(parent) => self.name(parent).to_owned(),
+            None => "object".to_string(),
+        }
+    }
+
     pub fn is_of_type(&self, type_index: usize, wished_index: usize) -> bool {
         if type_index == wished_index {
             return true;
@@ -31,6 +38,13 @@ impl Types {
             Some(parent) => self.is_of_type(parent, wished_index),
             None => false,
         }
+    }
+
+    pub fn iterate<'a>(&'a self) -> impl Iterator<Item = (&String, String)> + 'a {
+        self.index_map
+            .iter()
+            .filter(|(_, index)| **index != self.default())
+            .map(|(n, index)| (n, self.parent_name(*index)))
     }
 }
 

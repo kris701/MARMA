@@ -6,14 +6,42 @@ use std::{
     process::Command,
 };
 
-use crate::tools::random_file_name;
+use crate::tools::{random_file_name, status_print, Status};
+use once_cell::sync::OnceCell;
+
+#[derive(Debug)]
+pub enum DownwardError {
+    Unsolvable,
+    Launch(String),
+    RunTime(String),
+    PlanRead(String),
+    PlanParse(String),
+}
+
+impl DownwardError {
+    pub fn to_string(&self) -> String {
+        match self {
+            DownwardError::Unsolvable => format!("Downward could not solve problem"),
+            DownwardError::Launch(err) => format!("Could not launch downward with err: {}", err),
+            DownwardError::RunTime(err) => format!("Downward crashed with err: {}", err),
+            DownwardError::PlanRead(err) => format!("Failed to read plan with err: {}", err),
+            DownwardError::PlanParse(err) => format!("Failed to parse plan with err: {}", err),
+        }
+    }
+}
 
 pub struct Downward {
     pub path: PathBuf,
     pub temp_dir: PathBuf,
 }
 
+pub static DOWNWARD: OnceCell<Downward> = OnceCell::new();
+
 impl Downward {
+    pub fn global() -> &'static Downward {
+        DOWNWARD.get().expect("downward is not initialized")
+    }
+
     pub fn new(path: &Option<PathBuf>, temp_dir: &PathBuf) -> Self {
         let path = match path {
             Some(path) => path.into(),
@@ -28,27 +56,35 @@ impl Downward {
         }
     }
 
-    fn run(&self, cmd: &mut Command, plan_path: &String) -> Result<SASPlan, String> {
-        let out = cmd.output().map_err(|e| e.to_string())?;
+    fn run(&self, cmd: &mut Command, plan_path: &String) -> Result<SASPlan, DownwardError> {
+        let out = cmd
+            .output()
+            .map_err(|e| DownwardError::Launch(e.to_string()))?;
+
         if !out.status.success() {
-            return Err(format!(
-                "Downward failed with args:\n{:?}stdout:\n{}err:\n{}",
-                cmd.get_args(),
-                String::from_utf8(out.stdout).unwrap(),
-                String::from_utf8(out.stderr).unwrap(),
-            ));
+            if out.status.code().unwrap() == 12 {
+                return Err(DownwardError::Unsolvable);
+            } else {
+                return Err(DownwardError::RunTime(format!(
+                    "{:?}stdout:\n{}err:\n{}",
+                    cmd.get_args(),
+                    String::from_utf8(out.stdout).unwrap(),
+                    String::from_utf8(out.stderr).unwrap(),
+                )));
+            }
         }
-        let plan = fs::read_to_string(plan_path).map_err(|e| e.to_string())?;
+        let plan =
+            fs::read_to_string(plan_path).map_err(|e| DownwardError::PlanRead(e.to_string()))?;
         parse_sas(&plan).map_err(|e| {
-            format!(
-                "Could not parse the plan downward outputted. Plan: {}\nError: {}",
-                &plan,
-                e.to_string()
-            )
+            DownwardError::PlanParse(format!("Plan: {}\nError: {}", &plan, e.to_string()))
         })
     }
 
-    pub fn solve(&self, domain_path: &PathBuf, problem_path: &PathBuf) -> Result<SASPlan, String> {
+    pub fn solve(
+        &self,
+        domain_path: &PathBuf,
+        problem_path: &PathBuf,
+    ) -> Result<SASPlan, DownwardError> {
         let mut cmd: Command = Command::new(Path::new(&self.path).to_str().unwrap());
         let plan_path = random_file_name(&self.temp_dir);
         let sas_path = random_file_name(&self.temp_dir);
@@ -67,12 +103,11 @@ impl Downward {
         let result = self.run(&mut cmd, &plan_path);
         _ = fs::remove_file(sas_path);
         _ = fs::remove_file(plan_path);
-        match result {
-            Ok(plan) => Ok(plan),
-            Err(err) => Err(format!(
-                "Had error during fast downward replacement. Error: {}",
-                err
-            )),
-        }
+        result
     }
+}
+
+pub fn init_downward(downward: &Option<PathBuf>, temp_dir: &PathBuf) {
+    status_print(Status::Init, "Finding downward");
+    let _ = DOWNWARD.set(Downward::new(downward, temp_dir));
 }

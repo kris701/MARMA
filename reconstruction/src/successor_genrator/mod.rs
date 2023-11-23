@@ -1,5 +1,3 @@
-pub mod r#static;
-
 use crate::{
     state::State,
     world::{action::Action, atom::Atom, World},

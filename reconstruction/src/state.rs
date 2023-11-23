@@ -1,11 +1,8 @@
-use std::collections::HashSet;
-
-use itertools::Itertools;
-
 use crate::{
     fact::Fact,
     world::{action::Action, World},
 };
+use std::collections::HashSet;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
@@ -35,23 +32,6 @@ impl State {
 
     fn get(&self) -> &HashSet<Fact> {
         &self.internal
-    }
-
-    /// NOTE: checks only non-static atoms
-    pub fn is_legal(&self, action: &Action, arguments: &Vec<usize>) -> bool {
-        action
-            .precondition
-            .iter()
-            .filter(|a| !World::global().predicates.is_static(a.predicate))
-            .all(|atom| {
-                let corresponding: Vec<usize> = atom.map_args(arguments);
-                if atom.predicate == 0 && corresponding.iter().all_equal() != atom.value {
-                    return false;
-                } else if self.has(atom.predicate, &corresponding) != atom.value {
-                    return false;
-                }
-                true
-            })
     }
 
     pub fn has(&self, predicate: usize, arguments: &Vec<usize>) -> bool {
