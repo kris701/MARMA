@@ -136,6 +136,8 @@ namespace MetaActions.Learn
                     {
                         ConsoleHelper.WriteLineColor($"Something failed in the training!", ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
+                        if (ex.StackTrace != null)
+                            ConsoleHelper.WriteLineColor(ex.StackTrace, ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor($"", ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor($"Killing tasks...!", ConsoleColor.Red);
                         foreach (var cancel in runTasks)

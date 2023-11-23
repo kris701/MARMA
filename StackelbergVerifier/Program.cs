@@ -65,7 +65,7 @@ namespace StacklebergVerifier
                     _timedOut = true;
                     if (_activeProcess != null)
                     {
-                        _activeProcess.Kill();
+                        _activeProcess.Kill(true);
                         _activeProcess.WaitForExit();
                     }
                 };
