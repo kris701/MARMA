@@ -66,7 +66,6 @@ fn meta_solve(
     domain_path: &PathBuf,
     problem_path: &PathBuf,
 ) -> SASPlan {
-    println!("operator_count={}", get_permutation_count());
     let mut search_time: f64 = 0.0;
     let meta_count = World::global().meta_actions.len();
     let mut banned_meta_actions: Vec<usize> = Vec::new();
@@ -80,7 +79,10 @@ fn meta_solve(
         let reconstructed = reconstruct(cache, iterative, domain_path, plan);
         let _ = fs::remove_file(&meta_file);
         match reconstructed {
-            Ok(plan) => return plan,
+            Ok(plan) => {
+                println!("search_time={:.4}", search_time);
+                return plan;
+            }
             Err(err) => {
                 println!(
                     "Invalid meta action: {}",
@@ -90,7 +92,6 @@ fn meta_solve(
             }
         }
     }
-    println!("search_time={:.4}", search_time);
     panic!()
 }
 
@@ -109,6 +110,7 @@ fn main() {
         &args.domain,
         &args.problem,
     );
+    println!("operator_count={}", get_permutation_count());
     if let Some(val_path) = args.val {
         status_print(Status::Validation, "Checking VAL");
         if check_val(

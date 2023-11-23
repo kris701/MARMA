@@ -11,7 +11,11 @@ pub struct State {
 
 impl State {
     pub fn new(facts: &Vec<Fact>) -> Self {
-        let internal: HashSet<Fact> = facts.iter().cloned().collect();
+        let internal: HashSet<Fact> = facts
+            .iter()
+            .filter(|f| !World::global().predicates.is_static(f.predicate()))
+            .cloned()
+            .collect();
         Self { internal }
     }
 
