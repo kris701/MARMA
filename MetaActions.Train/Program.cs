@@ -113,7 +113,7 @@ namespace MetaActions.Learn
             if (multitask)
             {
                 int counter = 1;
-                var tasks = new List<Task<RunReport?>>();
+                var tasks = new List<Task<RunReport>>();
                 foreach (var task in runTasks)
                     tasks.Add(task.RunTask());
                 foreach (var task in tasks)
@@ -126,12 +126,9 @@ namespace MetaActions.Learn
                         var resultTask = Task.WhenAny(tasks).Result;
                         tasks.Remove(resultTask);
                         var result = resultTask.Result;
-
-                        if (result != null)
-                        {
-                            runReports.Add(result);
+                        runReports.Add(result);
+                        if (!result.TimedOut)
                             ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
-                        }
                         else
                             ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
                     }
@@ -157,11 +154,9 @@ namespace MetaActions.Learn
                         resultTask.Start();
                         resultTask.Wait();
                         var result = resultTask.Result;
-                        if (result != null)
-                        {
-                            runReports.Add(result);
+                        runReports.Add(result);
+                        if (!result.TimedOut)
                             ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
-                        }
                         else
                             ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
                     }

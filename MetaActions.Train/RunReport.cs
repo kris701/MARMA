@@ -8,8 +8,9 @@
         public int TotalMetaActions { get; set; }
         public int TotalValidMetaActions { get; set; }
         public int TotalReplacementMacros { get; set; }
+        public bool TimedOut { get; set; }
 
-        public RunReport(string taskID, int totalTrainingProblems, int totalTestingProblems, int totalMetaActions, int totalValidMetaActions, int totalReplacementMacros)
+        public RunReport(string taskID, int totalTrainingProblems, int totalTestingProblems, int totalMetaActions, int totalValidMetaActions, int totalReplacementMacros, bool timedOut)
         {
             TaskID = taskID;
             TotalTrainingProblems = totalTrainingProblems;
@@ -17,6 +18,7 @@
             TotalMetaActions = totalMetaActions;
             TotalValidMetaActions = totalValidMetaActions;
             TotalReplacementMacros = totalReplacementMacros;
+            TimedOut = timedOut;
         }
     }
 }

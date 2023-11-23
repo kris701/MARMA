@@ -16,7 +16,7 @@ namespace MetaActions.Train.Trainers
         public IVerificationStrategy MetaActionVerificationStrategy { get; }
 
         public CancellationTokenSource CancellationToken { get; }
-        public Task<RunReport?> RunTask();
-        public RunReport? Run();
+        public Task<RunReport> RunTask();
+        public RunReport Run();
     }
 }

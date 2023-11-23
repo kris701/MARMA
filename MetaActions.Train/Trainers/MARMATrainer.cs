@@ -84,11 +84,11 @@ namespace MetaActions.Train.Trainers
             GenerateMetaDomain(Domain, MetaActionVerificationStrategy.CurrentlyValidMetaActions, OutPath, TempPath);
         }
 
-        public Task<RunReport?> RunTask()
+        public Task<RunReport> RunTask()
         {
-            return new Task<RunReport?>(Run);
+            return new Task<RunReport>(Run);
         }
-        public RunReport? Run()
+        public RunReport Run()
         {
             _isDone = false;
             Print($"Training started ({GetType().Name})", ConsoleColor.Blue);
@@ -98,7 +98,6 @@ namespace MetaActions.Train.Trainers
 
             Print($"Getting meta actions...", ConsoleColor.Blue);
             var allMetaActions = MetaActionStrategy.GetMetaActions(Domain, TrainingProblems);
-            if (CancellationToken.IsCancellationRequested) return null;
 
             Print($"Validating meta actions...", ConsoleColor.Blue);
             var verifiedMetaActions = MetaActionVerificationStrategy.VerifyMetaActions(Domain, allMetaActions, TrainingProblems);
@@ -111,7 +110,6 @@ namespace MetaActions.Train.Trainers
             }
             Print($"Generating final meta domain...", ConsoleColor.Blue);
             GenerateMetaDomain(Domain, MetaActionVerificationStrategy.CurrentlyValidMetaActions, OutPath, TempPath);
-            if (CancellationToken.IsCancellationRequested) return null;
 
             if (!CancellationToken.IsCancellationRequested)
                 _isDone = true;
@@ -122,7 +120,8 @@ namespace MetaActions.Train.Trainers
                 TestingProblems.Count,
                 allMetaActions.Count,
                 verifiedMetaActions.Count,
-                verifiedMetaActions.Sum(x => x.Replacements.Count / 2));
+                verifiedMetaActions.Sum(x => x.Replacements.Count / 2),
+                CancellationToken.IsCancellationRequested);
         }
 
         private void StartTimeoutTimer()
