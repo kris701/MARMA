@@ -6,7 +6,7 @@ source("src/style.R")
 
 # Handle arguments
 args = commandArgs(trailingOnly=TRUE)
-args[1] <- "trainResults.csv"
+#args[1] <- "trainResults.csv"
 if (length(args) != 1) {
   stop("No results file given in arguments!", call.=FALSE)
 }
