@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use itertools::Itertools;
+
 use crate::input_handling::Record;
 
 fn calculate_score(time_used: &f64, time_limit: &f64) -> f64 {
@@ -10,19 +12,20 @@ fn calculate_score(time_used: &f64, time_limit: &f64) -> f64 {
     }
 }
 
-fn generate_scores(records: Vec<Record>, time_limit: &f64) -> HashMap<String, f64> {
-    let mut scores: HashMap<String, f64> = HashMap::new();
+fn generate_scores(
+    records: Vec<Record>,
+    time_limit: &f64,
+) -> HashMap<String, HashMap<String, f64>> {
+    let mut scores: HashMap<String, HashMap<String, f64>> = HashMap::new();
     for record in records.into_iter() {
+        let domain_entry = scores.entry(record.domain).or_default();
+        let reconstruction_entry = domain_entry.entry(record.name).or_default();
         if !record.solved {
             continue;
         }
         if let Some(time_used) = record.total_time {
             let score = calculate_score(&time_used, time_limit);
-
-            match scores.get(&record.name) {
-                Some(count) => scores.insert(record.name, count + score),
-                None => scores.insert(record.name, score),
-            };
+            *reconstruction_entry += score;
         }
     }
     scores
@@ -30,10 +33,43 @@ fn generate_scores(records: Vec<Record>, time_limit: &f64) -> HashMap<String, f6
 
 pub fn generate_report(records: Vec<Record>, time_limit: &f64) -> String {
     let scores = generate_scores(records, time_limit);
-    let mut s = String::new();
-    s.push_str("name,score\n");
-    for (name, score) in scores.iter() {
-        s.push_str(&format!("{},{:.2}\n", name, score));
+    let domains: Vec<String> = scores.keys().cloned().collect();
+    let methods: Vec<String> = scores
+        .iter()
+        .flat_map(|(_, v)| v.keys().cloned())
+        .unique()
+        .collect();
+    let domain_width = domains
+        .iter()
+        .max_by(|a, b| a.len().cmp(&b.len()))
+        .unwrap()
+        .len()
+        + 1;
+    let method_width = methods
+        .iter()
+        .max_by(|a, b| a.len().cmp(&b.len()))
+        .unwrap()
+        .len()
+        + 1;
+    let mut s = format!("{:1$}", "domain", domain_width);
+    for method in methods.iter() {
+        s.push_str(&format!("{:>1$}", method, method_width));
     }
+    s.push_str("\n");
+    for domain in domains.into_iter() {
+        let score_entry = &scores[&domain];
+        s.push_str(&format!("{:1$}", domain, domain_width));
+        for method in methods.iter() {
+            s.push_str(&format!("{:1$.0}", score_entry[method], method_width));
+        }
+        s.push_str("\n");
+    }
+    s.push_str(&format!("{:1$}", "sum", domain_width));
+    for method in methods.iter() {
+        let sum: f64 = scores.iter().map(|(_, v)| v[method]).sum();
+        s.push_str(&format!("{:1$.0}", sum, method_width));
+    }
+    s.push_str("\n");
+
     s
 }
