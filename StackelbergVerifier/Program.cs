@@ -10,6 +10,7 @@ namespace StacklebergVerifier
 {
     internal class Program : BaseCLI
     {
+        private static string _replacementsPath = "replacements";
         private static string _stackelbergPath = PathHelper.RootPath("Dependencies/stackelberg-planner/src/fast-downward.py");
         private static int _returnCode = int.MaxValue;
         private static Process? _activeProcess;
@@ -28,6 +29,7 @@ namespace StacklebergVerifier
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
             opts.DomainFilePath = PathHelper.RootPath(opts.DomainFilePath);
             opts.ProblemFilePath = PathHelper.RootPath(opts.ProblemFilePath);
+            _replacementsPath = Path.Combine(opts.OutputPath, _replacementsPath);
 
             ConsoleHelper.WriteLineColor("Verifying paths...");
             if (!Directory.Exists(opts.OutputPath))
@@ -76,6 +78,17 @@ namespace StacklebergVerifier
             ConsoleHelper.WriteLineColor("(Note, this may take a while)");
             var exitCode = ExecutePlanner(opts);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
+
+            if (exitCode == 0 || _timedOut)
+            {
+                var checkDir = new DirectoryInfo(_replacementsPath);
+                if (Directory.Exists(checkDir.FullName)) {
+                    int count = checkDir.GetFiles().Count();
+                    Thread.Sleep(1000);
+                    while(count != checkDir.GetFiles().Count())
+                        Thread.Sleep(1000);
+                }
+            }
 
             if (exitCode != 0)
             {
