@@ -1,7 +1,7 @@
 library(dplyr) 
 library(ggplot2)
 
-source("style.R")
+source("./src/style.R")
 
 generate_coveragePlot <- function(list1, name1, list2, name2, title, outName) {
 	metaSearchTime <- lapply(list(list2), sort)[[1]]

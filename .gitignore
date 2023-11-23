@@ -413,3 +413,4 @@ FodyWeavers.xsd
 /cache/
 results.csv
 /Graphs/*.pdf
+/Graphs/out/*
