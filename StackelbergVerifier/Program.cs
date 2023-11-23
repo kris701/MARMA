@@ -64,7 +64,10 @@ namespace StacklebergVerifier
                 {
                     _timedOut = true;
                     if (_activeProcess != null)
+                    {
                         _activeProcess.Kill();
+                        _activeProcess.WaitForExit();
+                    }
                 };
                 cancelationTimer.Start();
             }
