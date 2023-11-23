@@ -16,6 +16,7 @@ echo == Installing R Packages ==
 echo 
 Rscript -e "install.packages(\"dplyr\");"
 Rscript -e "install.packages(\"ggplot2\");"
+Rscript -e "install.packages(\"gridExtra\");"
 echo 
 echo == Done! ==
 echo 
