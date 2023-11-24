@@ -1,13 +1,13 @@
 library(dplyr) 
 library(ggplot2)
 
-source("style.R")
-source("graphNames.R")
-source("scatterPlots.R")
-source("donutPlots.R")
-source("coveragePlots.R")
-source("domainBarPlots.R")
-source("clamper.R")
+source("src/style.R")
+source("src/graphNames.R")
+source("src/scatterPlots.R")
+source("src/donutPlots.R")
+source("src/coveragePlots.R")
+source("src/domainBarPlots.R")
+source("src/clamper.R")
 
 # Handle arguments
 args = commandArgs(trailingOnly=TRUE)
@@ -39,9 +39,9 @@ data <- read.csv(
 )
 data <- rename_data(data)
 if (nrow(data[data$name == AName,]) == 0)
-	stop(paste("Column name '", AName, "' not found in dataset!"), call.=FALSE)
+	stop(paste("Column name '", args[2], "' not found in dataset!"), call.=FALSE)
 if (nrow(data[data$name == BName,]) == 0)
-	stop(paste("Column name '", BName, "' not found in dataset!"), call.=FALSE)
+	stop(paste("Column name '", args[3], "' not found in dataset!"), call.=FALSE)
 
 data <- max_unsolved(data, "total_time")
 data <- max_unsolved(data, "search_time")
@@ -51,9 +51,11 @@ data <- max_unsolved(data, "reconstruction_time")
 AData = data[data$name == AName,]
 BData = data[data$name == BName,]
 if (nrow(AData[AData$solved == 'true',]) == 0)
-	stop(paste("Method '", AName, "' have no solved instances!"), call.=FALSE)
+	stop(paste("Method '", args[2], "' have no solved instances!"), call.=FALSE)
 if (nrow(BData[BData$solved == 'true',]) == 0)
-	stop(paste("Method '", BName, "' have no solved instances!"), call.=FALSE)
+	stop(paste("Method '", args[3], "' have no solved instances!"), call.=FALSE)
+
+dir.create(file.path("out"), showWarnings = FALSE)
 
 combined <- merge(AData, BData, by = c("domain", "problem"), suffixes=c(".A", ".B"))
 combined <- combined %>% select(-contains('name.A'))
@@ -71,7 +73,7 @@ generate_dounotplot(
 	BName,
 	nrow(combined),
 	"Solved vs. Unsolved",
-	paste(AName, "_vs_", BName, "_solvedUnsolved.pdf"))
+	paste("out/solvedUnsolved_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Cache Init times")
 generate_domainBarPlot(
@@ -80,8 +82,8 @@ generate_domainBarPlot(
 	AName,
 	"cache_init_time.B",
 	BName,
-	"Cache Init Times",
-	paste(AName, "_vs_", BName, "_cacheInitTime.pdf"))
+	"Cache Init Times (s)",
+	paste("out/cacheInitTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Cache Lookup times")
 generate_domainBarPlot(
@@ -90,8 +92,8 @@ generate_domainBarPlot(
 	AName,
 	"cache_lookup_time.B",
 	BName,
-	"Cache Lookup Times",
-	paste(AName, "_vs_", BName, "_cacheLookupTime.pdf"))
+	"Cache Lookup Times (s)",
+	paste("out/cacheLookupTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Used Meta Actions (A)")
 generate_domainBarPlot(
@@ -101,7 +103,7 @@ generate_domainBarPlot(
 	"found_in_cache.A",
 	"Replacements Found",
 	paste("Meta Actions vs. Replacements found (", AName, ")"),
-	paste(AName, "_metaActionCoverage.pdf"))
+	paste("out/metaActionCoverage_", AName, ".pdf", sep = ""))
 
 print("Generating: Used Meta Actions (B)")
 generate_domainBarPlot(
@@ -111,20 +113,20 @@ generate_domainBarPlot(
 	"found_in_cache.B",
 	"Replacements Found",
 	paste("Meta Actions vs. Replacements found (", BName, ")"),
-	paste(BName, "_metaActionCoverage.pdf"))
+	paste("out/metaActionCoverage_", BName, ".pdf", sep = ""))
 
 print("Generating: Search Time Scatter")
 searchData <- data.frame(x = combined$search_time.A, y = combined$search_time.B, domain = combined$domain)
-generate_scatterplot(searchData , AName, BName, "Search Time", paste(AName, "_vs_", BName, "_searchTime.pdf"))
+generate_scatterplot(searchData , AName, BName, "Search Time (s)", paste("out/searchTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Total Time Scatter")
 totalData <- data.frame(x = combined$total_time.A, y = combined$total_time.B, domain = combined$domain)
-generate_scatterplot(totalData, AName, BName, "Total Time", paste(AName, "_vs_", BName, "_totalTime.pdf"))
+generate_scatterplot(totalData, AName, BName, "Total Time (s)", paste("out/totalTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Reconstruction Time Scatter")
 reconData <- data.frame(x = combined$reconstruction_time.A, y = combined$reconstruction_time.B, domain = combined$domain)
-generate_scatterplot(reconData, AName, BName, "Reconstruction Time", paste(AName, "_vs_", BName, "_reconstructionTime.pdf"))
+generate_scatterplot(reconData, AName, BName, "Reconstruction Time (s)", paste("out/reconstructionTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Coverage plot")
-generate_coveragePlot(finished$total_time.A, AName, finished$total_time.B, BName, "Coverage", paste(AName, "_vs_", BName, "_coverage.pdf"))
+generate_coveragePlot(finished$total_time.A, AName, finished$total_time.B, BName, "Coverage", paste("out/fullCoverage_", AName, "_vs_", BName, ".pdf", sep = ""))
 

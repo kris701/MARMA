@@ -1,6 +1,6 @@
 library(ggplot2)
 
-source("style.R")
+source("./src/style.R")
 
 generate_domainBarPlot <- function(finished, target1, name1, target2, name2, title, outName) {
 	domains <- c()

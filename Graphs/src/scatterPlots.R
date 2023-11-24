@@ -1,6 +1,6 @@
 library(ggplot2)
 
-source("style.R")
+source("./src/style.R")
 
 generate_scatterplot <- function(data, name1, name2, title, outName) {
 	minimum = min(data$x, data$y)

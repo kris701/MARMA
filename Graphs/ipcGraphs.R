@@ -1,10 +1,17 @@
 library(dplyr) 
 library(ggplot2)
 
-imgWidth <- 8
-imgHeight <- 9
+source("src/style.R")
+source("src/graphNames.R")
 
-data <- read.csv("results.csv", header = T, sep = ",", colClasses=c('character','numeric'))
+# Handle arguments
+args = commandArgs(trailingOnly=TRUE)
+if (length(args) != 1) {
+  stop("No results file given in arguments!", call.=FALSE)
+}
+dir.create(file.path("out"), showWarnings = FALSE)
+
+data <- read.csv(args[1], header = T, sep = ",", colClasses=c('character','numeric'))
 
 plot <- ggplot(data, aes(x = reorder(name, -score), y = score, fill = name)) + 
 	geom_col() + 
@@ -16,4 +23,4 @@ plot <- ggplot(data, aes(x = reorder(name, -score), y = score, fill = name)) +
 		axis.title=element_blank(),
 		legend.position="none")
 plot
-ggsave(plot=plot, filename="ipcScore.pdf", width=imgWidth, height=imgHeight)
+ggsave(plot=plot, filename=paste("out/", "ipcScore.pdf", sep=""), width=imgWidth, height=imgHeight)

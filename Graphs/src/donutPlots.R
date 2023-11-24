@@ -1,6 +1,6 @@
 library(ggplot2)
 
-source("style.R")
+source("./src/style.R")
 
 generate_dounotplot <- function(size1, name1, size2, name2, total, title, outName) {
 	plot <- ggplot() + 
