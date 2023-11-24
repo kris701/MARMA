@@ -10,9 +10,12 @@ namespace StacklebergVerifier
 {
     internal class Program : BaseCLI
     {
+        private static string _replacementsPath = "replacements";
         private static string _stackelbergPath = PathHelper.RootPath("Dependencies/stackelberg-planner/src/fast-downward.py");
         private static int _returnCode = int.MaxValue;
-        private static string _errLog = "";
+        private static Process? _activeProcess;
+        private static bool _timedOut = false;
+
         static int Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
@@ -26,6 +29,7 @@ namespace StacklebergVerifier
             opts.OutputPath = PathHelper.RootPath(opts.OutputPath);
             opts.DomainFilePath = PathHelper.RootPath(opts.DomainFilePath);
             opts.ProblemFilePath = PathHelper.RootPath(opts.ProblemFilePath);
+            _replacementsPath = Path.Combine(opts.OutputPath, _replacementsPath);
 
             ConsoleHelper.WriteLineColor("Verifying paths...");
             if (!Directory.Exists(opts.OutputPath))
@@ -53,15 +57,42 @@ namespace StacklebergVerifier
                 }
             }
 
+            if (opts.TimeLimit != 0)
+            {
+                var cancelationTimer = new System.Timers.Timer();
+                cancelationTimer.Interval = TimeSpan.FromMinutes(opts.TimeLimit).TotalMilliseconds;
+                cancelationTimer.AutoReset = false;
+                cancelationTimer.Elapsed += (s, e) =>
+                {
+                    _timedOut = true;
+                    if (_activeProcess != null)
+                    {
+                        _activeProcess.Kill(true);
+                        _activeProcess.WaitForExit();
+                    }
+                };
+                cancelationTimer.Start();
+            }
+
             ConsoleHelper.WriteLineColor("Executing Stackelberg Planner");
             ConsoleHelper.WriteLineColor("(Note, this may take a while)");
             var exitCode = ExecutePlanner(opts);
             ConsoleHelper.WriteLineColor("Done!", ConsoleColor.Green);
 
+            if (exitCode == 0 || _timedOut)
+            {
+                var checkDir = new DirectoryInfo(_replacementsPath);
+                if (Directory.Exists(checkDir.FullName)) {
+                    int count = checkDir.GetFiles().Count();
+                    Thread.Sleep(1000);
+                    while(count != checkDir.GetFiles().Count())
+                        Thread.Sleep(1000);
+                }
+            }
+
             if (exitCode != 0)
             {
-                // Looks like the translator outputs "-24" if it times out (even tho its not documented to do so anywhere...)
-                if (exitCode == -24 || _errLog.Contains("CPU time limit exceeded"))
+                if (_timedOut)
                 {
                     _returnCode = 2;
                     ConsoleHelper.WriteLineColor("== Planner timed out ==", ConsoleColor.Yellow);
@@ -103,11 +134,8 @@ namespace StacklebergVerifier
 
         private static int ExecutePlanner(Options opts)
         {
-            _errLog = "";
             StringBuilder sb = new StringBuilder("");
             sb.Append($"{_stackelbergPath} ");
-            if (opts.TimeLimit != 0)
-                sb.Append($"--search-time-limit {opts.TimeLimit}m ");
             sb.Append($"\"{opts.DomainFilePath}\" ");
             sb.Append($"\"{opts.ProblemFilePath}\" ");
             if (opts.IsEasyProblem)
@@ -115,7 +143,7 @@ namespace StacklebergVerifier
             else
                 sb.Append($"--search \"sym_stackelberg(optimal_engine=symbolic(plan_reuse_minimal_task_upper_bound=true, plan_reuse_upper_bound=true, force_bw_search_minimum_task_seconds=30, time_limit_seconds_minimum_task=300), upper_bound_pruning=true)\" ");
 
-            var process = new Process
+            _activeProcess = new Process
             {
                 StartInfo = new ProcessStartInfo()
                 {
@@ -128,15 +156,10 @@ namespace StacklebergVerifier
                     WorkingDirectory = opts.OutputPath
                 }
             };
-            process.ErrorDataReceived += (s, e) => { 
-                if (e.Data != null) 
-                    _errLog += e.Data; 
-            };
 
-            process.Start();
-            process.BeginErrorReadLine();
-            process.WaitForExit();
-            return process.ExitCode;
+            _activeProcess.Start();
+            _activeProcess.WaitForExit();
+            return _activeProcess.ExitCode;
         }
 
     }

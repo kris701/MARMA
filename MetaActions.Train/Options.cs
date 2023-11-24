@@ -9,7 +9,8 @@ namespace MetaActions
         {
             None = 0,
             CSMMacros = 1,
-            PDDLSharpMacros = 2
+            PDDLSharpMacros = 2,
+            PredicateMetaActions = 3
         }
 
         [Flags]
@@ -19,7 +20,9 @@ namespace MetaActions
             Strong = 1,
             StrongUseful = 2,
             Weak1m = 3,
-            Weak1mUseful = 4
+            Weak1mUseful = 4,
+            Weak5m = 5,
+            Weak5mUseful = 6
         }
 
 

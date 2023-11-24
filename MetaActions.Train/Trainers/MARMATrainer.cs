@@ -63,6 +63,7 @@ namespace MetaActions.Train.Trainers
             {
                 case MetaActionGenerationStrategy.CSMMacros: MetaActionStrategy = new CSMMacros(domainName, RunID, tempPath, CancellationToken); break;
                 case MetaActionGenerationStrategy.PDDLSharpMacros: MetaActionStrategy = new PDDLSharpMacros(domainName, RunID, tempPath, CancellationToken); break;
+                case MetaActionGenerationStrategy.PredicateMetaActions: MetaActionStrategy = new PredicateMetaActionsStrategy(domainName, RunID, tempPath, CancellationToken); break;
                 default:
                     throw new Exception("Unknown meta action generation strategy!");
             }
@@ -73,6 +74,8 @@ namespace MetaActions.Train.Trainers
                 case Options.MetaActionVerificationStrategy.StrongUseful: MetaActionVerificationStrategy = new StrongUsefulVerificationStrategy(domainName, RunID, tempPath, CancellationToken); break;
                 case Options.MetaActionVerificationStrategy.Weak1m: MetaActionVerificationStrategy = new WeakVerificationStrategy(domainName, RunID, tempPath, CancellationToken, 1); break;
                 case Options.MetaActionVerificationStrategy.Weak1mUseful: MetaActionVerificationStrategy = new WeakUsefulVerificationStrategy(domainName, RunID, tempPath, CancellationToken, 1); break;
+                case Options.MetaActionVerificationStrategy.Weak5m: MetaActionVerificationStrategy = new WeakVerificationStrategy(domainName, RunID, tempPath, CancellationToken, 5); break;
+                case Options.MetaActionVerificationStrategy.Weak5mUseful: MetaActionVerificationStrategy = new WeakUsefulVerificationStrategy(domainName, RunID, tempPath, CancellationToken, 5); break;
                 default:
                     throw new Exception("Unknown meta action verification strategy!");
             }
@@ -81,11 +84,11 @@ namespace MetaActions.Train.Trainers
             GenerateMetaDomain(Domain, MetaActionVerificationStrategy.CurrentlyValidMetaActions, OutPath, TempPath);
         }
 
-        public Task<RunReport?> RunTask()
+        public Task<RunReport> RunTask()
         {
-            return new Task<RunReport?>(Run);
+            return new Task<RunReport>(Run);
         }
-        public RunReport? Run()
+        public RunReport Run()
         {
             _isDone = false;
             Print($"Training started ({GetType().Name})", ConsoleColor.Blue);
@@ -95,7 +98,6 @@ namespace MetaActions.Train.Trainers
 
             Print($"Getting meta actions...", ConsoleColor.Blue);
             var allMetaActions = MetaActionStrategy.GetMetaActions(Domain, TrainingProblems);
-            if (CancellationToken.IsCancellationRequested) return null;
 
             Print($"Validating meta actions...", ConsoleColor.Blue);
             var verifiedMetaActions = MetaActionVerificationStrategy.VerifyMetaActions(Domain, allMetaActions, TrainingProblems);
@@ -108,12 +110,18 @@ namespace MetaActions.Train.Trainers
             }
             Print($"Generating final meta domain...", ConsoleColor.Blue);
             GenerateMetaDomain(Domain, MetaActionVerificationStrategy.CurrentlyValidMetaActions, OutPath, TempPath);
-            if (CancellationToken.IsCancellationRequested) return null;
 
             if (!CancellationToken.IsCancellationRequested)
                 _isDone = true;
 
-            return new RunReport(Name, allMetaActions.Count, MetaActionVerificationStrategy.CurrentlyValidMetaActions.Count);
+            return new RunReport(
+                Name,
+                TrainingProblems.Count,
+                TestingProblems.Count,
+                allMetaActions.Count,
+                verifiedMetaActions.Count,
+                verifiedMetaActions.Sum(x => x.Replacements.Count / 2),
+                CancellationToken.IsCancellationRequested);
         }
 
         private void StartTimeoutTimer()
