@@ -20,10 +20,10 @@ using Tools;
 
 namespace MetaActions.Train.MetaActionStrategies
 {
-    public class PredicateMetaActionsStrategy : BaseCancelable, IMetaActionStrategy
+    public class PredicateMetaActions : BaseCancelable, IMetaActionStrategy
     {
         internal string _tempMetaActionPath = "metaActions";
-        public PredicateMetaActionsStrategy(string name, int runID, string tempPath, CancellationTokenSource token) : base(name, runID, token)
+        public PredicateMetaActions(string name, int runID, string tempPath, CancellationTokenSource token) : base(name, runID, token)
         {
             _tempMetaActionPath = Path.Combine(tempPath, _tempMetaActionPath);
             PathHelper.RecratePath(_tempMetaActionPath);
