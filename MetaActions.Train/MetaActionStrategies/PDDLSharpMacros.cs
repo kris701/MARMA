@@ -41,6 +41,8 @@ namespace MetaActions.Train.MetaActionStrategies
 
         public List<FileInfo> GetMetaActions(FileInfo domain, List<FileInfo> trainingProblems)
         {
+            Print($"Generating macros using PDDLSharp", ConsoleColor.Blue);
+
             var allMacros = GetPDDLSharpMacros(domain, trainingProblems, 10);
             if (allMacros.Count == 0)
             {

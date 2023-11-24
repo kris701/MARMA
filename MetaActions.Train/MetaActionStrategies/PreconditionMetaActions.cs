@@ -28,6 +28,8 @@ namespace MetaActions.Train.MetaActionStrategies
 
         public List<FileInfo> GetMetaActions(FileInfo domain, List<FileInfo> trainingProblems)
         {
+            Print($"Generating macros using Precondition actions", ConsoleColor.Blue);
+
             var listener = new ErrorListener();
             var parser = new PDDLParser(listener);
             var codeGenerator = new PDDLCodeGenerator(listener);

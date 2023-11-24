@@ -37,6 +37,8 @@ namespace MetaActions.Train.MetaActionStrategies
 
         public List<FileInfo> GetMetaActions(FileInfo domain, List<FileInfo> trainingProblems)
         {
+            Print($"Generating macros using CSM", ConsoleColor.Blue);
+
             Print($"Copying training problems...", ConsoleColor.Blue);
             CopyProblemsToTemp(trainingProblems);
             if (CancellationToken.IsCancellationRequested) return new List<FileInfo>();
