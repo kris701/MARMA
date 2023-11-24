@@ -14,6 +14,8 @@ namespace MetaActions.Learn
     internal class Program : BaseCLI
     {
         private static int _ticked = 1;
+        private static int _totalTasks = 1;
+        private static int _finishedTasks = 0;
         static int Main(string[] args)
         {
             var parser = new CommandLine.Parser(with => with.HelpWriter = null);
@@ -109,10 +111,10 @@ namespace MetaActions.Learn
         private static List<RunReport> ExecuteTasks(List<ITrainer> runTasks, bool multitask)
         {
             var runReports = new List<RunReport>();
+            _totalTasks = runTasks.Count;
             StartTimeLeftTimer();
             if (multitask)
             {
-                int counter = 1;
                 var tasks = new List<Task<RunReport>>();
                 foreach (var task in runTasks)
                     tasks.Add(task.RunTask());
@@ -127,10 +129,11 @@ namespace MetaActions.Learn
                         tasks.Remove(resultTask);
                         var result = resultTask.Result;
                         runReports.Add(result);
+                        _finishedTasks++;
                         if (!result.TimedOut)
-                            ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                            ConsoleHelper.WriteLineColor($"Training for '{result.TaskID}' complete! {TaskStatus()}", ConsoleColor.Green);
                         else
-                            ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
+                            ConsoleHelper.WriteLineColor($"Task '{result.TaskID}' canceled! {TaskStatus()}", ConsoleColor.Yellow);
                     }
                     catch (Exception ex)
                     {
@@ -147,7 +150,6 @@ namespace MetaActions.Learn
             }
             else
             {
-                int counter = 1;
                 foreach (var task in runTasks)
                 {
                     try
@@ -157,10 +159,11 @@ namespace MetaActions.Learn
                         resultTask.Wait();
                         var result = resultTask.Result;
                         runReports.Add(result);
+                        _finishedTasks++;
                         if (!result.TimedOut)
-                            ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
+                            ConsoleHelper.WriteLineColor($"Training for '{result.TaskID}' complete! {TaskStatus()}", ConsoleColor.Green);
                         else
-                            ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
+                            ConsoleHelper.WriteLineColor($"Task '{result.TaskID}' canceled! {TaskStatus()}", ConsoleColor.Yellow);
                     }
                     catch (Exception ex)
                     {
@@ -180,9 +183,14 @@ namespace MetaActions.Learn
             timeUpdateTimer.Interval = TimeSpan.FromMinutes(1).TotalMilliseconds;
             timeUpdateTimer.Elapsed += (s, e) =>
             {
-                ConsoleHelper.WriteLineColor($"Time passed: {_ticked++}m", ConsoleColor.Blue);
+                ConsoleHelper.WriteLineColor($"Time passed: {_ticked++}m {TaskStatus()}", ConsoleColor.Blue);
             };
             timeUpdateTimer.Start();
+        }
+
+        private static string TaskStatus() 
+        {
+            return $"[{_finishedTasks} finished out of {_totalTasks} tasks, {Math.Round(100 * ((double)_finishedTasks / (double)_totalTasks), 0)}%]";
         }
 
         private static void GenerateTrainCSV(List<RunReport> runReports, string resultFile)
