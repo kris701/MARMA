@@ -87,13 +87,13 @@ namespace TestingScriptGenerator
 
             sb.AppendLine($"\t--domains\\");
             foreach (var domain in domains)
-                sb.AppendLine($"\t\t\t\t\t\t {domain.FullName.Replace(relative, "")} \\");
+                sb.AppendLine($"\t\t\t\t\t\t {domain.FullName.Replace(relative, "").Substring(1)} \\");
             sb.AppendLine($"\t--train-problems\\");
             foreach (var problem in trainingProblems)
-                sb.AppendLine($"\t\t\t\t\t\t {problem.FullName.Replace(relative, "")} \\");
+                sb.AppendLine($"\t\t\t\t\t\t {problem.FullName.Replace(relative, "").Substring(1)} \\");
             sb.AppendLine($"\t--test-problems\\");
             foreach (var problem in testingProblems)
-                sb.AppendLine($"\t\t\t\t\t\t {problem.FullName.Replace(relative, "")} \\");
+                sb.AppendLine($"\t\t\t\t\t\t {problem.FullName.Replace(relative, "").Substring(1)} \\");
 
             sb.AppendLine($"\t--generation-strategy {method}\\");
             sb.AppendLine($"\t--verification-strategy {verification}\\");
