@@ -1,5 +1,8 @@
 library(dplyr) 
 library(ggplot2)
+library(grid)
+library(gridExtra)
+library(gtable)
 
 source("src/style.R")
 source("src/graphNames.R")
@@ -7,13 +10,14 @@ source("src/scatterPlots.R")
 source("src/donutPlots.R")
 source("src/coveragePlots.R")
 source("src/domainBarPlots.R")
+source("src/tables.R")
 source("src/clamper.R")
 
 # Handle arguments
 args = commandArgs(trailingOnly=TRUE)
-#args[1] <- "results.csv"
-#args[2] <- "meta_no_cache"
-#args[3] <- "meta_lifted"
+args[1] <- "results.csv"
+args[2] <- "meta_lifted_iterative"
+args[3] <- "meta_lifted"
 if (length(args) != 3) {
   stop("3 arguments must be supplied! The source data file, and one for each target reconstruction type", call.=FALSE)
 }
@@ -95,25 +99,36 @@ generate_domainBarPlot(
 	"Cache Lookup Times (s)",
 	paste("out/cacheLookupTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
-print("Generating: Used Meta Actions (A)")
-generate_domainBarPlot(
-	finished,
-	"meta_actions_in_plan.A",
-	"Meta Actions In Plan",
-	"found_in_cache.A",
-	"Replacements Found",
-	paste("Meta Actions vs. Replacements found (", AName, ")"),
-	paste("out/metaActionCoverage_", AName, ".pdf", sep = ""))
-
-print("Generating: Used Meta Actions (B)")
-generate_domainBarPlot(
-	finished,
-	"meta_actions_in_plan.B",
-	"Meta Actions In Plan",
-	"found_in_cache.B",
-	"Replacements Found",
-	paste("Meta Actions vs. Replacements found (", BName, ")"),
-	paste("out/metaActionCoverage_", BName, ".pdf", sep = ""))
+print("Generating: Used Meta Actions info")
+tableData <- finished %>% select(
+	contains('domain'), 
+	contains('meta_actions_in_plan.A'), 
+	contains('found_in_cache.A'),
+	contains('operator_count.A')
+)
+newTableData <- data.frame(domain=character(), meta_actions_in_plan.A = integer(), found_in_cache.A = integer(), operator_count.A = integer())
+for(domain in unique(tableData$domain)){
+	newTableData[nrow(newTableData) + 1,] <- list(
+		domain,
+		sum(tableData[tableData$domain == domain,]$meta_actions_in_plan.A, na.rm=TRUE),
+		sum(tableData[tableData$domain == domain,]$found_in_cache.A, na.rm=TRUE),
+		sum(tableData[tableData$domain == domain,]$operator_count.A, na.rm=TRUE)
+	)
+}
+tableData <- newTableData
+names(tableData) <- c(
+	"Domain", 
+	"Meta Actions\nin plan", 
+	"Found in\ncache",
+	"Cache\nOperators"
+)
+generate_table(
+	tableData,
+	paste("out/reconstructionTable_", AName, ".pdf", sep = ""),
+	3.5,
+	0.6 + 0.25 + 0.25 * nrow(tableData),
+	TRUE
+)
 
 print("Generating: Search Time Scatter")
 searchData <- data.frame(x = combined$search_time.A, y = combined$search_time.B, domain = combined$domain)

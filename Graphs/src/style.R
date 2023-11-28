@@ -1,5 +1,5 @@
 imgWidth <- 4
 imgHeight <- 5
 
-fontSize <- 10
+fontSize <- 12
 fontFamily <- "serif"

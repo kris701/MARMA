@@ -59,7 +59,6 @@ namespace MetaActions.Train.MetaActionStrategies
             if (allMetaActions.Count == 0)
             {
                 Print($"No meta actions was found for the domain.", ConsoleColor.Red);
-                CancellationToken.Cancel();
                 return new List<FileInfo>();
             }
             if (CancellationToken.IsCancellationRequested) return new List<FileInfo>();

@@ -191,8 +191,6 @@ namespace MetaActions.Train.Trainers
 
             foreach (var file in metaActionFiles)
             {
-                if (CancellationToken.IsCancellationRequested)
-                    return;
                 var metaAction = parser.ParseAs<ActionDecl>(file.MetaAction);
                 domain.Actions.Add(metaAction);
             }
