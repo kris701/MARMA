@@ -47,17 +47,17 @@ namespace TestingScriptGenerator
                     for (int i = 0; i < opts.TrainSplit; i++)
                     {
                         var item = domainTrainProblems[rnd.Next(0, domainTrainProblems.Count)];
-                        if (!sortedTrainProblems.Contains(item))
+                        if (!sortedTrainProblems.Any(x => x.FullName == item.FullName))
                             sortedTrainProblems.Add(item);
                         else
                             i--;
                     }
                 }
                 foreach (var domainTrainProblem in domainTrainProblems)
-                    if (!sortedTrainProblems.Contains(domainTrainProblem))
+                    if (!sortedTrainProblems.Any(x => x.FullName == domainTrainProblem.FullName))
                         sortedTestProblems.Add(domainTrainProblem);
                 foreach (var domainTestProblem in domainTestProblems)
-                    if (!sortedTrainProblems.Contains(domainTestProblem))
+                    if (!sortedTrainProblems.Any(x => x.FullName == domainTestProblem.FullName) && !sortedTestProblems.Any(x => x.FullName == domainTestProblem.FullName))
                         sortedTestProblems.Add(domainTestProblem);
 
                 Console.WriteLine($"Domain {domainName} has {sortedTrainProblems.Where(x => x.FullName.Contains(domainName)).ToList().Count} training problems and {sortedTestProblems.Where(x => x.FullName.Contains(domainName)).ToList().Count} testing problems");
