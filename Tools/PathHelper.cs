@@ -105,7 +105,7 @@
         public static void RecratePath(string path)
         {
             if (Directory.Exists(path))
-                new DirectoryInfo(path).Delete(true);
+                Directory.Delete(path, true);
             Directory.CreateDirectory(path);
         }
     }

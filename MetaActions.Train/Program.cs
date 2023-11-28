@@ -2,7 +2,10 @@
 using MetaActions.Train;
 using MetaActions.Train.Tools;
 using MetaActions.Train.Trainers;
+using System.Diagnostics.Metrics;
 using System.IO.Compression;
+using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using Tools;
 
@@ -10,6 +13,9 @@ namespace MetaActions.Learn
 {
     internal class Program : BaseCLI
     {
+        private static int _ticked = 1;
+        private static int _totalTasks = 1;
+        private static int _finishedTasks = 0;
         static int Main(string[] args)
         {
             var parser = new CommandLine.Parser(with => with.HelpWriter = null);
@@ -41,11 +47,15 @@ namespace MetaActions.Learn
 
             ConsoleHelper.WriteLineColor($"Executing Training Tasks", ConsoleColor.Blue);
             ConsoleHelper.WriteLineColor($"Time limit: {opts.TimeLimit}m", ConsoleColor.Blue);
-            ExecuteTasks(trainingTasks, opts.Multitask, opts.OutputPath);
+            var runReports = ExecuteTasks(trainingTasks, opts.Multitask);
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Generating identity file...", ConsoleColor.Blue);
             File.WriteAllText(Path.Combine(opts.OutputPath, $"{timestamp}.json"), JsonSerializer.Serialize(opts));
+            ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
+
+            ConsoleHelper.WriteLineColor($"Generating training information file...", ConsoleColor.Blue);
+            GenerateTrainCSV(runReports, Path.Combine(opts.OutputPath, $"{timestamp}.csv"));
             ConsoleHelper.WriteLineColor($"Done!", ConsoleColor.Green);
 
             ConsoleHelper.WriteLineColor($"Compressing testing dataset...", ConsoleColor.Blue);
@@ -80,11 +90,7 @@ namespace MetaActions.Learn
 
                 var tempPath = Path.Combine(opts.TempPath, domainName);
                 var outPath = Path.Combine(opts.OutputPath, domainName);
-
-                switch (opts.TrainingMethod)
-                {
-                    case Options.TrainingMethods.CSMMacros:
-                        runTasks.Add(new CSMTrainer(
+                runTasks.Add(new MARMATrainer(
                             domainName,
                             domain,
                             domainTrainProblems,
@@ -92,24 +98,9 @@ namespace MetaActions.Learn
                             TimeSpan.FromMinutes(opts.TimeLimit),
                             tempPath,
                             outPath,
-                            opts.Useful
+                            opts.VerificationStrategy,
+                            opts.GenerationStrategy
                             ));
-                        break;
-                    case Options.TrainingMethods.PDDLSharpMacros:
-                        runTasks.Add(new PDDLSharpTrainer(
-                            domainName,
-                            domain,
-                            domainTrainProblems,
-                            domainTestProblems,
-                            TimeSpan.FromMinutes(opts.TimeLimit),
-                            tempPath,
-                            outPath,
-                            opts.Useful
-                            ));
-                        break;
-                    default:
-                        throw new Exception("Training method not implemented");
-                }
             }
 
             runTasks.Shuffle();
@@ -117,12 +108,14 @@ namespace MetaActions.Learn
             return runTasks;
         }
 
-        private static void ExecuteTasks(List<ITrainer> runTasks, bool multitask, string outPath)
+        private static List<RunReport> ExecuteTasks(List<ITrainer> runTasks, bool multitask)
         {
+            var runReports = new List<RunReport>();
+            _totalTasks = runTasks.Count;
+            StartTimeLeftTimer();
             if (multitask)
             {
-                int counter = 1;
-                var tasks = new List<Task<RunReport?>>();
+                var tasks = new List<Task<RunReport>>();
                 foreach (var task in runTasks)
                     tasks.Add(task.RunTask());
                 foreach (var task in tasks)
@@ -135,21 +128,19 @@ namespace MetaActions.Learn
                         var resultTask = Task.WhenAny(tasks).Result;
                         tasks.Remove(resultTask);
                         var result = resultTask.Result;
-
-                        if (result != null)
-                        {
-                            ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
-                            ConsoleHelper.WriteLineColor($"Total meta actions:              {result.TotalMetaActions}", ConsoleColor.DarkGreen);
-                            ConsoleHelper.WriteLineColor($"Total valid meta actions:        {result.TotalValidMetaActions}", ConsoleColor.DarkGreen);
-                            ConsoleHelper.WriteLineColor($"Total useful valid meta actions: {result.TotalUsefulMetaActions}", ConsoleColor.DarkGreen);
-                        }
+                        runReports.Add(result);
+                        _finishedTasks++;
+                        if (!result.TimedOut)
+                            ConsoleHelper.WriteLineColor($"Training for '{result.TaskID}' complete! {TaskStatus()}", ConsoleColor.Green);
                         else
-                            ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
+                            ConsoleHelper.WriteLineColor($"Task '{result.TaskID}' canceled! {TaskStatus()}", ConsoleColor.Yellow);
                     }
                     catch (Exception ex)
                     {
                         ConsoleHelper.WriteLineColor($"Something failed in the training!", ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor(ex.Message, ConsoleColor.Red);
+                        if (ex.StackTrace != null)
+                            ConsoleHelper.WriteLineColor(ex.StackTrace, ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor($"", ConsoleColor.Red);
                         ConsoleHelper.WriteLineColor($"Killing tasks...!", ConsoleColor.Red);
                         foreach (var cancel in runTasks)
@@ -159,7 +150,6 @@ namespace MetaActions.Learn
             }
             else
             {
-                int counter = 1;
                 foreach (var task in runTasks)
                 {
                     try
@@ -168,12 +158,12 @@ namespace MetaActions.Learn
                         resultTask.Start();
                         resultTask.Wait();
                         var result = resultTask.Result;
-                        if (result != null)
-                        {
-                            ConsoleHelper.WriteLineColor($"Training for [{result.TaskID}] complete! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Green);
-                        }
+                        runReports.Add(result);
+                        _finishedTasks++;
+                        if (!result.TimedOut)
+                            ConsoleHelper.WriteLineColor($"Training for '{result.TaskID}' complete! {TaskStatus()}", ConsoleColor.Green);
                         else
-                            ConsoleHelper.WriteLineColor($"Task canceled! [{Math.Round(100 * ((double)counter++ / (double)runTasks.Count), 0)}%]", ConsoleColor.Yellow);
+                            ConsoleHelper.WriteLineColor($"Task '{result.TaskID}' canceled! {TaskStatus()}", ConsoleColor.Yellow);
                     }
                     catch (Exception ex)
                     {
@@ -184,6 +174,43 @@ namespace MetaActions.Learn
                     }
                 }
             }
+            return runReports;
         }
-    }
+
+        private static void StartTimeLeftTimer()
+        {
+            var timeUpdateTimer = new System.Timers.Timer();
+            timeUpdateTimer.Interval = TimeSpan.FromMinutes(1).TotalMilliseconds;
+            timeUpdateTimer.Elapsed += (s, e) =>
+            {
+                ConsoleHelper.WriteLineColor($"Time passed: {_ticked++}m {TaskStatus()}", ConsoleColor.Blue);
+            };
+            timeUpdateTimer.Start();
+        }
+
+        private static string TaskStatus() 
+        {
+            return $"[{_finishedTasks} finished out of {_totalTasks} tasks, {Math.Round(100 * ((double)_finishedTasks / (double)_totalTasks), 0)}%]";
+        }
+
+        private static void GenerateTrainCSV(List<RunReport> runReports, string resultFile)
+        {
+            var sb = new StringBuilder();
+            var header = "";
+            foreach (PropertyInfo p in typeof(RunReport).GetProperties())
+                header += $"{p.Name},";
+            header = header.Remove(header.Length - 1);
+            sb.AppendLine(header);
+            foreach (var report in runReports)
+            {
+                var line = "";
+                foreach (PropertyInfo p in typeof(RunReport).GetProperties())
+                    line += $"{p.GetValue(report, null)},";
+                line = line.Remove(line.Length - 1);
+                sb.AppendLine(line);
+            }
+
+            File.WriteAllText(resultFile, sb.ToString());
+        }
+    }   
 }

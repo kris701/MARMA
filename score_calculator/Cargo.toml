@@ -11,3 +11,4 @@ serde = { version = "1.0.192", features = ["derive"] }
 clap = { version = "4.4.7", features = ["derive"] }
 atty = "0.2.14"
 humantime = "2.1.0"
+itertools = "0.9.0"

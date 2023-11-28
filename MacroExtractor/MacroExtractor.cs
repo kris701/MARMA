@@ -33,7 +33,11 @@ namespace MacroExtractor
             foreach (var planFile in followerPlans)
             {
                 var plan = parser.Parse(planFile);
+                if (plan.Plan.Count == 0)
+                    continue;
                 int metaActionIndex = IndexOfMetaAction(plan);
+                if (metaActionIndex == -1)
+                    continue;
                 var metaAction = plan.Plan[metaActionIndex];
                 var nameDictionary = GenerateNameReplacementDict(metaAction);
                 RenameActionArguments(metaAction, nameDictionary);
@@ -74,7 +78,7 @@ namespace MacroExtractor
             for (int i = 0; i < leaderPlan.Plan.Count; i++)
                 if (leaderPlan.Plan[i].ActionName.Contains(_metaActionName))
                     return i;
-            throw new Exception("No meta action found in plan!");
+            return -1;
         }
 
         private static List<RepairSequence> GenerateMacros(Dictionary<GroundedAction, HashSet<ActionPlan>> from, DomainDecl domain)
