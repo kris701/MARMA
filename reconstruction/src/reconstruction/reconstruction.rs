@@ -96,7 +96,7 @@ pub fn reconstruct(
     cache: &mut Option<Box<dyn Cache>>,
     iterative_cache: bool,
     domain_path: &PathBuf,
-    plan: SASPlan,
+    plan: &SASPlan,
 ) -> Result<SASPlan, usize> {
     let mut replacements: Vec<(usize, SASPlan)> = Vec::new();
     let mut state = State::from_init();

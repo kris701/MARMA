@@ -66,7 +66,7 @@ fn meta_solve(
     domain_path: &PathBuf,
     problem_path: &PathBuf,
 ) -> SASPlan {
-    let mut search_time: f64 = 0.0;
+    let mut meta_solution_time: f64 = 0.0;
     let meta_count = World::global().meta_actions.len();
     let mut banned_meta_actions: Vec<usize> = Vec::new();
     while banned_meta_actions.len() <= meta_count {
@@ -75,13 +75,20 @@ fn meta_solve(
         let _ = fs::write(&meta_file, meta_domain);
         let search_begin = Instant::now();
         status_print(Status::Reconstruction, "Finding meta solution");
-        let plan = Downward::global().solve(&meta_file, problem_path).unwrap();
-        search_time += search_begin.elapsed().as_secs_f64();
-        let reconstructed = reconstruct(cache, iterative, domain_path, plan);
+        let meta_plan = Downward::global().solve(&meta_file, problem_path).unwrap();
+        meta_solution_time += search_begin.elapsed().as_secs_f64();
+        let reconstructed = reconstruct(cache, iterative, domain_path, &meta_plan);
         let _ = fs::remove_file(&meta_file);
         match reconstructed {
             Ok(plan) => {
-                println!("search_time={:.4}", search_time);
+                println!("meta_solution_time={:.4}", meta_solution_time);
+                println!(
+                    "meta_actions_in_plan={}",
+                    meta_plan
+                        .iter()
+                        .filter(|s| World::global().is_meta_action(&s.name))
+                        .count()
+                );
                 println!("invalid_meta_actions={}", banned_meta_actions.len());
                 return plan;
             }
