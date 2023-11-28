@@ -16,6 +16,7 @@ struct Metrics {
     cache_time: f64,
     downward_time: f64,
     found_in_cache: usize,
+    added_to_cache: usize,
 }
 
 impl Metrics {
@@ -24,11 +25,13 @@ impl Metrics {
             cache_time: 0.0,
             downward_time: 0.0,
             found_in_cache: 0,
+            added_to_cache: 0,
         }
     }
 
     fn print(&self) {
         println!("found_in_cache={}", self.found_in_cache);
+        println!("added_to_cache={}", self.added_to_cache);
         println!("cache_lookup_time={:.4?}", self.cache_time);
         println!("planner_time={:.4?}", self.downward_time);
     }
@@ -86,6 +89,9 @@ fn find_replacement(
     let replacement = generate_replacement(domain_path, init, goal)?;
     if let Some(cache) = cache {
         if iterative_cache {
+            unsafe {
+                METRICS.added_to_cache += 1;
+            }
             cache.add_entry(term, &replacement);
         }
     }

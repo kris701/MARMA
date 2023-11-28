@@ -15,6 +15,7 @@ use crate::world::{init_world, World};
 use cache::generation::{generate_cache, CacheMethod};
 use cache::Cache;
 use clap::Parser;
+use itertools::Itertools;
 use reconstruction::reconstruction::reconstruct;
 use spingus::sas_plan::{export_sas, SASPlan};
 use std::fs;
@@ -82,11 +83,20 @@ fn meta_solve(
         match reconstructed {
             Ok(plan) => {
                 println!("meta_solution_time={:.4}", meta_solution_time);
+                println!("meta_plan_length={}", meta_plan.len());
                 println!(
                     "meta_actions_in_plan={}",
                     meta_plan
                         .iter()
                         .filter(|s| World::global().is_meta_action(&s.name))
+                        .count()
+                );
+                println!(
+                    "meta_actions_in_plan_unique={}",
+                    meta_plan
+                        .iter()
+                        .filter(|s| World::global().is_meta_action(&s.name))
+                        .unique_by(|s| &s.name)
                         .count()
                 );
                 println!("invalid_meta_actions={}", banned_meta_actions.len());
@@ -107,10 +117,16 @@ fn meta_solve(
 fn main() {
     init_time();
     let args = Args::parse();
+    println!("iterative_cache={}", args.iterative_cache);
 
     init_world(&args.domain, &args.meta_domain, &args.problem);
     init_downward(&args.downward, &args.temp_dir);
+    let cache_init_start = Instant::now();
     let mut cache = generate_cache(&args.cache, args.cache_method, args.iterative_cache);
+    println!(
+        "cache_init_time={:.4}",
+        cache_init_start.elapsed().as_secs_f64()
+    );
 
     let plan = meta_solve(
         &mut cache,
