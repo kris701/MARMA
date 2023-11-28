@@ -46,7 +46,15 @@ namespace MetaActions.Train.VerificationStrategies
                     }
                     else if (verificationResult == VerificationResult.TimedOut)
                     {
-                        Print($"\tMeta action timed out on problem '{problem.Name}'. Assuming weak....", ConsoleColor.Yellow);
+                        if (Directory.Exists(_tempVerificationReplacementsPath) && Directory.GetFiles(_tempVerificationReplacementsPath).Count() > 0)
+                        {
+                            Print($"\tMeta action timed out on problem '{problem.Name}'. Assuming weak....", ConsoleColor.Yellow);
+                        }
+                        else
+                        {
+                            Print($"\tMeta action was invalid in problem '{problem.Name}' (Timed out and had no replacements).", ConsoleColor.Red);
+                            allValid = false;
+                        }
                         break;
                     }
                     problemCounter++;
