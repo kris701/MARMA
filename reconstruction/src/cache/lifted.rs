@@ -8,7 +8,7 @@ use crate::{
     world::{action::Action, World},
 };
 use spingus::{sas_plan::SASPlan, term::Term};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 #[derive(Debug)]
 struct Replacement {
@@ -35,18 +35,15 @@ pub struct LiftedCache {
 }
 
 impl LiftedCache {
-    pub fn new(
-        cache_data: CacheData,
-        used_meta_actions: HashMap<usize, HashSet<Vec<usize>>>,
-    ) -> Self {
+    pub fn new(cache_data: CacheData) -> Self {
         status_print(Status::Cache, "Init Lifted Cache");
         let mut replacements: HashMap<usize, Vec<Replacement>> = HashMap::new();
 
-        for (meta_action, _) in used_meta_actions.into_iter() {
-            let action_replacements = generate_replacements(&cache_data, &meta_action);
+        for (i, _) in World::global().meta_actions.iter().enumerate() {
+            let action_replacements = generate_replacements(&cache_data, &i);
 
             if let Some(action_replacements) = action_replacements {
-                replacements.insert(meta_action, action_replacements);
+                replacements.insert(i, action_replacements);
             }
         }
 

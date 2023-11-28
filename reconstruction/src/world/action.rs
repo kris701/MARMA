@@ -1,36 +1,11 @@
-use core::fmt;
-
-use spingus::domain::action::string_expression::StringExpression;
-
 use super::{
+    atom::{convert_expression, Atom},
     parameter::{translate_parameters, Parameters},
     predicates::Predicates,
     types::Types,
     World,
 };
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct Atom {
-    /// NOTE: predicate of 0 indicates equality
-    pub predicate: usize,
-    pub parameters: Vec<usize>,
-    pub value: bool,
-}
-
-impl fmt::Display for Atom {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}{} {:?}",
-            match self.value {
-                true => "",
-                false => "!",
-            },
-            World::global().predicates.name(self.predicate),
-            self.parameters
-        )
-    }
-}
+use core::fmt;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Action {
@@ -42,90 +17,45 @@ pub struct Action {
 
 impl Action {
     pub fn new(action: spingus::domain::action::Action) -> Self {
-        let name = action.name;
-        let parameters = translate_parameters(&World::global().types, action.parameters);
-        let precondition = match action.precondition {
-            Some(e) => translate_expression(&World::global().predicates, &parameters, e),
-            None => vec![],
-        };
-        let effect = translate_expression(&World::global().predicates, &parameters, action.effect);
-        Action {
-            name,
-            parameters,
-            precondition,
-            effect,
-        }
+        translate_action(&World::global().types, &World::global().predicates, action)
     }
 }
 
 impl fmt::Display for Action {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "{}", self.name)?;
-        writeln!(f, "parameters: {:?}", self.parameters.names)?;
-        writeln!(f, "precondition:")?;
+        writeln!(f, "\t(:action {}", self.name)?;
+        writeln!(f, "\t\t:parameters ({})", self.parameters.export())?;
+        writeln!(f, "\t\t:precondition (and")?;
         for atom in self.precondition.iter() {
-            writeln!(f, "\t{}", atom)?;
+            writeln!(f, "\t\t\t{}", atom.export(&self.parameters.names))?;
         }
-        writeln!(f, "effect:")?;
+        writeln!(f, "\t\t)")?;
+        writeln!(f, "\t\t:effect (and")?;
         for atom in self.effect.iter() {
-            writeln!(f, "\t{}", atom)?;
+            writeln!(f, "\t\t\t{}", atom.export(&self.parameters.names))?;
         }
+        writeln!(f, "\t\t)")?;
+        writeln!(f, "\t)")?;
         Ok(())
     }
 }
 
-fn translate_expression(
-    predicates: &Predicates,
-    parameters: &Parameters,
-    expression: StringExpression,
-) -> Vec<Atom> {
-    let mut atoms: Vec<Atom> = Vec::new();
-
-    let mut queue: Vec<(StringExpression, bool)> = vec![(expression, true)];
-
-    while !queue.is_empty() {
-        let e = queue.pop().unwrap();
-        match e {
-            (StringExpression::Predicate(p), v) => atoms.push(Atom {
-                predicate: predicates.index(&p.name),
-                parameters: parameters.indexes(&p.parameters),
-                value: v,
-            }),
-            (StringExpression::Equal(e), v) => atoms.push(Atom {
-                predicate: 0,
-                parameters: parameters.indexes(&e),
-                value: v,
-            }),
-            (StringExpression::And(e), v) => queue.extend(e.into_iter().map(|e| (e, v))),
-            (StringExpression::Not(e), v) => queue.push((*e, !v)),
-            _ => todo!(),
-        };
-    }
-
-    atoms
-}
-
-pub(super) fn translate_actions(
+pub(super) fn translate_action(
     types: &Types,
     predicates: &Predicates,
-    actions: spingus::domain::action::Actions,
-) -> Vec<Action> {
-    actions
-        .into_iter()
-        .map(|a| {
-            let name = a.name;
-            let parameters = translate_parameters(types, a.parameters);
-            let precondition = match a.precondition {
-                Some(e) => translate_expression(predicates, &parameters, e),
-                None => vec![],
-            };
-            let effect = translate_expression(predicates, &parameters, a.effect);
-            Action {
-                name,
-                parameters,
-                precondition,
-                effect,
-            }
-        })
-        .collect()
+    action: spingus::domain::action::Action,
+) -> Action {
+    let name = action.name;
+    let parameters = translate_parameters(types, action.parameters);
+    let precondition = match action.precondition {
+        Some(e) => convert_expression(predicates, &parameters, e),
+        None => vec![],
+    };
+    let effect = convert_expression(predicates, &parameters, action.effect);
+    Action {
+        name,
+        parameters,
+        precondition,
+        effect,
+    }
 }

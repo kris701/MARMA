@@ -33,10 +33,6 @@ impl Fact {
         }
         parameters
     }
-
-    pub fn cmp(&self, b: &Fact) -> std::cmp::Ordering {
-        self.internal.cmp(&b.internal)
-    }
 }
 
 impl fmt::Display for Fact {

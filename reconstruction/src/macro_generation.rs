@@ -5,11 +5,7 @@ use spingus::{sas_plan::SASPlan, term::Term};
 
 use crate::{
     fact::Fact,
-    world::{
-        action::{Action, Atom},
-        parameter::Parameters,
-        World,
-    },
+    world::{action::Action, atom::Atom, parameter::Parameters, World},
 };
 
 // NOTE: Assumes that is a legal macro

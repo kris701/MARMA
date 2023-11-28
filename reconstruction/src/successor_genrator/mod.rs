@@ -1,8 +1,6 @@
-pub mod r#static;
-
 use crate::{
     state::State,
-    world::{action::Action, World},
+    world::{action::Action, atom::Atom, World},
 };
 use itertools::Itertools;
 use std::{
@@ -36,16 +34,15 @@ pub fn get_applicable_with_fixed<'a>(
             None => World::global()
                 .objects
                 .iterate_with_type(t)
-                .map(|v| v as usize)
+                .map(|v| v)
                 .collect(),
         })
         .collect();
 
-    for atom in action
-        .precondition
-        .iter()
-        .filter(|a| a.parameters.len() == 1)
-    {
+    let (unary_atoms, other_atoms): (Vec<&Atom>, Vec<&Atom>) =
+        action.precondition.iter().partition(|a| a.is_unary());
+
+    for atom in unary_atoms {
         let parameter = atom.parameters[0];
         candidates[parameter].retain(|o| state.has(atom.predicate, &vec![*o]) == atom.value);
     }
@@ -53,24 +50,13 @@ pub fn get_applicable_with_fixed<'a>(
     candidates
         .into_iter()
         .multi_cartesian_product()
-        .filter(|p| {
+        .filter(move |p| {
             increment_counter();
-            is_valid(action, state, p)
+            other_atoms.iter().all(|atom| {
+                let corresponding: Vec<usize> = atom.map_args(p);
+                atom.predicate == 0 && corresponding.iter().all_equal() == atom.value
+                    || atom.predicate != 0
+                        && state.has(atom.predicate, &corresponding) == atom.value
+            })
         })
-}
-
-fn is_valid<'a>(action: &'a Action, state: &'a State, permutation: &Vec<usize>) -> bool {
-    for atom in action
-        .precondition
-        .iter()
-        .filter(|a| a.parameters.len() != 1)
-    {
-        let corresponding: Vec<usize> = atom.parameters.iter().map(|p| permutation[*p]).collect();
-        if atom.predicate == 0 && corresponding.iter().all_equal() != atom.value {
-            return false;
-        } else if state.has(atom.predicate, &corresponding) != atom.value {
-            return false;
-        }
-    }
-    true
 }

@@ -1,11 +1,8 @@
-use std::collections::HashSet;
-
-use itertools::Itertools;
-
 use crate::{
     fact::Fact,
     world::{action::Action, World},
 };
+use std::collections::HashSet;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
@@ -14,7 +11,11 @@ pub struct State {
 
 impl State {
     pub fn new(facts: &Vec<Fact>) -> Self {
-        let internal: HashSet<Fact> = facts.iter().cloned().collect();
+        let internal: HashSet<Fact> = facts
+            .iter()
+            .filter(|f| !World::global().predicates.is_static(f.predicate()))
+            .cloned()
+            .collect();
         Self { internal }
     }
 
@@ -37,27 +38,12 @@ impl State {
         &self.internal
     }
 
-    /// NOTE: checks only non-static atoms
-    pub fn is_legal(&self, action: &Action, arguments: &Vec<usize>) -> bool {
-        action
-            .precondition
-            .iter()
-            .filter(|a| !World::global().predicates.is_static(a.predicate))
-            .all(|atom| {
-                let corresponding: Vec<usize> =
-                    atom.parameters.iter().map(|p| arguments[*p]).collect();
-                if atom.predicate == 0 && corresponding.iter().all_equal() != atom.value {
-                    return false;
-                } else if self.has(atom.predicate, &corresponding) != atom.value {
-                    return false;
-                }
-                true
-            })
-    }
-
     pub fn has(&self, predicate: usize, arguments: &Vec<usize>) -> bool {
-        self.internal
-            .contains(&Fact::new(predicate, arguments.clone()))
+        let fact = Fact::new(predicate, arguments.clone());
+        match World::global().predicates.is_static(predicate) {
+            true => World::global().static_facts.contains(&fact),
+            false => self.internal.contains(&fact),
+        }
     }
 
     pub fn diff(&self, state: &State) -> Vec<(Fact, bool)> {

@@ -14,10 +14,6 @@ pub struct Predicates {
 }
 
 impl Predicates {
-    pub fn count(&self) -> usize {
-        self.index_map.len()
-    }
-
     pub fn index(&self, name: &str) -> usize {
         self.index_map[name]
     }
@@ -26,12 +22,14 @@ impl Predicates {
         self.index_map.iter().find(|(_, v)| **v == index).unwrap().0
     }
 
-    pub fn arity(&self, index: usize) -> usize {
-        self.parameters[&index].arity()
-    }
-
     pub fn is_static(&self, index: usize) -> bool {
         self.static_predicates.contains(&index)
+    }
+
+    pub fn iterate<'a>(&'a self) -> impl Iterator<Item = (&String, &Parameters)> + 'a {
+        self.index_map
+            .iter()
+            .map(|(name, index)| (name, &self.parameters[index]))
     }
 }
 
