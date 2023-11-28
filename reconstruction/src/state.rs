@@ -39,8 +39,11 @@ impl State {
     }
 
     pub fn has(&self, predicate: usize, arguments: &Vec<usize>) -> bool {
-        self.internal
-            .contains(&Fact::new(predicate, arguments.clone()))
+        let fact = Fact::new(predicate, arguments.clone());
+        match World::global().predicates.is_static(predicate) {
+            true => World::global().static_facts.contains(&fact),
+            false => self.internal.contains(&fact),
+        }
     }
 
     pub fn diff(&self, state: &State) -> Vec<(Fact, bool)> {

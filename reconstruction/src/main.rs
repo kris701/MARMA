@@ -69,11 +69,12 @@ fn meta_solve(
     let mut search_time: f64 = 0.0;
     let meta_count = World::global().meta_actions.len();
     let mut banned_meta_actions: Vec<usize> = Vec::new();
-    while banned_meta_actions.len() < meta_count {
+    while banned_meta_actions.len() <= meta_count {
         let meta_domain = World::global().export_meta_domain(&banned_meta_actions);
         let meta_file = PathBuf::from(random_file_name(&Downward::global().temp_dir));
         let _ = fs::write(&meta_file, meta_domain);
         let search_begin = Instant::now();
+        status_print(Status::Reconstruction, "Finding meta solution");
         let plan = Downward::global().solve(&meta_file, problem_path).unwrap();
         search_time += search_begin.elapsed().as_secs_f64();
         let reconstructed = reconstruct(cache, iterative, domain_path, plan);
@@ -93,12 +94,11 @@ fn meta_solve(
             }
         }
     }
-    panic!()
+    unreachable!();
 }
 
 fn main() {
     init_time();
-
     let args = Args::parse();
 
     init_world(&args.domain, &args.meta_domain, &args.problem);
