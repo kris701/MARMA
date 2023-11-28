@@ -10,7 +10,8 @@ namespace MetaActions
             None = 0,
             CSMMacros = 1,
             PDDLSharpMacros = 2,
-            PredicateMetaActions = 3
+            PredicateMetaActions = 3,
+            PreconditionMetaActions = 4
         }
 
         [Flags]
