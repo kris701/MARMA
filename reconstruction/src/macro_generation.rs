@@ -5,7 +5,12 @@ use spingus::{sas_plan::SASPlan, term::Term};
 
 use crate::{
     fact::Fact,
-    world::{action::Action, atom::Atom, parameter::Parameters, World},
+    world::{
+        action::Action,
+        atom::{Argument, Atom},
+        parameter::Parameters,
+        World,
+    },
 };
 
 // NOTE: Assumes that is a legal macro
@@ -37,7 +42,10 @@ pub fn generate_macro(
             parameters: fact
                 .parameters()
                 .iter()
-                .map(|f_a| cul_args.iter().position(|a| f_a == a).unwrap())
+                .map(|f_a| match World::global().objects.is_constant(*f_a) {
+                    true => Argument::Constant(*f_a),
+                    false => Argument::Parameter(cul_args.iter().position(|a| a == f_a).unwrap()),
+                })
                 .collect(),
             value,
         })
@@ -50,7 +58,10 @@ pub fn generate_macro(
             parameters: fact
                 .parameters()
                 .iter()
-                .map(|f_a| cul_args.iter().position(|a| f_a == a).unwrap())
+                .map(|f_a| match World::global().objects.is_constant(*f_a) {
+                    true => Argument::Constant(*f_a),
+                    false => Argument::Parameter(cul_args.iter().position(|a| a == f_a).unwrap()),
+                })
                 .collect(),
             value,
         })
@@ -61,7 +72,18 @@ pub fn generate_macro(
         let corresponding_atom = effect.iter().find(|a| a.predicate == atom.predicate);
         if let Some(corresponding_atom) = corresponding_atom {
             for (i, parameter) in corresponding_atom.parameters.iter().enumerate() {
-                fixed_parameters.insert(*parameter, atom.parameters[i]);
+                match parameter {
+                    Argument::Parameter(p) => {
+                        let _ = fixed_parameters.insert(
+                            *p,
+                            match atom.parameters[i] {
+                                Argument::Parameter(p) => p,
+                                Argument::Constant(_) => todo!(),
+                            },
+                        );
+                    }
+                    Argument::Constant(_) => {}
+                };
             }
         }
     }
@@ -114,7 +136,7 @@ fn combine_pre(
     args: &Vec<usize>,
 ) {
     for atom in pre.iter() {
-        let corresponding: Vec<usize> = atom.parameters.iter().map(|p| args[*p]).collect();
+        let corresponding: Vec<usize> = atom.map_args(args);
         let fact = Fact::new(atom.predicate, corresponding);
         if !cul_pre.contains_key(&fact) && !cul_eff.contains_key(&fact) {
             cul_pre.insert(fact, atom.value);
@@ -124,7 +146,7 @@ fn combine_pre(
 
 fn combine_eff(cul_eff: &mut HashMap<Fact, bool>, eff: &Vec<Atom>, args: &Vec<usize>) {
     for atom in eff.iter() {
-        let corresponding: Vec<usize> = atom.parameters.iter().map(|p| args[*p]).collect();
+        let corresponding: Vec<usize> = atom.map_args(args);
         let fact = Fact::new(atom.predicate, corresponding);
         cul_eff.insert(fact, atom.value);
     }

@@ -1,5 +1,6 @@
 use super::{
     atom::{convert_expression, Atom},
+    objects::Objects,
     parameter::{translate_parameters, Parameters},
     predicates::Predicates,
     types::Types,
@@ -17,7 +18,12 @@ pub struct Action {
 
 impl Action {
     pub fn new(action: spingus::domain::action::Action) -> Self {
-        translate_action(&World::global().types, &World::global().predicates, action)
+        translate_action(
+            &World::global().types,
+            &World::global().predicates,
+            &World::global().objects,
+            action,
+        )
     }
 }
 
@@ -43,15 +49,16 @@ impl fmt::Display for Action {
 pub(super) fn translate_action(
     types: &Types,
     predicates: &Predicates,
+    objects: &Objects,
     action: spingus::domain::action::Action,
 ) -> Action {
     let name = action.name;
     let parameters = translate_parameters(types, action.parameters);
     let precondition = match action.precondition {
-        Some(e) => convert_expression(predicates, &parameters, e),
+        Some(e) => convert_expression(predicates, objects, &parameters, e),
         None => vec![],
     };
-    let effect = convert_expression(predicates, &parameters, action.effect);
+    let effect = convert_expression(predicates, objects, &parameters, action.effect);
     Action {
         name,
         parameters,

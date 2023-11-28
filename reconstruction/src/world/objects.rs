@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use spingus::domain::parameter::Parameter;
 
@@ -7,6 +7,7 @@ use super::{types::Types, World};
 pub struct Objects {
     objects: HashMap<String, usize>,
     object_types: HashMap<usize, usize>,
+    constants: HashSet<usize>,
 }
 
 impl Objects {
@@ -34,16 +35,23 @@ impl Objects {
         self.object_types[&index]
     }
 
+    pub fn is_constant(&self, index: usize) -> bool {
+        self.constants.contains(&index)
+    }
+
     pub fn iterate_typed<'a>(&'a self) -> impl Iterator<Item = (usize, usize)> + 'a {
         self.objects.iter().map(|(_, v)| (*v, self.object_type(*v)))
     }
 
     pub fn iterate_named<'a>(&'a self) -> impl Iterator<Item = (&String, &String)> + 'a {
-        self.objects.iter().map(|(name, index)| {
-            let object_type = self.object_type(*index);
-            let type_name = World::global().types.name(object_type);
-            (name, type_name)
-        })
+        self.objects
+            .iter()
+            .filter(|(_, o)| !self.is_constant(**o))
+            .map(|(name, index)| {
+                let object_type = self.object_type(*index);
+                let type_name = World::global().types.name(object_type);
+                (name, type_name)
+            })
     }
 
     pub fn iterate_with_type<'a>(&'a self, type_id: &'a usize) -> impl Iterator<Item = usize> + 'a {
@@ -54,6 +62,10 @@ impl Objects {
             }
         })
     }
+
+    pub fn iterate_constants<'a>(&'a self) -> impl Iterator<Item = usize> + 'a {
+        self.constants.iter().cloned()
+    }
 }
 
 pub(super) fn translate_objects(
@@ -62,7 +74,7 @@ pub(super) fn translate_objects(
     objects: spingus::problem::object::Objects,
 ) -> Objects {
     let mut objects = objects.clone();
-    match constants {
+    match &constants {
         Some(parameters) => objects.append(
             &mut parameters
                 .iter()
@@ -97,9 +109,26 @@ pub(super) fn translate_objects(
         .collect();
     let (objects, object_types): (HashMap<String, usize>, HashMap<usize, usize>) =
         temp.into_iter().unzip();
+    let constant_indexes: HashSet<usize> = match constants {
+        Some(constants) => objects
+            .iter()
+            .filter_map(|(object_name, index)| {
+                match constants.iter().any(|p| match p {
+                    Parameter::Untyped { name } => object_name == name,
+                    Parameter::Typed { name, .. } => object_name == name,
+                    Parameter::Either { name, .. } => object_name == name,
+                }) {
+                    true => Some(*index),
+                    false => None,
+                }
+            })
+            .collect(),
+        None => HashSet::new(),
+    };
     println!("object_count={}", objects.len());
     Objects {
         objects,
         object_types,
+        constants: constant_indexes,
     }
 }

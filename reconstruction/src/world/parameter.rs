@@ -11,8 +11,8 @@ impl Parameters {
         self.names.iter().position(|n| n == name).unwrap()
     }
 
-    pub fn indexes(&self, names: &Vec<String>) -> Vec<usize> {
-        names.iter().map(|n| self.index(n)).collect()
+    pub fn contains(&self, name: &String) -> bool {
+        self.names.contains(name)
     }
 
     pub fn iterate<'a>(&'a self) -> impl Iterator<Item = (&String, &String)> + 'a {

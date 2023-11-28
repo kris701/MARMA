@@ -15,6 +15,19 @@ impl World {
             .collect()
     }
 
+    fn export_constants(&self) -> String {
+        self.objects
+            .iterate_constants()
+            .map(|o| {
+                format!(
+                    "\t\t{} - {}\n",
+                    self.objects.name(o),
+                    self.types.name(self.objects.object_type(o))
+                )
+            })
+            .collect()
+    }
+
     fn export_actions(&self) -> String {
         self.actions.iter().map(|a| format!("{}", a)).collect()
     }
@@ -36,12 +49,16 @@ impl World {
 {}  )
     (:predicates
 {}
-    )
+)
+    (:constants
+{}
+)
 {}
 {})",
             self.domain_name,
             self.export_types(),
             self.export_predicates(),
+            self.export_constants(),
             self.export_actions(),
             self.export_meta_actions(banned_meta_actions)
         )
