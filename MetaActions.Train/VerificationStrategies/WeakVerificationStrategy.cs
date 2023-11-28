@@ -57,7 +57,7 @@ namespace MetaActions.Train.VerificationStrategies
                         CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, ""))));
                     }
                     else
-                        Print($"\tMeta action was invalid in since it had no replacements.", ConsoleColor.Red);
+                        Print($"\tMeta action was invalid since it had no replacements.", ConsoleColor.Red);
                 }
                 metaActionCounter++;
             }
