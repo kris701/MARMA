@@ -1,0 +1,20 @@
+dotnet run --configuration Release --project MetaActions.Train -- \
+	--domains			 \
+						 /Dependencies/learning-benchmarks/blocksworld/domain.pddl \
+						 /Dependencies/learning-benchmarks/childsnack/domain.pddl \
+						 /Dependencies/learning-benchmarks/ferry/domain.pddl \
+						 /Dependencies/learning-benchmarks/floortile/domain.pddl \
+						 /Dependencies/learning-benchmarks/miconic/domain.pddl \
+						 /Dependencies/learning-benchmarks/rovers/domain.pddl \
+						 /Dependencies/learning-benchmarks/satellite/domain.pddl \
+						 /Dependencies/learning-benchmarks/sokoban/domain.pddl \
+						 /Dependencies/learning-benchmarks/spanner/domain.pddl \
+						 /Dependencies/learning-benchmarks/transport/domain.pddl \
+						 /Dependencies/downward-benchmarks/depot/domain.pddl \
+						 /Dependencies/downward-benchmarks/driverlog/domain.pddl \
+						 /Dependencies/downward-benchmarks/freecell/domain.pddl \
+						 /Dependencies/downward-benchmarks/gripper/domain.pddl \
+						 /Dependencies/downward-benchmarks/logistics98/domain.pddl \
+						 /Dependencies/downward-benchmarks/mprime/domain.pddl \
+						 /Dependencies/downward-benchmarks/mystery/domain.pddl \
+						 /Dependencies/downward-benchmarks/zenotravel/domain.pddl \
