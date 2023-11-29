@@ -43,6 +43,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroExtractor.Tests", "Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergCompiler.Tests", "Tests\StackelbergCompiler.Tests\StackelbergCompiler.Tests.csproj", "{FC109629-25D4-4791-8146-E0606B5775AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingScriptGenerator", "TestingScriptGenerator\TestingScriptGenerator.csproj", "{D86F85B2-1C88-4E04-B939-AAE4882CBEEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,10 @@ Global
 		{FC109629-25D4-4791-8146-E0606B5775AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC109629-25D4-4791-8146-E0606B5775AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC109629-25D4-4791-8146-E0606B5775AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D86F85B2-1C88-4E04-B939-AAE4882CBEEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D86F85B2-1C88-4E04-B939-AAE4882CBEEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D86F85B2-1C88-4E04-B939-AAE4882CBEEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D86F85B2-1C88-4E04-B939-AAE4882CBEEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

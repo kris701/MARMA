@@ -47,7 +47,6 @@ namespace MetaActions.Train.MetaActionStrategies
             if (allMacros.Count == 0)
             {
                 Print($"No macros was found for the domain.", ConsoleColor.Red);
-                CancellationToken.Cancel();
                 return new List<FileInfo>();
             }
             if (CancellationToken.IsCancellationRequested) return new List<FileInfo>();

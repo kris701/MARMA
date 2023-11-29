@@ -45,24 +45,26 @@ namespace MetaActions.Train.VerificationStrategies
                         break;
                     }
                     else if (verificationResult == VerificationResult.TimedOut)
-                    {
-                        Print($"\tMeta action timed out on problem '{problem.Name}'. Assuming weak....", ConsoleColor.Yellow);
-                        break;
-                    }
+                        Print($"\tMeta action timed out on problem '{problem.Name}'. Assuming weak. Continuing...", ConsoleColor.Yellow);
                     problemCounter++;
                 }
                 if (allValid)
                 {
-                    Print($"\tGenerating initial meta domain...", ConsoleColor.Magenta);
-                    GenerateMetaDomain(domain, metaAction, _tempUsefulPath);
+                    if (Directory.Exists(_tempVerificationReplacementsPath) && Directory.GetFiles(_tempVerificationReplacementsPath).Count() > 0)
+                    {
+                        Print($"\tGenerating initial meta domain...", ConsoleColor.Magenta);
+                        GenerateMetaDomain(domain, metaAction, _tempUsefulPath);
 
-                    Print("\tChecking for meta action usefulness...", ConsoleColor.Magenta);
-                    if (!IsMetaActionUseful(metaAction, verificationProblem, _tempUsefulPath))
-                        continue;
-                    Print("\tMeta Action is Useful!", ConsoleColor.Green);
+                        Print("\tChecking for meta action usefulness...", ConsoleColor.Magenta);
+                        if (!IsMetaActionUseful(metaAction, verificationProblem, _tempUsefulPath))
+                            continue;
+                        Print("\tMeta Action is Useful!", ConsoleColor.Green);
 
-                    Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
-                    CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, ""))));
+                        Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
+                        CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, ""))));
+                    }
+                    else
+                        Print($"\tMeta action was invalid since it had no replacements.", ConsoleColor.Red);
                 }
                 metaActionCounter++;
             }
