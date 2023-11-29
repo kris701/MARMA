@@ -83,11 +83,10 @@ namespace StacklebergVerifier
 
             if (exitCode == 0 || _timedOut)
             {
-                var checkDir = new DirectoryInfo(_replacementsPath);
-                if (Directory.Exists(checkDir.FullName)) {
-                    int count = checkDir.GetFiles().Count();
+                if (Directory.Exists(_replacementsPath)) {
+                    int count = Directory.GetFiles(_replacementsPath).Count();
                     Thread.Sleep(1000);
-                    while(count != checkDir.GetFiles().Count())
+                    while(count != Directory.GetFiles(_replacementsPath).Count())
                         Thread.Sleep(1000);
                 }
             }
