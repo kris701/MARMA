@@ -124,8 +124,8 @@ names(tableData) <- c(
 generate_table(
 	tableData,
 	paste("out/reconstructionTable_", AName, ".pdf", sep = ""),
-	3.5,
-	0.6 + 0.25 + 0.25 * nrow(tableData),
+	4.2,
+	1 + 0.25 + 0.25 * nrow(tableData),
 	TRUE
 )
 
