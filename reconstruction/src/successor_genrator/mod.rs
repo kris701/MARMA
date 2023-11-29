@@ -1,6 +1,10 @@
 use crate::{
     state::State,
-    world::{action::Action, atom::Atom, World},
+    world::{
+        action::Action,
+        atom::{Argument, Atom},
+        World,
+    },
 };
 use itertools::Itertools;
 use std::{
@@ -43,8 +47,12 @@ pub fn get_applicable_with_fixed<'a>(
         action.precondition.iter().partition(|a| a.is_unary());
 
     for atom in unary_atoms {
-        let parameter = atom.parameters[0];
-        candidates[parameter].retain(|o| state.has(atom.predicate, &vec![*o]) == atom.value);
+        match atom.parameters[0] {
+            Argument::Parameter(p) => {
+                candidates[p].retain(|o| state.has(atom.predicate, &vec![*o]) == atom.value);
+            }
+            _ => {}
+        };
     }
 
     candidates

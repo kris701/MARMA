@@ -51,13 +51,13 @@ impl World {
         let actions: Vec<Action> = domain
             .actions
             .into_iter()
-            .map(|a| translate_action(&types, &predicates, a))
+            .map(|a| translate_action(&types, &predicates, &objects, a))
             .collect();
         println!("action_count={}", actions.len());
         let meta_actions: Vec<Action> = meta_domain
             .actions
             .into_iter()
-            .map(|a| translate_action(&types, &predicates, a))
+            .map(|a| translate_action(&types, &predicates, &objects, a))
             .collect();
         println!("meta_action_count={}", meta_actions.len());
         let init: Vec<Fact> = problem

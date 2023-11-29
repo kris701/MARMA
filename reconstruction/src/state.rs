@@ -25,7 +25,7 @@ impl State {
 
     pub fn apply(&mut self, action: &Action, arguments: &Vec<usize>) {
         for atom in action.effect.iter() {
-            let corresponding: Vec<usize> = atom.parameters.iter().map(|p| arguments[*p]).collect();
+            let corresponding: Vec<usize> = atom.map_args(arguments);
             let fact = Fact::new(atom.predicate, corresponding);
             match atom.value {
                 true => self.internal.insert(fact),

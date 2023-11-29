@@ -18,8 +18,11 @@ impl Predicates {
         self.index_map[name]
     }
 
-    pub fn name(&self, index: usize) -> &String {
-        self.index_map.iter().find(|(_, v)| **v == index).unwrap().0
+    pub fn name(&self, index: usize) -> &str {
+        match index {
+            0 => "=",
+            _ => self.index_map.iter().find(|(_, v)| **v == index).unwrap().0,
+        }
     }
 
     pub fn is_static(&self, index: usize) -> bool {

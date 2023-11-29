@@ -62,8 +62,7 @@ impl Cache for LiftedCache {
             for permutation in get_applicable_with_fixed(&action, init, &fixed) {
                 let mut eff: Vec<(Fact, bool)> = Vec::new();
                 for atom in action.effect.iter() {
-                    let corresponding: Vec<usize> =
-                        atom.parameters.iter().map(|p| permutation[*p]).collect();
+                    let corresponding: Vec<usize> = atom.map_args(&permutation);
                     if atom.value != init.has(atom.predicate, &corresponding) {
                         let fact = Fact::new(atom.predicate, corresponding);
                         eff.push((fact, atom.value))
