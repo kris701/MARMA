@@ -67,10 +67,17 @@ namespace StacklebergVerifier
                     _timedOut = true;
                     if (_activeProcess != null)
                     {
-                        _activeProcess.Kill(true);
-                        while (!_activeProcess.HasExited)
+                        try
+                        {
                             _activeProcess.Kill(true);
-                        _activeProcess.WaitForExit();
+                            while (!_activeProcess.HasExited)
+                                _activeProcess.Kill(true);
+                            _activeProcess.WaitForExit();
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Could not kill process???");
+                        }
                     }
                 };
                 cancelationTimer.Start();
@@ -84,14 +91,14 @@ namespace StacklebergVerifier
             if (exitCode == 0 || _timedOut)
             {
                 if (Directory.Exists(_replacementsPath)) {
-                    int count = -1;
-                    int preCount = 0;
+                    int count = 0;
+                    int preCount = -1;
                     while (count != preCount)
                     {
                         preCount = count;
-                        ConsoleHelper.WriteLineColor($"Waiting for planner to finish outputting files [{count}]...", ConsoleColor.Yellow);
                         Thread.Sleep(1000);
                         count = Directory.GetFiles(_replacementsPath).Count();
+                        ConsoleHelper.WriteLineColor($"Waiting for planner to finish outputting files [was {preCount} is now {count}]...", ConsoleColor.Yellow);
                     }
                 }
             }
