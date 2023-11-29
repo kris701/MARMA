@@ -84,12 +84,14 @@ namespace StacklebergVerifier
             if (exitCode == 0 || _timedOut)
             {
                 if (Directory.Exists(_replacementsPath)) {
-                    int count = Directory.GetFiles(_replacementsPath).Count();
-                    Thread.Sleep(1000);
-                    while (count != Directory.GetFiles(_replacementsPath).Count())
+                    int count = -1;
+                    int preCount = 0;
+                    while (count != preCount)
                     {
-                        ConsoleHelper.WriteLineColor("Waiting for planner to finish outputting files...", ConsoleColor.Yellow);
+                        preCount = count;
+                        ConsoleHelper.WriteLineColor($"Waiting for planner to finish outputting files [{count}]...", ConsoleColor.Yellow);
                         Thread.Sleep(1000);
+                        count = Directory.GetFiles(_replacementsPath).Count();
                     }
                 }
             }
