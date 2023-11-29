@@ -45,17 +45,19 @@ namespace MetaActions.Train.VerificationStrategies
                         break;
                     }
                     else if (verificationResult == VerificationResult.TimedOut)
-                    {
-                        Print($"\tMeta action timed out on problem '{problem.Name}'. Assuming weak....", ConsoleColor.Yellow);
-                        break;
-                    }
+                        Print($"\tMeta action timed out on problem '{problem.Name}'. Assuming weak. Continuing...", ConsoleColor.Yellow);
                     problemCounter++;
                 }
                 if (allValid)
                 {
-                    Print($"\tMeta action was valid in all {verificationProblem.Count} problems.", ConsoleColor.Green);
-                    Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
-                    CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, ""))));
+                    if (Directory.Exists(_tempVerificationReplacementsPath) && Directory.GetFiles(_tempVerificationReplacementsPath).Count() > 0)
+                    {
+                        Print($"\tMeta action was valid in all {verificationProblem.Count} problems.", ConsoleColor.Green);
+                        Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
+                        CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, ""))));
+                    }
+                    else
+                        Print($"\tMeta action was invalid since it had no replacements.", ConsoleColor.Red);
                 }
                 metaActionCounter++;
             }
