@@ -68,6 +68,8 @@ namespace StacklebergVerifier
                     if (_activeProcess != null)
                     {
                         _activeProcess.Kill(true);
+                        while (!_activeProcess.HasExited)
+                            _activeProcess.Kill(true);
                         _activeProcess.WaitForExit();
                     }
                 };
