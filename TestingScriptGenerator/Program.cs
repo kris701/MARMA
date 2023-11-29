@@ -7,6 +7,8 @@ namespace TestingScriptGenerator
 {
     internal class Program : BaseCLI
     {
+        private static int _seed = 1633123;
+        private static int _timeLimit = 360;
         static int Main(string[] args)
         {
             var parser = new Parser(with => with.HelpWriter = null);
@@ -33,7 +35,7 @@ namespace TestingScriptGenerator
 
             var sortedTrainProblems = new List<FileInfo>();
             var sortedTestProblems = new List<FileInfo>();
-            var rnd = new Random();
+            var rnd = new Random(_seed);
             Console.WriteLine($"{domains.Count} domains in total");
             foreach(var domain in domains)
             {
@@ -52,6 +54,7 @@ namespace TestingScriptGenerator
                         else
                             i--;
                     }
+                    sortedTrainProblems = sortedTrainProblems.OrderBy(x => x.Name).ToList();
                 }
                 foreach (var domainTrainProblem in domainTrainProblems)
                     if (!sortedTrainProblems.Any(x => x.FullName == domainTrainProblem.FullName))
@@ -63,21 +66,21 @@ namespace TestingScriptGenerator
                 Console.WriteLine($"Domain {domainName} has {sortedTrainProblems.Where(x => x.FullName.Contains(domainName)).ToList().Count} training problems and {sortedTestProblems.Where(x => x.FullName.Contains(domainName)).ToList().Count} testing problems");
             }
 
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "CSMMacros", "Strong", 120);
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "CSMMacros", "Weak1m", 120);
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "CSMMacros", "Weak5m", 120);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "CSMMacros", "Strong", _timeLimit);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "CSMMacros", "Weak1m", _timeLimit);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "CSMMacros", "Weak5m", _timeLimit);
 
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Strong", 120);
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Weak1m", 120);
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Weak5m", 120);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Strong", _timeLimit);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Weak1m", _timeLimit);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Weak5m", _timeLimit);
 
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PredicateMetaActions", "Strong", 120);
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PredicateMetaActions", "Weak1m", 120);
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PredicateMetaActions", "Weak5m", 120);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PredicateMetaActions", "Strong", _timeLimit);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PredicateMetaActions", "Weak1m", _timeLimit);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PredicateMetaActions", "Weak5m", _timeLimit);
 
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PreconditionMetaActions", "Strong", 120);
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PreconditionMetaActions", "Weak1m", 120);
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PreconditionMetaActions", "Weak5m", 120);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PreconditionMetaActions", "Strong", _timeLimit);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PreconditionMetaActions", "Weak1m", _timeLimit);
+            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PreconditionMetaActions", "Weak5m", _timeLimit);
         }
 
         private static void GenerateScript(List<FileInfo> domains, List<FileInfo> trainingProblems, List<FileInfo> testingProblems, string method, string verification, int timeout)

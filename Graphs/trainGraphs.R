@@ -34,7 +34,7 @@ data[nrow(data) + 1,] <- list(
 )
 
 # Generate table
-pdf("out/trainResult.pdf", width = 6.7, height = 5.7)
+pdf("out/trainResult.pdf", width = 7.9, height = 5.9)
 g <- tableGrob(data, rows=NULL, theme=ttheme_minimal(base_size = fontSize, family = fontFamily))
 g <- gtable_add_grob(g,
         grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
