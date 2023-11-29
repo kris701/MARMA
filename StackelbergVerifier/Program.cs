@@ -86,8 +86,11 @@ namespace StacklebergVerifier
                 if (Directory.Exists(_replacementsPath)) {
                     int count = Directory.GetFiles(_replacementsPath).Count();
                     Thread.Sleep(1000);
-                    while(count != Directory.GetFiles(_replacementsPath).Count())
+                    while (count != Directory.GetFiles(_replacementsPath).Count())
+                    {
+                        ConsoleHelper.WriteLineColor("Waiting for planner to finish outputting files...", ConsoleColor.Yellow);
                         Thread.Sleep(1000);
+                    }
                 }
             }
 
