@@ -15,9 +15,9 @@ source("src/clamper.R")
 
 # Handle arguments
 args = commandArgs(trailingOnly=TRUE)
-args[1] <- "results.csv"
-args[2] <- "meta_lifted_iterative"
-args[3] <- "meta_no_cache"
+#args[1] <- "results.csv"
+#args[2] <- "meta_lifted_iterative"
+#args[3] <- "meta_no_cache"
 if (length(args) != 3) {
   stop("3 arguments must be supplied! The source data file, and one for each target reconstruction type", call.=FALSE)
 }
