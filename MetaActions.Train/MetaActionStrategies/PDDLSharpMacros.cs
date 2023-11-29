@@ -20,6 +20,8 @@ namespace MetaActions.Train.MetaActionStrategies
 {
     public class PDDLSharpMacros : BaseCancelable, IMetaActionStrategy
     {
+        public int MacroCount { get; internal set; } = 0;
+
         internal string _tempMetaActionPath = "metaActions";
         internal string _tempMacroPath = "macros";
         internal string _tempMacroGeneratorPath = "macrosGeneratorTemp";
@@ -44,6 +46,7 @@ namespace MetaActions.Train.MetaActionStrategies
             Print($"Generating macros using PDDLSharp", ConsoleColor.Blue);
 
             var allMacros = GetPDDLSharpMacros(domain, trainingProblems, 10);
+            MacroCount = allMacros.Count;
             if (allMacros.Count == 0)
             {
                 Print($"No macros was found for the domain.", ConsoleColor.Red);

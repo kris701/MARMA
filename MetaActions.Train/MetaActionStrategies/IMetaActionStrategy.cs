@@ -8,6 +8,7 @@ namespace MetaActions.Train.MetaActionStrategies
 {
     public interface IMetaActionStrategy
     {
+        public int MacroCount { get; }
         public List<FileInfo> GetMetaActions(FileInfo domain, List<FileInfo> trainingProblems);
     }
 }

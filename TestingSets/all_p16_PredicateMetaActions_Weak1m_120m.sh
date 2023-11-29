@@ -19,186 +19,294 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/downward-benchmarks/mystery/domain.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/domain.pddl \
 	--train-problems\
-						 Dependencies/learning-benchmarks/miconic/training/easy/p01.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p01.pddl \
+						 Dependencies/downward-benchmarks/driverlog/p01.pddl \
+						 Dependencies/downward-benchmarks/zenotravel/p01.pddl \
 						 Dependencies/downward-benchmarks/depot/p02.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p02.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p03.pddl \
+						 Dependencies/downward-benchmarks/zenotravel/p02.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p03.pddl \
+						 Dependencies/downward-benchmarks/depot/p03.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p03.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p03.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p04.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p04.pddl \
-						 Dependencies/downward-benchmarks/depot/p04.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p04.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p04.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p04.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p05.pddl \
 						 Dependencies/downward-benchmarks/depot/p05.pddl \
+						 Dependencies/downward-benchmarks/driverlog/p05.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p05.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p06.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p06.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p06.pddl \
+						 Dependencies/downward-benchmarks/depot/p06.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p06.pddl \
+						 Dependencies/downward-benchmarks/zenotravel/p06.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p07.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p07.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p07.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p08.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p08.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p07.pddl \
+						 Dependencies/downward-benchmarks/depot/p07.pddl \
+						 Dependencies/downward-benchmarks/driverlog/p07.pddl \
+						 Dependencies/downward-benchmarks/zenotravel/p07.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p08.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p08.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p08.pddl \
 						 Dependencies/downward-benchmarks/depot/p08.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p09.pddl \
+						 Dependencies/downward-benchmarks/driverlog/p08.pddl \
+						 Dependencies/downward-benchmarks/freecell/p08.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p09.pddl \
 						 Dependencies/downward-benchmarks/depot/p09.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p09.pddl \
-						 Dependencies/downward-benchmarks/freecell/p09.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p09.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p10.pddl \
+						 Dependencies/downward-benchmarks/driverlog/p10.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p10.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p11.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p11.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p11.pddl \
 						 Dependencies/downward-benchmarks/depot/p11.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p11.pddl \
+						 Dependencies/downward-benchmarks/zenotravel/p11.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p12.pddl \
 						 Dependencies/downward-benchmarks/depot/p12.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p12.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p13.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p13.pddl \
-						 Dependencies/downward-benchmarks/depot/p13.pddl \
-						 Dependencies/downward-benchmarks/driverlog/p13.pddl \
-						 Dependencies/downward-benchmarks/zenotravel/p13.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p13.pddl \
+						 Dependencies/downward-benchmarks/freecell/p13.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p14.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p14.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p14.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p14.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p14.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p14.pddl \
 						 Dependencies/downward-benchmarks/depot/p14.pddl \
+						 Dependencies/downward-benchmarks/driverlog/p14.pddl \
+						 Dependencies/downward-benchmarks/depot/p15.pddl \
+						 Dependencies/downward-benchmarks/freecell/p15.pddl \
+						 Dependencies/downward-benchmarks/zenotravel/p15.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p16.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p16.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p16.pddl \
+						 Dependencies/downward-benchmarks/depot/p16.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p16.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p16.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p17.pddl \
+						 Dependencies/downward-benchmarks/depot/p17.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p17.pddl \
 						 Dependencies/downward-benchmarks/freecell/p17.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p17.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p18.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p18.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p18.pddl \
+						 Dependencies/learning-benchmarks/blocksworld/training/easy/p19.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p19.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p19.pddl \
-						 Dependencies/downward-benchmarks/freecell/p19.pddl \
+						 Dependencies/downward-benchmarks/depot/p19.pddl \
+						 Dependencies/downward-benchmarks/driverlog/p19.pddl \
+						 Dependencies/downward-benchmarks/zenotravel/p19.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p20.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p20.pddl \
 						 Dependencies/downward-benchmarks/depot/p20.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p20.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p20.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p21.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p22.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p22.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p26.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p28.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p22.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p22.pddl \
+						 Dependencies/downward-benchmarks/depot/p22.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p23.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p26.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p27.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p28.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p28.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p30.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p31.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p32.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p33.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p28.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p29.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p29.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p30.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p31.pddl \
+						 Dependencies/learning-benchmarks/blocksworld/training/easy/p32.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p32.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p32.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p32.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p32.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p33.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p35.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p37.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p38.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p38.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p39.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p40.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p34.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p34.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p35.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p36.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p36.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p36.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p37.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p37.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p38.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p39.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p40.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p41.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p41.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p41.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p42.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p42.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p43.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p43.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p44.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p44.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p45.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p46.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p48.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p49.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p45.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p45.pddl \
+						 Dependencies/learning-benchmarks/blocksworld/training/easy/p47.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p47.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p47.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p49.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p49.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p50.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p50.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p51.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p52.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p52.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p53.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p53.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p53.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p53.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p55.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p55.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p54.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p54.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p55.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p56.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p57.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p57.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p58.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p59.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p57.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p59.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p60.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p60.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p62.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p64.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p65.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p67.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p67.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p68.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p70.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p71.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p72.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p74.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p75.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p76.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p77.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p77.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p60.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p60.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p60.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p60.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p61.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p61.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p61.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p62.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p66.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p67.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p68.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p68.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p70.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p70.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p71.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p72.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p74.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p74.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p74.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p75.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p75.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p75.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p76.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p76.pddl \
+						 Dependencies/learning-benchmarks/blocksworld/training/easy/p77.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p77.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p77.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p78.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p78.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p78.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p79.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p80.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p82.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p83.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p84.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p85.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p85.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p86.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p86.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p87.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p87.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p90.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p92.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p92.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p78.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p78.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p79.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p79.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p79.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p80.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p81.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p81.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p82.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p82.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p83.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p83.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p85.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p85.pddl \
+						 Dependencies/learning-benchmarks/blocksworld/training/easy/p86.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p86.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p87.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p87.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p87.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p89.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p90.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p90.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p91.pddl \
+						 Dependencies/learning-benchmarks/blocksworld/training/easy/p92.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p92.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p92.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p93.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p93.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p93.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p94.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p95.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p95.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p96.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p98.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p99.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p95.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p96.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p96.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p97.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p98.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p99.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p99.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob01.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob01.pddl \
+						 Dependencies/downward-benchmarks/gripper/prob02.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob02.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob02.pddl \
+						 Dependencies/downward-benchmarks/gripper/prob03.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob03.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob03.pddl \
+						 Dependencies/downward-benchmarks/gripper/prob04.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob04.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob04.pddl \
-						 Dependencies/downward-benchmarks/gripper/prob05.pddl \
+						 Dependencies/downward-benchmarks/gripper/prob06.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob06.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob06.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob06.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob07.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob07.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob07.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob08.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob08.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob08.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob09.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob09.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob09.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob10.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob10.pddl \
+						 Dependencies/downward-benchmarks/gripper/prob10.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob10.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob11.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob11.pddl \
+						 Dependencies/downward-benchmarks/gripper/prob12.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob12.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob12.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob12.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob13.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob13.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob13.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob14.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob14.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob15.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob15.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob15.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob16.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob16.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob17.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob17.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob17.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob18.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob18.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob18.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob19.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob19.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob19.pddl \
+						 Dependencies/downward-benchmarks/gripper/prob20.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob20.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob21.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob21.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob22.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob22.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob22.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob23.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob24.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob26.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob27.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob25.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob26.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob28.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob28.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob29.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob30.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob30.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob30.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob32.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob35.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-10-4.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob35.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-11-1.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-11-4.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-5-5.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-6-3.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-12-1.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-12-3.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-13-3.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-2-2.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-3-2.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-3-3.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-3-5.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-6-5.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-8-5.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-9-2.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-9-3.pddl \
 	--test-problems\
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p02.pddl \
@@ -214,7 +322,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p13.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p15.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p16.pddl \
-						 Dependencies/learning-benchmarks/blocksworld/training/easy/p19.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p20.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p21.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p22.pddl \
@@ -227,7 +334,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p29.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p30.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p31.pddl \
-						 Dependencies/learning-benchmarks/blocksworld/training/easy/p32.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p33.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p34.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p35.pddl \
@@ -242,7 +348,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p44.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p45.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p46.pddl \
-						 Dependencies/learning-benchmarks/blocksworld/training/easy/p47.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p48.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p49.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p50.pddl \
@@ -268,7 +373,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p74.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p75.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p76.pddl \
-						 Dependencies/learning-benchmarks/blocksworld/training/easy/p77.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p79.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p80.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p81.pddl \
@@ -276,13 +380,11 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p83.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p84.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p85.pddl \
-						 Dependencies/learning-benchmarks/blocksworld/training/easy/p86.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p87.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p88.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p89.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p90.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p91.pddl \
-						 Dependencies/learning-benchmarks/blocksworld/training/easy/p92.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p93.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p94.pddl \
 						 Dependencies/learning-benchmarks/blocksworld/training/easy/p96.pddl \
@@ -387,15 +489,14 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p06.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p07.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p08.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p09.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p10.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p11.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p12.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p13.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p14.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p15.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p17.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p18.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p20.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p21.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p22.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p23.pddl \
@@ -406,23 +507,21 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p29.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p30.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p31.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p32.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p33.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p34.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p35.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p36.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p37.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p38.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p39.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p40.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p41.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p42.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p43.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p44.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p45.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p46.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p47.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p48.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p49.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p50.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p51.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p53.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p54.pddl \
@@ -441,29 +540,26 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p67.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p68.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p69.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p70.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p71.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p72.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p73.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p74.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p75.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p76.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p77.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p78.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p79.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p80.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p81.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p82.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p83.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p84.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p85.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p87.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p86.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p88.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p89.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p90.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p91.pddl \
+						 Dependencies/learning-benchmarks/childsnack/training/easy/p92.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p93.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p95.pddl \
-						 Dependencies/learning-benchmarks/childsnack/training/easy/p96.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p97.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p98.pddl \
 						 Dependencies/learning-benchmarks/childsnack/training/easy/p99.pddl \
@@ -557,18 +653,13 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/childsnack/testing/medium/p28.pddl \
 						 Dependencies/learning-benchmarks/childsnack/testing/medium/p29.pddl \
 						 Dependencies/learning-benchmarks/childsnack/testing/medium/p30.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p02.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p03.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p04.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p05.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p06.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p07.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p08.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p09.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p10.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p11.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p12.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p13.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p14.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p15.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p16.pddl \
@@ -577,25 +668,21 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p19.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p20.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p21.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p22.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p23.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p24.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p25.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p26.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p27.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p28.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p29.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p30.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p31.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p32.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p33.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p34.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p35.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p36.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p37.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p38.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p39.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p40.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p41.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p42.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p43.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p44.pddl \
@@ -603,6 +690,7 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p46.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p47.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p48.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p49.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p50.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p51.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p52.pddl \
@@ -613,9 +701,7 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p57.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p58.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p59.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p60.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p61.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p62.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p63.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p64.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p65.pddl \
@@ -623,18 +709,22 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p67.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p68.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p69.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p70.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p71.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p72.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p73.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p74.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p75.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p76.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p77.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p78.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p79.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p80.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p81.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p82.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p83.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p84.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p85.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p86.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p87.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p88.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p89.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p90.pddl \
@@ -643,9 +733,9 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p93.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p94.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p95.pddl \
+						 Dependencies/learning-benchmarks/ferry/training/easy/p96.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p97.pddl \
 						 Dependencies/learning-benchmarks/ferry/training/easy/p98.pddl \
-						 Dependencies/learning-benchmarks/ferry/training/easy/p99.pddl \
 						 Dependencies/learning-benchmarks/ferry/testing/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/ferry/testing/easy/p02.pddl \
 						 Dependencies/learning-benchmarks/ferry/testing/easy/p03.pddl \
@@ -739,9 +829,9 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p02.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p03.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p04.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p05.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p07.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p08.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p09.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p10.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p11.pddl \
@@ -752,26 +842,27 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p16.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p17.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p18.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p19.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p20.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p22.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p23.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p24.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p25.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p26.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p27.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p29.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p30.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p28.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p31.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p32.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p33.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p34.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p35.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p36.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p37.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p38.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p39.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p40.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p41.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p44.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p45.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p46.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p47.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p48.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p49.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p50.pddl \
@@ -780,19 +871,15 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p53.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p54.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p55.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p56.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p57.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p58.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p59.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p60.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p61.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p62.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p63.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p64.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p65.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p66.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p67.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p68.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p69.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p70.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p71.pddl \
@@ -802,6 +889,7 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p75.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p76.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p77.pddl \
+						 Dependencies/learning-benchmarks/floortile/training/easy/p78.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p79.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p80.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p81.pddl \
@@ -809,11 +897,9 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p83.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p84.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p85.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p86.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p87.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p88.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p89.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p90.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p91.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p92.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p93.pddl \
@@ -821,8 +907,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p95.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p96.pddl \
 						 Dependencies/learning-benchmarks/floortile/training/easy/p97.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p98.pddl \
-						 Dependencies/learning-benchmarks/floortile/training/easy/p99.pddl \
 						 Dependencies/learning-benchmarks/floortile/testing/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/floortile/testing/easy/p02.pddl \
 						 Dependencies/learning-benchmarks/floortile/testing/easy/p03.pddl \
@@ -913,17 +997,16 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/floortile/testing/medium/p28.pddl \
 						 Dependencies/learning-benchmarks/floortile/testing/medium/p29.pddl \
 						 Dependencies/learning-benchmarks/floortile/testing/medium/p30.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p02.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p03.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p04.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p05.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p08.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p06.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p09.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p10.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p12.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p14.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p13.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p15.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p16.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p17.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p18.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p19.pddl \
@@ -935,7 +1018,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p25.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p26.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p27.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p28.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p29.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p30.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p31.pddl \
@@ -944,8 +1026,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p34.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p35.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p36.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p37.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p38.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p39.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p40.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p41.pddl \
@@ -960,13 +1040,15 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p50.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p51.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p52.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p53.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p54.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p55.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p56.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p57.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p58.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p59.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p60.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p61.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p62.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p63.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p64.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p65.pddl \
@@ -975,22 +1057,18 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p68.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p69.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p70.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p71.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p72.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p73.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p74.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p75.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p76.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p77.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p78.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p80.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p79.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p81.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p82.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p83.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p84.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p85.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p86.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p87.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p88.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p89.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p90.pddl \
@@ -998,10 +1076,10 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p92.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p93.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p94.pddl \
-						 Dependencies/learning-benchmarks/miconic/training/easy/p95.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p96.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p97.pddl \
 						 Dependencies/learning-benchmarks/miconic/training/easy/p98.pddl \
+						 Dependencies/learning-benchmarks/miconic/training/easy/p99.pddl \
 						 Dependencies/learning-benchmarks/miconic/testing/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/miconic/testing/easy/p02.pddl \
 						 Dependencies/learning-benchmarks/miconic/testing/easy/p03.pddl \
@@ -1094,7 +1172,7 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/miconic/testing/medium/p30.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p02.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p03.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p04.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p05.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p06.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p07.pddl \
@@ -1104,7 +1182,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p11.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p12.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p13.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p14.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p15.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p16.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p17.pddl \
@@ -1112,14 +1189,15 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p19.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p20.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p21.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p22.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p23.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p24.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p25.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p26.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p27.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p28.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p29.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p32.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p30.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p31.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p33.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p34.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p35.pddl \
@@ -1132,48 +1210,42 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p42.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p43.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p45.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p46.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p47.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p48.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p49.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p50.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p51.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p52.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p53.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p54.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p55.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p56.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p57.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p58.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p59.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p60.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p61.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p62.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p63.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p64.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p65.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p66.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p68.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p67.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p69.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p70.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p71.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p72.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p73.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p74.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p75.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p76.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p77.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p78.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p79.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p80.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p81.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p82.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p83.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p84.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p85.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p86.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p87.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p88.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p89.pddl \
+						 Dependencies/learning-benchmarks/rovers/training/easy/p90.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p91.pddl \
-						 Dependencies/learning-benchmarks/rovers/training/easy/p92.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p93.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p94.pddl \
 						 Dependencies/learning-benchmarks/rovers/training/easy/p95.pddl \
@@ -1274,21 +1346,21 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p02.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p03.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p04.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p05.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p06.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p08.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p07.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p09.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p10.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p11.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p12.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p13.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p14.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p15.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p17.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p18.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p19.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p20.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p21.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p22.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p23.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p24.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p25.pddl \
@@ -1302,42 +1374,38 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p34.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p35.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p36.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p39.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p37.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p38.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p40.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p41.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p42.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p43.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p44.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p45.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p46.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p47.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p48.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p49.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p50.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p51.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p52.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p53.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p54.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p55.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p56.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p57.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p58.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p59.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p60.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p61.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p62.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p63.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p64.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p65.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p66.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p67.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p68.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p69.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p70.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p71.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p72.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p73.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p74.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p75.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p76.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p77.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p78.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p79.pddl \
@@ -1348,17 +1416,15 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p84.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p85.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p86.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p87.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p88.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p89.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p90.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p91.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p92.pddl \
-						 Dependencies/learning-benchmarks/satellite/training/easy/p93.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p94.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p95.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p96.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p97.pddl \
+						 Dependencies/learning-benchmarks/satellite/training/easy/p98.pddl \
 						 Dependencies/learning-benchmarks/satellite/training/easy/p99.pddl \
 						 Dependencies/learning-benchmarks/satellite/testing/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/satellite/testing/easy/p02.pddl \
@@ -1456,7 +1522,7 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p04.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p05.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p06.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p07.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p08.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p09.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p10.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p12.pddl \
@@ -1478,17 +1544,13 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p29.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p30.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p31.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p32.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p33.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p34.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p35.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p36.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p37.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p38.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p39.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p40.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p41.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p42.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p43.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p44.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p45.pddl \
@@ -1505,8 +1567,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p57.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p58.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p59.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p60.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p61.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p62.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p63.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p64.pddl \
@@ -1516,18 +1576,18 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p68.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p69.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p70.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p71.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p72.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p73.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p75.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p74.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p76.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p77.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p78.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p79.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p81.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p80.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p82.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p83.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p84.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p85.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p86.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p87.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p88.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p89.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p90.pddl \
@@ -1535,7 +1595,7 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p92.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p93.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p94.pddl \
-						 Dependencies/learning-benchmarks/sokoban/training/easy/p96.pddl \
+						 Dependencies/learning-benchmarks/sokoban/training/easy/p95.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p97.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p98.pddl \
 						 Dependencies/learning-benchmarks/sokoban/training/easy/p99.pddl \
@@ -1631,67 +1691,62 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/sokoban/testing/medium/p30.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p01.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p02.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p03.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p04.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p05.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p06.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p07.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p08.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p09.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p10.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p11.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p12.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p13.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p14.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p18.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p24.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p25.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p26.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p28.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p29.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p30.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p31.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p32.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p33.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p34.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p35.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p36.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p37.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p38.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p40.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p41.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p42.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p43.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p44.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p45.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p46.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p47.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p48.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p49.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p50.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p51.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p52.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p53.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p54.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p55.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p56.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p57.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p58.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p59.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p60.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p61.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p62.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p63.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p66.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p64.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p65.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p67.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p68.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p69.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p70.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p71.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p72.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p73.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p74.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p75.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p76.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p78.pddl \
+						 Dependencies/learning-benchmarks/spanner/training/easy/p77.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p79.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p80.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p81.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p82.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p83.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p84.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p85.pddl \
@@ -1700,7 +1755,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p88.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p89.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p90.pddl \
-						 Dependencies/learning-benchmarks/spanner/training/easy/p91.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p92.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p94.pddl \
 						 Dependencies/learning-benchmarks/spanner/training/easy/p95.pddl \
@@ -1802,7 +1856,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/transport/training/easy/p02.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p03.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p04.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p05.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p06.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p07.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p08.pddl \
@@ -1811,10 +1864,10 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/transport/training/easy/p11.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p12.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p13.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p14.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p15.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p16.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p17.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p18.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p19.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p20.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p21.pddl \
@@ -1822,23 +1875,20 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/transport/training/easy/p23.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p24.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p25.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p27.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p26.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p28.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p29.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p30.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p31.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p32.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p33.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p34.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p35.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p36.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p37.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p38.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p39.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p40.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p41.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p42.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p43.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p44.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p45.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p46.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p47.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p48.pddl \
@@ -1847,10 +1897,7 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/transport/training/easy/p51.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p52.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p53.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p54.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p55.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p56.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p57.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p58.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p59.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p60.pddl \
@@ -1861,6 +1908,7 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/transport/training/easy/p65.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p66.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p67.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p68.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p69.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p70.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p71.pddl \
@@ -1868,23 +1916,23 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/transport/training/easy/p73.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p74.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p75.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p76.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p77.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p79.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p78.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p80.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p81.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p82.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p83.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p84.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p85.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p86.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p87.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p88.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p89.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p90.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p91.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p92.pddl \
+						 Dependencies/learning-benchmarks/transport/training/easy/p93.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p94.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p95.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p96.pddl \
-						 Dependencies/learning-benchmarks/transport/training/easy/p97.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p98.pddl \
 						 Dependencies/learning-benchmarks/transport/training/easy/p99.pddl \
 						 Dependencies/learning-benchmarks/transport/testing/easy/p01.pddl \
@@ -1978,27 +2026,15 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/learning-benchmarks/transport/testing/medium/p29.pddl \
 						 Dependencies/learning-benchmarks/transport/testing/medium/p30.pddl \
 						 Dependencies/downward-benchmarks/depot/p01.pddl \
-						 Dependencies/downward-benchmarks/depot/p03.pddl \
-						 Dependencies/downward-benchmarks/depot/p06.pddl \
-						 Dependencies/downward-benchmarks/depot/p07.pddl \
+						 Dependencies/downward-benchmarks/depot/p04.pddl \
 						 Dependencies/downward-benchmarks/depot/p10.pddl \
-						 Dependencies/downward-benchmarks/depot/p15.pddl \
-						 Dependencies/downward-benchmarks/depot/p16.pddl \
-						 Dependencies/downward-benchmarks/depot/p17.pddl \
+						 Dependencies/downward-benchmarks/depot/p13.pddl \
 						 Dependencies/downward-benchmarks/depot/p18.pddl \
-						 Dependencies/downward-benchmarks/depot/p19.pddl \
 						 Dependencies/downward-benchmarks/depot/p21.pddl \
-						 Dependencies/downward-benchmarks/depot/p22.pddl \
-						 Dependencies/downward-benchmarks/driverlog/p01.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p04.pddl \
-						 Dependencies/downward-benchmarks/driverlog/p05.pddl \
-						 Dependencies/downward-benchmarks/driverlog/p07.pddl \
-						 Dependencies/downward-benchmarks/driverlog/p08.pddl \
-						 Dependencies/downward-benchmarks/driverlog/p10.pddl \
-						 Dependencies/downward-benchmarks/driverlog/p14.pddl \
+						 Dependencies/downward-benchmarks/driverlog/p13.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p15.pddl \
 						 Dependencies/downward-benchmarks/driverlog/p18.pddl \
-						 Dependencies/downward-benchmarks/driverlog/p19.pddl \
 						 Dependencies/downward-benchmarks/freecell/p01.pddl \
 						 Dependencies/downward-benchmarks/freecell/p02.pddl \
 						 Dependencies/downward-benchmarks/freecell/p03.pddl \
@@ -2006,43 +2042,36 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/downward-benchmarks/freecell/p05.pddl \
 						 Dependencies/downward-benchmarks/freecell/p06.pddl \
 						 Dependencies/downward-benchmarks/freecell/p07.pddl \
-						 Dependencies/downward-benchmarks/freecell/p08.pddl \
+						 Dependencies/downward-benchmarks/freecell/p09.pddl \
 						 Dependencies/downward-benchmarks/freecell/p10.pddl \
 						 Dependencies/downward-benchmarks/freecell/p11.pddl \
 						 Dependencies/downward-benchmarks/freecell/p12.pddl \
-						 Dependencies/downward-benchmarks/freecell/p13.pddl \
 						 Dependencies/downward-benchmarks/freecell/p14.pddl \
-						 Dependencies/downward-benchmarks/freecell/p15.pddl \
 						 Dependencies/downward-benchmarks/freecell/p16.pddl \
 						 Dependencies/downward-benchmarks/freecell/p18.pddl \
+						 Dependencies/downward-benchmarks/freecell/p19.pddl \
 						 Dependencies/downward-benchmarks/freecell/p20.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-10-1.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-10-2.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-10-3.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-10-4.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-10-5.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-11-2.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-11-3.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-11-5.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-12-1.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-12-2.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-12-3.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-12-4.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-12-5.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-13-1.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-13-2.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-13-3.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-13-4.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-13-5.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-2-1.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-2-2.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-2-3.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-2-4.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-2-5.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-3-1.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-3-2.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-3-3.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-3-4.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-3-5.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-4-1.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-4-2.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-4-3.pddl \
@@ -2052,8 +2081,10 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-5-2.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-5-3.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-5-4.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-5-5.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-6-1.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-6-2.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-6-3.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-6-4.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-7-1.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-7-2.pddl \
@@ -2064,104 +2095,73 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-8-2.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-8-3.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-8-4.pddl \
+						 Dependencies/downward-benchmarks/freecell/probfreecell-8-5.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-9-1.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-9-2.pddl \
-						 Dependencies/downward-benchmarks/freecell/probfreecell-9-3.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-9-4.pddl \
 						 Dependencies/downward-benchmarks/freecell/probfreecell-9-5.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob01.pddl \
-						 Dependencies/downward-benchmarks/gripper/prob02.pddl \
-						 Dependencies/downward-benchmarks/gripper/prob03.pddl \
-						 Dependencies/downward-benchmarks/gripper/prob04.pddl \
-						 Dependencies/downward-benchmarks/gripper/prob06.pddl \
-						 Dependencies/downward-benchmarks/gripper/prob10.pddl \
+						 Dependencies/downward-benchmarks/gripper/prob05.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob11.pddl \
-						 Dependencies/downward-benchmarks/gripper/prob12.pddl \
 						 Dependencies/downward-benchmarks/gripper/prob18.pddl \
-						 Dependencies/downward-benchmarks/gripper/prob20.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob01.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob03.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob04.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob05.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob06.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob07.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob08.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob09.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob11.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob13.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob14.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob16.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob10.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob15.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob17.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob18.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob22.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob19.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob23.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob24.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob25.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob26.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob27.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob29.pddl \
-						 Dependencies/downward-benchmarks/logistics98/prob30.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob31.pddl \
+						 Dependencies/downward-benchmarks/logistics98/prob32.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob33.pddl \
 						 Dependencies/downward-benchmarks/logistics98/prob34.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob01.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob02.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob04.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob05.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob06.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob08.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob10.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob12.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob13.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob14.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob15.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob16.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob17.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob18.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob19.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob20.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob21.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob23.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob25.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob28.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob29.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob30.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob26.pddl \
+						 Dependencies/downward-benchmarks/mprime/prob27.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob31.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob32.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob33.pddl \
 						 Dependencies/downward-benchmarks/mprime/prob34.pddl \
-						 Dependencies/downward-benchmarks/mprime/prob35.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob01.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob03.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob05.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob07.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob10.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob08.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob09.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob11.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob13.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob14.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob15.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob16.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob19.pddl \
+						 Dependencies/downward-benchmarks/mystery/prob18.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob20.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob22.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob23.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob24.pddl \
-						 Dependencies/downward-benchmarks/mystery/prob25.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob26.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob27.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob28.pddl \
 						 Dependencies/downward-benchmarks/mystery/prob29.pddl \
-						 Dependencies/downward-benchmarks/zenotravel/p01.pddl \
-						 Dependencies/downward-benchmarks/zenotravel/p02.pddl \
-						 Dependencies/downward-benchmarks/zenotravel/p06.pddl \
-						 Dependencies/downward-benchmarks/zenotravel/p07.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p08.pddl \
-						 Dependencies/downward-benchmarks/zenotravel/p11.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p12.pddl \
+						 Dependencies/downward-benchmarks/zenotravel/p13.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p14.pddl \
-						 Dependencies/downward-benchmarks/zenotravel/p15.pddl \
-						 Dependencies/downward-benchmarks/zenotravel/p19.pddl \
-	--generation-strategy PreconditionMetaActions\
+	--generation-strategy PredicateMetaActions\
 	--verification-strategy Weak1m\
 	--multitask\
 	--timelimit 120\
 	--rebuild
-cp output/train/*.zip "TestingSets/all_p10_PreconditionMetaActions_Weak1m_120m.zip"
+cp output/train/*.zip "TestingSets/all_p10_PredicateMetaActions_Weak1m_120m.zip"

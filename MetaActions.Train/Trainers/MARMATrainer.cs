@@ -119,6 +119,7 @@ namespace MetaActions.Train.Trainers
                 Name,
                 TrainingProblems.Count,
                 TestingProblems.Count,
+                MetaActionStrategy.MacroCount,
                 allMetaActions.Count,
                 verifiedMetaActions.Count,
                 verifiedMetaActions.Sum(x => x.Replacements.Count / 2),

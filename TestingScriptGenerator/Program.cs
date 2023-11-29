@@ -70,9 +70,9 @@ namespace TestingScriptGenerator
             GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "CSMMacros", "Weak1m", _timeLimit);
             GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "CSMMacros", "Weak5m", _timeLimit);
 
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Strong", _timeLimit);
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Weak1m", _timeLimit);
-            GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Weak5m", _timeLimit);
+            //GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Strong", _timeLimit);
+            //GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Weak1m", _timeLimit);
+            //GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PDDLSharpMacros", "Weak5m", _timeLimit);
 
             GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PredicateMetaActions", "Strong", _timeLimit);
             GenerateScript(domains, sortedTrainProblems, sortedTestProblems, "PredicateMetaActions", "Weak1m", _timeLimit);
@@ -106,7 +106,7 @@ namespace TestingScriptGenerator
 
             sb.AppendLine($"cp output/train/*.zip \"TestingSets/all_p10_{method}_{verification}_{timeout}m.zip\"");
 
-            File.WriteAllText($"TestingSets/all_p10_{method}_{verification}_{timeout}m.sh", sb.ToString());
+            File.WriteAllText($"TestingSets/all_p16_{method}_{verification}_{timeout}m.sh", sb.ToString());
         }
     }
 }
