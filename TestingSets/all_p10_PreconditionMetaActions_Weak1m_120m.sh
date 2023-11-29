@@ -2159,9 +2159,9 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 						 Dependencies/downward-benchmarks/zenotravel/p14.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p15.pddl \
 						 Dependencies/downward-benchmarks/zenotravel/p19.pddl \
-	--generation-strategy PDDLSharpMacros\
+	--generation-strategy PreconditionMetaActions\
 	--verification-strategy Weak1m\
 	--multitask\
-	--timelimit 360\
+	--timelimit 120\
 	--rebuild
-cp output/train/*.zip "TestingSets/all_p10_PDDLSharpMacros_Weak1m_360m.zip"
+cp output/train/*.zip "TestingSets/all_p10_PreconditionMetaActions_Weak1m_120m.zip"

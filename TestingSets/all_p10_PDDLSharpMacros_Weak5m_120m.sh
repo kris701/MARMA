@@ -2162,6 +2162,6 @@ dotnet run --configuration Release --project MetaActions.Train -- \
 	--generation-strategy PDDLSharpMacros\
 	--verification-strategy Weak5m\
 	--multitask\
-	--timelimit 360\
+	--timelimit 120\
 	--rebuild
-cp output/train/*.zip "TestingSets/all_p10_PDDLSharpMacros_Weak5m_360m.zip"
+cp output/train/*.zip "TestingSets/all_p10_PDDLSharpMacros_Weak5m_120m.zip"

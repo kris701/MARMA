@@ -8,7 +8,7 @@ namespace TestingScriptGenerator
     internal class Program : BaseCLI
     {
         private static int _seed = 1633123;
-        private static int _timeLimit = 360;
+        private static int _timeLimit = 120;
         static int Main(string[] args)
         {
             var parser = new Parser(with => with.HelpWriter = null);
