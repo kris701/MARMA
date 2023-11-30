@@ -27,7 +27,16 @@ pub fn get_applicable_with_fixed<'a>(
     action: &'a Action,
     state: &'a State,
     fixed: &'a HashMap<usize, usize>,
-) -> impl Iterator<Item = Vec<usize>> + 'a {
+) -> Option<impl Iterator<Item = Vec<usize>> + 'a> {
+    let (nullary_atoms, other_atoms): (Vec<&Atom>, Vec<&Atom>) =
+        action.precondition.iter().partition(|a| a.is_nullary());
+
+    if nullary_atoms
+        .iter()
+        .any(|a| state.has_nullary(a.predicate) != a.value)
+    {
+        return None;
+    }
     let mut candidates: Vec<Vec<usize>> = action
         .parameters
         .types
@@ -43,28 +52,34 @@ pub fn get_applicable_with_fixed<'a>(
         })
         .collect();
 
-    let (unary_atoms, other_atoms): (Vec<&Atom>, Vec<&Atom>) =
-        action.precondition.iter().partition(|a| a.is_unary());
+    let (unary_atoms, nary_atoms): (Vec<&Atom>, Vec<&Atom>) =
+        other_atoms.into_iter().partition(|a| a.is_unary());
 
     for atom in unary_atoms {
         match atom.parameters[0] {
             Argument::Parameter(p) => {
                 candidates[p].retain(|o| state.has(atom.predicate, &vec![*o]) == atom.value);
             }
-            _ => {}
+            Argument::Constant(c) => {
+                if state.has(atom.predicate, &vec![c]) != atom.value {
+                    return None;
+                }
+            }
         };
     }
 
-    candidates
-        .into_iter()
-        .multi_cartesian_product()
-        .filter(move |p| {
-            increment_counter();
-            other_atoms.iter().all(|atom| {
-                let corresponding: Vec<usize> = atom.map_args(p);
-                atom.predicate == 0 && corresponding.iter().all_equal() == atom.value
-                    || atom.predicate != 0
-                        && state.has(atom.predicate, &corresponding) == atom.value
-            })
-        })
+    Some(
+        candidates
+            .into_iter()
+            .multi_cartesian_product()
+            .filter(move |p| {
+                increment_counter();
+                nary_atoms.iter().all(|atom| {
+                    let corresponding: Vec<usize> = atom.map_args(p);
+                    (atom.predicate == 0 && corresponding.iter().all_equal() == atom.value)
+                        || (atom.predicate != 0
+                            && state.has(atom.predicate, &corresponding) == atom.value)
+                })
+            }),
+    )
 }

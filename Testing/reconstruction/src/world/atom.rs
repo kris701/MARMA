@@ -19,6 +19,10 @@ pub struct Atom {
 }
 
 impl Atom {
+    pub fn is_nullary(&self) -> bool {
+        self.parameters.len() == 0
+    }
+
     pub fn is_unary(&self) -> bool {
         self.parameters.len() == 1
     }
