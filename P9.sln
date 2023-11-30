@@ -33,8 +33,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Train", "MetaAc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroExtractor", "MacroExtractor\MacroExtractor.csproj", "{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestingSets", "TestingSets", "{8DA6DBD4-939F-4D75-9A59-98010AA30B59}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8B977624-590C-429F-AF65-6C2B00C75AF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator.Tests", "Tests\MetaActionGenerator.Tests\MetaActionGenerator.Tests.csproj", "{5C5289EA-288A-4728-91E6-DC001AD21A7C}"
