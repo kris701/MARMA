@@ -88,7 +88,11 @@ pub fn get_applicable_with_fixed<'a>(
                 Argument::Parameter(p) => {
                     candidates[*p].retain(|o| state.has_partial(atom.predicate, i, *o))
                 }
-                Argument::Constant(_) => todo!(),
+                Argument::Constant(c) => {
+                    if state.has_partial(atom.predicate, i, *c) {
+                        return None;
+                    }
+                }
             }
         }
     }
