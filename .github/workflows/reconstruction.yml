@@ -20,6 +20,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build
-      run: cargo build --verbose --workspace --manifest-path reconstruction/Cargo.toml
+      run: cargo build --verbose --workspace --manifest-path Testing/reconstruction/Cargo.toml
     - name: Run tests
-      run: cargo test --workspace --manifest-path reconstruction/Cargo.toml
+      run: cargo test --workspace --manifest-path Testing/reconstruction/Cargo.toml
