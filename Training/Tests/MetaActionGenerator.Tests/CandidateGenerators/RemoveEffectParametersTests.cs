@@ -12,7 +12,7 @@ namespace MetaActionGenerator.Tests.CandidateGenerators
         [ClassInitialize]
         public static async Task InitialiseAsync(TestContext context)
         {
-            await GitFetcher.CheckAndDownloadBenchmarksAsync("https://github.com/kris701/P9-Test-Data", "benchmarks");
+            await GitFetcher.CheckAndDownloadBenchmarksAsync("https://github.com/kris701/MARMA-Test-Data", "benchmarks");
         }
 
         [TestMethod]
