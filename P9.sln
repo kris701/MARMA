@@ -42,6 +42,20 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergCompiler.Tests", "Training\Tests\StackelbergCompiler.Tests\StackelbergCompiler.Tests.csproj", "{FC109629-25D4-4791-8146-E0606B5775AA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Training", "Training", "{17DD7BB4-13CF-46DE-8F52-F2A5FDF56C16}"
+	ProjectSection(SolutionItems) = preProject
+		Training\README.md = Training\README.md
+		Training\train_all.sh = Training\train_all.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Evaluation", "Evaluation", "{C3D6F16B-5664-413E-9485-92FA9BA1E3D3}"
+	ProjectSection(SolutionItems) = preProject
+		Evaluation\README.md = Evaluation\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{49D92F4E-320A-4FEA-ADCE-07B45E1322D0}"
+	ProjectSection(SolutionItems) = preProject
+		Testing\README.md = Testing\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
