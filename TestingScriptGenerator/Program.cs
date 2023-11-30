@@ -104,9 +104,9 @@ namespace TestingScriptGenerator
             sb.AppendLine($"\t--timelimit {timeout}\\");
             sb.AppendLine($"\t--rebuild");
 
-            sb.AppendLine($"cp output/train/*.zip \"TestingSets/all_p10_{method}_{verification}_{timeout}m.zip\"");
+            sb.AppendLine($"cp output/train/*.zip \"MARMA-TestingSets/all_p10_{method}_{verification}_{timeout}m.zip\"");
 
-            File.WriteAllText($"TestingSets/all_p16_{method}_{verification}_{timeout}m.sh", sb.ToString());
+            File.WriteAllText($"MARMA-TestingSets/all_p16_{method}_{verification}_{timeout}m.sh", sb.ToString());
         }
     }
 }
