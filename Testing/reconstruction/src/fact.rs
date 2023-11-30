@@ -12,10 +12,20 @@ impl Fact {
         debug_assert!(parameters.len() <= 3);
         let internal = predicate as u64
             + parameters
-                .iter()
+                .into_iter()
                 .enumerate()
-                .map(|(i, p)| (*p as u64) << 16 * (i + 1))
+                .map(|(i, p)| (p as u64) << 16 * (i + 1))
                 .sum::<u64>();
+        Self { internal }
+    }
+
+    pub fn new_unary(predicate: usize, parameter: usize) -> Self {
+        let internal = (predicate as u64) + ((parameter as u64) << 16);
+        Self { internal }
+    }
+
+    pub fn new_nullary(predicate: usize) -> Self {
+        let internal = predicate as u64;
         Self { internal }
     }
 

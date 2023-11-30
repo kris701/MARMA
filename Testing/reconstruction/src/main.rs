@@ -8,7 +8,7 @@ mod tools;
 mod world;
 
 use crate::reconstruction::downward_wrapper::{init_downward, Downward};
-use crate::successor_genrator::get_permutation_count;
+use crate::successor_genrator::{legal_count, pseudo_count};
 use crate::tools::val::check_val;
 use crate::tools::{random_file_name, status_print};
 use crate::world::{init_world, World};
@@ -134,7 +134,8 @@ fn main() {
         &args.domain,
         &args.problem,
     );
-    println!("operator_count={}", get_permutation_count());
+    println!("pseudo_operator_count={}", pseudo_count());
+    println!("legal_operator_count={}", legal_count());
     if let Some(val_path) = args.val {
         status_print(Status::Validation, "Checking VAL");
         if check_val(

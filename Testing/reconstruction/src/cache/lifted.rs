@@ -59,11 +59,11 @@ impl Cache for LiftedCache {
         for replacement in replacement_candidates.iter() {
             let action = &replacement.action;
             let fixed = find_fixed(&meta_parameters, action);
-            for permutation in get_applicable_with_fixed(&action, init, &fixed) {
+            for permutation in get_applicable_with_fixed(&action, init, &fixed)? {
                 let mut eff: Vec<(Fact, bool)> = Vec::new();
                 for atom in action.effect.iter() {
                     let corresponding: Vec<usize> = atom.map_args(&permutation);
-                    if atom.value != init.has(atom.predicate, &corresponding) {
+                    if atom.value != init.has_nary(atom.predicate, &corresponding) {
                         let fact = Fact::new(atom.predicate, corresponding);
                         eff.push((fact, atom.value))
                     }

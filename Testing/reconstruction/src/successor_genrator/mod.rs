@@ -12,14 +12,23 @@ use std::{
     sync::atomic::{AtomicUsize, Ordering},
 };
 
-static PERMUTATION_COUNT: AtomicUsize = AtomicUsize::new(0);
+static PSEUDO_OPERATORS: AtomicUsize = AtomicUsize::new(0);
+static LEGAL_OPERATORS: AtomicUsize = AtomicUsize::new(0);
 
-fn increment_counter() {
-    PERMUTATION_COUNT.fetch_add(1, Ordering::SeqCst);
+fn increment_pseudo() {
+    PSEUDO_OPERATORS.fetch_add(1, Ordering::SeqCst);
 }
 
-pub fn get_permutation_count() -> usize {
-    PERMUTATION_COUNT.load(Ordering::SeqCst)
+pub fn pseudo_count() -> usize {
+    PSEUDO_OPERATORS.load(Ordering::SeqCst)
+}
+
+fn increment_legal() {
+    LEGAL_OPERATORS.fetch_add(1, Ordering::SeqCst);
+}
+
+pub fn legal_count() -> usize {
+    LEGAL_OPERATORS.load(Ordering::SeqCst)
 }
 
 /// Generates all legal permutations, with some parameters fixed, of an action in a given state
@@ -27,7 +36,17 @@ pub fn get_applicable_with_fixed<'a>(
     action: &'a Action,
     state: &'a State,
     fixed: &'a HashMap<usize, usize>,
-) -> impl Iterator<Item = Vec<usize>> + 'a {
+) -> Option<impl Iterator<Item = Vec<usize>> + 'a> {
+    let (nullary_atoms, other_atoms): (Vec<&Atom>, Vec<&Atom>) =
+        action.precondition.iter().partition(|a| a.is_nullary());
+
+    if nullary_atoms
+        .iter()
+        .any(|a| state.has_nullary(a.predicate) != a.value)
+    {
+        return None;
+    }
+
     let mut candidates: Vec<Vec<usize>> = action
         .parameters
         .types
@@ -43,28 +62,56 @@ pub fn get_applicable_with_fixed<'a>(
         })
         .collect();
 
-    let (unary_atoms, other_atoms): (Vec<&Atom>, Vec<&Atom>) =
-        action.precondition.iter().partition(|a| a.is_unary());
+    let (unary_atoms, nary_atoms): (Vec<&Atom>, Vec<&Atom>) =
+        other_atoms.into_iter().partition(|a| a.is_unary());
 
     for atom in unary_atoms {
         match atom.parameters[0] {
             Argument::Parameter(p) => {
-                candidates[p].retain(|o| state.has(atom.predicate, &vec![*o]) == atom.value);
+                candidates[p].retain(|o| state.has_unary(atom.predicate, *o) == atom.value);
             }
-            _ => {}
+            Argument::Constant(c) => {
+                if state.has_unary(atom.predicate, c) != atom.value {
+                    return None;
+                }
+            }
         };
     }
+    if candidates.iter().any(|c| c.is_empty()) {
+        return None;
+    }
 
-    candidates
-        .into_iter()
-        .multi_cartesian_product()
-        .filter(move |p| {
-            increment_counter();
-            other_atoms.iter().all(|atom| {
-                let corresponding: Vec<usize> = atom.map_args(p);
-                atom.predicate == 0 && corresponding.iter().all_equal() == atom.value
-                    || atom.predicate != 0
-                        && state.has(atom.predicate, &corresponding) == atom.value
-            })
-        })
+    for atom in nary_atoms.iter().filter(|a| a.value) {
+        debug_assert!(World::global().predicates.arity(atom.predicate) > 1);
+        for (i, parameter) in atom.parameters.iter().enumerate() {
+            match parameter {
+                Argument::Parameter(p) => {
+                    candidates[*p].retain(|o| state.has_partial(atom.predicate, i, *o))
+                }
+                Argument::Constant(c) => {
+                    if state.has_partial(atom.predicate, i, *c) {
+                        return None;
+                    }
+                }
+            }
+        }
+    }
+    Some(
+        candidates
+            .into_iter()
+            .multi_cartesian_product()
+            .filter(move |p| {
+                increment_pseudo();
+                let val = nary_atoms.iter().all(|atom| {
+                    let corresponding: Vec<usize> = atom.map_args(p);
+                    (atom.predicate == 0 && corresponding.iter().all_equal() == atom.value)
+                        || (atom.predicate != 0
+                            && state.has_nary(atom.predicate, &corresponding) == atom.value)
+                });
+                if val {
+                    increment_legal();
+                }
+                val
+            }),
+    )
 }

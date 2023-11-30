@@ -10,6 +10,9 @@ impl Parameters {
     pub fn index(&self, name: &str) -> usize {
         self.names.iter().position(|n| n == name).unwrap()
     }
+    pub fn arity(&self) -> usize {
+        self.types.len()
+    }
 
     pub fn contains(&self, name: &String) -> bool {
         self.names.contains(name)
