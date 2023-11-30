@@ -132,11 +132,41 @@ generate_table(
 )
 
 print("Generating: Search Time Scatter")
-searchData <- data.frame(x = containsMeta$meta_solution_time.A, y = containsMeta$meta_solution_time.B, domain = containsMeta$domain)
+sideA <- containsMeta$meta_solution_time.A
+sideB <- containsMeta$meta_solution_time.B
+sideDomains <- containsMeta$domain
+if (AName == "Fast Downward" || AName == "Fast Downward (Meta)")
+{
+	sideA <- combined[combined$meta_actions_in_plan.B > 0,]$meta_solution_time.A
+	sideB <- combined[combined$meta_actions_in_plan.B > 0,]$meta_solution_time.B
+	sideDomains <- combined[combined$meta_actions_in_plan.B > 0,]$domain
+}
+if (BName == "Fast Downward" || BName == "Fast Downward (Meta)")
+{
+	sideA <- combined[combined$meta_actions_in_plan.A > 0,]$meta_solution_time.A
+	sideB <- combined[combined$meta_actions_in_plan.A > 0,]$meta_solution_time.B
+	sideDomains <- combined[combined$meta_actions_in_plan.A > 0,]$domain
+}
+searchData <- data.frame(x = sideA, y = sideB, domain = sideDomains)
 generate_scatterplot(searchData, AName, BName, "Search Time (s)", paste("out/searchTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Total Time Scatter")
-totalData <- data.frame(x = containsMeta$total_time.A, y = containsMeta$total_time.B, domain = containsMeta$domain)
+sideA <- containsMeta$total_time.A
+sideB <- containsMeta$total_time.B
+sideDomains <- containsMeta$domain
+if (AName == "Fast Downward" || AName == "Fast Downward (Meta)")
+{
+	sideA <- combined[combined$meta_actions_in_plan.B > 0,]$total_time.A
+	sideB <- combined[combined$meta_actions_in_plan.B > 0,]$total_time.B
+	sideDomains <- combined[combined$meta_actions_in_plan.B > 0,]$domain
+}
+if (BName == "Fast Downward" || BName == "Fast Downward (Meta)")
+{
+	sideA <- combined[combined$meta_actions_in_plan.A > 0,]$total_time.A
+	sideB <- combined[combined$meta_actions_in_plan.A > 0,]$total_time.B
+	sideDomains <- combined[combined$meta_actions_in_plan.A > 0,]$domain
+}
+totalData <- data.frame(x = sideA, y = sideB, domain = sideDomains)
 generate_scatterplot(totalData, AName, BName, "Total Time (s)", paste("out/totalTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Coverage plot")
