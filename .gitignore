@@ -414,3 +414,5 @@ FodyWeavers.xsd
 /Graphs/*.csv
 /Graphs/*.pdf
 /Graphs/out/*
+/TestingSets/**
+/TestingScripts/**
