@@ -100,13 +100,6 @@ impl State {
             .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
         s
     }
-
-    pub fn export_partial(&self) -> String {
-        self.partial_facts
-            .iter()
-            .map(|f| format!("{}\n", f))
-            .collect()
-    }
 }
 
 fn generate_partial_facts(facts: &HashSet<Fact>) -> HashSet<Fact> {
