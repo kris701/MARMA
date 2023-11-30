@@ -88,7 +88,7 @@ pub fn get_applicable_with_fixed<'a>(
                     let corresponding: Vec<usize> = atom.map_args(p);
                     (atom.predicate == 0 && corresponding.iter().all_equal() == atom.value)
                         || (atom.predicate != 0
-                            && state.has(atom.predicate, &corresponding) == atom.value)
+                            && state.has_nary(atom.predicate, &corresponding) == atom.value)
                 });
                 if val {
                     increment_legal();

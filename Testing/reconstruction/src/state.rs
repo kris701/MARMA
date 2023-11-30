@@ -38,28 +38,26 @@ impl State {
         &self.internal
     }
 
-    pub fn has_nullary(&self, predicate: usize) -> bool {
-        let fact = Fact::new_nullary(predicate);
-        match World::global().predicates.is_static(predicate) {
+    pub fn has(&self, fact: &Fact) -> bool {
+        match World::global().predicates.is_static(fact.predicate()) {
             true => World::global().static_facts.contains(&fact),
             false => self.internal.contains(&fact),
         }
+    }
+
+    pub fn has_nullary(&self, predicate: usize) -> bool {
+        let fact = Fact::new_nullary(predicate);
+        self.has(&fact)
     }
 
     pub fn has_unary(&self, predicate: usize, arg: usize) -> bool {
         let fact = Fact::new_unary(predicate, arg);
-        match World::global().predicates.is_static(predicate) {
-            true => World::global().static_facts.contains(&fact),
-            false => self.internal.contains(&fact),
-        }
+        self.has(&fact)
     }
 
-    pub fn has(&self, predicate: usize, arguments: &Vec<usize>) -> bool {
+    pub fn has_nary(&self, predicate: usize, arguments: &Vec<usize>) -> bool {
         let fact = Fact::new(predicate, arguments.clone());
-        match World::global().predicates.is_static(predicate) {
-            true => World::global().static_facts.contains(&fact),
-            false => self.internal.contains(&fact),
-        }
+        self.has(&fact)
     }
 
     pub fn diff(&self, state: &State) -> Vec<(Fact, bool)> {

@@ -20,7 +20,7 @@ impl Fact {
     }
 
     pub fn new_unary(predicate: usize, parameter: usize) -> Self {
-        let internal = predicate as u64 + (parameter as u64) << 16;
+        let internal = (predicate as u64) + ((parameter as u64) << 16);
         Self { internal }
     }
 
