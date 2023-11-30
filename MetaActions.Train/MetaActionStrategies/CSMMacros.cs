@@ -10,6 +10,8 @@ namespace MetaActions.Train.MetaActionStrategies
 {
     public class CSMMacros : BaseCancelable, IMetaActionStrategy
     {
+        public int MacroCount { get; internal set; } = 0;
+
         internal string _tempProblemPath = "problems";
         internal string _tempMetaActionPath = "metaActions";
         internal string _tempMacroPath = "macros";
@@ -44,6 +46,7 @@ namespace MetaActions.Train.MetaActionStrategies
             if (CancellationToken.IsCancellationRequested) return new List<FileInfo>();
 
             var allMacros = GetCSMMacros(domain);
+            MacroCount = allMacros.Count;
             if (allMacros.Count == 0)
             {
                 Print($"No macros was found for the domain.", ConsoleColor.Red);

@@ -19,6 +19,8 @@ namespace MetaActions.Train.MetaActionStrategies
 {
     public class PreconditionMetaActions : BaseCancelable, IMetaActionStrategy
     {
+        public int MacroCount { get; internal set; } = 0;
+
         internal string _tempMetaActionPath = "metaActions";
         public PreconditionMetaActions(string name, int runID, string tempPath, CancellationTokenSource token) : base(name, runID, token)
         {

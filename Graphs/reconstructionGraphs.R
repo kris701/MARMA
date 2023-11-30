@@ -15,9 +15,9 @@ source("src/clamper.R")
 
 # Handle arguments
 args = commandArgs(trailingOnly=TRUE)
-args[1] <- "results.csv"
-args[2] <- "meta_lifted_iterative"
-args[3] <- "meta_lifted"
+#args[1] <- "results.csv"
+#args[2] <- "meta_lifted_iterative"
+#args[3] <- "meta_no_cache"
 if (length(args) != 3) {
   stop("3 arguments must be supplied! The source data file, and one for each target reconstruction type", call.=FALSE)
 }
@@ -34,8 +34,8 @@ data <- read.csv(
 		'character','character',
 		'numeric','numeric',
 		'numeric','numeric',
-		'numeric','numeric',
-		'numeric', 'character', 
+		'numeric','character',
+		'numeric', 'numeric', 
 		'numeric', 'numeric',
 		'numeric', 'numeric',
 		'numeric', 'numeric'
@@ -48,8 +48,7 @@ if (nrow(data[data$name == BName,]) == 0)
 	stop(paste("Column name '", args[3], "' not found in dataset!"), call.=FALSE)
 
 data <- max_unsolved(data, "total_time")
-data <- max_unsolved(data, "search_time")
-data <- max_unsolved(data, "reconstruction_time")
+data <- max_unsolved(data, "meta_solution_time")
 
 # Split data
 AData = data[data$name == AName,]
@@ -125,22 +124,18 @@ names(tableData) <- c(
 generate_table(
 	tableData,
 	paste("out/reconstructionTable_", AName, ".pdf", sep = ""),
-	3.5,
-	0.6 + 0.25 + 0.25 * nrow(tableData),
+	4.2,
+	1 + 0.25 + 0.25 * nrow(tableData),
 	TRUE
 )
 
 print("Generating: Search Time Scatter")
-searchData <- data.frame(x = combined$search_time.A, y = combined$search_time.B, domain = combined$domain)
+searchData <- data.frame(x = combined$meta_solution_time.A, y = combined$meta_solution_time.B, domain = combined$domain)
 generate_scatterplot(searchData , AName, BName, "Search Time (s)", paste("out/searchTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Total Time Scatter")
 totalData <- data.frame(x = combined$total_time.A, y = combined$total_time.B, domain = combined$domain)
 generate_scatterplot(totalData, AName, BName, "Total Time (s)", paste("out/totalTime_", AName, "_vs_", BName, ".pdf", sep = ""))
-
-print("Generating: Reconstruction Time Scatter")
-reconData <- data.frame(x = combined$reconstruction_time.A, y = combined$reconstruction_time.B, domain = combined$domain)
-generate_scatterplot(reconData, AName, BName, "Reconstruction Time (s)", paste("out/reconstructionTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Coverage plot")
 generate_coveragePlot(finished$total_time.A, AName, finished$total_time.B, BName, "Coverage", paste("out/fullCoverage_", AName, "_vs_", BName, ".pdf", sep = ""))
