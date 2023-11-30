@@ -1,0 +1,3 @@
+[submodule "MARMA-TestingSets"]
+	path = MARMA-TestingSets
+	url = https://github.com/kris701/MARMA-TestingSets
