@@ -27,7 +27,8 @@ generate_scatterplot <- function(data, name1, name2, title, outName) {
 		theme(text = element_text(size=fontSize, family=fontFamily),
 			axis.text.x = element_text(angle=90, hjust=1),
 			legend.position="bottom"
-		)
+		) +
+		guides(shape=guide_legend(nrow=2, byrow=TRUE))
 	ggsave(plot=plot, filename=outName, width=imgWidth, height=imgHeight)
 	return (plot)
 }

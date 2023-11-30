@@ -7,6 +7,8 @@ generate_coveragePlot <- function(list1, name1, list2, name2, title, outName) {
 	metaSearchTime <- lapply(list(list2), sort)[[1]]
 	normSearchTime <- lapply(list(list1), sort)[[1]]
 	highestValue <- max(metaSearchTime, normSearchTime)
+	metaSearchTime <- metaSearchTime[metaSearchTime != highestValue]
+	normSearchTime <- normSearchTime[normSearchTime != highestValue]
 
 	metaUnique <- unique(metaSearchTime)
 	metaCounter <- c()
@@ -60,7 +62,7 @@ generate_coveragePlot <- function(list1, name1, list2, name2, title, outName) {
 			limits=c(min(list1,list2),max(list1,list2)),
 			labels = scales::trans_format("log10", scales::math_format(10^.x))) +
 		ggtitle(title) + 
-		xlab("Time") +
+		xlab("Time (s)") +
 		ylab("Problems Solved") + 
 		theme(text = element_text(size=fontSize, family=fontFamily),
 			axis.text.x = element_text(angle=90, hjust=1),

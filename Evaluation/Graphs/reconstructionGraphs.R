@@ -49,6 +49,7 @@ if (nrow(data[data$name == BName,]) == 0)
 
 data <- max_unsolved(data, "total_time")
 data <- max_unsolved(data, "meta_solution_time")
+data <- min_unsolved(data, "meta_actions_in_plan")
 
 # Split data
 AData = data[data$name == AName,]
@@ -67,6 +68,7 @@ finished <- split(combined, combined$solved.A)$`true`
 finished <- split(finished, finished$solved.B)$`true`
 finished <- finished %>% select(-contains('solved.A'))
 finished <- finished %>% select(-contains('solved.B'))
+containsMeta <- combined[!(combined$meta_actions_in_plan.A == 0 & combined$meta_actions_in_plan.B == 0),]
 
 print("Generating: Solved vs Unsolved")
 generate_dounotplot(
@@ -99,7 +101,7 @@ generate_domainBarPlot(
 	paste("out/cacheLookupTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Used Meta Actions info")
-tableData <- finished %>% select(
+tableData <- containsMeta %>% select(
 	contains('domain'), 
 	contains('meta_actions_in_plan.A'), 
 	contains('found_in_cache.A'),
@@ -130,13 +132,15 @@ generate_table(
 )
 
 print("Generating: Search Time Scatter")
-searchData <- data.frame(x = combined$meta_solution_time.A, y = combined$meta_solution_time.B, domain = combined$domain)
-generate_scatterplot(searchData , AName, BName, "Search Time (s)", paste("out/searchTime_", AName, "_vs_", BName, ".pdf", sep = ""))
+searchData <- data.frame(x = containsMeta$meta_solution_time.A, y = containsMeta$meta_solution_time.B, domain = containsMeta$domain)
+generate_scatterplot(searchData, AName, BName, "Search Time (s)", paste("out/searchTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Total Time Scatter")
-totalData <- data.frame(x = combined$total_time.A, y = combined$total_time.B, domain = combined$domain)
+totalData <- data.frame(x = containsMeta$total_time.A, y = containsMeta$total_time.B, domain = containsMeta$domain)
 generate_scatterplot(totalData, AName, BName, "Total Time (s)", paste("out/totalTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Coverage plot")
-generate_coveragePlot(finished$total_time.A, AName, finished$total_time.B, BName, "Coverage", paste("out/fullCoverage_", AName, "_vs_", BName, ".pdf", sep = ""))
+maxTime <- max(combined$total_time.A, combined$total_time.B)
+coverageData <- combined[!(combined$total_time.A == maxTime & combined$total_time.B == maxTime),]
+generate_coveragePlot(coverageData$total_time.A, AName, coverageData$total_time.B, BName, "Coverage", paste("out/fullCoverage_", AName, "_vs_", BName, ".pdf", sep = ""))
 
