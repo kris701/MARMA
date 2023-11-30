@@ -18,6 +18,7 @@ names(data) <- c(
 	"Domain", 
 	"Training\n Problems", 
 	"Testing\n Problems",
+	"Total\n Macros",
 	"Total\n Meta Actions",
 	"Valid\n Meta Actions",
 	"Total\n Replacements",
@@ -30,11 +31,12 @@ data[nrow(data) + 1,] <- list(
 	sum(data[4]),
 	sum(data[5]),
 	sum(data[6]),
+	sum(data[7]),
 	"-"
 )
 
 # Generate table
-pdf("out/trainResult.pdf", width = 7.9, height = 5.9)
+pdf("out/trainResult.pdf", width = 8.9, height = 5.9)
 g <- tableGrob(data, rows=NULL, theme=ttheme_minimal(base_size = fontSize, family = fontFamily))
 g <- gtable_add_grob(g,
         grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
