@@ -19,11 +19,14 @@ impl Objects {
         names.iter().map(|i| self.index(i)).collect()
     }
 
-    pub fn name(&self, index: usize) -> &String {
-        &self.objects.iter().find(|(_, i)| **i == index).unwrap().0
+    pub fn name(&self, index: usize) -> &str {
+        match self.objects.iter().find(|(_, i)| **i == index) {
+            Some(o) => o.0,
+            None => "_",
+        }
     }
 
-    pub fn names(&self, indexes: &Vec<usize>) -> Vec<&String> {
+    pub fn names(&self, indexes: &Vec<usize>) -> Vec<&str> {
         indexes.iter().map(|i| self.name(*i)).collect()
     }
 

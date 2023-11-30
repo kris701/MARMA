@@ -25,6 +25,10 @@ impl Predicates {
         }
     }
 
+    pub fn arity(&self, index: usize) -> usize {
+        self.parameters[&index].arity()
+    }
+
     pub fn is_static(&self, index: usize) -> bool {
         self.static_predicates.contains(&index)
     }

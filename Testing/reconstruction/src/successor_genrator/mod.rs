@@ -77,7 +77,21 @@ pub fn get_applicable_with_fixed<'a>(
             }
         };
     }
+    if candidates.iter().any(|c| c.is_empty()) {
+        return None;
+    }
 
+    for atom in nary_atoms.iter().filter(|a| a.value) {
+        debug_assert!(World::global().predicates.arity(atom.predicate) > 1);
+        for (i, parameter) in atom.parameters.iter().enumerate() {
+            match parameter {
+                Argument::Parameter(p) => {
+                    candidates[*p].retain(|o| state.has_partial(atom.predicate, i, *o))
+                }
+                Argument::Constant(_) => todo!(),
+            }
+        }
+    }
     Some(
         candidates
             .into_iter()

@@ -134,8 +134,8 @@ fn main() {
         &args.domain,
         &args.problem,
     );
-    println!("legal_operator_count={}", legal_count());
     println!("pseudo_operator_count={}", pseudo_count());
+    println!("legal_operator_count={}", legal_count());
     if let Some(val_path) = args.val {
         status_print(Status::Validation, "Checking VAL");
         if check_val(
