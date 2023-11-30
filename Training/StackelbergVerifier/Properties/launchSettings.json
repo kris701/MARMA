@@ -7,7 +7,7 @@
       "commandName": "WSL",
       "distributionName": "",
       "commandLineArgs": "StackelbergVerifier/bin/Debug/net7.0/StackelbergVerifier.dll --domain StackelbergDomains/gripper/simplified_domain.pddl --problem StackelbergDomains/gripper/simplified_problem.pddl --output VerifiedDomains/gripper",
-      "workingDirectory": "StackelbergVerifier/../"
+      "workingDirectory": "Training/StackelbergVerifier/../"
     }
   }
 }

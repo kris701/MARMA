@@ -402,8 +402,8 @@ FodyWeavers.xsd
 /StackelbergDomains/**
 /VerifiedDomains/**
 /MetaActions/**
-/temp/**
-/output/**
+/Training/temp/**
+/Training/output/**
 !/Dependencies/readme.md
 !/Dependencies/setup.sh
 !/Dependencies/setup_data.sh
@@ -411,8 +411,8 @@ FodyWeavers.xsd
 !/Dependencies/setup_programs.sh
 /build/
 /cache/
-/Graphs/*.csv
-/Graphs/*.pdf
-/Graphs/out/*
-/TestingSets/**
-/TestingScripts/**
+/Evaluation/Graphs/*.csv
+/Evaluation/Graphs/*.pdf
+/Evaluation/Graphs/out/**
+/Training/TestingSets/*.zip
+/Training/TestingScripts/*.sh

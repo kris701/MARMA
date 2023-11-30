@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\rust.yml = .github\workflows\rust.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tools", "Tools\Tools.csproj", "{8DE4836F-AF6B-4219-96DE-3FF729F664A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tools", "Training\Tools\Tools.csproj", "{8DE4836F-AF6B-4219-96DE-3FF729F664A5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{A4449615-F6E7-45E5-BECF-75397C0B4CBF}"
 	ProjectSection(SolutionItems) = preProject
@@ -23,23 +23,39 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencie
 		Dependencies\setup_programs.sh = Dependencies\setup_programs.sh
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergCompiler", "StackelbergCompiler\StackelbergCompiler.csproj", "{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergCompiler", "Training\StackelbergCompiler\StackelbergCompiler.csproj", "{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergVerifier", "StackelbergVerifier\StackelbergVerifier.csproj", "{5DB596AE-CB35-4439-AB62-0502C42F7586}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergVerifier", "Training\StackelbergVerifier\StackelbergVerifier.csproj", "{5DB596AE-CB35-4439-AB62-0502C42F7586}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator", "MetaActionGenerator\MetaActionGenerator.csproj", "{6E04D1D4-065F-4CCA-B657-021ADBB1B032}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator", "Training\MetaActionGenerator\MetaActionGenerator.csproj", "{6E04D1D4-065F-4CCA-B657-021ADBB1B032}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Train", "MetaActions.Train\MetaActions.Train.csproj", "{2A4828D6-88F9-40F9-A4E2-F5513717A257}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActions.Train", "Training\MetaActions.Train\MetaActions.Train.csproj", "{2A4828D6-88F9-40F9-A4E2-F5513717A257}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroExtractor", "MacroExtractor\MacroExtractor.csproj", "{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroExtractor", "Training\MacroExtractor\MacroExtractor.csproj", "{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8B977624-590C-429F-AF65-6C2B00C75AF1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator.Tests", "Tests\MetaActionGenerator.Tests\MetaActionGenerator.Tests.csproj", "{5C5289EA-288A-4728-91E6-DC001AD21A7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaActionGenerator.Tests", "Training\Tests\MetaActionGenerator.Tests\MetaActionGenerator.Tests.csproj", "{5C5289EA-288A-4728-91E6-DC001AD21A7C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroExtractor.Tests", "Tests\MacroExtractor.Tests\MacroExtractor.Tests.csproj", "{3CD2C382-CD00-46E5-807F-BEE118867793}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacroExtractor.Tests", "Training\Tests\MacroExtractor.Tests\MacroExtractor.Tests.csproj", "{3CD2C382-CD00-46E5-807F-BEE118867793}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergCompiler.Tests", "Tests\StackelbergCompiler.Tests\StackelbergCompiler.Tests.csproj", "{FC109629-25D4-4791-8146-E0606B5775AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackelbergCompiler.Tests", "Training\Tests\StackelbergCompiler.Tests\StackelbergCompiler.Tests.csproj", "{FC109629-25D4-4791-8146-E0606B5775AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Training", "Training", "{17DD7BB4-13CF-46DE-8F52-F2A5FDF56C16}"
+	ProjectSection(SolutionItems) = preProject
+		Training\README.md = Training\README.md
+		Training\train_all.sh = Training\train_all.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Evaluation", "Evaluation", "{C3D6F16B-5664-413E-9485-92FA9BA1E3D3}"
+	ProjectSection(SolutionItems) = preProject
+		Evaluation\README.md = Evaluation\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{49D92F4E-320A-4FEA-ADCE-07B45E1322D0}"
+	ProjectSection(SolutionItems) = preProject
+		Testing\README.md = Testing\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +104,13 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{8DE4836F-AF6B-4219-96DE-3FF729F664A5} = {17DD7BB4-13CF-46DE-8F52-F2A5FDF56C16}
+		{9DD511E2-00DA-44B0-87EB-D9C8A956EE5B} = {17DD7BB4-13CF-46DE-8F52-F2A5FDF56C16}
+		{5DB596AE-CB35-4439-AB62-0502C42F7586} = {17DD7BB4-13CF-46DE-8F52-F2A5FDF56C16}
+		{6E04D1D4-065F-4CCA-B657-021ADBB1B032} = {17DD7BB4-13CF-46DE-8F52-F2A5FDF56C16}
+		{2A4828D6-88F9-40F9-A4E2-F5513717A257} = {17DD7BB4-13CF-46DE-8F52-F2A5FDF56C16}
+		{29BFBFCF-A24E-4ADD-AE4D-6FCED21D302C} = {17DD7BB4-13CF-46DE-8F52-F2A5FDF56C16}
+		{8B977624-590C-429F-AF65-6C2B00C75AF1} = {17DD7BB4-13CF-46DE-8F52-F2A5FDF56C16}
 		{5C5289EA-288A-4728-91E6-DC001AD21A7C} = {8B977624-590C-429F-AF65-6C2B00C75AF1}
 		{3CD2C382-CD00-46E5-807F-BEE118867793} = {8B977624-590C-429F-AF65-6C2B00C75AF1}
 		{FC109629-25D4-4791-8146-E0606B5775AA} = {8B977624-590C-429F-AF65-6C2B00C75AF1}

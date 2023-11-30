@@ -12,7 +12,7 @@ namespace StackelbergVerifier.ReachabilityChecker
     {
         public string TempPath { get; }
 
-        private static string _fastDownwardPath = PathHelper.RootPath("Dependencies/fast-downward/fast-downward.py");
+        private static string _fastDownwardPath = PathHelper.RootPath("../Dependencies/fast-downward/fast-downward.py");
         private string _stdLog = "";
 
         public FDReachabilityChecker(string tempPath)
