@@ -414,5 +414,5 @@ FodyWeavers.xsd
 /Evaluation/Graphs/*.csv
 /Evaluation/Graphs/*.pdf
 /Evaluation/Graphs/out/**
-/TestingSets/**
-/TestingScripts/**
+/Training/TestingSets/*.zip
+/Training/TestingScripts/*.sh
