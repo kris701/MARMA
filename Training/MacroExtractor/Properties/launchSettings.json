@@ -8,7 +8,7 @@
       "distributionName": "",
       //"commandLineArgs": "MacroExtractor/bin/Debug/net7.0/MacroExtractor.dll --domain MacroExtractor/bin/Debug/net7.0/TestData/gripper/gripper.pddl --follower-plans MacroExtractor/bin/Debug/net7.0/TestData/*/*/*.plan",
       "commandLineArgs": "MacroExtractor/bin/Debug/net7.0/MacroExtractor.dll --domain MacroExtractor/bin/Debug/net7.0/TestData/floortile/domain.pddl --follower-plans MacroExtractor/bin/Debug/net7.0/TestData/floortile/*/*.plan",
-      "workingDirectory": "MacroExtractor/../"
+      "workingDirectory": "Training/MacroExtractor/../"
     }
   }
 }

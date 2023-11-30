@@ -11,7 +11,7 @@ namespace StacklebergVerifier
     internal class Program : BaseCLI
     {
         private static string _replacementsPath = "replacements";
-        private static string _stackelbergPath = PathHelper.RootPath("Dependencies/stackelberg-planner/src/fast-downward.py");
+        private static string _stackelbergPath = PathHelper.RootPath("../Dependencies/stackelberg-planner/src/fast-downward.py");
         private static int _returnCode = int.MaxValue;
         private static Process? _activeProcess;
         private static bool _timedOut = false;

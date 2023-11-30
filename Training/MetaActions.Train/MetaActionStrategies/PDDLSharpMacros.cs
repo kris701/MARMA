@@ -90,7 +90,7 @@ namespace MetaActions.Train.MetaActionStrategies
                     {
                         fdCaller.StdOut += (s, o) => { };
                         fdCaller.StdErr += (s, o) => { };
-                        fdCaller.Arguments.Add(PathHelper.RootPath("Training/Dependencies/fast-downward/fast-downward.py"), "");
+                        fdCaller.Arguments.Add(PathHelper.RootPath("../Dependencies/fast-downward/fast-downward.py"), "");
                         fdCaller.Arguments.Add("--alias", "lama-first");
                         fdCaller.Arguments.Add("--overall-time-limit", "5m");
                         fdCaller.Arguments.Add("--plan-file", "plan.plan");

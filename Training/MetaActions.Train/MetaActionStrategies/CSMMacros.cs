@@ -90,8 +90,8 @@ namespace MetaActions.Train.MetaActionStrategies
             {
                 Print($"Copying CSM to temp", ConsoleColor.Blue);
                 // Make a temp copy of CSMs, since it cant handle multiple runs at the same time.
-                IOHelper.CopyFilesRecursively(PathHelper.RootPath("Training/Dependencies/CSMs/src"), Path.Combine(_tempMacroGeneratorPath, "src"));
-                IOHelper.CopyFilesRecursively(PathHelper.RootPath("Training/Dependencies/CSMs/scripts"), Path.Combine(_tempMacroGeneratorPath, "scripts"));
+                IOHelper.CopyFilesRecursively(PathHelper.RootPath("../Dependencies/CSMs/src"), Path.Combine(_tempMacroGeneratorPath, "src"));
+                IOHelper.CopyFilesRecursively(PathHelper.RootPath("../Dependencies/CSMs/scripts"), Path.Combine(_tempMacroGeneratorPath, "scripts"));
 
                 Print($"Generating macros with CSM", ConsoleColor.Blue);
                 var macroGenerator = ArgsCallerBuilder.GetRustRunner("macros");
@@ -101,7 +101,7 @@ namespace MetaActions.Train.MetaActionStrategies
                 macroGenerator.Arguments.Add("-o", _tempMacroPath);
                 macroGenerator.Arguments.Add("-t", _tempMacroTempPath);
                 macroGenerator.Arguments.Add("-c", _tempMacroGeneratorPath);
-                macroGenerator.Arguments.Add("-f", PathHelper.RootPath("Training/Dependencies/fast-downward/fast-downward.py"));
+                macroGenerator.Arguments.Add("-f", PathHelper.RootPath("../Dependencies/fast-downward/fast-downward.py"));
                 if (macroGenerator.Run() != 0 && !CancellationToken.IsCancellationRequested)
                 {
                     Print("Macro Generation failed!", ConsoleColor.Red);
