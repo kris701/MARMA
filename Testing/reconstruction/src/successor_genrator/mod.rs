@@ -37,6 +37,7 @@ pub fn get_applicable_with_fixed<'a>(
     {
         return None;
     }
+
     let mut candidates: Vec<Vec<usize>> = action
         .parameters
         .types
@@ -58,10 +59,10 @@ pub fn get_applicable_with_fixed<'a>(
     for atom in unary_atoms {
         match atom.parameters[0] {
             Argument::Parameter(p) => {
-                candidates[p].retain(|o| state.has(atom.predicate, &vec![*o]) == atom.value);
+                candidates[p].retain(|o| state.has_unary(atom.predicate, *o) == atom.value);
             }
             Argument::Constant(c) => {
-                if state.has(atom.predicate, &vec![c]) != atom.value {
+                if state.has_unary(atom.predicate, c) != atom.value {
                     return None;
                 }
             }

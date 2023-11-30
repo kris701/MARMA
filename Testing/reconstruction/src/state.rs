@@ -39,7 +39,15 @@ impl State {
     }
 
     pub fn has_nullary(&self, predicate: usize) -> bool {
-        let fact = Fact::new(predicate, vec![]);
+        let fact = Fact::new_nullary(predicate);
+        match World::global().predicates.is_static(predicate) {
+            true => World::global().static_facts.contains(&fact),
+            false => self.internal.contains(&fact),
+        }
+    }
+
+    pub fn has_unary(&self, predicate: usize, arg: usize) -> bool {
+        let fact = Fact::new_unary(predicate, arg);
         match World::global().predicates.is_static(predicate) {
             true => World::global().static_facts.contains(&fact),
             false => self.internal.contains(&fact),

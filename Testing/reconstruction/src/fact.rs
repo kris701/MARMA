@@ -19,6 +19,16 @@ impl Fact {
         Self { internal }
     }
 
+    pub fn new_unary(predicate: usize, parameter: usize) -> Self {
+        let internal = predicate as u64 + (parameter as u64) << 16;
+        Self { internal }
+    }
+
+    pub fn new_nullary(predicate: usize) -> Self {
+        let internal = predicate as u64;
+        Self { internal }
+    }
+
     pub fn predicate(&self) -> usize {
         (self.internal as u16) as usize
     }
