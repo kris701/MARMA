@@ -12,14 +12,23 @@ use std::{
     sync::atomic::{AtomicUsize, Ordering},
 };
 
-static PERMUTATION_COUNT: AtomicUsize = AtomicUsize::new(0);
+static PSEUDO_OPERATORS: AtomicUsize = AtomicUsize::new(0);
+static LEGAL_OPERATORS: AtomicUsize = AtomicUsize::new(0);
 
-fn increment_counter() {
-    PERMUTATION_COUNT.fetch_add(1, Ordering::SeqCst);
+fn increment_pseudo() {
+    PSEUDO_OPERATORS.fetch_add(1, Ordering::SeqCst);
 }
 
-pub fn get_permutation_count() -> usize {
-    PERMUTATION_COUNT.load(Ordering::SeqCst)
+pub fn pseudo_count() -> usize {
+    PSEUDO_OPERATORS.load(Ordering::SeqCst)
+}
+
+fn increment_legal() {
+    LEGAL_OPERATORS.fetch_add(1, Ordering::SeqCst);
+}
+
+pub fn legal_count() -> usize {
+    LEGAL_OPERATORS.load(Ordering::SeqCst)
 }
 
 /// Generates all legal permutations, with some parameters fixed, of an action in a given state
@@ -74,13 +83,17 @@ pub fn get_applicable_with_fixed<'a>(
             .into_iter()
             .multi_cartesian_product()
             .filter(move |p| {
-                increment_counter();
-                nary_atoms.iter().all(|atom| {
+                increment_pseudo();
+                let val = nary_atoms.iter().all(|atom| {
                     let corresponding: Vec<usize> = atom.map_args(p);
                     (atom.predicate == 0 && corresponding.iter().all_equal() == atom.value)
                         || (atom.predicate != 0
                             && state.has(atom.predicate, &corresponding) == atom.value)
-                })
+                });
+                if val {
+                    increment_legal();
+                }
+                val
             }),
     )
 }
