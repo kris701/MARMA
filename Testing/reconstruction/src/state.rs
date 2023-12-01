@@ -12,11 +12,7 @@ pub struct State {
 
 impl State {
     pub fn new(facts: &Vec<Fact>) -> Self {
-        let facts: HashSet<Fact> = facts
-            .iter()
-            .filter(|f| !World::global().predicates.is_static(f.predicate()))
-            .cloned()
-            .collect();
+        let facts: HashSet<Fact> = facts.iter().cloned().collect();
         let partial_facts = generate_partial_facts(&facts);
         Self {
             facts,
@@ -45,10 +41,7 @@ impl State {
     }
 
     pub fn has(&self, fact: &Fact) -> bool {
-        match World::global().predicates.is_static(fact.predicate()) {
-            true => World::global().static_facts.contains(&fact),
-            false => self.facts.contains(&fact),
-        }
+        self.facts.contains(&fact)
     }
 
     pub fn has_nullary(&self, predicate: usize) -> bool {
@@ -85,10 +78,8 @@ impl State {
 
     pub fn export_all(&self) -> String {
         let mut s: String = "".to_owned();
-        World::global()
-            .static_facts
+        self.facts
             .iter()
-            .chain(self.facts.iter())
             .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
         s
     }
@@ -104,11 +95,7 @@ impl State {
 
 fn generate_partial_facts(facts: &HashSet<Fact>) -> HashSet<Fact> {
     let mut partial_facts: HashSet<Fact> = HashSet::new();
-    for fact in facts
-        .iter()
-        .chain(World::global().init.iter())
-        .filter(|f| f.parameters().len() > 1)
-    {
+    for fact in facts.iter().filter(|f| f.parameters().len() > 1) {
         let predicate = fact.predicate();
         let args = fact.parameters();
         for i in 0..args.len() {

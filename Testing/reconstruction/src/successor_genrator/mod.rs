@@ -77,9 +77,6 @@ pub fn get_applicable_with_fixed<'a>(
             }
         };
     }
-    if candidates.iter().any(|c| c.is_empty()) {
-        return None;
-    }
 
     for atom in nary_atoms.iter().filter(|a| a.value) {
         debug_assert!(World::global().predicates.arity(atom.predicate) > 1);
