@@ -5,8 +5,9 @@ mod lifted;
 use std::collections::HashMap;
 
 use crate::{
+    fact::Fact,
     state::State,
-    world::{action::Action, World},
+    world::{action::Action, atom::Atom, World},
 };
 use spingus::{sas_plan::SASPlan, term::Term};
 
@@ -17,16 +18,18 @@ pub trait Cache {
 }
 
 pub(super) fn generate_plan(
+    init: &State,
     replacement_macro: &Action,
     replacement_plan: &SASPlan,
     parameters: &Vec<usize>,
-) -> SASPlan {
+) -> Option<SASPlan> {
     let macro_parameters = &replacement_macro.parameters;
     let actions: Vec<String> = replacement_plan.iter().map(|t| t.name.to_owned()).collect();
     let replacements: Vec<&Action> = actions
         .iter()
         .map(|n| World::global().get_action(n))
         .collect();
+    let mut state = init.clone();
     let mut plan: SASPlan = Vec::new();
     for (action, step) in replacements.iter().zip(replacement_plan.iter()) {
         let name = action.name.to_owned();
@@ -38,10 +41,16 @@ pub(super) fn generate_plan(
                 parameters[index]
             })
             .collect();
+        for pre in action.precondition.iter() {
+            if !state.has_nary(pre.predicate, &pre.map_args(&parameters)) {
+                return None;
+            }
+        }
+        state.apply(action, &parameters);
         let parameters = World::global().objects.names_cloned(&parameters);
         plan.push(Term { name, parameters })
     }
-    plan
+    Some(plan)
 }
 
 pub(super) fn find_fixed(arguments: &Vec<usize>, macro_action: &Action) -> HashMap<usize, usize> {

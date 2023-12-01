@@ -72,11 +72,11 @@ impl Cache for LiftedCache {
                 if eff != desired {
                     continue;
                 }
-                return Some(generate_plan(
-                    &replacement.action,
-                    &replacement.plan,
-                    &permutation,
-                ));
+                let plan =
+                    generate_plan(&init, &replacement.action, &replacement.plan, &permutation);
+                if plan.is_some() {
+                    return plan;
+                }
             }
         }
         None
