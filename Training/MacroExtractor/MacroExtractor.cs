@@ -108,9 +108,13 @@ namespace MacroExtractor
                     foreach (var step in actionPlan.Plan)
                         RenameActionArguments(step, replacementDict);
 
-                    var newSeq = new RepairSequence(key, macro, actionPlan);
-                    if (!returnList.Contains(newSeq))
+                    var newSeq = new RepairSequence(key, macro, new List<ActionPlan>() { actionPlan });
+                    var match = returnList.FirstOrDefault(x => x.Equals(newSeq));
+                    if (match == null)
                         returnList.Add(newSeq);
+                    else
+                        if (!match.Replacements.Any(x => x.Equals(actionPlan)))
+                            match.Replacements.Add(actionPlan);
                 }
             }
 
