@@ -123,7 +123,7 @@ namespace MetaActions.Train.Trainers
                 MetaActionStrategy.MacroCount,
                 allMetaActions.Count,
                 verifiedMetaActions.Count,
-                verifiedMetaActions.Sum(x => x.Replacements.Count / 2),
+                verifiedMetaActions.Sum(x => x.Replacements.Count - 1),
                 CancellationToken.IsCancellationRequested);
         }
 
