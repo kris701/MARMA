@@ -99,6 +99,7 @@ namespace MetaActions.Train.Trainers
 
             Print($"Getting meta actions...", ConsoleColor.Blue);
             var allMetaActions = MetaActionStrategy.GetMetaActions(Domain, TrainingProblems);
+            allMetaActions.Shuffle();
 
             Print($"Validating meta actions...", ConsoleColor.Blue);
             var verifiedMetaActions = MetaActionVerificationStrategy.VerifyMetaActions(Domain, allMetaActions, TrainingProblems);
