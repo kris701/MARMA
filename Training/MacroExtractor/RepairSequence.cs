@@ -7,13 +7,13 @@ namespace MacroExtractor
     {
         public GroundedAction MetaAction { get; set; }
         public ActionDecl Macro { get; set; }
-        public ActionPlan Replacement { get; set; }
+        public List<ActionPlan> Replacements { get; set; }
 
-        public RepairSequence(GroundedAction metaAction, ActionDecl macro, ActionPlan replacement)
+        public RepairSequence(GroundedAction metaAction, ActionDecl macro, List<ActionPlan> replacements)
         {
             MetaAction = metaAction;
             Macro = macro;
-            Replacement = replacement;
+            Replacements = replacements;
         }
 
         public override int GetHashCode()

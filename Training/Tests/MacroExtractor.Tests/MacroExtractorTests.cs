@@ -220,10 +220,13 @@ namespace MacroExtractor.Tests
             // ASSERT
             foreach (var item in result)
             {
-                foreach (var seq in item.Replacement.Plan)
+                foreach (var rep in item.Replacements)
                 {
-                    Assert.IsFalse(seq.ActionName.StartsWith("attack_"));
-                    Assert.IsFalse(seq.ActionName.StartsWith("fix_"));
+                    foreach (var seq in rep.Plan)
+                    {
+                        Assert.IsFalse(seq.ActionName.StartsWith("attack_"));
+                        Assert.IsFalse(seq.ActionName.StartsWith("fix_"));
+                    }
                 }
             }
         }
@@ -249,14 +252,17 @@ namespace MacroExtractor.Tests
             // ASSERT
             foreach (var item in result)
             {
-                foreach (var seq in item.Replacement.Plan)
+                foreach (var rep in item.Replacements)
                 {
-                    Assert.IsFalse(seq.ActionName.EndsWith("_0"));
-                    Assert.IsFalse(seq.ActionName.EndsWith("_1"));
-                    Assert.IsFalse(seq.ActionName.EndsWith("_2"));
-                    Assert.IsFalse(seq.ActionName.EndsWith("_3"));
-                    Assert.IsFalse(seq.ActionName.EndsWith("_4"));
-                    Assert.IsFalse(seq.ActionName.EndsWith("_5"));
+                    foreach (var seq in rep.Plan)
+                    {
+                        Assert.IsFalse(seq.ActionName.EndsWith("_0"));
+                        Assert.IsFalse(seq.ActionName.EndsWith("_1"));
+                        Assert.IsFalse(seq.ActionName.EndsWith("_2"));
+                        Assert.IsFalse(seq.ActionName.EndsWith("_3"));
+                        Assert.IsFalse(seq.ActionName.EndsWith("_4"));
+                        Assert.IsFalse(seq.ActionName.EndsWith("_5"));
+                    }
                 }
             }
         }
