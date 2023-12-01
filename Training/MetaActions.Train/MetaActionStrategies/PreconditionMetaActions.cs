@@ -69,16 +69,44 @@ namespace MetaActions.Train.MetaActionStrategies
                             if (permutation[i] && and.Children[i].Copy() is IExp child)
                                 copyPrecon.Children.Add(child);
 
-                        var toRemove = new List<int>();
-                        for (int j = 0; j < copy.Parameters.Values.Count; j++)
+                        var notReferenced = new List<NameExp>();
+                        foreach(var param in copy.Parameters.Values)
+                            if (!IsReferenced(copy, param, statics))
+                                notReferenced.Add(param);
+
+                        var notReferenced2 = new List<NameExp>();
+                        foreach (var param in notReferenced)
                         {
-                            var allRefs = copy.FindNames(copy.Parameters.Values[j].Name);
-                            if (allRefs.Count == 1)
-                                toRemove.Add(j);
+                            var allRefs = copy.FindNames(param.Name);
+                            bool isReferences = false;
+                            foreach (var refs in allRefs)
+                            {
+                                if (refs.Parent is PredicateExp pred && pred.Arguments.Any(x => IsReferenced(copy, x, notReferenced)))
+                                {
+                                    isReferences = true;
+                                    break;
+                                }
+                            }
+                            if (!isReferences)
+                                notReferenced2.Add(param);
                         }
-                        toRemove.Reverse();
-                        for (int j = 0; j < toRemove.Count; j++)
-                            copy.Parameters.Values.RemoveAt(toRemove[j]);
+
+                        var toRemove = new List<INode>();
+                        foreach (var notRefed in notReferenced2)
+                        {
+                            var allRefs = copy.FindNames(notRefed.Name);
+                            toRemove.Add(notRefed);
+                            foreach (var refe in allRefs)
+                                if (refe.Parent is PredicateExp pred)
+                                    toRemove.Add(pred);
+                        }
+
+                        foreach (var remove in toRemove)
+                        {
+                            var useful = GetMostUsefullParent(remove);
+                            if (useful.Parent is IListable list)
+                                list.Remove(useful);
+                        }
 
                         if (!copy.Preconditions.Equals(action.Preconditions))
                             metaActions.Add(copy);
@@ -86,6 +114,45 @@ namespace MetaActions.Train.MetaActionStrategies
                 }
             }
             return metaActions;
+        }
+
+        private bool IsReferenced(INode copy, NameExp param, List<PredicateExp> statics)
+        {
+            var allRefs = copy.FindNames(param.Name);
+            bool isReferenced = false;
+            foreach (var refs in allRefs)
+            {
+                if (refs.Parent is PredicateExp pred && !statics.Any(x => x.Name == pred.Name))
+                {
+                    isReferenced = true;
+                    break;
+                }
+            }
+            return isReferenced;
+        }
+
+        private bool IsReferenced(INode copy, NameExp param, List<NameExp> notReferenced)
+        {
+            var allRefs = copy.FindNames(param.Name);
+            bool isReferenced = false;
+            foreach (var refs in allRefs)
+            {
+                if (refs.Parent is PredicateExp pred && !notReferenced.Any(x => x.Name == pred.Name))
+                {
+                    isReferenced = true;
+                    break;
+                }
+            }
+            return isReferenced;
+        }
+
+        private INode GetMostUsefullParent(INode from)
+        {
+            if (from.Parent is IListable)
+                return from;
+            if (from.Parent == null)
+                throw new ArgumentNullException("Expected a parent");
+            return GetMostUsefullParent(from.Parent);
         }
 
         private Queue<bool[]> GeneratePermutations(AndExp preconditions, List<PredicateExp> statics)
