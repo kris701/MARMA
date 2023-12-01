@@ -41,14 +41,17 @@ pub(super) fn generate_plan(
                 parameters[index]
             })
             .collect();
+        let parameters_named = World::global().objects.names_cloned(&parameters);
         for pre in action.precondition.iter() {
-            if !state.has_nary(pre.predicate, &pre.map_args(&parameters)) {
+            if state.has_nary(pre.predicate, &pre.map_args(&parameters)) != pre.value {
                 return None;
             }
         }
         state.apply(action, &parameters);
-        let parameters = World::global().objects.names_cloned(&parameters);
-        plan.push(Term { name, parameters })
+        plan.push(Term {
+            name,
+            parameters: parameters_named,
+        })
     }
     Some(plan)
 }
