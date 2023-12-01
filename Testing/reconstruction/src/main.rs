@@ -67,6 +67,7 @@ fn meta_solve(
     domain_path: &PathBuf,
     problem_path: &PathBuf,
 ) -> SASPlan {
+    let mut reconstruction_begin = None;
     let mut meta_solution_time: f64 = 0.0;
     let meta_count = World::global().meta_actions.len();
     let mut banned_meta_actions: Vec<usize> = Vec::new();
@@ -78,10 +79,17 @@ fn meta_solve(
         status_print(Status::Reconstruction, "Finding meta solution");
         let meta_plan = Downward::global().solve(&meta_file, problem_path).unwrap();
         meta_solution_time += search_begin.elapsed().as_secs_f64();
+        if reconstruction_begin.is_none() {
+            reconstruction_begin = Some(Instant::now());
+        }
         let reconstructed = reconstruct(cache, iterative, domain_path, &meta_plan);
         let _ = fs::remove_file(&meta_file);
         match reconstructed {
             Ok(plan) => {
+                println!(
+                    "reconstruction_time={:.4}",
+                    reconstruction_begin.unwrap().elapsed().as_secs_f64()
+                );
                 println!("meta_solution_time={:.4}", meta_solution_time);
                 println!("meta_plan_length={}", meta_plan.len());
                 println!(

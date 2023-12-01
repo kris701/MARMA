@@ -5,9 +5,8 @@ mod lifted;
 use std::collections::HashMap;
 
 use crate::{
-    fact::Fact,
     state::State,
-    world::{action::Action, atom::Atom, World},
+    world::{action::Action, World},
 };
 use spingus::{sas_plan::SASPlan, term::Term};
 
