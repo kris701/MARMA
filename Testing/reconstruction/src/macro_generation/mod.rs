@@ -1,7 +1,4 @@
-use std::collections::HashMap;
-
 use clap::ValueEnum;
-use itertools::Itertools;
 use once_cell::sync::OnceCell;
 
 use crate::world::action::Action;
@@ -26,7 +23,10 @@ pub fn generate_macro(
 ) -> (Action, SASPlan) {
     let macro_method = MACRO_METHOD.get().expect("macro method uninitialised");
     match macro_method {
-        MacroMethod::Lifted => todo!(),
+        MacroMethod::Lifted => {
+            let actions = operators.into_iter().map(|(action, ..)| action).collect();
+            lifted::generate_macro(meta_action, actions)
+        }
         MacroMethod::Grounded => grounded::generate_macro(meta_action, operators),
     }
 }
