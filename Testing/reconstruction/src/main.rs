@@ -7,6 +7,8 @@ mod successor_genrator;
 mod tools;
 mod world;
 
+use crate::macro_generation::MacroMethod;
+use crate::macro_generation::MACRO_METHOD;
 use crate::reconstruction::downward_wrapper::{init_downward, Downward};
 use crate::successor_genrator::{legal_count, pseudo_count};
 use crate::tools::val::check_val;
@@ -55,6 +57,8 @@ pub struct Args {
     /// If given, adds entries found by planner to cache
     #[arg(short, long)]
     iterative_cache: bool,
+    #[arg(long, default_value = "lifted")]
+    macro_method: MacroMethod,
     /// Path to val
     /// If given checks reconstructed plan with VAL
     #[arg(short, long)]
@@ -129,6 +133,7 @@ fn main() {
 
     init_world(&args.domain, &args.meta_domain, &args.problem);
     init_downward(&args.downward, &args.temp_dir);
+    let _ = MACRO_METHOD.set(args.macro_method);
     let cache_init_start = Instant::now();
     let mut cache = generate_cache(&args.cache, args.cache_method, args.iterative_cache);
     println!(

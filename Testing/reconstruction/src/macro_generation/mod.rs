@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
+use clap::ValueEnum;
 use itertools::Itertools;
-use spingus::{sas_plan::SASPlan, term::Term};
+use once_cell::sync::OnceCell;
 
 use crate::{
     fact::Fact,
@@ -13,7 +14,17 @@ use crate::{
     },
 };
 
-// NOTE: Assumes that is a legal macro
+use spingus::{sas_plan::SASPlan, term::Term};
+
+#[derive(Debug, Copy, Clone, PartialEq, Default, ValueEnum)]
+pub enum MacroMethod {
+    #[default]
+    Lifted,
+    Grounded,
+}
+
+pub static MACRO_METHOD: OnceCell<MacroMethod> = OnceCell::new();
+
 pub fn generate_macro(
     meta_action: &Action,
     operators: Vec<(&Action, Vec<usize>)>,
