@@ -2,12 +2,13 @@ use crate::{
     fact::Fact,
     world::{action::Action, World},
 };
+use bitvec::prelude::*;
 use std::collections::HashSet;
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
     facts: HashSet<Fact>,
-    partial_facts: HashSet<Fact>,
+    partial_facts: Vec<Vec<BitVec>>,
 }
 
 impl State {
@@ -60,8 +61,7 @@ impl State {
     }
 
     pub fn has_partial(&self, predicate: usize, index: usize, arg: usize) -> bool {
-        let fact = generate_partial_fact(predicate, index, arg);
-        self.partial_facts.contains(&fact)
+        self.partial_facts[predicate][index][arg]
     }
 
     pub fn diff(&self, state: &State) -> Vec<(Fact, bool)> {
@@ -93,33 +93,27 @@ impl State {
     }
 }
 
-fn generate_partial_facts(facts: &HashSet<Fact>) -> HashSet<Fact> {
-    let mut partial_facts: HashSet<Fact> = HashSet::new();
+fn generate_partial_facts(facts: &HashSet<Fact>) -> Vec<Vec<BitVec>> {
+    let mut partial_facts: Vec<Vec<BitVec>> = vec![vec![]];
+    for i in 1..World::global().predicates.count() + 1 {
+        let mut predicate_partials: Vec<BitVec> = Vec::new();
+
+        let arity = World::global().predicates.arity(i);
+        if arity > 1 {
+            for _ in 0..arity {
+                predicate_partials.push(bitvec![0; World::global().objects.count() + 1]);
+            }
+        }
+
+        partial_facts.push(predicate_partials);
+    }
+
     for fact in facts.iter().filter(|f| f.parameters().len() > 1) {
         let predicate = fact.predicate();
         let args = fact.parameters();
         for i in 0..args.len() {
-            partial_facts.insert(generate_partial_fact(predicate, i, args[i]));
+            partial_facts[predicate][i].set(args[i], true);
         }
     }
     partial_facts
-}
-
-fn generate_partial_fact(predicate: usize, index: usize, arg: usize) -> Fact {
-    debug_assert_ne!(arg, 0);
-    let arity = World::global().predicates.arity(predicate);
-    debug_assert!(arity > 1);
-    debug_assert!(index < arity);
-    let fact = Fact::new(
-        predicate,
-        (0..arity)
-            .into_iter()
-            .map(|i| match i == index {
-                true => arg,
-                false => 0,
-            })
-            .collect(),
-    );
-    debug_assert!(fact.parameters().iter().any(|p| *p != 0));
-    fact
 }

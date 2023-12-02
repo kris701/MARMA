@@ -11,6 +11,9 @@ pub struct Objects {
 }
 
 impl Objects {
+    pub fn count(&self) -> usize {
+        self.objects.len()
+    }
     pub fn index(&self, name: &str) -> usize {
         self.objects[name]
     }

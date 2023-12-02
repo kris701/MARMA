@@ -38,6 +38,10 @@ impl Predicates {
             .iter()
             .map(|(name, index)| (name, &self.parameters[index]))
     }
+
+    pub fn count(&self) -> usize {
+        self.index_map.len()
+    }
 }
 
 fn find_static_predicates(
