@@ -2,13 +2,18 @@ mod cache_data;
 pub mod generation;
 mod lifted;
 
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    sync::atomic::{AtomicUsize, Ordering},
+};
 
 use crate::{
     state::State,
     world::{action::Action, World},
 };
 use spingus::{sas_plan::SASPlan, term::Term};
+
+pub static INVALID_REPLACEMENTS: AtomicUsize = AtomicUsize::new(0);
 
 pub trait Cache {
     /// Retrives replacement from cache from given init to goal
@@ -43,6 +48,7 @@ pub(super) fn generate_plan(
         let parameters_named = World::global().objects.names_cloned(&parameters);
         for pre in action.precondition.iter() {
             if state.has_nary(pre.predicate, &pre.map_args(&parameters)) != pre.value {
+                INVALID_REPLACEMENTS.fetch_add(1, Ordering::SeqCst);
                 return None;
             }
         }

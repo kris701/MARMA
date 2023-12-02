@@ -16,6 +16,7 @@ use crate::tools::{random_file_name, status_print};
 use crate::world::{init_world, World};
 use cache::generation::{generate_cache, CacheMethod};
 use cache::Cache;
+use cache::INVALID_REPLACEMENTS;
 use clap::Parser;
 use itertools::Itertools;
 use reconstruction::reconstruction::reconstruct;
@@ -23,6 +24,7 @@ use spingus::sas_plan::{export_sas, SASPlan};
 use std::fs;
 use std::path::PathBuf;
 use std::process::exit;
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 use tools::time::init_time;
 use tools::Status;
@@ -57,7 +59,7 @@ pub struct Args {
     /// If given, adds entries found by planner to cache
     #[arg(short, long)]
     iterative_cache: bool,
-    #[arg(long, default_value = "lifted")]
+    #[arg(long, default_value = "grounded")]
     macro_method: MacroMethod,
     /// Path to val
     /// If given checks reconstructed plan with VAL
@@ -164,6 +166,10 @@ fn main() {
         }
     }
     println!("final_plan_length={}", &plan.len());
+    println!(
+        "invalid_replacements={}",
+        INVALID_REPLACEMENTS.load(Ordering::SeqCst)
+    );
     if let Some(path) = args.out {
         let plan_export = export_sas(&plan);
         fs::write(path, plan_export).unwrap();
