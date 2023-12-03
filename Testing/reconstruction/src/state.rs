@@ -95,11 +95,13 @@ impl State {
 
 fn generate_partial_facts(facts: &HashSet<Fact>) -> Vec<Vec<BitVec>> {
     let mut partial_facts: Vec<Vec<BitVec>> = vec![vec![]];
+    partial_facts.reserve_exact(World::global().predicates.count() + 1);
     for i in 1..World::global().predicates.count() + 1 {
         let mut predicate_partials: Vec<BitVec> = Vec::new();
 
         let arity = World::global().predicates.arity(i);
         if arity > 1 {
+            predicate_partials.reserve_exact(arity);
             for _ in 0..arity {
                 predicate_partials.push(bitvec![0; World::global().objects.count() + 1]);
             }
