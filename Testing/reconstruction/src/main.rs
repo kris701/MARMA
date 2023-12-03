@@ -83,7 +83,12 @@ fn meta_solve(
         let _ = fs::write(&meta_file, meta_domain);
         let search_begin = Instant::now();
         status_print(Status::Reconstruction, "Finding meta solution");
-        let meta_plan = Downward::global().solve(&meta_file, problem_path).unwrap();
+        let meta_plan = match Downward::global().solve(&meta_file, problem_path) {
+            Ok(p) => p,
+            Err(err) => panic!("Had error finding meta solution: {}", err.to_string()),
+        };
+        println!("Found solution");
+
         meta_solution_time += search_begin.elapsed().as_secs_f64();
         if reconstruction_begin.is_none() {
             reconstruction_begin = Some(Instant::now());
@@ -96,7 +101,7 @@ fn meta_solve(
                     "reconstruction_time={:.4}",
                     reconstruction_begin.unwrap().elapsed().as_secs_f64()
                 );
-                println!("meta_solution_time={:.4}", meta_solution_time);
+                println!("solution_time={:.4}", meta_solution_time);
                 println!("meta_plan_length={}", meta_plan.len());
                 println!(
                     "meta_actions_in_plan={}",
@@ -174,5 +179,6 @@ fn main() {
         let plan_export = export_sas(&plan);
         fs::write(path, plan_export).unwrap();
     }
+    status_print(Status::Validation, "Finished");
     exit(0)
 }
