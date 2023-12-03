@@ -8,17 +8,12 @@ use std::collections::HashSet;
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct State {
     facts: HashSet<Fact>,
-    partial_facts: Vec<Vec<BitVec>>,
 }
 
 impl State {
     pub fn new(facts: &Vec<Fact>) -> Self {
         let facts: HashSet<Fact> = facts.iter().cloned().collect();
-        let partial_facts = generate_partial_facts(&facts);
-        Self {
-            facts,
-            partial_facts,
-        }
+        Self { facts }
     }
 
     pub fn from_init() -> Self {
@@ -34,7 +29,6 @@ impl State {
                 false => self.facts.remove(&fact),
             };
         }
-        self.partial_facts = generate_partial_facts(&self.facts);
     }
 
     fn get(&self) -> &HashSet<Fact> {
@@ -58,10 +52,6 @@ impl State {
     pub fn has_nary(&self, predicate: usize, arguments: &Vec<usize>) -> bool {
         let fact = Fact::new(predicate, arguments.clone());
         self.has(&fact)
-    }
-
-    pub fn has_partial(&self, predicate: usize, index: usize, arg: usize) -> bool {
-        self.partial_facts[predicate][index][arg]
     }
 
     pub fn diff(&self, state: &State) -> Vec<(Fact, bool)> {
@@ -91,31 +81,4 @@ impl State {
             .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
         s
     }
-}
-
-fn generate_partial_facts(facts: &HashSet<Fact>) -> Vec<Vec<BitVec>> {
-    let mut partial_facts: Vec<Vec<BitVec>> = vec![vec![]];
-    partial_facts.reserve_exact(World::global().predicates.count() + 1);
-    for i in 1..World::global().predicates.count() + 1 {
-        let mut predicate_partials: Vec<BitVec> = Vec::new();
-
-        let arity = World::global().predicates.arity(i);
-        if arity > 1 {
-            predicate_partials.reserve_exact(arity);
-            for _ in 0..arity {
-                predicate_partials.push(bitvec![0; World::global().objects.count() + 1]);
-            }
-        }
-
-        partial_facts.push(predicate_partials);
-    }
-
-    for fact in facts.iter().filter(|f| f.parameters().len() > 1) {
-        let predicate = fact.predicate();
-        let args = fact.parameters();
-        for i in 0..args.len() {
-            partial_facts[predicate][i].set(args[i], true);
-        }
-    }
-    partial_facts
 }

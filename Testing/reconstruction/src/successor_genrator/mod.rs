@@ -78,21 +78,6 @@ pub fn get_applicable_with_fixed<'a>(
         };
     }
 
-    for atom in nary_atoms.iter().filter(|a| a.value) {
-        debug_assert!(World::global().predicates.arity(atom.predicate) > 1);
-        for (i, parameter) in atom.parameters.iter().enumerate() {
-            match parameter {
-                Argument::Parameter(p) => {
-                    candidates[*p].retain(|o| state.has_partial(atom.predicate, i, *o))
-                }
-                Argument::Constant(c) => {
-                    if state.has_partial(atom.predicate, i, *c) {
-                        return None;
-                    }
-                }
-            }
-        }
-    }
     Some(
         candidates
             .into_iter()
