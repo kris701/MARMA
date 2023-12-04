@@ -62,15 +62,7 @@ impl State {
         diff
     }
 
-    pub fn export_all(&self) -> String {
-        let mut s: String = "".to_owned();
-        self.facts
-            .iter()
-            .for_each(|fact| s.push_str(&format!("\n\t\t({})", fact.to_string())));
-        s
-    }
-
-    pub fn export_mutable(&self) -> String {
+    pub fn export(&self) -> String {
         let mut s: String = "".to_owned();
         self.facts
             .iter()

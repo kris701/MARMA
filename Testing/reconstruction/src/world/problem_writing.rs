@@ -20,8 +20,8 @@ impl World {
                 .iterate_named()
                 .map(|(object, type_name)| format!("\n\t\t{} - {}", object, type_name))
                 .collect::<String>(),
-            init.export_all(),
-            goal.export_mutable()
+            init.export(),
+            goal.export()
         )
     }
 }
