@@ -35,23 +35,19 @@ impl State {
         &self.facts
     }
 
-    pub fn has(&self, fact: &Fact) -> bool {
-        self.facts.contains(&fact)
-    }
-
     pub fn has_nullary(&self, predicate: usize) -> bool {
         let fact = Fact::new_nullary(predicate);
-        self.has(&fact)
+        self.facts.contains(&fact)
     }
 
     pub fn has_unary(&self, predicate: usize, arg: usize) -> bool {
         let fact = Fact::new_unary(predicate, arg);
-        self.has(&fact)
+        self.facts.contains(&fact)
     }
 
     pub fn has_nary(&self, predicate: usize, arguments: &Vec<usize>) -> bool {
         let fact = Fact::new(predicate, arguments.clone());
-        self.has(&fact)
+        self.facts.contains(&fact)
     }
 
     pub fn diff(&self, state: &State) -> Vec<(Fact, bool)> {
