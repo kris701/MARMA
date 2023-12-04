@@ -8,7 +8,6 @@ mod tools;
 mod world;
 
 use crate::instantiation::legal_count;
-use crate::instantiation::INSTANTIATION_METHOD;
 use crate::macro_generation::MacroMethod;
 use crate::macro_generation::MACRO_METHOD;
 use crate::reconstruction::downward_wrapper::{init_downward, Downward};
@@ -19,7 +18,6 @@ use cache::generation::{generate_cache, CacheMethod};
 use cache::Cache;
 use cache::INVALID_REPLACEMENTS;
 use clap::Parser;
-use instantiation::InstantiationMethod;
 use itertools::Itertools;
 use reconstruction::reconstruction::reconstruct;
 use spingus::sas_plan::{export_sas, SASPlan};
@@ -63,8 +61,6 @@ pub struct Args {
     iterative_cache: bool,
     #[arg(long, default_value = "grounded")]
     macro_method: MacroMethod,
-    #[arg(long, default_value = "naive")]
-    instantiation_method: InstantiationMethod,
     /// Path to val
     /// If given checks reconstructed plan with VAL
     #[arg(short, long)]
@@ -145,7 +141,6 @@ fn main() {
     init_world(&args.domain, &args.meta_domain, &args.problem);
     init_downward(&args.downward, &args.temp_dir);
     let _ = MACRO_METHOD.set(args.macro_method);
-    let _ = INSTANTIATION_METHOD.set(args.instantiation_method);
     let cache_init_start = Instant::now();
     let mut cache = generate_cache(&args.cache, args.cache_method, args.iterative_cache);
     println!(
