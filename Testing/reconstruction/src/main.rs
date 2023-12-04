@@ -1,17 +1,17 @@
 mod cache;
 mod fact;
+mod instantiation;
 mod macro_generation;
 mod reconstruction;
 mod state;
-mod successor_genrator;
 mod tools;
 mod world;
 
+use crate::instantiation::legal_count;
+use crate::instantiation::INSTANTIATION_METHOD;
 use crate::macro_generation::MacroMethod;
 use crate::macro_generation::MACRO_METHOD;
 use crate::reconstruction::downward_wrapper::{init_downward, Downward};
-use crate::successor_genrator::legal_count;
-use crate::successor_genrator::INSTANTIATION_METHOD;
 use crate::tools::val::check_val;
 use crate::tools::{random_file_name, status_print};
 use crate::world::{init_world, World};
@@ -19,6 +19,7 @@ use cache::generation::{generate_cache, CacheMethod};
 use cache::Cache;
 use cache::INVALID_REPLACEMENTS;
 use clap::Parser;
+use instantiation::InstantiationMethod;
 use itertools::Itertools;
 use reconstruction::reconstruction::reconstruct;
 use spingus::sas_plan::{export_sas, SASPlan};
@@ -27,7 +28,6 @@ use std::path::PathBuf;
 use std::process::exit;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
-use successor_genrator::InstantiationMethod;
 use tools::time::init_time;
 use tools::Status;
 

@@ -1,9 +1,9 @@
 use super::{cache_data::CacheData, find_fixed, generate_plan, Cache};
 use crate::{
     fact::Fact,
+    instantiation::instantiate,
     macro_generation::generate_macro,
     state::State,
-    successor_genrator::instantiate,
     tools::{status_print, Status},
     world::{action::Action, World},
 };
