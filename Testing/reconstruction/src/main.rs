@@ -10,7 +10,8 @@ mod world;
 use crate::macro_generation::MacroMethod;
 use crate::macro_generation::MACRO_METHOD;
 use crate::reconstruction::downward_wrapper::{init_downward, Downward};
-use crate::successor_genrator::{legal_count, pseudo_count};
+use crate::successor_genrator::legal_count;
+use crate::successor_genrator::INSTANTIATION_METHOD;
 use crate::tools::val::check_val;
 use crate::tools::{random_file_name, status_print};
 use crate::world::{init_world, World};
@@ -26,6 +27,7 @@ use std::path::PathBuf;
 use std::process::exit;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
+use successor_genrator::InstantiationMethod;
 use tools::time::init_time;
 use tools::Status;
 
@@ -61,6 +63,8 @@ pub struct Args {
     iterative_cache: bool,
     #[arg(long, default_value = "grounded")]
     macro_method: MacroMethod,
+    #[arg(long, default_value = "naive")]
+    instantiation_method: InstantiationMethod,
     /// Path to val
     /// If given checks reconstructed plan with VAL
     #[arg(short, long)]
@@ -141,6 +145,7 @@ fn main() {
     init_world(&args.domain, &args.meta_domain, &args.problem);
     init_downward(&args.downward, &args.temp_dir);
     let _ = MACRO_METHOD.set(args.macro_method);
+    let _ = INSTANTIATION_METHOD.set(args.instantiation_method);
     let cache_init_start = Instant::now();
     let mut cache = generate_cache(&args.cache, args.cache_method, args.iterative_cache);
     println!(
@@ -154,7 +159,6 @@ fn main() {
         &args.domain,
         &args.problem,
     );
-    println!("pseudo_operator_count={}", pseudo_count());
     println!("legal_operator_count={}", legal_count());
     if let Some(val_path) = args.val {
         status_print(Status::Validation, "Checking VAL");
