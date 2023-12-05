@@ -73,10 +73,9 @@ impl Cache for LiftedCache {
                     continue;
                 }
                 for plan in replacement.plans.iter() {
-                    if let Some(plan) =
-                        generate_plan(&init, &replacement.action, plan, &permutation)
-                    {
-                        return Some(plan);
+                    let plan = generate_plan(&init, &replacement.action, &plan, &permutation);
+                    if plan.is_some() {
+                        return plan;
                     }
                 }
             }

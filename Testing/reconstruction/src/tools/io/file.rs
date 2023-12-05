@@ -70,10 +70,10 @@ pub fn match_files(files: Vec<PathBuf>, other_files: Vec<PathBuf>) -> Vec<(PathB
     let mut matches: Vec<(PathBuf, Vec<PathBuf>)> = Vec::new();
 
     for file in files {
-        let s = file.to_str().unwrap();
+        let s = file_name(&file);
         let contained = other_files
             .iter()
-            .filter(|f| f.to_str().unwrap().contains(s))
+            .filter(|f| file_name(&f).contains(&s))
             .cloned()
             .collect();
         matches.push((file, contained));
