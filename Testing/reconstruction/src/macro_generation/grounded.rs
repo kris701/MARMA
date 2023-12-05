@@ -78,7 +78,7 @@ pub(super) fn generate_macro(
                             *p,
                             match atom.parameters[i] {
                                 Argument::Parameter(p) => p,
-                                Argument::Constant(_) => todo!(),
+                                Argument::Constant(o) => o,
                             },
                         );
                     }
