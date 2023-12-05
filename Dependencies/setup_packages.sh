@@ -17,6 +17,7 @@ echo
 Rscript -e "install.packages(\"dplyr\");"
 Rscript -e "install.packages(\"ggplot2\");"
 Rscript -e "install.packages(\"gridExtra\");"
+Rscript -e "install.packages(\"xtable\");"
 echo 
 echo == Done! ==
 echo 
