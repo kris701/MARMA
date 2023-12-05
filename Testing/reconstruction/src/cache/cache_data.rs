@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io, path::PathBuf};
+use std::{collections::HashMap, fs, io, path::PathBuf};
 
 use spingus::{
     domain::action::{parse_action, Action},
@@ -10,7 +10,7 @@ use crate::{
     world::World,
 };
 
-pub type CacheData = HashMap<usize, Vec<(Action, SASPlan)>>;
+pub type CacheData = HashMap<usize, Vec<(Action, Vec<SASPlan>)>>;
 
 pub fn read_cache(path: &PathBuf) -> CacheData {
     let meta_dirs = dir_dirs(path)
@@ -32,18 +32,30 @@ pub fn read_cache(path: &PathBuf) -> CacheData {
     cache_data
 }
 
-fn read_meta_dir(path: &PathBuf) -> io::Result<Vec<(Action, SASPlan)>> {
+fn read_meta_dir(path: &PathBuf) -> io::Result<Vec<(Action, Vec<SASPlan>)>> {
     let macros: Vec<PathBuf> = dir_files_by_extension(path, "pddl")?;
     let plans: Vec<PathBuf> = dir_files_by_extension(path, "plan")?;
 
-    let matched: Vec<(PathBuf, PathBuf)> = match_files(plans, macros);
-    let content: Vec<(String, String)> = read_pairs(matched)?;
-
+    let matched: Vec<(PathBuf, Vec<PathBuf>)> = match_files(macros, plans);
+    let content: Vec<(String, Vec<String>)> = matched
+        .into_iter()
+        .map(|(action, plans)| {
+            (
+                fs::read_to_string(action).unwrap(),
+                plans
+                    .into_iter()
+                    .map(|p| fs::read_to_string(p).unwrap())
+                    .collect(),
+            )
+        })
+        .collect();
     Ok(content
-        .iter()
-        .map(|(p, a)| {
-            let a = &a[1..a.len() - 1];
-            (parse_action(a).unwrap().1, parse_sas(p).unwrap())
+        .into_iter()
+        .map(|(action, plans)| {
+            (
+                parse_action(&action[1..action.len() - 1]).unwrap().1,
+                plans.into_iter().map(|p| parse_sas(&p).unwrap()).collect(),
+            )
         })
         .collect())
 }

@@ -64,33 +64,22 @@ fn sort_files(files: Vec<PathBuf>) -> Vec<PathBuf> {
     files
 }
 
-pub fn match_files(files: Vec<PathBuf>, sub_files: Vec<PathBuf>) -> Vec<(PathBuf, PathBuf)> {
-    let mut pairs: Vec<(PathBuf, PathBuf)> = Vec::new();
+/// Matches every file in files with a set of files from other_files
+/// A match occurs if its name occurs
+pub fn match_files(files: Vec<PathBuf>, other_files: Vec<PathBuf>) -> Vec<(PathBuf, Vec<PathBuf>)> {
+    let mut matches: Vec<(PathBuf, Vec<PathBuf>)> = Vec::new();
 
-    let files = sort_files(files);
-    let mut sub_files = sort_files(sub_files);
-    let mut unmatched_files: Vec<PathBuf> = Vec::new();
-
-    for file in files.into_iter() {
-        let mut found = false;
-        for (i, sub_file) in sub_files.iter().enumerate() {
-            if file_name(&file).contains(&file_name(&sub_file)) {
-                found = true;
-                pairs.push((file.clone(), sub_file.to_owned()));
-                sub_files.remove(i);
-                break;
-            }
-        }
-        if !found {
-            unmatched_files.push(file);
-        }
+    for file in files {
+        let s = file.to_str().unwrap();
+        let contained = other_files
+            .iter()
+            .filter(|f| f.to_str().unwrap().contains(s))
+            .cloned()
+            .collect();
+        matches.push((file, contained));
     }
 
-    for file in unmatched_files.into_iter().chain(sub_files.into_iter()) {
-        eprintln!("WARNING: Could not find match for file {:?}", file);
-    }
-
-    pairs
+    matches
 }
 
 pub fn read_pairs(files: Vec<(PathBuf, PathBuf)>) -> io::Result<Vec<(String, String)>> {
