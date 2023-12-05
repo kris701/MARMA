@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use itertools::Itertools;
-use spingus::{sas_plan::SASPlan, term::Term};
 
 use crate::{
     fact::Fact,
@@ -13,8 +12,9 @@ use crate::{
     },
 };
 
-// NOTE: Assumes that is a legal macro
-pub fn generate_macro(
+use spingus::{sas_plan::SASPlan, term::Term};
+
+pub(super) fn generate_macro(
     meta_action: &Action,
     operators: Vec<(&Action, Vec<usize>)>,
 ) -> (Action, SASPlan) {
@@ -69,8 +69,7 @@ pub fn generate_macro(
     // macro parameter maps to meta parameter
     let mut fixed_parameters: HashMap<usize, usize> = HashMap::new();
     for atom in meta_action.effect.iter() {
-        let corresponding_atom = effect.iter().find(|a| a.predicate == atom.predicate);
-        if let Some(corresponding_atom) = corresponding_atom {
+        for corresponding_atom in effect.iter().filter(|a| a.predicate == atom.predicate) {
             for (i, parameter) in corresponding_atom.parameters.iter().enumerate() {
                 match parameter {
                     Argument::Parameter(p) => {
@@ -78,7 +77,7 @@ pub fn generate_macro(
                             *p,
                             match atom.parameters[i] {
                                 Argument::Parameter(p) => p,
-                                Argument::Constant(_) => todo!(),
+                                Argument::Constant(o) => o,
                             },
                         );
                     }

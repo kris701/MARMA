@@ -85,7 +85,11 @@ impl Downward {
         domain_path: &PathBuf,
         problem_path: &PathBuf,
     ) -> Result<SASPlan, DownwardError> {
-        let mut cmd: Command = Command::new(Path::new(&self.path).to_str().unwrap());
+        let command_path = match Path::new(&self.path).to_str() {
+            Some(p) => p,
+            None => panic!("Had error trying to generate command path"),
+        };
+        let mut cmd: Command = Command::new(command_path);
         let plan_path = random_file_name(&self.temp_dir);
         let sas_path = random_file_name(&self.temp_dir);
 
@@ -99,7 +103,7 @@ impl Downward {
             domain_path.to_str().unwrap(),
             problem_path.to_str().unwrap(),
         ]);
-
+        println!("Running command: {:?}", cmd);
         let result = self.run(&mut cmd, &plan_path);
         _ = fs::remove_file(sas_path);
         _ = fs::remove_file(plan_path);

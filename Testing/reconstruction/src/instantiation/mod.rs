@@ -12,16 +12,7 @@ use std::{
     sync::atomic::{AtomicUsize, Ordering},
 };
 
-static PSEUDO_OPERATORS: AtomicUsize = AtomicUsize::new(0);
 static LEGAL_OPERATORS: AtomicUsize = AtomicUsize::new(0);
-
-fn increment_pseudo() {
-    PSEUDO_OPERATORS.fetch_add(1, Ordering::SeqCst);
-}
-
-pub fn pseudo_count() -> usize {
-    PSEUDO_OPERATORS.load(Ordering::SeqCst)
-}
 
 fn increment_legal() {
     LEGAL_OPERATORS.fetch_add(1, Ordering::SeqCst);
@@ -31,8 +22,7 @@ pub fn legal_count() -> usize {
     LEGAL_OPERATORS.load(Ordering::SeqCst)
 }
 
-/// Generates all legal permutations, with some parameters fixed, of an action in a given state
-pub fn get_applicable_with_fixed<'a>(
+pub fn instantiate<'a>(
     action: &'a Action,
     state: &'a State,
     fixed: &'a HashMap<usize, usize>,
@@ -77,31 +67,11 @@ pub fn get_applicable_with_fixed<'a>(
             }
         };
     }
-    if candidates.iter().any(|c| c.is_empty()) {
-        return None;
-    }
-
-    for atom in nary_atoms.iter().filter(|a| a.value) {
-        debug_assert!(World::global().predicates.arity(atom.predicate) > 1);
-        for (i, parameter) in atom.parameters.iter().enumerate() {
-            match parameter {
-                Argument::Parameter(p) => {
-                    candidates[*p].retain(|o| state.has_partial(atom.predicate, i, *o))
-                }
-                Argument::Constant(c) => {
-                    if state.has_partial(atom.predicate, i, *c) {
-                        return None;
-                    }
-                }
-            }
-        }
-    }
     Some(
         candidates
             .into_iter()
             .multi_cartesian_product()
             .filter(move |p| {
-                increment_pseudo();
                 let val = nary_atoms.iter().all(|atom| {
                     let corresponding: Vec<usize> = atom.map_args(p);
                     (atom.predicate == 0 && corresponding.iter().all_equal() == atom.value)

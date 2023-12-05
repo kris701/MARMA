@@ -25,6 +25,7 @@ impl Predicates {
         }
     }
 
+    #[allow(unused)]
     pub fn arity(&self, index: usize) -> usize {
         self.parameters[&index].arity()
     }
@@ -37,6 +38,11 @@ impl Predicates {
         self.index_map
             .iter()
             .map(|(name, index)| (name, &self.parameters[index]))
+    }
+
+    #[allow(unused)]
+    pub fn count(&self) -> usize {
+        self.index_map.len()
     }
 }
 

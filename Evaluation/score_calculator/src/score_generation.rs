@@ -33,11 +33,12 @@ fn generate_scores(
 
 pub fn generate_report(records: Vec<Record>, time_limit: &f64) -> String {
     let scores = generate_scores(records, time_limit);
-    let domains: Vec<String> = scores.keys().cloned().collect();
+    let domains: Vec<String> = scores.keys().cloned().sorted().collect();
     let methods: Vec<String> = scores
         .iter()
         .flat_map(|(_, v)| v.keys().cloned())
         .unique()
+        .sorted()
         .collect();
     let domain_width = domains
         .iter()
