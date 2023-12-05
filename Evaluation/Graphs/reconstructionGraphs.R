@@ -3,6 +3,7 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(gtable)
+library(xtable)
 
 source("src/style.R")
 source("src/graphNames.R")
@@ -107,29 +108,59 @@ tableData <- containsMeta %>% select(
 	contains('found_in_cache.A'),
 	contains('operator_count.A')
 )
-newTableData <- data.frame(domain=character(), meta_actions_in_plan.A = integer(), found_in_cache.A = integer(), operator_count.A = integer())
+newTableData <- data.frame(domain=character(), meta_actions_in_plan.A = integer(), found_in_cache.A = integer(), operator_count.A = integer(), coverage = character())
 for(domain in unique(tableData$domain)){
 	newTableData[nrow(newTableData) + 1,] <- list(
 		domain,
 		sum(tableData[tableData$domain == domain,]$meta_actions_in_plan.A, na.rm=TRUE),
 		sum(tableData[tableData$domain == domain,]$found_in_cache.A, na.rm=TRUE),
-		sum(tableData[tableData$domain == domain,]$operator_count.A, na.rm=TRUE)
+		sum(tableData[tableData$domain == domain,]$operator_count.A, na.rm=TRUE),
+		paste(round((sum(tableData[tableData$domain == domain,]$found_in_cache.A, na.rm=TRUE) / sum(tableData[tableData$domain == domain,]$meta_actions_in_plan.A, na.rm=TRUE)) * 100, 0), "\\%", sep="")
 	)
 }
 tableData <- newTableData
 names(tableData) <- c(
-	"Domain", 
-	"Meta Actions\nin plan", 
-	"Found in\ncache",
-	"Cache\nOperators"
+	"$Domain$", 
+	"$Meta_{plan}$", 
+	"$C_{found}$",
+	"$O_{cache}$",
+	"$C_{perc}$"
 )
 generate_table(
 	tableData,
 	paste("out/reconstructionTable_", AName, ".pdf", sep = ""),
-	4.2,
-	1 + 0.25 + 0.25 * nrow(tableData),
-	TRUE
+	10,
+	10,
+	FALSE
 )
+tableData <- tableData %>% select(-contains('$O_{cache}$'))
+tableData[nrow(tableData) + 1,] <- list(
+	"Total", 
+	sum(tableData[2]), 
+	sum(tableData[3]),
+	"-"
+)
+table <- xtable(
+		tableData, 
+		type = "latex", 
+		caption="Across all the problems in each domain, $Meta_{plan}$ is how many meta actions was in the plans, $C_{found}$ is how many replacements could be found in cache.",
+		label="table:metaCoverage"
+	)
+hlines <- c(-1, 0, nrow(table) - 1, nrow(table))
+align(table ) <- "|0|X|X|X|X|"
+bold <- function(x){
+	paste0('{\\textbf{ ', x, '}}')
+}
+print(table, 
+	file = paste("out/reconstructionTable_", AName, ".tex", sep = ""), 
+	include.rownames=FALSE,
+	tabular.environment = "tabularx",
+	width = "\\textwidth / 2",
+	hline.after = hlines,
+	sanitize.text.function = function(x) {x},
+	latex.environments="centering",
+	sanitize.colnames.function = bold,
+	floating = TRUE)
 
 print("Generating: Search Time Scatter")
 sideA <- containsMeta$meta_solution_time.A
