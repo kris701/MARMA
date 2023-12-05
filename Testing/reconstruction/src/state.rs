@@ -2,7 +2,6 @@ use crate::{
     fact::Fact,
     world::{action::Action, World},
 };
-use bitvec::prelude::*;
 use std::collections::HashSet;
 
 #[derive(PartialEq, Eq, Clone, Debug)]

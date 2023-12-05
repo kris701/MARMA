@@ -10,6 +10,7 @@ impl Parameters {
     pub fn index(&self, name: &str) -> usize {
         self.names.iter().position(|n| n == name).unwrap()
     }
+    #[allow(unused)]
     pub fn arity(&self) -> usize {
         self.types.len()
     }

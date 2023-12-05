@@ -11,6 +11,7 @@ pub struct Objects {
 }
 
 impl Objects {
+    #[allow(unused)]
     pub fn count(&self) -> usize {
         self.objects.len()
     }
