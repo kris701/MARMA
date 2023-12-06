@@ -53,6 +53,7 @@ if (nrow(data[data$name == BName,]) == 0)
 
 data <- max_unsolved(data, "total_time")
 data <- max_unsolved(data, "solution_time")
+data <- max_unsolved(data, "reconstruction_time")
 data <- min_unsolved(data, "meta_actions_in_plan")
 
 # Split data
@@ -169,17 +170,23 @@ print("Generating: Search Time Scatter")
 sideA <- containsMeta$solution_time.A
 sideB <- containsMeta$solution_time.B
 sideDomains <- containsMeta$domain
-if (AName == "Fast Downward" || AName == "Fast Downward (Meta)")
+if (AName == "FD" || AName == "FDM")
 {
 	sideA <- combined[combined$meta_actions_in_plan.B > 0,]$solution_time.A
 	sideB <- combined[combined$meta_actions_in_plan.B > 0,]$solution_time.B
 	sideDomains <- combined[combined$meta_actions_in_plan.B > 0,]$domain
 }
-if (BName == "Fast Downward" || BName == "Fast Downward (Meta)")
+if (BName == "FD" || BName == "FDM")
 {
 	sideA <- combined[combined$meta_actions_in_plan.A > 0,]$solution_time.A
 	sideB <- combined[combined$meta_actions_in_plan.A > 0,]$solution_time.B
 	sideDomains <- combined[combined$meta_actions_in_plan.A > 0,]$domain
+}
+if ((AName == "FD" || AName == "FDM") && (BName == "FD" || BName == "FDM"))
+{
+	sideA <- combined$solution_time.A
+	sideB <- combined$solution_time.B
+	sideDomains <- combined$domain
 }
 searchData <- data.frame(x = sideA, y = sideB, domain = sideDomains)
 generate_scatterplot(searchData, AName, BName, "Search Time (s)", paste("out/searchTime_", AName, "_vs_", BName, ".pdf", sep = ""))
@@ -188,23 +195,53 @@ print("Generating: Total Time Scatter")
 sideA <- containsMeta$total_time.A
 sideB <- containsMeta$total_time.B
 sideDomains <- containsMeta$domain
-if (AName == "Fast Downward" || AName == "Fast Downward (Meta)")
+if (AName == "FD" || AName == "FDM")
 {
 	sideA <- combined[combined$meta_actions_in_plan.B > 0,]$total_time.A
 	sideB <- combined[combined$meta_actions_in_plan.B > 0,]$total_time.B
 	sideDomains <- combined[combined$meta_actions_in_plan.B > 0,]$domain
 }
-if (BName == "Fast Downward" || BName == "Fast Downward (Meta)")
+if (BName == "FD" || BName == "FDM")
 {
 	sideA <- combined[combined$meta_actions_in_plan.A > 0,]$total_time.A
 	sideB <- combined[combined$meta_actions_in_plan.A > 0,]$total_time.B
 	sideDomains <- combined[combined$meta_actions_in_plan.A > 0,]$domain
 }
+if ((AName == "FD" || AName == "FDM") && (BName == "FD" || BName == "FDM"))
+{
+	sideA <- combined$total_time.A
+	sideB <- combined$total_time.B
+	sideDomains <- combined$domain
+}
 totalData <- data.frame(x = sideA, y = sideB, domain = sideDomains)
 generate_scatterplot(totalData, AName, BName, "Total Time (s)", paste("out/totalTime_", AName, "_vs_", BName, ".pdf", sep = ""))
+
+print("Generating: Reconstruction Time Scatter")
+sideA <- containsMeta$reconstruction_time.A
+sideB <- containsMeta$reconstruction_time.B
+sideDomains <- containsMeta$domain
+if (AName == "FD" || AName == "FDM")
+{
+	sideA <- combined[combined$meta_actions_in_plan.B > 0,]$reconstruction_time.A
+	sideB <- combined[combined$meta_actions_in_plan.B > 0,]$reconstruction_time.B
+	sideDomains <- combined[combined$meta_actions_in_plan.B > 0,]$domain
+}
+if (BName == "FD" || BName == "FDM")
+{
+	sideA <- combined[combined$meta_actions_in_plan.A > 0,]$reconstruction_time.A
+	sideB <- combined[combined$meta_actions_in_plan.A > 0,]$reconstruction_time.B
+	sideDomains <- combined[combined$meta_actions_in_plan.A > 0,]$domain
+}
+if ((AName == "FD" || AName == "FDM") && (BName == "FD" || BName == "FDM"))
+{
+	sideA <- combined$reconstruction_time.A
+	sideB <- combined$reconstruction_time.B
+	sideDomains <- combined$domain
+}
+totalData <- data.frame(x = sideA, y = sideB, domain = sideDomains)
+generate_scatterplot(totalData, AName, BName, "Reconstruction Time (s)", paste("out/reconstructionTime_", AName, "_vs_", BName, ".pdf", sep = ""))
 
 print("Generating: Coverage plot")
 maxTime <- max(combined$total_time.A, combined$total_time.B)
 coverageData <- combined[!(combined$total_time.A == maxTime & combined$total_time.B == maxTime),]
 generate_coveragePlot(coverageData$total_time.A, AName, coverageData$total_time.B, BName, "Coverage", paste("out/fullCoverage_", AName, "_vs_", BName, ".pdf", sep = ""))
-

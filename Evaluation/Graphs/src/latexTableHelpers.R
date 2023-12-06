@@ -10,8 +10,10 @@ topRowBottomRowLines <- function(rows)
 generateRowDefinition <- function(columnCount, ignoreFirst = FALSE) {
 	source <- "|"
 	if (ignoreFirst == TRUE)
-		source <- "|0|"
-	for (i in 1:columnCount)
-		source <- paste(source, "X|", sep="")
+		source <- "|0|X|"
+	else
+		source <- "|X|"
+	for (i in 2:columnCount)
+		source <- paste(source, "l|", sep="")
 	return (source)
 }

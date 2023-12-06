@@ -1,29 +1,29 @@
 recon_names <- function(name) { 
-  	if (name == "fast_downward") return ("Fast Downward")
-  	if (name == "fast_downward_meta") return ("Fast Downward (Meta)")
-  	if (name == "meta_no_cache") return ("FD Reconstruction")
-  	if (name == "meta_hashed") return ("MARMA (Hashed)")
-  	if (name == "meta_lifted") return ("MARMA (Lifted)")
-  	if (name == "meta_lifted_iterative") return ("MARMA (Lifted, it)")
-  	if (name == "meta_lifted_iterative_no_cache") return ("MARMA (Lifted, itt. only)")
+  	if (name == "fast_downward") return ("FD")
+  	if (name == "fast_downward_meta") return ("FDM")
+  	if (name == "meta_no_cache") return ("FDR")
+  	if (name == "meta_hashed") return ("MARMA(H)")
+  	if (name == "meta_lifted") return ("MARMA(L)")
+  	if (name == "meta_lifted_iterative") return ("MARMA(L, itt)")
+  	if (name == "meta_lifted_iterative_no_cache") return ("MARMA(L, itt. only)")
 	return (name)
 }
 
 rename_data <- function(data) { 
-	data[data=="fast_downward"] <- "Fast Downward"
-	names(data)[names(data)=="fast_downward"] <- "Fast Downward"
-	data[data=="fast_downward_meta"] <- "Fast Downward (Meta)"
-	names(data)[names(data)=="fast_downward_meta"] <- "Fast Downward (Meta)"
-	data[data=="meta_no_cache"] <- "FD Reconstruction"
-	names(data)[names(data)=="meta_no_cache"] <- "FD Reconstruction"
-	data[data=="meta_hashed"] <- "MARMA (Hashed)"
-	names(data)[names(data)=="meta_hashed"] <- "MARMA (Hashed)"
-	data[data=="meta_lifted"] <- "MARMA (Lifted)"
-	names(data)[names(data)=="meta_lifted"] <- "MARMA (Lifted)"
-	data[data=="meta_lifted_iterative"] <- "MARMA (Lifted, it)"
-	names(data)[names(data)=="meta_lifted_iterative"] <- "MARMA (Lifted, it)"
-	data[data=="meta_lifted_iterative_no_cache"] <- "MARMA (Lifted, itt. only)"
-	names(data)[names(data)=="meta_lifted_iterative_no_cache"] <- "MARMA (Lifted, itt. only)"
+	data[data=="fast_downward"] <- "FD"
+	names(data)[names(data)=="fast_downward"] <- "FD"
+	data[data=="fast_downward_meta"] <- "FDM"
+	names(data)[names(data)=="fast_downward_meta"] <- "FDM"
+	data[data=="meta_no_cache"] <- "FDR"
+	names(data)[names(data)=="meta_no_cache"] <- "FDR"
+	data[data=="meta_hashed"] <- "MARMA(H)"
+	names(data)[names(data)=="meta_hashed"] <- "MARMA(H)"
+	data[data=="meta_lifted"] <- "MARMA(L)"
+	names(data)[names(data)=="meta_lifted"] <- "MARMA(L)"
+	data[data=="meta_lifted_iterative"] <- "MARMA(L, itt)"
+	names(data)[names(data)=="meta_lifted_iterative"] <- "MARMA(L, itt)"
+	data[data=="meta_lifted_iterative_no_cache"] <- "MARMA(L, itt. only)"
+	names(data)[names(data)=="meta_lifted_iterative_no_cache"] <- "MARMA(L, itt. only)"
 	return (data)
 }
 

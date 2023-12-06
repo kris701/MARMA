@@ -20,7 +20,6 @@ names(data)[names(data)=="domain"] <- "Domain"
 totalRow <- list("Total")
 for(i in 2:ncol(data))
 	totalRow <- append(totalRow, sum(sapply(data[i], as.numeric)))
-print(totalRow)
 data[nrow(data) + 1,] <- totalRow 
 
 table <- xtable(
@@ -29,15 +28,15 @@ table <- xtable(
 		caption="IPC Score for all the methods",
 		label="table:ipcScore"
 	)
-hlines <- topRowBottomRowLines(nrow(data))
 align(table ) <- generateRowDefinition(ncol(table), TRUE)
 print(table, 
 	file = "out/ipcScore.tex", 
 	include.rownames=FALSE,
 	tabular.environment = "tabularx",
 	width = "\\textwidth / 2",
-	hline.after = hlines,
+	hline.after = topRowBottomRowLines(nrow(data)),
 	sanitize.text.function = function(x) {x},
 	latex.environments="centering",
 	sanitize.colnames.function = bold,
-	floating = TRUE)
+	floating = TRUE,
+	rotate.colnames = TRUE)
