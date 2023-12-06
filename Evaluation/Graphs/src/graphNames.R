@@ -11,12 +11,19 @@ recon_names <- function(name) {
 
 rename_data <- function(data) { 
 	data[data=="fast_downward"] <- "Fast Downward"
+	names(data)[names(data)=="fast_downward"] <- "Fast Downward"
 	data[data=="fast_downward_meta"] <- "Fast Downward (Meta)"
+	names(data)[names(data)=="fast_downward_meta"] <- "Fast Downward (Meta)"
 	data[data=="meta_no_cache"] <- "FD Reconstruction"
+	names(data)[names(data)=="meta_no_cache"] <- "FD Reconstruction"
 	data[data=="meta_hashed"] <- "MARMA (Hashed)"
+	names(data)[names(data)=="meta_hashed"] <- "MARMA (Hashed)"
 	data[data=="meta_lifted"] <- "MARMA (Lifted)"
+	names(data)[names(data)=="meta_lifted"] <- "MARMA (Lifted)"
 	data[data=="meta_lifted_iterative"] <- "MARMA (Lifted, it)"
+	names(data)[names(data)=="meta_lifted_iterative"] <- "MARMA (Lifted, it)"
 	data[data=="meta_lifted_iterative_no_cache"] <- "MARMA (Lifted, itt. only)"
+	names(data)[names(data)=="meta_lifted_iterative_no_cache"] <- "MARMA (Lifted, itt. only)"
 	return (data)
 }
 
