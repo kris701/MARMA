@@ -13,6 +13,7 @@ source("src/coveragePlots.R")
 source("src/domainBarPlots.R")
 source("src/tables.R")
 source("src/clamper.R")
+source("src/latexTableHelpers.R")
 
 # Handle arguments
 args = commandArgs(trailingOnly=TRUE)
@@ -33,13 +34,15 @@ data <- read.csv(
 	colClasses = c(
 		'character','character',
 		'character','character',
+		'character',
 		'numeric','numeric',
 		'numeric','numeric',
-		'numeric','character',
-		'numeric', 'numeric', 
-		'numeric', 'numeric',
-		'numeric', 'numeric',
-		'numeric', 'numeric'
+		'numeric','numeric',
+		'numeric','numeric',
+		'numeric','numeric',
+		'numeric','numeric',
+		'numeric','numeric',
+		'numeric','numeric'
 	)
 )
 data <- rename_data(data)
@@ -49,7 +52,7 @@ if (nrow(data[data$name == BName,]) == 0)
 	stop(paste("Column name '", args[3], "' not found in dataset!"), call.=FALSE)
 
 data <- max_unsolved(data, "total_time")
-data <- max_unsolved(data, "meta_solution_time")
+data <- max_unsolved(data, "solution_time")
 data <- min_unsolved(data, "meta_actions_in_plan")
 
 # Split data
@@ -163,19 +166,19 @@ print(table,
 	floating = TRUE)
 
 print("Generating: Search Time Scatter")
-sideA <- containsMeta$meta_solution_time.A
-sideB <- containsMeta$meta_solution_time.B
+sideA <- containsMeta$solution_time.A
+sideB <- containsMeta$solution_time.B
 sideDomains <- containsMeta$domain
 if (AName == "Fast Downward" || AName == "Fast Downward (Meta)")
 {
-	sideA <- combined[combined$meta_actions_in_plan.B > 0,]$meta_solution_time.A
-	sideB <- combined[combined$meta_actions_in_plan.B > 0,]$meta_solution_time.B
+	sideA <- combined[combined$meta_actions_in_plan.B > 0,]$solution_time.A
+	sideB <- combined[combined$meta_actions_in_plan.B > 0,]$solution_time.B
 	sideDomains <- combined[combined$meta_actions_in_plan.B > 0,]$domain
 }
 if (BName == "Fast Downward" || BName == "Fast Downward (Meta)")
 {
-	sideA <- combined[combined$meta_actions_in_plan.A > 0,]$meta_solution_time.A
-	sideB <- combined[combined$meta_actions_in_plan.A > 0,]$meta_solution_time.B
+	sideA <- combined[combined$meta_actions_in_plan.A > 0,]$solution_time.A
+	sideB <- combined[combined$meta_actions_in_plan.A > 0,]$solution_time.B
 	sideDomains <- combined[combined$meta_actions_in_plan.A > 0,]$domain
 }
 searchData <- data.frame(x = sideA, y = sideB, domain = sideDomains)
