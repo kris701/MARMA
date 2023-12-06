@@ -1,4 +1,4 @@
-library(dplyr) 
+#library(dplyr) 
 library(xtable)
 
 source("src/style.R")
@@ -13,9 +13,15 @@ if (length(args) != 1) {
 dir.create(file.path("out"), showWarnings = FALSE)
 
 data <- read.csv(args[1])
+data <- data[,-ncol(data)]
 data <- rename_data(data)
 names(data)[names(data)=="domain"] <- "Domain"
-data[data=="sum"] <- "Total"
+
+totalRow <- list("Total")
+for(i in 2:ncol(data))
+	totalRow <- append(totalRow, sum(sapply(data[i], as.numeric)))
+print(totalRow)
+data[nrow(data) + 1,] <- totalRow 
 
 table <- xtable(
 		data, 

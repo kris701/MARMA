@@ -1,5 +1,5 @@
 bold <- function(x){
-	paste0('{\\textbf{ ', x, '}}')
+	paste0('\\textbf{', x, '}')
 }
 
 topRowLines <- function(rows) 
