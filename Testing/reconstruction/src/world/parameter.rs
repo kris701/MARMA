@@ -8,7 +8,10 @@ pub struct Parameters {
 
 impl Parameters {
     pub fn index(&self, name: &str) -> usize {
-        self.names.iter().position(|n| n == name).unwrap()
+        self.names
+            .iter()
+            .position(|n| n == name)
+            .expect(&format!("{:?} - {}", self.names, name))
     }
     #[allow(unused)]
     pub fn arity(&self) -> usize {
