@@ -82,7 +82,7 @@ pub fn generate_csv(scores: HashMap<String, HashMap<String, f64>>) -> String {
         .unique()
         .sorted()
         .collect();
-    let mut s = String::new();
+    let mut s = "domains,".to_string();
     for method in methods.iter() {
         s.push_str(&format!("{},", method));
     }
