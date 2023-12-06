@@ -1,6 +1,6 @@
 use clap::Parser;
 use input_handling::get_records;
-use score_generation::generate_report;
+use score_generation::{generate_csv, generate_report, generate_scores};
 use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
@@ -23,12 +23,18 @@ pub struct Args {
     #[arg(short, long)]
     #[clap(value_parser = humantime::parse_duration, default_value = "30m")]
     time_limit: std::time::Duration,
+    #[arg(short, long)]
+    comma_seperated: bool,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
     let records = get_records(&args.input)?;
-    let report = generate_report(records, &args.time_limit.as_secs_f64());
+    let scores = generate_scores(records, &args.time_limit.as_secs_f64());
+    let report = match args.comma_seperated {
+        true => generate_csv(scores),
+        false => generate_report(scores),
+    };
     match &args.out {
         Some(path) => fs::write(path, report)?,
         None => print!("{}", report),
