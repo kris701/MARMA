@@ -73,7 +73,7 @@ pub fn match_files(files: Vec<PathBuf>, other_files: Vec<PathBuf>) -> Vec<(PathB
         let s = file_name(&file);
         let contained = other_files
             .iter()
-            .filter(|f| file_name(&f).contains(&s))
+            .filter(|f| file_name(&f).split_once('_').unwrap().0 == s)
             .cloned()
             .collect();
         matches.push((file, contained));
