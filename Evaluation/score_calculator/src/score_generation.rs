@@ -12,7 +12,7 @@ fn calculate_score(time_used: &f64, time_limit: &f64) -> f64 {
     }
 }
 
-fn generate_scores(
+pub fn generate_scores(
     records: Vec<Record>,
     time_limit: &f64,
 ) -> HashMap<String, HashMap<String, f64>> {
@@ -31,8 +31,7 @@ fn generate_scores(
     scores
 }
 
-pub fn generate_report(records: Vec<Record>, time_limit: &f64) -> String {
-    let scores = generate_scores(records, time_limit);
+pub fn generate_report(scores: HashMap<String, HashMap<String, f64>>) -> String {
     let domains: Vec<String> = scores.keys().cloned().sorted().collect();
     let methods: Vec<String> = scores
         .iter()
@@ -72,5 +71,29 @@ pub fn generate_report(records: Vec<Record>, time_limit: &f64) -> String {
     }
     s.push_str("\n");
 
+    s
+}
+
+pub fn generate_csv(scores: HashMap<String, HashMap<String, f64>>) -> String {
+    let domains: Vec<String> = scores.keys().cloned().sorted().collect();
+    let methods: Vec<String> = scores
+        .iter()
+        .flat_map(|(_, v)| v.keys().cloned())
+        .unique()
+        .sorted()
+        .collect();
+    let mut s = String::new();
+    for method in methods.iter() {
+        s.push_str(&format!("{},", method));
+    }
+    s.push_str("\n");
+    for domain in domains.into_iter() {
+        let score_entry = &scores[&domain];
+        s.push_str(&format!("{},", domain));
+        for method in methods.iter() {
+            s.push_str(&format!("{},", score_entry[method]));
+        }
+        s.push_str("\n");
+    }
     s
 }
