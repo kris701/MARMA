@@ -150,21 +150,18 @@ table <- xtable(
 		caption="Across all the problems in each domain, $Meta_{plan}$ is how many meta actions was in the plans, $C_{found}$ is how many replacements could be found in cache.",
 		label="table:metaCoverage"
 	)
-hlines <- c(-1, 0, nrow(table) - 1, nrow(table))
-align(table ) <- "|0|X|X|X|X|"
-bold <- function(x){
-	paste0('{\\textbf{ ', x, '}}')
-}
+align(table ) <- generateRowDefinition(ncol(table), TRUE)
 print(table, 
 	file = paste("out/reconstructionTable_", AName, ".tex", sep = ""), 
 	include.rownames=FALSE,
 	tabular.environment = "tabularx",
 	width = "\\textwidth / 2",
-	hline.after = hlines,
+	hline.after = topRowBottomRowLines(nrow(table)),
 	sanitize.text.function = function(x) {x},
 	latex.environments="centering",
 	sanitize.colnames.function = bold,
-	floating = TRUE)
+	floating = TRUE,
+	rotate.colnames = TRUE)
 
 print("Generating: Search Time Scatter")
 sideA <- containsMeta$solution_time.A
