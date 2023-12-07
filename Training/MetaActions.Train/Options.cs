@@ -23,7 +23,9 @@ namespace MetaActions
             Weak1m = 3,
             Weak1mUseful = 4,
             Weak5m = 5,
-            Weak5mUseful = 6
+            Weak5mUseful = 6,
+            Weak15m = 7,
+            Weak15mUseful = 8
         }
 
 
