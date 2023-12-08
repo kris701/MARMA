@@ -7,13 +7,13 @@ namespace MacroExtractor
     {
         public GroundedAction MetaAction { get; set; }
         public ActionDecl Macro { get; set; }
-        public List<ActionPlan> Replacements { get; set; }
+        public ActionPlan Replacement { get; set; }
 
-        public RepairSequence(GroundedAction metaAction, ActionDecl macro, List<ActionPlan> replacements)
+        public RepairSequence(GroundedAction metaAction, ActionDecl macro, ActionPlan replacements)
         {
             MetaAction = metaAction;
             Macro = macro;
-            Replacements = replacements;
+            Replacement = replacements;
         }
 
         public override int GetHashCode()
@@ -25,12 +25,8 @@ namespace MacroExtractor
         {
             if (obj is RepairSequence seq)
             {
-                if (Macro.Name != seq.Macro.Name) return false;
-                if (Macro.Parameters.Values.Count != seq.Macro.Parameters.Values.Count) return false;
-                for (int i = 0; i < Macro.Parameters.Values.Count; i++)
-                    if (Macro.Parameters.Values[i].Name != seq.Macro.Parameters.Values[i].Name)
-                        return false;
-                return true;
+                if (!MetaAction.Equals(seq.MetaAction)) return false;
+                return Macro.Equals(seq.Macro);
             }
             return false;
         }

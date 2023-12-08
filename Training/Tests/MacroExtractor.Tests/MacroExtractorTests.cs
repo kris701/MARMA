@@ -28,7 +28,7 @@ namespace MacroExtractor.Tests
         #region ExtractMacros
 
         [TestMethod]
-        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 2)]
+        [DataRow("benchmarks/floortile/domain.pddl", "benchmarks/floortile/meta-1", 4)]
         [DataRow("benchmarks/rovers/domain.pddl", "benchmarks/rovers/meta-1", 7)]
         [DataRow("benchmarks/ferry/domain.pddl", "benchmarks/ferry/meta-4", 3)]
         public void Can_ExtractMacros_Count(string domain, string plansPath, int expectedMacroCount)
@@ -220,13 +220,10 @@ namespace MacroExtractor.Tests
             // ASSERT
             foreach (var item in result)
             {
-                foreach (var rep in item.Replacements)
+                foreach (var seq in item.Replacement.Plan)
                 {
-                    foreach (var seq in rep.Plan)
-                    {
-                        Assert.IsFalse(seq.ActionName.StartsWith("attack_"));
-                        Assert.IsFalse(seq.ActionName.StartsWith("fix_"));
-                    }
+                    Assert.IsFalse(seq.ActionName.StartsWith("attack_"));
+                    Assert.IsFalse(seq.ActionName.StartsWith("fix_"));
                 }
             }
         }
@@ -252,17 +249,14 @@ namespace MacroExtractor.Tests
             // ASSERT
             foreach (var item in result)
             {
-                foreach (var rep in item.Replacements)
+                foreach (var seq in item.Replacement.Plan)
                 {
-                    foreach (var seq in rep.Plan)
-                    {
-                        Assert.IsFalse(seq.ActionName.EndsWith("_0"));
-                        Assert.IsFalse(seq.ActionName.EndsWith("_1"));
-                        Assert.IsFalse(seq.ActionName.EndsWith("_2"));
-                        Assert.IsFalse(seq.ActionName.EndsWith("_3"));
-                        Assert.IsFalse(seq.ActionName.EndsWith("_4"));
-                        Assert.IsFalse(seq.ActionName.EndsWith("_5"));
-                    }
+                    Assert.IsFalse(seq.ActionName.EndsWith("_0"));
+                    Assert.IsFalse(seq.ActionName.EndsWith("_1"));
+                    Assert.IsFalse(seq.ActionName.EndsWith("_2"));
+                    Assert.IsFalse(seq.ActionName.EndsWith("_3"));
+                    Assert.IsFalse(seq.ActionName.EndsWith("_4"));
+                    Assert.IsFalse(seq.ActionName.EndsWith("_5"));
                 }
             }
         }

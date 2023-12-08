@@ -61,9 +61,7 @@ namespace MacroExtractor
             foreach (var replacement in repairSequences)
             {
                 codeGenerator.Generate(replacement.Macro, Path.Combine(outPath, replacement.MetaAction.ActionName, $"macro{id}.pddl"));
-                for(int i = 0; i < replacement.Replacements.Count; i++)
-                    planGenerator.Generate(replacement.Replacements[i], Path.Combine(outPath, replacement.MetaAction.ActionName, $"macro{id}_replacement{i}.plan"));
-                id++;
+                planGenerator.Generate(replacement.Replacement, Path.Combine(outPath, replacement.MetaAction.ActionName, $"macro{id}_replacement.plan"));
             }
         }
     }

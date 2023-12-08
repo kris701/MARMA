@@ -52,7 +52,7 @@
     <None Update="TestData\gripper\$meta-pick-pick-move-drop-drop\plan2.plan">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\gripper\gripper.pddl">
+    <None Update="TestData\gripper\domain.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TestData\miconic\domain.pddl">

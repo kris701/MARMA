@@ -27,8 +27,8 @@ namespace MacroExtractor
             var followerPlans = PathHelper.ResolveFileWildcards(followerPlanFiles);
 
             var planSequences = new Dictionary<GroundedAction, HashSet<ActionPlan>>();
-            IErrorListener listener = new ErrorListener();
-            IParser<ActionPlan> parser = new FDPlanParser(listener);
+            var listener = new ErrorListener();
+            var parser = new FDPlanParser(listener);
 
             foreach (var planFile in followerPlans)
             {
@@ -108,13 +108,9 @@ namespace MacroExtractor
                     foreach (var step in actionPlan.Plan)
                         RenameActionArguments(step, replacementDict);
 
-                    var newSeq = new RepairSequence(key, macro, new List<ActionPlan>() { actionPlan });
-                    var match = returnList.FirstOrDefault(x => x.Equals(newSeq));
-                    if (match == null)
+                    var newSeq = new RepairSequence(key, macro, actionPlan);
+                    if (!returnList.Contains(newSeq))
                         returnList.Add(newSeq);
-                    else
-                        if (!match.Replacements.Any(x => x.Equals(actionPlan)))
-                            match.Replacements.Add(actionPlan);
                 }
             }
 
