@@ -125,7 +125,8 @@ namespace MetaActions.Train.Trainers
                 MetaActionStrategy.MacroCount,
                 allMetaActions.Count,
                 verifiedMetaActions.Count,
-                verifiedMetaActions.Count,
+                MetaActionVerificationStrategy.CheckedCounter,
+                verifiedMetaActions.Sum(x => x.Replacements.Count / 2),
                 CancellationToken.IsCancellationRequested);
         }
 

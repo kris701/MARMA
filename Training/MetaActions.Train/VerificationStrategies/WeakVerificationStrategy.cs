@@ -60,6 +60,7 @@ namespace MetaActions.Train.VerificationStrategies
                         Print($"\tMeta action was invalid since it had no replacements.", ConsoleColor.Red);
                 }
                 metaActionCounter++;
+                CheckedCounter++;
             }
             Print($"A total of {CurrentlyValidMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green);
             return CurrentlyValidMetaActions;

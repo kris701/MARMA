@@ -51,6 +51,7 @@ namespace MetaActions.Train.VerificationStrategies
                     CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, ""))));
                 }
                 metaActionCounter++;
+                CheckedCounter++;
             }
             Print($"A total of {CurrentlyValidMetaActions.Count} valid meta actions out of {allMetaActions.Count} was found.", ConsoleColor.Green);
             return CurrentlyValidMetaActions;

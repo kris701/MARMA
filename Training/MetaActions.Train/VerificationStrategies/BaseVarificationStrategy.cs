@@ -12,6 +12,7 @@ namespace MetaActions.Train.VerificationStrategies
     public abstract class BaseVarificationStrategy : BaseCancelable, IVerificationStrategy
     {
         public enum VerificationResult { None = -1, Success = 0, Failure = 1, TimedOut = 2}
+        public int CheckedCounter { get; internal set; }
         public List<ValidMetaAction> CurrentlyValidMetaActions { get; }
         internal string _tempCompiledPath = "compiled";
         internal string _tempVerificationPath = "verification";
