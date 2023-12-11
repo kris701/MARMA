@@ -8,7 +8,7 @@ using Tools;
 
 namespace MacroExtractor
 {
-    internal class Program : BaseCLI
+    public class Program : BaseCLI
     {
         public static string _metaActionName = "$meta";
         public static string _macroActionName = "$macro";
@@ -50,7 +50,7 @@ namespace MacroExtractor
             return parser.ParseAs<DomainDecl>(new FileInfo(domainFile));
         }
 
-        private static void OutputReconstructionData(List<RepairSequence> repairSequences, string outPath)
+        public static void OutputReconstructionData(List<RepairSequence> repairSequences, string outPath)
         {
             var listener = new ErrorListener();
             var codeGenerator = new PDDLCodeGenerator(listener);
@@ -61,7 +61,7 @@ namespace MacroExtractor
             foreach (var replacement in repairSequences)
             {
                 codeGenerator.Generate(replacement.Macro, Path.Combine(outPath, replacement.MetaAction.ActionName, $"macro{id}.pddl"));
-                planGenerator.Generate(replacement.Replacement, Path.Combine(outPath, replacement.MetaAction.ActionName, $"macro{id}_replacement.plan"));
+                planGenerator.Generate(replacement.Replacement, Path.Combine(outPath, replacement.MetaAction.ActionName, $"macro{id++}_replacement.plan"));
             }
         }
     }
