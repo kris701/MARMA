@@ -1,6 +1,5 @@
-use core::fmt;
-
 use crate::world::World;
+use core::fmt;
 
 #[derive(Hash, PartialEq, Eq, Clone, Copy, Debug, PartialOrd, Ord)]
 pub struct Fact {

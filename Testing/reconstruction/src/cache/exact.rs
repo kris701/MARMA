@@ -76,8 +76,7 @@ impl Cache for ExactCache {
                 if eff != desired {
                     continue;
                 }
-                let plan =
-                    generate_plan(&init, &replacement.action, &replacement.plan, &permutation);
+                let plan = generate_plan(&init, &replacement.plan, &permutation);
                 if plan.is_some() {
                     return plan;
                 }

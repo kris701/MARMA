@@ -53,17 +53,6 @@ pub fn dir_files_by_extension(path: &PathBuf, ext: &str) -> io::Result<Vec<PathB
         .collect())
 }
 
-fn sort_files(files: Vec<PathBuf>) -> Vec<PathBuf> {
-    let mut files = files;
-    files.sort_by(|a, b| {
-        a.file_name()
-            .unwrap()
-            .len()
-            .cmp(&b.file_name().unwrap().len())
-    });
-    files
-}
-
 /// Matches every file in files with a set of files from other_files
 /// A match occurs if its name occurs
 pub fn match_files(files: Vec<PathBuf>, other_files: Vec<PathBuf>) -> Vec<(PathBuf, PathBuf)> {
@@ -81,14 +70,4 @@ pub fn match_files(files: Vec<PathBuf>, other_files: Vec<PathBuf>) -> Vec<(PathB
     }
 
     matches
-}
-
-pub fn read_pairs(files: Vec<(PathBuf, PathBuf)>) -> io::Result<Vec<(String, String)>> {
-    let mut pairs: Vec<(String, String)> = Vec::new();
-
-    for (a, b) in files {
-        pairs.push((fs::read_to_string(a)?, fs::read_to_string(b)?));
-    }
-
-    Ok(pairs)
 }

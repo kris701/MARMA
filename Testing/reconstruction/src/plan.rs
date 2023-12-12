@@ -1,8 +1,7 @@
-use std::{fs, io, path::PathBuf};
-
 use crate::world::{action::Action, World};
 use itertools::Itertools;
 use spingus::sas_plan::{parse_sas, SASPlan};
+use std::fs;
 
 #[derive(Debug, Clone)]
 pub struct Step {

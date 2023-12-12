@@ -19,7 +19,6 @@ use cache::generation::{generate_cache, CacheMethod};
 use cache::Cache;
 use cache::INVALID_REPLACEMENTS;
 use clap::Parser;
-use itertools::Itertools;
 use reconstruction::reconstruction::reconstruct;
 use spingus::sas_plan::{export_sas, SASPlan};
 use std::fs;

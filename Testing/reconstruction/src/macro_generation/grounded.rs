@@ -1,7 +1,3 @@
-use std::collections::HashMap;
-
-use itertools::Itertools;
-
 use crate::{
     fact::Fact,
     plan::{Plan, Step},
@@ -13,6 +9,8 @@ use crate::{
         World,
     },
 };
+use itertools::Itertools;
+use std::collections::HashMap;
 
 pub(super) fn generate_macro(meta_action: &Action, plan: &Plan) -> (Action, Plan) {
     let mut cul_args: Vec<usize> = Vec::new();

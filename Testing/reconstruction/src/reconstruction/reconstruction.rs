@@ -9,7 +9,6 @@ use crate::{
     tools::{random_file_name, status_print, Status},
     world::World,
 };
-use spingus::{sas_plan::SASPlan, term::Term};
 use std::{fs, path::PathBuf, time::Instant};
 
 #[derive(Default)]

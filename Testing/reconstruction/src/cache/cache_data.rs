@@ -1,14 +1,12 @@
-use std::{collections::HashMap, fs, io, path::PathBuf};
-
-use spingus::{
-    domain::action::{parse_action, Action},
-    sas_plan::{parse_sas, SASPlan},
-};
-
 use crate::{
     tools::io::file::{dir_dirs, dir_files_by_extension, dir_name, match_files},
     world::World,
 };
+use spingus::{
+    domain::action::{parse_action, Action},
+    sas_plan::{parse_sas, SASPlan},
+};
+use std::{collections::HashMap, fs, io, path::PathBuf};
 
 pub type CacheData = HashMap<usize, Vec<(Action, SASPlan)>>;
 

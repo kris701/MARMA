@@ -8,6 +8,12 @@ mod predicates;
 pub mod problem_writing;
 mod types;
 
+use self::{
+    actions::{translate_actions, Actions},
+    objects::Objects,
+    predicates::Predicates,
+    types::Types,
+};
 use crate::{
     fact::Fact,
     tools::{status_print, Status},
@@ -16,13 +22,6 @@ use crate::{
 use once_cell::sync::OnceCell;
 use spingus::{domain::parse_domain, problem::parse_problem};
 use std::{collections::HashSet, fs, path::PathBuf};
-
-use self::{
-    actions::{translate_actions, Actions},
-    objects::Objects,
-    predicates::Predicates,
-    types::Types,
-};
 
 pub struct World {
     pub domain_name: String,
