@@ -2,6 +2,7 @@ mod cache;
 mod fact;
 mod instantiation;
 mod macro_generation;
+mod plan;
 mod reconstruction;
 mod state;
 mod tools;
@@ -54,7 +55,7 @@ pub struct Args {
     #[arg(short = 'c')]
     cache: Option<PathBuf>,
     /// Type of caching
-    #[arg(long, default_value = "lifted")]
+    #[arg(long, default_value = "exact")]
     cache_method: CacheMethod,
     /// If given, adds entries found by planner to cache
     #[arg(short, long)]
@@ -75,7 +76,7 @@ fn meta_solve(
 ) -> SASPlan {
     let mut reconstruction_begin = None;
     let mut meta_solution_time: f64 = 0.0;
-    let meta_count = World::global().meta_actions.len();
+    let meta_count = World::global().actions.meta_count();
     let mut banned_meta_actions: Vec<usize> = Vec::new();
     while banned_meta_actions.len() <= meta_count {
         let meta_domain = World::global().export_meta_domain(&banned_meta_actions);
@@ -103,29 +104,17 @@ fn meta_solve(
                 );
                 println!("solution_time={:.4}", meta_solution_time);
                 println!("meta_plan_length={}", meta_plan.len());
-                println!(
-                    "meta_actions_in_plan={}",
-                    meta_plan
-                        .iter()
-                        .filter(|s| World::global().is_meta_action(&s.name))
-                        .count()
-                );
+                println!("meta_actions_in_plan={}", meta_plan.meta_count());
                 println!(
                     "meta_actions_in_plan_unique={}",
-                    meta_plan
-                        .iter()
-                        .filter(|s| World::global().is_meta_action(&s.name))
-                        .unique_by(|s| &s.name)
-                        .count()
+                    meta_plan.meta_count_unique()
                 );
                 println!("invalid_meta_actions={}", banned_meta_actions.len());
-                return plan;
+                return plan.export();
             }
             Err(err) => {
-                println!(
-                    "Invalid meta action: {}",
-                    World::global().meta_actions[err].name
-                );
+                assert!(World::global().actions.is_meta(err));
+                println!("Invalid meta action: {}", World::global().actions.name(err));
                 banned_meta_actions.push(err)
             }
         }

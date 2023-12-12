@@ -1,5 +1,6 @@
 use crate::{
     cache::Cache,
+    plan::{Plan, Step},
     reconstruction::{
         downward_wrapper::{Downward, DownwardError},
         stiching::stich,
@@ -41,13 +42,13 @@ static mut METRICS: Metrics = Metrics::new();
 
 fn check_cache(
     cache: Option<&Box<dyn Cache>>,
-    term: &Term,
+    step: &Step,
     init: &State,
     goal: &State,
-) -> Option<SASPlan> {
+) -> Option<Plan> {
     let cache = cache?;
     let cache_start = Instant::now();
-    let replacement = cache.get_replacement(term, init, goal);
+    let replacement = cache.get_replacement(step, init, goal);
     unsafe {
         METRICS.cache_time += cache_start.elapsed().as_secs_f64();
         if replacement.is_some() {
@@ -61,7 +62,7 @@ fn generate_replacement(
     domain_path: &PathBuf,
     init: &State,
     goal: &State,
-) -> Result<SASPlan, DownwardError> {
+) -> Result<Plan, DownwardError> {
     let downward = Downward::global();
     let problem_path = PathBuf::from(format!("{}", random_file_name(&downward.temp_dir)));
     let problem = World::global().export_problem(&init, &goal);
@@ -79,11 +80,11 @@ fn find_replacement(
     cache: &mut Option<Box<dyn Cache>>,
     iterative_cache: bool,
     domain_path: &PathBuf,
-    term: &Term,
+    step: &Step,
     init: &State,
     goal: &State,
-) -> Result<SASPlan, DownwardError> {
-    if let Some(plan) = check_cache(cache.as_ref(), term, init, goal) {
+) -> Result<Plan, DownwardError> {
+    if let Some(plan) = check_cache(cache.as_ref(), step, init, goal) {
         return Ok(plan);
     }
     let replacement = generate_replacement(domain_path, init, goal)?;
@@ -92,7 +93,7 @@ fn find_replacement(
             unsafe {
                 METRICS.added_to_cache += 1;
             }
-            cache.add_entry(term, &replacement);
+            cache.add_entry(step, &replacement);
         }
     }
     Ok(replacement)
@@ -102,18 +103,16 @@ pub fn reconstruct(
     cache: &mut Option<Box<dyn Cache>>,
     iterative_cache: bool,
     domain_path: &PathBuf,
-    plan: &SASPlan,
-) -> Result<SASPlan, usize> {
-    let mut replacements: Vec<(usize, SASPlan)> = Vec::new();
+    plan: &Plan,
+) -> Result<Plan, usize> {
+    let mut replacements: Vec<(usize, Plan)> = Vec::new();
     let mut state = State::from_init();
     status_print(Status::Reconstruction, "Generating replacements");
     for (i, step) in plan.iter().enumerate() {
-        let meta_index = World::global().meta_index(&step.name);
-        let action = World::global().get_action(&step.name);
-        let arguments = World::global().objects.indexes(&step.parameters);
+        let action = World::global().actions.get(step.action);
         let init = state.clone();
-        state.apply(action, &arguments);
-        if !World::global().is_meta_action(&step.name) {
+        state.apply(action, &step.args);
+        if !World::global().actions.is_meta(step.action) {
             continue;
         }
         let replacement =
@@ -121,7 +120,7 @@ pub fn reconstruct(
         match replacement {
             Ok(plan) => replacements.push((i, plan)),
             Err(err) => match err {
-                DownwardError::Unsolvable => return Err(meta_index),
+                DownwardError::Unsolvable => return Err(step.action),
                 _ => panic!("{}", err.to_string()),
             },
         };

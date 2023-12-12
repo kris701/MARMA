@@ -1,12 +1,14 @@
 use pathsearch::find_executable_in_path;
-use spingus::sas_plan::{parse_sas, SASPlan};
 use std::{
     fs,
     path::{Path, PathBuf},
     process::Command,
 };
 
-use crate::tools::{random_file_name, status_print, Status};
+use crate::{
+    plan::{read_plan, Plan},
+    tools::{random_file_name, status_print, Status},
+};
 use once_cell::sync::OnceCell;
 
 #[derive(Debug)]
@@ -14,7 +16,6 @@ pub enum DownwardError {
     Unsolvable,
     Launch(String),
     RunTime(String),
-    PlanRead(String),
     PlanParse(String),
 }
 
@@ -24,7 +25,6 @@ impl DownwardError {
             DownwardError::Unsolvable => format!("Downward could not solve problem"),
             DownwardError::Launch(err) => format!("Could not launch downward with err: {}", err),
             DownwardError::RunTime(err) => format!("Downward crashed with err: {}", err),
-            DownwardError::PlanRead(err) => format!("Failed to read plan with err: {}", err),
             DownwardError::PlanParse(err) => format!("Failed to parse plan with err: {}", err),
         }
     }
@@ -56,7 +56,7 @@ impl Downward {
         }
     }
 
-    fn run(&self, cmd: &mut Command, plan_path: &String) -> Result<SASPlan, DownwardError> {
+    fn run(&self, cmd: &mut Command, plan_path: &String) -> Result<Plan, DownwardError> {
         let out = cmd
             .output()
             .map_err(|e| DownwardError::Launch(e.to_string()))?;
@@ -73,18 +73,14 @@ impl Downward {
                 )));
             }
         }
-        let plan =
-            fs::read_to_string(plan_path).map_err(|e| DownwardError::PlanRead(e.to_string()))?;
-        parse_sas(&plan).map_err(|e| {
-            DownwardError::PlanParse(format!("Plan: {}\nError: {}", &plan, e.to_string()))
-        })
+        read_plan(plan_path).map_err(|e| DownwardError::PlanParse(e))
     }
 
     pub fn solve(
         &self,
         domain_path: &PathBuf,
         problem_path: &PathBuf,
-    ) -> Result<SASPlan, DownwardError> {
+    ) -> Result<Plan, DownwardError> {
         let command_path = match Path::new(&self.path).to_str() {
             Some(p) => p,
             None => panic!("Had error trying to generate command path"),

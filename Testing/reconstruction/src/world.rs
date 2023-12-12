@@ -1,4 +1,5 @@
 pub mod action;
+pub mod actions;
 pub mod atom;
 pub mod domain_writing;
 mod objects;
@@ -10,24 +11,25 @@ mod types;
 use crate::{
     fact::Fact,
     tools::{status_print, Status},
-    world::{
-        action::translate_action, objects::translate_objects, predicates::translate_predicates,
-        types::translate_types,
-    },
+    world::{objects::translate_objects, predicates::translate_predicates, types::translate_types},
 };
 use once_cell::sync::OnceCell;
 use spingus::{domain::parse_domain, problem::parse_problem};
 use std::{collections::HashSet, fs, path::PathBuf};
 
-use self::{action::Action, objects::Objects, predicates::Predicates, types::Types};
+use self::{
+    actions::{translate_actions, Actions},
+    objects::Objects,
+    predicates::Predicates,
+    types::Types,
+};
 
 pub struct World {
     pub domain_name: String,
     pub types: Types,
     pub objects: Objects,
     pub predicates: Predicates,
-    pub actions: Vec<Action>,
-    pub meta_actions: Vec<Action>,
+    pub actions: Actions,
     pub init: Vec<Fact>,
     pub static_facts: HashSet<Fact>,
 }
@@ -48,18 +50,13 @@ impl World {
         let types = translate_types(domain.types);
         let predicates = translate_predicates(&types, &domain.actions, domain.predicates);
         let objects = translate_objects(&types, domain.constants, problem.objects);
-        let actions: Vec<Action> = domain
-            .actions
-            .into_iter()
-            .map(|a| translate_action(&types, &predicates, &objects, a))
-            .collect();
-        println!("action_count={}", actions.len());
-        let meta_actions: Vec<Action> = meta_domain
-            .actions
-            .into_iter()
-            .map(|a| translate_action(&types, &predicates, &objects, a))
-            .collect();
-        println!("meta_action_count={}", meta_actions.len());
+        let actions = translate_actions(
+            &types,
+            &predicates,
+            &objects,
+            domain.actions,
+            meta_domain.actions,
+        );
         let init: Vec<Fact> = problem
             .inits
             .iter()
@@ -80,39 +77,9 @@ impl World {
             types,
             predicates,
             actions,
-            meta_actions,
             objects,
             init,
             static_facts,
-        }
-    }
-
-    pub fn is_meta_action(&self, name: &str) -> bool {
-        if self.actions.iter().any(|a| a.name == name) {
-            return false;
-        }
-
-        if self.meta_actions.iter().any(|a| a.name == name) {
-            return true;
-        }
-        panic!("Undeclared action: {}", name);
-    }
-
-    pub fn action_index(&self, name: &str) -> usize {
-        self.actions.iter().position(|a| a.name == name).unwrap()
-    }
-
-    pub fn meta_index(&self, name: &str) -> usize {
-        self.meta_actions
-            .iter()
-            .position(|a| a.name == name)
-            .unwrap()
-    }
-
-    pub fn get_action(&self, name: &str) -> &Action {
-        match self.is_meta_action(name) {
-            true => &self.meta_actions[self.meta_index(name) as usize],
-            false => &self.actions[self.action_index(name) as usize],
         }
     }
 }

@@ -3,17 +3,17 @@ use crate::{
     fact::Fact,
     instantiation::instantiate,
     macro_generation::generate_macro,
+    plan::{convert_replacement_plan, Plan},
     state::State,
     tools::{status_print, Status},
     world::{action::Action, World},
 };
-use spingus::{sas_plan::SASPlan, term::Term};
 use std::collections::HashMap;
 
 #[derive(Debug)]
 struct Replacement {
     action: Action,
-    plan: SASPlan,
+    plan: Plan,
 }
 
 fn generate_replacements(cache_data: &CacheData, meta_index: &usize) -> Option<Vec<Replacement>> {
@@ -22,7 +22,7 @@ fn generate_replacements(cache_data: &CacheData, meta_index: &usize) -> Option<V
         .iter()
         .map(|(action, sas_plan)| {
             let action = Action::new(action.clone());
-            let plan = sas_plan.to_owned();
+            let plan = convert_replacement_plan(&action, sas_plan);
             Replacement { action, plan }
         })
         .collect();
@@ -30,35 +30,39 @@ fn generate_replacements(cache_data: &CacheData, meta_index: &usize) -> Option<V
 }
 
 #[derive(Debug)]
-pub struct LiftedCache {
+pub struct ExactCache {
     replacements: HashMap<usize, Vec<Replacement>>,
 }
 
-impl LiftedCache {
+impl ExactCache {
     pub fn new(cache_data: CacheData) -> Self {
-        status_print(Status::Cache, "Init Lifted Cache");
+        status_print(Status::Cache, "Init Exact Cache");
         let mut replacements: HashMap<usize, Vec<Replacement>> = HashMap::new();
 
-        for (i, _) in World::global().meta_actions.iter().enumerate() {
-            let action_replacements = generate_replacements(&cache_data, &i);
+        for a in World::global().actions.iterate_meta() {
+            let index = World::global().actions.index(&a.name);
+            let action_replacements = generate_replacements(&cache_data, &index);
 
             if let Some(action_replacements) = action_replacements {
-                replacements.insert(i, action_replacements);
+                replacements.insert(index, action_replacements);
             }
         }
 
         Self { replacements }
     }
 }
-impl Cache for LiftedCache {
-    fn get_replacement(&self, meta_term: &Term, init: &State, goal: &State) -> Option<SASPlan> {
+impl Cache for ExactCache {
+    fn get_replacement(
+        &self,
+        step: &crate::plan::Step,
+        init: &State,
+        goal: &State,
+    ) -> Option<Plan> {
         let desired = init.diff(goal);
-        let meta_index = World::global().meta_index(&meta_term.name);
-        let meta_parameters = World::global().objects.indexes(&meta_term.parameters);
-        let replacement_candidates = &self.replacements.get(&meta_index)?;
+        let replacement_candidates = &self.replacements.get(&step.action)?;
         for replacement in replacement_candidates.iter() {
             let action = &replacement.action;
-            let fixed = find_fixed(&meta_parameters, action);
+            let fixed = find_fixed(&step.args, action);
             for permutation in instantiate(&action, init, &fixed)? {
                 let mut eff: Vec<(Fact, bool)> = Vec::new();
                 for atom in action.effect.iter() {
@@ -82,22 +86,12 @@ impl Cache for LiftedCache {
         None
     }
 
-    fn add_entry(&mut self, meta_term: &Term, replacement_plan: &SASPlan) {
-        let meta_index = World::global().meta_index(&meta_term.name);
-        let meta_action = World::global().get_action(&meta_term.name);
-        let operators = replacement_plan
-            .iter()
-            .map(|s| {
-                (
-                    World::global().get_action(&s.name),
-                    World::global().objects.indexes(&s.parameters),
-                )
-            })
-            .collect();
-        let (action, plan) = generate_macro(meta_action, operators);
+    fn add_entry(&mut self, step: &crate::plan::Step, replacement_plan: &Plan) {
+        let meta_action = World::global().actions.get(step.action);
+        let (action, plan) = generate_macro(meta_action, replacement_plan);
         let replacement = Replacement { action, plan };
         self.replacements
-            .entry(meta_index)
+            .entry(step.action)
             .or_default()
             .push(replacement);
     }

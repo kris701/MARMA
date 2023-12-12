@@ -29,15 +29,17 @@ impl World {
     }
 
     fn export_actions(&self) -> String {
-        self.actions.iter().map(|a| format!("{}", a)).collect()
+        self.actions
+            .iterate_primitive()
+            .map(|a| format!("{}", a))
+            .collect()
     }
 
     fn export_meta_actions(&self, banned_meta_actions: &Vec<usize>) -> String {
-        self.meta_actions
-            .iter()
-            .enumerate()
-            .filter(|(i, ..)| !banned_meta_actions.contains(i))
-            .map(|(_, a)| format!("{}", a))
+        self.actions
+            .iterate_meta()
+            .filter(|a| !banned_meta_actions.contains(&self.actions.index(&a.name)))
+            .map(|a| format!("{}", a))
             .collect()
     }
 

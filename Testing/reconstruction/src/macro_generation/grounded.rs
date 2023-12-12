@@ -4,6 +4,8 @@ use itertools::Itertools;
 
 use crate::{
     fact::Fact,
+    plan::{Plan, Step},
+    tools::random_name,
     world::{
         action::Action,
         atom::{Argument, Atom},
@@ -12,25 +14,21 @@ use crate::{
     },
 };
 
-use spingus::{sas_plan::SASPlan, term::Term};
-
-pub(super) fn generate_macro(
-    meta_action: &Action,
-    operators: Vec<(&Action, Vec<usize>)>,
-) -> (Action, SASPlan) {
-    let name: String = operators
-        .iter()
-        .map(|(a, ..)| format!("_{}", a.name))
-        .collect();
+pub(super) fn generate_macro(meta_action: &Action, plan: &Plan) -> (Action, Plan) {
     let mut cul_args: Vec<usize> = Vec::new();
     let mut cul_pre: HashMap<Fact, bool> = HashMap::new();
     let mut cul_eff: HashMap<Fact, bool> = HashMap::new();
 
-    for (action, args) in operators.iter() {
-        let new_args = args.iter().filter(|a| !cul_args.contains(a)).collect_vec();
+    for step in plan.iter() {
+        let action = World::global().actions.get(step.action);
+        let new_args = step
+            .args
+            .iter()
+            .filter(|a| !cul_args.contains(a))
+            .collect_vec();
         cul_args.extend(new_args);
-        combine_pre(&mut cul_pre, &cul_eff, &action.precondition, args);
-        combine_eff(&mut cul_eff, &action.effect, args);
+        combine_pre(&mut cul_pre, &cul_eff, &action.precondition, &step.args);
+        combine_eff(&mut cul_eff, &action.effect, &step.args);
     }
 
     let effect: Vec<Atom> = cul_eff
@@ -50,7 +48,7 @@ pub(super) fn generate_macro(
             value,
         })
         .collect();
-    let precondition = cul_pre
+    let precondition: Vec<Atom> = cul_pre
         .into_iter()
         .sorted()
         .map(|(fact, value)| Atom {
@@ -95,19 +93,19 @@ pub(super) fn generate_macro(
             false => format!("O{}", i),
         })
         .collect();
-    let replacement_plan = operators
-        .iter()
-        .map(|(action, args)| Term {
-            name: action.name.to_owned(),
-            parameters: args
-                .iter()
-                .map(|a| {
-                    parameter_names[cul_args.iter().position(|c_arg| a == c_arg).unwrap()]
-                        .to_owned()
-                })
-                .collect(),
-        })
-        .collect();
+
+    let replacement_plan = Plan::new(
+        plan.iter()
+            .map(|s| Step {
+                action: s.action,
+                args: s
+                    .args
+                    .iter()
+                    .map(|a| cul_args.iter().position(|c_arg| a == c_arg).unwrap())
+                    .collect(),
+            })
+            .collect(),
+    );
     let parameter_types = cul_args
         .iter()
         .map(|a| World::global().objects.object_type(*a))
@@ -116,10 +114,9 @@ pub(super) fn generate_macro(
         names: parameter_names,
         types: parameter_types,
     };
-
     (
         Action {
-            name,
+            name: random_name(),
             parameters,
             precondition,
             effect,

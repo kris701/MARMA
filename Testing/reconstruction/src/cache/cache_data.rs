@@ -27,7 +27,7 @@ pub fn read_cache(path: &PathBuf) -> CacheData {
         let replacements = read_meta_dir(&dir)
             .map_err(|e| panic!("Failed to read cache dir {:?}. Had error {:?}", dir, e))
             .unwrap();
-        cache_data.insert(World::global().meta_index(&name), replacements);
+        cache_data.insert(World::global().actions.index(&name), replacements);
     }
     cache_data
 }

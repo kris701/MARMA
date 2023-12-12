@@ -1,6 +1,6 @@
 mod cache_data;
+mod exact;
 pub mod generation;
-mod lifted;
 
 use std::{
     collections::HashMap,
@@ -8,43 +8,31 @@ use std::{
 };
 
 use crate::{
+    plan::{Plan, Step},
     state::State,
     world::{action::Action, World},
 };
-use spingus::{sas_plan::SASPlan, term::Term};
 
 pub static INVALID_REPLACEMENTS: AtomicUsize = AtomicUsize::new(0);
 
 pub trait Cache {
     /// Retrives replacement from cache from given init to goal
-    fn get_replacement(&self, meta_term: &Term, init: &State, goal: &State) -> Option<SASPlan>;
-    fn add_entry(&mut self, meta_term: &Term, replacement_plan: &SASPlan);
+    fn get_replacement(&self, step: &Step, init: &State, goal: &State) -> Option<Plan>;
+    fn add_entry(&mut self, step: &Step, replacement_plan: &Plan);
 }
 
 pub(super) fn generate_plan(
     init: &State,
     replacement_macro: &Action,
-    replacement_plan: &SASPlan,
+    replacement_plan: &Plan,
     parameters: &Vec<usize>,
-) -> Option<SASPlan> {
+) -> Option<Plan> {
     let macro_parameters = &replacement_macro.parameters;
-    let actions: Vec<String> = replacement_plan.iter().map(|t| t.name.to_owned()).collect();
-    let replacements: Vec<&Action> = actions
-        .iter()
-        .map(|n| World::global().get_action(n))
-        .collect();
     let mut state = init.clone();
-    let mut plan: SASPlan = Vec::new();
-    for (action, step) in replacements.iter().zip(replacement_plan.iter()) {
-        let name = action.name.to_owned();
-        let parameters: Vec<usize> = step
-            .parameters
-            .iter()
-            .map(|n| {
-                let index = macro_parameters.index(n);
-                parameters[index]
-            })
-            .collect();
+    let mut steps: Vec<Step> = Vec::new();
+    for step in replacement_plan.iter() {
+        let action = World::global().actions.get(step.action);
+        let parameters: Vec<usize> = step.args.iter().map(|n| parameters[*n]).collect();
         let parameters_named = World::global().objects.names_cloned(&parameters);
         for pre in action.precondition.iter() {
             if state.has_nary(pre.predicate, &pre.map_args(&parameters)) != pre.value {
@@ -53,14 +41,13 @@ pub(super) fn generate_plan(
             }
         }
         state.apply(action, &parameters);
-        plan.push(Term {
-            name,
-            parameters: parameters_named,
+        steps.push(Step {
+            action: step.action,
+            args: parameters,
         })
     }
-    Some(plan)
+    Some(Plan::new(steps))
 }
-
 pub(super) fn find_fixed(arguments: &Vec<usize>, macro_action: &Action) -> HashMap<usize, usize> {
     macro_action
         .parameters

@@ -1,4 +1,4 @@
-use super::{cache_data::read_cache, lifted::LiftedCache, Cache};
+use super::{cache_data::read_cache, exact::ExactCache, Cache};
 use crate::tools::{status_print, Status};
 use clap::ValueEnum;
 use std::{collections::HashMap, path::PathBuf};
@@ -6,7 +6,8 @@ use std::{collections::HashMap, path::PathBuf};
 #[derive(Debug, Copy, Clone, PartialEq, Default, ValueEnum)]
 pub enum CacheMethod {
     #[default]
-    Lifted,
+    Exact,
+    Partial,
     None,
 }
 
@@ -23,7 +24,7 @@ pub fn generate_cache(
         .map_or(HashMap::new(), |p| read_cache(&p));
     status_print(Status::Cache, "Reading cache");
     match cache_type {
-        CacheMethod::Lifted => Some(Box::new(LiftedCache::new(data))),
-        _ => panic!(),
+        CacheMethod::Exact => Some(Box::new(ExactCache::new(data))),
+        _ => unreachable!(),
     }
 }
