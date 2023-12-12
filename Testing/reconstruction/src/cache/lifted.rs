@@ -13,17 +13,17 @@ use std::collections::HashMap;
 #[derive(Debug)]
 struct Replacement {
     action: Action,
-    plans: Vec<SASPlan>,
+    plan: SASPlan,
 }
 
 fn generate_replacements(cache_data: &CacheData, meta_index: &usize) -> Option<Vec<Replacement>> {
     let relevant_replacements = cache_data.get(meta_index)?;
     let replacements = relevant_replacements
         .iter()
-        .map(|(action, sas_plans)| {
+        .map(|(action, sas_plan)| {
             let action = Action::new(action.clone());
-            let plans = sas_plans.to_owned();
-            Replacement { action, plans }
+            let plan = sas_plan.to_owned();
+            Replacement { action, plan }
         })
         .collect();
     Some(replacements)
@@ -72,11 +72,10 @@ impl Cache for LiftedCache {
                 if eff != desired {
                     continue;
                 }
-                for plan in replacement.plans.iter() {
-                    let plan = generate_plan(&init, &replacement.action, &plan, &permutation);
-                    if plan.is_some() {
-                        return plan;
-                    }
+                let plan =
+                    generate_plan(&init, &replacement.action, &replacement.plan, &permutation);
+                if plan.is_some() {
+                    return plan;
                 }
             }
         }
@@ -96,10 +95,7 @@ impl Cache for LiftedCache {
             })
             .collect();
         let (action, plan) = generate_macro(meta_action, operators);
-        let replacement = Replacement {
-            action,
-            plans: vec![plan],
-        };
+        let replacement = Replacement { action, plan };
         self.replacements
             .entry(meta_index)
             .or_default()

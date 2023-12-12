@@ -66,17 +66,18 @@ fn sort_files(files: Vec<PathBuf>) -> Vec<PathBuf> {
 
 /// Matches every file in files with a set of files from other_files
 /// A match occurs if its name occurs
-pub fn match_files(files: Vec<PathBuf>, other_files: Vec<PathBuf>) -> Vec<(PathBuf, Vec<PathBuf>)> {
-    let mut matches: Vec<(PathBuf, Vec<PathBuf>)> = Vec::new();
+pub fn match_files(files: Vec<PathBuf>, other_files: Vec<PathBuf>) -> Vec<(PathBuf, PathBuf)> {
+    let mut matches: Vec<(PathBuf, PathBuf)> = Vec::new();
 
     for file in files {
         let s = file_name(&file);
         let contained = other_files
             .iter()
-            .filter(|f| file_name(&f).split_once('_').unwrap().0 == s)
-            .cloned()
-            .collect();
-        matches.push((file, contained));
+            .find(|f| file_name(&f).split_once('_').unwrap().0 == s)
+            .cloned();
+        if let Some(contained) = contained {
+            matches.push((file, contained));
+        }
     }
 
     matches
