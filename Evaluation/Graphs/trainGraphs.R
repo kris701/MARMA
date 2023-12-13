@@ -76,4 +76,5 @@ print(table,
 	sanitize.text.function = function(x) {x},
 	latex.environments="centering",
 	sanitize.colnames.function = bold,
-	floating = TRUE)
+	floating = TRUE,
+	rotate.colnames = TRUE)
