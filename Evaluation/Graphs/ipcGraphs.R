@@ -12,7 +12,7 @@ if (length(args) != 1) {
 dir.create(file.path("out"), showWarnings = FALSE)
 
 data <- read.csv(args[1])
-data <- data[,-ncol(data)]
+#data <- data[,-ncol(data)]
 data <- rename_data(data)
 names(data)[names(data)=="domain"] <- "Domain"
 

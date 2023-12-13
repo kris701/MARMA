@@ -147,7 +147,7 @@ tableData[nrow(tableData) + 1,] <- list(
 table <- xtable(
 		tableData, 
 		type = "latex", 
-		caption="Across all the problems in each domain, $Meta_{plan}$ is how many meta actions was in the plans, $C_{found}$ is how many replacements could be found in cache.",
+		caption="Across all the problems in each domain, $Meta_{plan}$ is how many meta actions was in the plans, $C_{found}$ is how many replacements could be found in cache. Do note, that spanner and blocksworld have no valid meta actions.",
 		label="table:metaCoverage"
 	)
 align(table ) <- generateRowDefinition(ncol(table), TRUE)
