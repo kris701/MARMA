@@ -1,4 +1,3 @@
-#library(dplyr) 
 library(xtable)
 
 source("src/style.R")
