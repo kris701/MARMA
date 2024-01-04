@@ -93,6 +93,8 @@ namespace MetaActions.Train.Trainers
         }
         public RunReport Run()
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             _isDone = false;
             Print($"Training started ({GetType().Name})", ConsoleColor.Blue);
             StartTimeoutTimer();
@@ -118,6 +120,7 @@ namespace MetaActions.Train.Trainers
             if (!CancellationToken.IsCancellationRequested)
                 _isDone = true;
 
+            stopwatch.Stop();
             return new RunReport(
                 Name,
                 TrainingProblems.Count,
@@ -125,9 +128,11 @@ namespace MetaActions.Train.Trainers
                 MetaActionStrategy.MacroCount,
                 allMetaActions.Count,
                 verifiedMetaActions.Count,
+                verifiedMetaActions.Count(x => x.TimedOut),
                 MetaActionVerificationStrategy.CheckedCounter,
                 verifiedMetaActions.Sum(x => x.Replacements.Count / 2),
-                CancellationToken.IsCancellationRequested);
+                CancellationToken.IsCancellationRequested,
+                stopwatch.ElapsedMilliseconds / 1000);
         }
 
         private void StartTimeoutTimer()

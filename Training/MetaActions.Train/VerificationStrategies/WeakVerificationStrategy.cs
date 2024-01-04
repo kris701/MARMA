@@ -25,6 +25,7 @@ namespace MetaActions.Train.VerificationStrategies
                 Print($"\tTesting meta action {metaActionCounter} of {allMetaActions.Count} [{Math.Round(metaActionCounter / (double)allMetaActions.Count * 100, 0)}%]", ConsoleColor.Magenta);
                 int problemCounter = 1;
                 bool allValid = true;
+                bool timedOut = false;
                 foreach (var problem in verificationProblem)
                 {
                     if (CancellationToken.IsCancellationRequested) return CurrentlyValidMetaActions;
@@ -45,7 +46,10 @@ namespace MetaActions.Train.VerificationStrategies
                         break;
                     }
                     else if (verificationResult == VerificationResult.TimedOut)
+                    {
+                        timedOut = true;
                         Print($"\tMeta action timed out on problem '{problem.Name}'. Assuming weak. Continuing...", ConsoleColor.Yellow);
+                    }
                     problemCounter++;
                 }
                 if (allValid)
@@ -54,7 +58,8 @@ namespace MetaActions.Train.VerificationStrategies
                     {
                         Print($"\tMeta action was valid in all {verificationProblem.Count} problems.", ConsoleColor.Green);
                         Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
-                        CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, ""))));
+                        CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, "")), timedOut));
+                        timedOut = false;
                     }
                     else
                         Print($"\tMeta action was invalid since it had no replacements.", ConsoleColor.Red);

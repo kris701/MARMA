@@ -63,7 +63,7 @@ namespace MetaActions.Train.VerificationStrategies
                     Print("\tMeta Action is Useful!", ConsoleColor.Green);
 
                     Print($"\tExtracting macros from plans...", ConsoleColor.Magenta);
-                    CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, ""))));
+                    CurrentlyValidMetaActions.Add(new ValidMetaAction(metaAction, ExtractMacrosFromPlans(domain, metaAction.Name.Replace(metaAction.Extension, "")), false));
                 }
                 metaActionCounter++;
                 CheckedCounter++;

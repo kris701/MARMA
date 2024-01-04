@@ -10,11 +10,13 @@ namespace MetaActions.Train.VerificationStrategies
     {
         public FileInfo MetaAction { get; }
         public List<FileInfo> Replacements { get; }
+        public bool TimedOut { get; }
 
-        public ValidMetaAction(FileInfo metaAction, List<FileInfo> replacements)
+        public ValidMetaAction(FileInfo metaAction, List<FileInfo> replacements, bool timedOut)
         {
             MetaAction = metaAction;
             Replacements = replacements;
+            TimedOut = timedOut;
         }
 
         public ValidMetaAction(FileInfo metaAction)
